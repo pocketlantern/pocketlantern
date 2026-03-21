@@ -116,7 +116,7 @@ Add to your MCP config (Cursor: `~/.cursor/mcp.json`):
   "mcpServers": {
     "pocketlantern": {
       "command": "node",
-      "args": ["/absolute/path/to/toolkit/apps/mcp-server/dist/server.js"]
+      "args": ["/absolute/path/to/pocketlantern/apps/mcp-server/dist/server.js"]
     }
   }
 }
@@ -211,7 +211,7 @@ See [packages/schema/src/card.ts](packages/schema/src/card.ts) for the full sche
 ## Project structure
 
 ```
-toolkit/
+pocketlantern/
   packages/schema/       <- Card schema (zod + TypeScript types)
   apps/mcp-server/       <- MCP server (search, retrieval, tool handlers)
   apps/cli/              <- CLI (validate, search, init, doctor)
