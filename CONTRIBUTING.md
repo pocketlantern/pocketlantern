@@ -23,7 +23,7 @@ This policy may change as the project matures.
 
 ```bash
 git clone https://github.com/pocketlantern/pocketlantern.git
-cd toolkit
+cd pocketlantern
 pnpm install
 pnpm build
 pnpm test

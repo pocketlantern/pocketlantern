@@ -28,7 +28,7 @@ PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapsh
 
    ```bash
    git clone https://github.com/pocketlantern/pocketlantern.git
-   cd toolkit && pnpm install && pnpm build
+   cd pocketlantern && pnpm install && pnpm build
    ```
 
 2. **Register MCP** (example — adjust path):
@@ -38,7 +38,7 @@ PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapsh
      "mcpServers": {
        "pocketlantern": {
          "command": "node",
-         "args": ["<path-to-toolkit>/apps/mcp-server/dist/server.js"]
+         "args": ["<path-to-pocketlantern>/apps/mcp-server/dist/server.js"]
        }
      }
    }

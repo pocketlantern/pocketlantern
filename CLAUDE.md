@@ -42,7 +42,7 @@ npx tsx apps/cli/src/index.ts validate              # Validate without building 
 ## Project Structure & Key Files
 
 ```
-toolkit/
+pocketlantern/
   packages/schema/
     src/card.ts              <- Card, Candidate, CardStatus, CardTier schemas (zod)
     src/index.ts             <- Public exports

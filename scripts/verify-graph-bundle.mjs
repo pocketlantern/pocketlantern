@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Release gate: bundled G2 index must exist and match the shape MCP graph-loader expects.
- * Run from toolkit root: node scripts/verify-graph-bundle.mjs
+ * Run from repo root: node scripts/verify-graph-bundle.mjs
  */
 import fs from "node:fs";
 import path from "node:path";
