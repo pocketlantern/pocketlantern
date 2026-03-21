@@ -1,0 +1,166 @@
+id: "backend/express-5-default-on-npm-after-v5-1-release-2025"
+title: "Express 5 Default on npm After v5.1 Release 2025"
+problem: "Node backend teams still assuming npm installs Express 4 need a
+  change-awareness card for the March 2025 switch that made Express 5 the
+  default on npm, including upgrade pain points, codemod availability, and
+  support-window implications."
+context:
+  - "backend"
+  - "nodejs"
+  - "express"
+  - "express-5"
+  - "npm"
+  - "migration"
+  - "version-support"
+  - "api-server"
+constraints:
+  - "small-team"
+  - "enterprise"
+  - "monorepo"
+  - "microservices"
+  - "low-ops"
+  - "compliance"
+candidates:
+  - name: "Standardize new installs and active services on Express 5.x"
+    summary: "As of 2026-03-15, the official Express homepage shows Express 5.2.1,
+      and the official March 31, 2025 Express blog says Express 5.1.0 was tagged
+      npm `latest`, which makes bare `npm install express` install the Express 5
+      line by default. Official Express docs also say v5.x requires Node.js 18+,
+      and the migration guide now includes codemods plus a verified list of
+      manual breaking-change checks."
+    when_to_use: "Best for small-team + low-ops or monorepo + microservices backends
+      where you already run Node.js 18+ and want to align with npm defaults, the
+      current major line, and the documented Express 5 behavior for async error
+      forwarding. Use this when you can run the official codemods first and then
+      manually audit route patterns, static file serving, body and query
+      parsing, and startup error handling."
+    tradeoffs: "You align with the default npm install path and the current Express
+      major line, which reduces surprise for new services and fresh
+      environments. The tradeoff is a real application regression pass because
+      Express 5 changes route path syntax, parser defaults, MIME handling, and
+      several long-deprecated method signatures."
+    cautions: "Do not assume the codemods finish the migration. The official docs
+      say some changes still require manual work, especially path route matching
+      syntax. Express also documents behavior changes that commonly break
+      production assumptions: rejected promises now flow to error middleware,
+      `express.urlencoded()` defaults `extended` to `false`, `express.static`
+      now ignores dotfiles by default, `req.body` is `undefined` until parsed,
+      `req.query` is now a getter with the default parser changed from
+      `extended` to `simple`, and `app.listen()` now passes server errors to the
+      callback."
+    links:
+      - "https://expressjs.com/"
+      - "https://expressjs.com/2025/03/31/v5-1-latest-release.html"
+      - "https://expressjs.com/2024/10/15/v5-release"
+      - "https://expressjs.com/en/guide/migrating-5.html"
+      - "https://expressjs.com/en/support/"
+  - name: "Pin Express 4 explicitly only as a time-boxed bridge"
+    summary: "After the March 31, 2025 dist-tag change, relying on bare `npm install
+      express` no longer preserves Express 4, so teams that must stay on v4 need
+      an explicit version pin and a migration plan. As of 2026-03-15, the live
+      Express support page still lists v4.x as ongoing, while the March 31, 2025
+      official blog says moving v5.1.0 to `latest` moved v4 into `MAINTENANCE`
+      with end of life no sooner than 2026-10-01 and described those dates as
+      goals rather than commitments."
+    when_to_use: "Best for enterprise + compliance or monorepo + microservices
+      estates that are blocked by Node.js versions below 18, incompatible
+      route-path syntax, or reliance on old parser and static-file defaults and
+      need a controlled bridge instead of a same-sprint upgrade. Use this only
+      when you can freeze the v4 range intentionally, document the blocker, and
+      schedule a migration rehearsal."
+    tradeoffs: "This minimizes immediate application churn because you avoid the
+      Express 5 behavior changes until your platform and test matrix are ready.
+      The tradeoff is that you are now opting out of npm's default install
+      behavior, and your codebase remains exposed to a shrinking support runway
+      and more future migration work."
+    cautions: "Do not let CI, scaffolding scripts, or fresh environments depend on
+      unqualified `npm install express` if you intend to stay on v4, because the
+      official Express blog says the npm `latest` tag now resolves to the v5
+      line. Also treat Express support-window messaging carefully: the live
+      support page and the March 2025 LTS blog are both official, but they
+      communicate v4 support status differently, so check the current support
+      page before making policy or compliance claims. If you cannot update to a
+      supported Express version, the support page points to HeroDevs for
+      commercial security support."
+    links:
+      - "https://expressjs.com/2025/03/31/v5-1-latest-release.html"
+      - "https://expressjs.com/en/support/"
+      - "https://expressjs.com/2024/10/15/v5-release"
+      - "https://expressjs.com/en/guide/migrating-5.html"
+tags:
+  - "backend"
+  - "express"
+  - "express-5"
+  - "express-4"
+  - "nodejs"
+  - "npm"
+  - "migration"
+  - "lts"
+  - "version-support"
+  - "api"
+aliases:
+  - "express 5 default npm"
+  - "npm install express 4 or 5"
+  - "express 5.1 latest tag"
+  - "express 4 to 5 migration"
+  - "express v5 codemod"
+  - "express support timeline"
+  - "express 5 breaking changes"
+related_cards:
+  - "deployment/node-upgrade-lts-breakage"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-05-11"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: framework
+      id: framework/express-5
+      name: Express 5
+      version: "5"
+    - type: framework
+      id: framework/express-4
+      name: Express 4
+      version: "4"
+    - type: runtime
+      id: runtime/nodejs-18
+      name: Node.js 18
+      current_lts: "18"
+      eol_date: 2025-04-30
+  edges:
+    - type: eol_date
+      from: framework/express-4
+      to: null
+      date: no sooner than 2026-10-01
+      successor: framework/express-5
+    - type: requires_version
+      from: framework/express-5
+      to: runtime/nodejs-18
+      min_version: "18"
+      reason: Express v5.x requires Node.js 18+
+    - type: breaking_change_in
+      from: framework/express-5
+      to: null
+      change: rejected promises now flow to error middleware automatically
+      migration_path: review async route handlers — unhandled rejections now reach
+        error middleware instead of crashing
+    - type: breaking_change_in
+      from: framework/express-5
+      to: null
+      change: express.urlencoded() defaults extended to false; req.query uses simple
+        parser instead of extended; req.body is undefined until parsed
+      migration_path: "explicitly set extended: true if needed; audit query string
+        parsing assumptions"
+    - type: breaking_change_in
+      from: framework/express-5
+      to: null
+      change: express.static now ignores dotfiles by default; route path matching
+        syntax changed
+      migration_path: run official codemods; manually audit route path patterns —
+        codemods do not cover all route syntax changes
+    - type: breaking_change_in
+      from: framework/express-5
+      to: null
+      change: app.listen() now passes server errors to the callback
+      migration_path: add error handling to app.listen callback

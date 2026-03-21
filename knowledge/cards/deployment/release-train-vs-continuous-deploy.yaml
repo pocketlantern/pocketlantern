@@ -1,0 +1,193 @@
+id: deployment/release-train-vs-continuous-deploy
+title: Release Train vs Continuous Deployment for B2B SaaS
+problem: Choosing between scheduled release trains (weekly/biweekly batched
+  deploys) and continuous deployment (deploy on every merge) for a B2B SaaS
+  product — where team size, customer communication, compliance requirements,
+  and deployment confidence change the right answer
+context:
+  - deployment
+  - process
+  - b2b-saas
+constraints:
+  - small-team
+  - enterprise
+  - compliance
+candidates:
+  - name: Continuous Deployment (deploy on every merge)
+    summary: Every merge to main triggers an automated deployment to production.
+      Requires strong CI/CD, automated testing, feature flags, and monitoring.
+      The standard for high-performing engineering teams per DORA metrics.
+    when_to_use: When your CI/CD pipeline is trusted (>95% test pass rate), you have
+      feature flags for incomplete work, and your team can respond to production
+      issues within 30 minutes. Best for small-team + cost-sensitive constraints
+      where fast iteration and small blast radius per deploy outweigh
+      coordination overhead.
+    tradeoffs: Fastest time to production — minutes from merge to live. Smallest
+      blast radius per deploy — easier to identify which change caused issues.
+      Requires investment in CI/CD reliability, automated testing, and feature
+      flags. No release coordination meetings. Rollback is simple (revert one
+      small commit). Not suitable if regulatory approval is required before each
+      deployment.
+    cautions: "Continuous deployment without sufficient test coverage and monitoring
+      is continuous risk. Minimum requirements: automated tests with >80%
+      coverage, feature flags for incomplete features, error monitoring
+      (Sentry), and fast rollback (<5 minutes). If your CI takes >15 minutes,
+      the feedback loop is too slow for effective CD."
+    links:
+      - https://dora.dev/guides/dora-metrics-four-keys/
+      - https://martinfowler.com/bliki/ContinuousDelivery.html
+  - name: Scheduled Release Train (weekly/biweekly)
+    summary: Batch changes into scheduled releases (e.g., every Tuesday). Features
+      are merged to a release branch, tested as a batch, and deployed together.
+      Common in enterprise B2B SaaS with customer communication requirements.
+    when_to_use: When customers need advance notice of changes (enterprise B2B with
+      change management processes), compliance requires deployment documentation
+      per release, or your test suite is too slow for per-merge deployment. Best
+      for enterprise + compliance constraints.
+    tradeoffs: Predictable release schedule for customer communication. Time for
+      manual QA on the full release. Release notes and documentation per train.
+      Larger blast radius per deploy — multiple changes deployed together make
+      issue isolation harder. Coordination overhead (release manager, go/no-go
+      meetings). Slower time to production (1-2 weeks from merge to live).
+    cautions: Release trains create pressure to 'make the train' — leading to rushed
+      code before the cut-off. If a release fails, the entire train is blocked,
+      not just one feature. Release trains are often a symptom of insufficient
+      test automation — invest in CI/CD confidence instead of compensating with
+      batched coordination. Cherry-pick hotfixes between trains add complexity.
+    links:
+      - https://www.atlassian.com/agile/project-management/release-planning
+  - name: "Hybrid: Continuous Deploy + Release Announcements"
+    summary: Deploy continuously but batch release announcements and changelogs on a
+      schedule (weekly/biweekly). Changes reach production immediately but
+      customers are notified in bundled updates. Feature flags control
+      visibility.
+    when_to_use: When you want the engineering benefits of continuous deployment but
+      need structured customer communication. Best for small-team + enterprise
+      where the product serves enterprise customers who expect release notes but
+      your engineering team moves faster than weekly releases.
+    tradeoffs: Engineering gets fast deployment feedback. Customers get structured
+      release communication. Feature flags decouple deploy from release — ship
+      code without exposing features. Requires discipline to separate 'deployed'
+      from 'released'. More complex feature flag management. Changelog
+      automation tools (Changesets, Release Please) help.
+    cautions: Feature flags add complexity — stale flags accumulate if not cleaned
+      up. Establish a flag lifecycle policy (remove flags within 2 weeks of full
+      rollout). This pattern only works if your team has the discipline to keep
+      flags managed. If feature flags become a burden, consider simplifying to
+      pure continuous deployment.
+    links:
+      - https://launchdarkly.com/blog/feature-flags-best-practices/
+      - https://github.com/google-github-actions/release-please
+  - name: Environment Promotion (dev → staging → prod)
+    summary: Changes flow through multiple environments before production. Each
+      promotion requires passing tests and (optionally) manual approval. Slower
+      than continuous deployment but provides multiple verification gates.
+    when_to_use: When regulatory or contractual requirements demand pre-production
+      verification environments. Best for enterprise + compliance where audit
+      trails showing testing in staging before production deployment are
+      required. Common in healthcare, finance, and government SaaS.
+    tradeoffs: Multiple verification gates reduce production risk. Audit trail of
+      which changes passed through which environments. Staging environment can
+      catch integration issues not found in unit tests. Staging environments
+      that drift from production create false confidence. Maintaining
+      environment parity is operationally expensive. Slower deployment pipeline
+      (hours to days).
+    cautions: "Staging environments must mirror production configuration — drift is
+      the #1 failure mode. Infrastructure-as-code (Terraform/Pulumi) helps
+      maintain parity. If staging is consistently different from production, it
+      provides false confidence and should be replaced with production canary
+      deployments. Consider preview environments per PR instead of a shared
+      staging."
+    links:
+      - https://docs.aws.amazon.com/prescriptive-guidance/latest/best-practices-cdk-typescript-iac/development-environments.html
+tags:
+  - deployment
+  - process
+  - ci-cd
+  - release
+  - b2b-saas
+aliases:
+  - release train
+  - continuous deployment
+  - release strategy
+  - deploy frequency
+  - release cadence
+related_cards:
+  - deployment/bluegreen-vs-canary-on-serverless
+  - deployment/feature-flags-vendor-choice
+  - deployment/rollback-strategy-for-schema-plus-app
+  - infra/feature-flag-platform-launchdarkly-vs-statsig-vs-growthbook-2026
+  - devtools/circleci-rerun-limit-january-2026-pipeline-design
+  - game/unreal-launch-everywhere-with-epic-3-5-vs-5-percent-royalty-2026
+updated: 2026-03-15
+sidecar_hard_facts:
+  extracted: 2026-03-15
+  nodes:
+    - type: framework
+      id: framework/continuous-deployment
+      name: Continuous Deployment
+      category: deployment_strategy
+    - type: framework
+      id: framework/hybrid-continuous-deploy-release-announcements
+      name: "Hybrid: Continuous Deploy + Release Announcements"
+      category: deployment_strategy
+    - type: framework
+      id: framework/environment-promotion
+      name: Environment Promotion
+      category: deployment_strategy
+    - type: capability
+      id: capability/feature-flags
+      name: Feature flags
+      category: deployment_control
+    - type: capability
+      id: capability/monitoring
+      name: Monitoring
+      category: observability
+    - type: package
+      id: package/sentry
+      name: Sentry
+    - type: package
+      id: package/changesets
+      name: Changesets
+    - type: package
+      id: package/release-please
+      name: Release Please
+    - type: package
+      id: package/terraform
+      name: Terraform
+    - type: package
+      id: package/pulumi
+      name: Pulumi
+  edges:
+    - type: locks_via
+      from: framework/continuous-deployment
+      to: capability/feature-flags
+      evidence: Requires strong CI/CD, automated testing, feature flags, and monitoring.
+    - type: locks_via
+      from: framework/hybrid-continuous-deploy-release-announcements
+      to: capability/feature-flags
+      evidence: Feature flags control visibility.
+    - type: locks_via
+      from: framework/continuous-deployment
+      to: capability/monitoring
+      evidence: Requires strong CI/CD, automated testing, feature flags, and monitoring.
+    - type: locks_via
+      from: framework/continuous-deployment
+      to: package/sentry
+      evidence: "Minimum requirements: ... error monitoring (Sentry) ..."
+    - type: locks_via
+      from: framework/hybrid-continuous-deploy-release-announcements
+      to: package/changesets
+      evidence: Changelog automation tools (Changesets, Release Please) help.
+    - type: locks_via
+      from: framework/hybrid-continuous-deploy-release-announcements
+      to: package/release-please
+      evidence: Changelog automation tools (Changesets, Release Please) help.
+    - type: locks_via
+      from: framework/environment-promotion
+      to: package/terraform
+      evidence: Infrastructure-as-code (Terraform/Pulumi) helps maintain parity.
+    - type: locks_via
+      from: framework/environment-promotion
+      to: package/pulumi
+      evidence: Infrastructure-as-code (Terraform/Pulumi) helps maintain parity.

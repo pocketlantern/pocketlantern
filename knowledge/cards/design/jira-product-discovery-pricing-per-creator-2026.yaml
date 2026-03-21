@@ -1,0 +1,208 @@
+id: "design/jira-product-discovery-pricing-per-creator-2026"
+title: "Jira Product Discovery Per-Creator Pricing and Rollout Fit 2026"
+problem: "Decide whether Jira Product Discovery is affordable for product and
+  design collaboration based on current creator-viewer pricing, plan limits, and
+  Atlassian bundle overlap."
+context:
+  - "design"
+  - "product-management"
+  - "jira"
+  - "atlassian"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Jira Product Discovery Free"
+    summary: 'Jira Product Discovery Free is the lowest-cost entry point if you only
+      need a small core team authoring the roadmap. As of 2026-03-18, Atlassian
+      lists it at "$0" with a hard limit of "3 creators" per site, unlimited
+      contributors, 2 GB of storage, and Community support. Core ideation,
+      prioritization, comments, votes, and Jira integration are included, so
+      many teams can validate the workflow before paying. This is the cheapest
+      fit when most collaborators only need to comment, vote, or view.'
+    when_to_use: "Use this when you are cost-sensitive and can keep true authorship
+      to three people or fewer across product and design. It is the right
+      default if designers, engineers, and stakeholders mainly need contributor
+      access while a small PM-led group remains the only creator set."
+    tradeoffs: "Zero direct license cost and unlimited contributors are strong
+      advantages. The tradeoff is the strict creator cap, 2 GB storage, lower
+      automation limits, no published views, and no business-hours or premium
+      support."
+    cautions: "As of 2026-03-18, the creator limit is per site, not per project, and
+      Atlassian says Free sites that exceed 3 creators are automatically moved
+      into a 14-day Standard trial. As of 2026-03-18, existing Jira or Jira
+      Service Management access does not make users free JPD creators; creator
+      seats remain the billable unit."
+    links:
+      - "https://www.atlassian.com/software/jira/product-discovery/pricing"
+      - "https://www.atlassian.com/licensing/jira-product-discovery"
+      - "https://support.atlassian.com/jira-cloud-administration/docs/explore-j\
+        ira-cloud-plans/"
+  - name: "Jira Product Discovery Standard"
+    summary: 'Jira Product Discovery Standard is the main paid option for an
+      individual product team. As of 2026-03-18, Atlassian lists Standard at
+      "$10 per creator / month" with unlimited creators, unlimited
+      contributors, 250 GB storage, business-hours support, published views, and
+      higher limits than Free. Atlassian bills only creators, while contributors
+      stay free with an Atlassian account. This makes Standard economical when
+      many stakeholders need input but only a bounded group of PMs and designers
+      need authoring permissions.'
+    when_to_use: "Use this when Free is blocked by the 3-creator cap but you still
+      want a low-cost rollout for one product team. It is the best fit for
+      cost-sensitive product and design collaboration when you need shared
+      authorship plus external or internal roadmap visibility without paying for
+      every viewer."
+    tradeoffs: "Per-creator pricing is materially cheaper than broad per-user
+      licensing if your viewer-to-author ratio is high. The tradeoff is that
+      Premium-only controls such as aggregated roadmaps, hierarchies, view
+      restrictions, sandbox, custom domains, admin insights, release tracks, IP
+      allowlisting, Atlassian Intelligence, and 99.9% SLA are excluded."
+    cautions: "As of 2026-03-18, Atlassian says Jira Product Discovery is a separate
+      product that can be used on its own, so existing Atlassian bundle
+      ownership does not remove JPD seat costs. As of 2026-03-18, Jira, Jira
+      Service Management, and Confluence integrations are included in the
+      subscription, but those products do not bundle creator rights."
+    links:
+      - "https://www.atlassian.com/software/jira/product-discovery/pricing"
+      - "https://www.atlassian.com/licensing/jira-product-discovery"
+      - "https://support.atlassian.com/jira-product-discovery/kb/updates-regard\
+        ing-your-jira-product-discovery-subscription/"
+  - name: "Jira Product Discovery Premium"
+    summary: 'Jira Product Discovery Premium targets multi-team product
+      organizations rather than a single team rollout. As of 2026-03-18,
+      Atlassian lists Premium at "$25 per creator / month" with unlimited
+      creators, unlimited contributors, unlimited storage, 24/7 Premium support,
+      and a 99.9% SLA. Premium adds the main scale and control features missing
+      from Standard, including aggregated roadmaps, hierarchies, granular view
+      restrictions, admin insights, sandbox, release tracks, IP allowlisting,
+      custom domains, and Atlassian Intelligence. The pricing jump is
+      substantial, so affordability depends on whether those organization-wide
+      controls replace separate admin or reporting work.'
+    when_to_use: "Use this when multiple product teams need a consolidated roadmap
+      layer, stronger governance, and enterprise-style controls. It is the fit
+      when the blocker is visibility and control at scale rather than basic
+      collaboration cost."
+    tradeoffs: "You get the strongest governance, support, storage, and cross-team
+      roadmap capabilities. The tradeoff is a 2.5x higher per-creator list price
+      than Standard, which is hard to justify for a single product squad or
+      light design collaboration."
+    cautions: "Atlassian's Premium marketing page still describes an early access
+      program, but the public pricing table shows Premium plan pricing and
+      feature comparison as of 2026-03-18, so teams should confirm availability
+      in their tenant before committing procurement timelines. As of 2026-03-18,
+      the old beta and extended trial path has already ended; Atlassian says
+      beta and extended standard trials ended on 2024-05-31."
+    links:
+      - "https://www.atlassian.com/software/jira/product-discovery/pricing"
+      - "https://www.atlassian.com/software/jira/product-discovery/premium"
+      - "https://www.atlassian.com/licensing/jira-product-discovery"
+tags:
+  - "design"
+  - "jira"
+  - "atlassian"
+  - "pricing"
+  - "product-management"
+aliases:
+  - "jira product discovery pricing"
+  - "jira product discovery creator pricing"
+  - "jira product discovery free vs standard vs premium"
+  - "jpd pricing per creator"
+  - "jira discovery pricing"
+  - "jira product discovery cost"
+  - "jira product discovery seats"
+  - "jira product discovery viewer creator"
+  - "atlassian jira discovery pricing"
+  - "jpd free standard premium"
+  - "jira prod discovery pricing"
+  - "jira product discovery plans pricing"
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+related_cards:
+  - design/zeplin-plan-limits-and-dev-seat-economics-2026
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/atlassian
+      name: Atlassian
+    - type: package
+      id: package/jira-product-discovery-free
+      name: Jira Product Discovery Free
+      category: plan
+    - type: package
+      id: package/jira-product-discovery-standard
+      name: Jira Product Discovery Standard
+      category: plan
+    - type: package
+      id: package/jira-product-discovery-premium
+      name: Jira Product Discovery Premium
+      category: plan
+    - type: capability
+      id: capability/creator-seats
+      name: Creator seats
+      category: licensing
+    - type: capability
+      id: capability/published-views
+      name: Published views
+      category: feature
+    - type: capability
+      id: capability/aggregated-roadmaps
+      name: Aggregated roadmaps
+      category: feature
+    - type: capability
+      id: capability/hierarchies
+      name: Hierarchies
+      category: feature
+    - type: capability
+      id: capability/sandbox
+      name: Sandbox
+      category: feature
+    - type: capability
+      id: capability/custom-domains
+      name: Custom domains
+      category: feature
+  edges:
+    - type: locks_via
+      from: package/jira-product-discovery-free
+      to: capability/creator-seats
+      value: 3 creators per site
+      as_of: 2026-03-18
+    - type: locks_via
+      from: package/jira-product-discovery-standard
+      to: capability/creator-seats
+      value: per creator billing
+      as_of: 2026-03-18
+    - type: locks_via
+      from: package/jira-product-discovery-premium
+      to: capability/creator-seats
+      value: per creator billing
+      as_of: 2026-03-18
+    - type: requires_version
+      from: capability/published-views
+      to: package/jira-product-discovery-standard
+      as_of: 2026-03-18
+    - type: requires_version
+      from: capability/aggregated-roadmaps
+      to: package/jira-product-discovery-premium
+      as_of: 2026-03-18
+    - type: requires_version
+      from: capability/hierarchies
+      to: package/jira-product-discovery-premium
+      as_of: 2026-03-18
+    - type: requires_version
+      from: capability/sandbox
+      to: package/jira-product-discovery-premium
+      as_of: 2026-03-18
+    - type: requires_version
+      from: capability/custom-domains
+      to: package/jira-product-discovery-premium
+      as_of: 2026-03-18
+    - type: eol_date
+      from: package/jira-product-discovery-premium
+      to: package/jira-product-discovery-premium
+      date: 2024-05-31
+      label: beta and extended standard trials ended
+      as_of: 2026-03-18

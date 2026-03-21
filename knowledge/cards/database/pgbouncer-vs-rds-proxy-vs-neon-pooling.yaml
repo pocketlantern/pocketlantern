@@ -1,0 +1,153 @@
+id: database/pgbouncer-vs-rds-proxy-vs-neon-pooling
+title: "PgBouncer vs RDS Proxy vs Neon Pooling vs Supavisor: Connection Pooling
+  Vendor Comparison"
+problem: Choosing a connection pooling solution for PostgreSQL where self-hosted
+  PgBouncer, AWS RDS Proxy, Neon's built-in pooling, and Supabase Supavisor have
+  dramatically different pricing, latency characteristics, and serverless
+  compatibility
+context:
+  - database
+  - connection-pooling
+  - serverless
+  - postgresql
+constraints:
+  - serverless
+  - cost-sensitive
+  - high-scale
+  - small-team
+candidates:
+  - name: PgBouncer (self-hosted)
+    summary: Open-source, lightweight PostgreSQL connection pooler. Transaction
+      pooling mode multiplexes many client connections to few database
+      connections. Zero software cost, requires infrastructure to host.
+    when_to_use: When you manage your own PostgreSQL infrastructure and need the
+      most battle-tested pooling solution. Best for enterprise + high-scale
+      constraints where you have ops capacity to manage the pooler instance. The
+      industry standard for PostgreSQL connection pooling.
+    tradeoffs: Most mature and proven pooler — used by companies at extreme scale.
+      Sub-millisecond overhead. Transaction pooling mode is ideal (session
+      pooling wastes connections, statement pooling is too restrictive).
+      Requires a separate instance/container to run. No built-in TLS termination
+      — configure separately.
+    cautions: Transaction pooling mode breaks prepared statements, SET commands, and
+      advisory locks — test your ORM compatibility (Prisma works in transaction
+      mode, some ORMs need configuration). Session pooling mode preserves these
+      features but doesn't reduce connections effectively. Monitor pgbouncer
+      stats (SHOW STATS, SHOW POOLS) to tune pool sizes.
+    links:
+      - https://www.pgbouncer.org/
+      - https://www.pgbouncer.org/config.html
+  - name: AWS RDS Proxy
+    summary: "AWS-managed connection pooler for RDS and Aurora PostgreSQL. Pricing:
+      $0.015/vCPU-hour (~$10.80/month per vCPU). Supports IAM authentication and
+      automatic failover pinning. No infrastructure to manage."
+    when_to_use: When you're on AWS RDS/Aurora and want managed pooling without
+      running PgBouncer. Best for enterprise + serverless + low-ops constraints
+      where Lambda-to-RDS connections need pooling and IAM-based database
+      authentication is required.
+    tradeoffs: Zero ops — AWS manages the proxy instances. IAM database
+      authentication eliminates password management. Automatic failover with
+      connection draining. Pricing at $0.015/vCPU-hour adds up — a db.r6g.xlarge
+      (4 vCPU) proxy costs ~$43/month. Adds 1-3ms latency per query (proxy hop).
+    cautions: RDS Proxy pricing is per-vCPU of the proxy, not the database —
+      evaluate cost at your instance size. Connection pinning (for prepared
+      statements, temp tables, SET commands) reduces pooling effectiveness —
+      monitor pinning rates. RDS Proxy is AWS-only — no equivalent for
+      self-managed PostgreSQL. For Lambda, RDS Proxy is often essential to
+      prevent connection exhaustion.
+    links:
+      - https://aws.amazon.com/rds/proxy/
+      - https://aws.amazon.com/rds/proxy/pricing/
+  - name: Neon Connection Pooling (built-in)
+    summary: "Neon's built-in PgBouncer-based connection pooling, available on all
+      plans including free tier. Add -pooler to your connection host to enable.
+      Supports transaction mode. Free tier: 0.5 GiB storage, 190 compute-hours."
+    when_to_use: When you use Neon as your PostgreSQL provider — pooling is included
+      at no extra cost. Best for serverless + cost-sensitive + small-team
+      constraints where Neon's serverless PostgreSQL with built-in pooling
+      eliminates the need for separate pooling infrastructure. The simplest path
+      for serverless apps.
+    tradeoffs: Zero additional cost — included in all Neon plans. Zero configuration
+      — just use the pooler connection string. Built on PgBouncer (transaction
+      mode). Neon's serverless architecture scales to zero — no idle database
+      costs on free/Launch plans. Connection pooling + serverless autoscaling in
+      one vendor. Neon-only — vendor lock-in.
+    cautions: Neon's free tier has limits (0.5 GiB storage, 190 compute-hours/month)
+      — evaluate for production use. Scale plan starts at $69/month. The pooler
+      endpoint adds a small latency hop (~1-2ms). Same transaction-mode
+      limitations as PgBouncer (prepared statements, SET commands). Neon's cold
+      start on scale-to-zero can add 500ms-2s on first connection.
+    links:
+      - https://neon.tech/docs/connect/connection-pooling
+      - https://neon.tech/pricing
+  - name: Supabase Supavisor (built-in)
+    summary: "Supabase's Elixir-based connection pooler, replacing PgBouncer since
+      late 2024. Supports transaction mode and session mode. Included in all
+      Supabase plans. Free tier: 500MB database, 2 pooler connections."
+    when_to_use: When you use Supabase as your PostgreSQL provider — Supavisor is
+      included at no extra cost. Best for small-team + cost-sensitive +
+      serverless constraints where Supabase's BaaS platform with built-in
+      pooling provides database + auth + storage in one vendor.
+    tradeoffs: Zero additional cost — included in all Supabase plans. Supavisor
+      replaced PgBouncer for better multi-tenant performance and observability.
+      Supports both transaction and session modes. Built in Elixir for high
+      concurrency. Supabase-only — vendor lock-in. Pro plan ($25/month) needed
+      for production workloads.
+    cautions: Supavisor is newer than PgBouncer — evaluate maturity for your
+      reliability requirements. Free tier limits (2 pooler connections) are
+      restrictive for production. Pro plan ($25/month) provides more reasonable
+      limits. Supabase's connection pooling is tightly integrated with their
+      platform — not usable with external PostgreSQL instances.
+    links:
+      - https://supabase.com/docs/guides/database/connecting-to-postgres#connection-pooler
+      - https://supabase.com/pricing
+      - https://github.com/supabase/supavisor
+tags:
+  - database
+  - connection-pooling
+  - postgresql
+  - pgbouncer
+  - neon
+  - supabase
+aliases:
+  - pgbouncer vs rds proxy
+  - connection pooler comparison
+  - neon pooling
+  - supavisor
+  - serverless connection pooling
+related_cards:
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - serverless/cloudflare-workers-vs-lambda
+  - serverless/cold-start-mitigation-by-runtime
+  - database/neon-vs-supabase-vs-planetscale-2026
+  - infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+updated: 2026-03-15
+review_by: 2026-10-12
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/aws-rds-proxy
+      name: AWS RDS Proxy
+      category: cloud
+    - type: vendor
+      id: vendor/neon
+      name: Neon
+      category: database
+    - type: capability
+      id: capability/connection-pooling
+      name: PostgreSQL Connection Pooling
+  edges:
+    - type: locks_via
+      from: vendor/aws-rds-proxy
+      to: capability/connection-pooling
+      surface: AWS-only — no equivalent for self-managed PostgreSQL; pricing per-vCPU
+        of the proxy not the database; connection pinning for prepared
+        statements reduces pooling effectiveness
+      severity: medium
+    - type: locks_via
+      from: vendor/neon
+      to: capability/connection-pooling
+      surface: "Neon-only; free tier limits: 0.5 GiB storage, 190 compute-hours/month;
+        vendor lock-in"
+      severity: medium

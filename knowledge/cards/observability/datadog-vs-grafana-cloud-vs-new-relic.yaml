@@ -1,0 +1,266 @@
+id: observability/datadog-vs-grafana-cloud-vs-new-relic
+title: Datadog vs Grafana Cloud vs New Relic for Full-Stack Observability
+problem: Select an observability platform given current pricing models,
+  cardinality limits, OpenTelemetry support quality, incident workflows,
+  retention controls, and AI-assisted debugging features.
+context:
+  - observability
+  - apm
+  - metrics
+  - logs
+  - tracing
+  - opentelemetry
+constraints:
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - microservices
+  - real-time
+  - compliance
+candidates:
+  - name: Datadog
+    summary: "Datadog is the most feature-dense managed option here, with mature
+      APM, log/trace correlation, incident response, and AI features in one
+      SaaS. As of 2026-03-14, its official pricing is still strongly SKU-based:
+      the pricing page lists APM per host, APM ingestion per GB, indexed spans
+      priced separately by retention window, and Incident Management as a
+      separate seat-based SKU."
+    when_to_use: Best for enterprise + low-ops or real-time + microservices
+      environments where fast rollout, integrated incident handling, and deep
+      Datadog-native workflows matter more than backend portability. It is
+      especially strong when you want built-in incident declaration from
+      monitors, rich third-party incident integrations, and AI-assisted alert
+      investigation without assembling multiple products.
+    tradeoffs: "The platform breadth is excellent, and Datadog explicitly recommends
+      its DDOT Collector path for OpenTelemetry while still supporting
+      standalone OTel Collector and OTLP-based options. Cost modeling is the
+      hardest part: custom metrics, APM hosts, ingestion, indexed spans, and
+      adjacent products can all move the bill. Datadog also steers you toward
+      Datadog-specific controls such as Intelligent Retention, custom retention
+      filters, and Metrics without Limits. Migration/reversibility: metrics,
+      logs, and traces stored in Datadog are not bulk-exportable; there is no
+      API for historical data dump of raw telemetry. Dashboards are exportable
+      as JSON via API. DogStatsD is a proprietary metric submission protocol,
+      and while Datadog supports OpenTelemetry ingestion it adds
+      Datadog-specific semantic conventions and extensions, meaning
+      instrumentation built on DD-native SDKs requires rework to become
+      vendor-neutral. The OTel Collector community Datadog receiver exists as a
+      migration path out, but coverage is not feature-complete. SLA: Datadog
+      guarantees 99.8% monthly availability; if availability falls below 99.8%
+      for two consecutive months, customers may terminate without penalty, but
+      no service credits are issued. Support: Standard support (included) has
+      <2h critical response 24x7 and <48h general response during business
+      hours; Premier support (8% of monthly spend, $2,000/mo minimum, 1-year
+      commitment) upgrades critical response to <30 min 24x7, general to <12h,
+      and adds 5 days/year of elevated support with named engineers."
+    cautions: "Watch cardinality and indexing closely. Datadog docs state custom
+      metric submission has no enforced fixed rate limit, but you are billed if
+      you exceed your allotment; Metrics without Limits requires careful tag
+      allowlisting and exposes a cardinality estimator before saving. For
+      traces, ingestion and indexing are separate concerns: custom retention
+      filters can change indexed-span usage, and Datadog's intelligent retention
+      keeps representative traces automatically. Verify Bits AI availability for
+      your Datadog site before standardizing, because the docs note site support
+      can differ. Custom metric cardinality: Datadog does not enforce a hard
+      cardinality cap that drops data; instead, high-cardinality metrics are
+      billed at the observed volume. Metrics without Limits lets you restrict
+      queryable tag combinations post-ingestion, but the raw ingestion still
+      counts toward billing. The Metrics Tags Cardinality Explorer surfaces
+      high-cardinality tags and Datadog recommends proactive allowlisting to
+      prevent bill surprises. Operational risk: because there is no bulk
+      historical export path, migrating away requires re-instrumenting and
+      forwarding to the new backend going forward; you cannot backfill
+      historical data from Datadog into a successor platform."
+    links:
+      - https://www.datadoghq.com/pricing/list/
+      - https://docs.datadoghq.com/opentelemetry/setup/
+      - https://docs.datadoghq.com/integrations/otel/
+      - https://docs.datadoghq.com/incident_response/incident_management/
+      - https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/
+      - https://docs.datadoghq.com/metrics/metrics-without-limits/
+      - https://docs.datadoghq.com/metrics/custom_metrics/
+      - https://docs.datadoghq.com/bits_ai/
+  - name: Grafana Cloud
+    summary: "Grafana Cloud is the strongest fit for teams that want an
+      OpenTelemetry-first managed stack with clearer cost controls and less
+      lock-in than a fully vendor-native platform. As of 2026-03-14, official
+      pricing is transparent but split by product: metrics are billed by active
+      series, logs/traces/profiles by GB, IRM by active user, Assistant by
+      active user, and Application Observability now has a host-hour model that
+      changed for new customers on February 13, 2026."
+    when_to_use: Best for cost-sensitive + microservices or high-scale + compliance
+      environments where OpenTelemetry and Prometheus compatibility matter, and
+      where you want to keep collector architecture, sampling, and data-routing
+      choices relatively open. It is also a strong fit for serverless +
+      small-team setups because the Application Observability docs state
+      serverless billing is telemetry-based instead of host-hour based.
+    tradeoffs: "Grafana Labs explicitly recommends Grafana Alloy or OpenTelemetry
+      Collector patterns, and its OTLP endpoint is documented as the recommended
+      OTLP target for metrics, logs, and traces. Cost governance is better
+      surfaced than in many competitors through cardinality dashboards, Adaptive
+      Metrics, Adaptive Logs, and Adaptive Traces. The tradeoff is that some
+      higher-level workflows are separate products or add-ons, and retention is
+      not one simple global knob across all signals. Migration/reversibility:
+      Prometheus metrics are exportable via PromQL remote_read API. Loki logs
+      are queryable and exportable via the LogQL API. Tempo traces are
+      accessible via the Jaeger-compatible query API. Grafana dashboards export
+      as JSON via API. Lock-in is minimal: the entire stack uses open protocols
+      (Prometheus remote_write, OTLP, Loki push API, Tempo/Jaeger API). All
+      backend components (Prometheus/Mimir, Loki, Tempo, Grafana) are
+      open-source and self-hostable, giving a concrete ejection path to
+      self-managed infrastructure without re-instrumentation. SLA: Grafana Cloud
+      guarantees 99.5% monthly availability for paid plans (Pro and above).
+      Service credits are tiered: 10% credit for 99.0-99.5%, 20% for 98.0-99.0%,
+      50% for 97.0-98.0%, and 100% credit below 97.0%. Credits must be claimed
+      within 10 days. Free tier has no SLA. The SLA excludes planned maintenance
+      (24h notice required) and usage spikes exceeding 300% of baseline.
+      Support: Pro tier includes 8x5 email support; Enterprise tier adds premium
+      support with custom SLAs and faster response times."
+    cautions: Be precise about the pricing model on your account. The Application
+      Observability docs say new customers pay $0.025 per host hour plus
+      separate telemetry charges, while existing customers from before February
+      13, 2026 remain on $0.04 per host hour with included telemetry credits.
+      Trace retention is configurable per stack, but the invoice docs say the
+      minimum retention period is 30 days and extra retention is purchased in
+      30-day increments. Grafana Assistant is not enabled by default; an
+      administrator must accept terms first, and the docs say no data is sent to
+      an AI provider until a user actively uses Assistant features.
+    links:
+      - https://grafana.com/pricing/
+      - https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/pricing/
+      - https://grafana.com/docs/grafana-cloud/alerting-and-irm/irm/get-started/
+      - https://grafana.com/docs/grafana-cloud/machine-learning/assistant/get-started/
+      - https://grafana.com/docs/grafana-cloud/cost-management-and-billing/analyze-costs/metrics-costs/prometheus-metrics-costs/cardinality-management/
+      - https://grafana.com/docs/grafana-cloud/cost-management-and-billing/manage-invoices/understand-your-invoice/traces-invoice/
+      - https://grafana.com/docs/grafana-cloud/send-data/traces/configure/sampling/
+      - https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/otlp-gateway/
+  - name: New Relic
+    summary: New Relic is the clearest alternative if you want usage-based
+      full-stack observability without host counting. As of 2026-03-14, its
+      official pricing is based on users plus data ingest or compute plus data
+      ingest, with 100 GB per month free, original data at $0.40 per GB beyond
+      the free tier, Data Plus at $0.60 per GB, optional EU storage at $0.05 per
+      GB, and no separate host charges.
+    when_to_use: Best for small-team + low-ops or enterprise + cost-sensitive
+      environments where unlimited hosts, containers, functions, and Fargate
+      tasks matter more than host-based APM packaging. It is a good fit when you
+      want broad platform access, strong OTLP support, and AI-assisted
+      troubleshooting, but you prefer to reason about ingest and user access
+      instead of per-host observability SKUs.
+    tradeoffs: "New Relic states it aims for first-class OpenTelemetry support and
+      recommends evaluating both New Relic instrumentation and OpenTelemetry
+      depending on how much out-of-the-box integration versus flexibility you
+      want. Its incident workflow model is centered on alert events, issue
+      correlation via Incident Intelligence, and workflow-based
+      notification/enrichment rather than the more visibly separate IRM product
+      packaging Grafana uses. AI support is broad across chat, NRQL help, log
+      explanation, error-stack analysis, alert-gap detection, and issue
+      summaries. Migration/reversibility: New Relic offers Historical Data
+      Export via NerdGraph, which supports unlimited query duration and up to
+      200 million data-point rows per export, returned as JSON files to an S3
+      bucket. The time range must end at least 12 hours in the past, and result
+      files expire after one week. Streaming Data Export sends data at ingestion
+      time via Kinesis Firehose using custom NRQL rules, suitable for populating
+      external data lakes. NRQL queries are also exportable programmatically via
+      NerdGraph. Lock-in: NRQL is a proprietary query language (SQL-like but New
+      Relic-specific); dashboards and alerts built on NRQL require translation
+      if migrating. OpenTelemetry support is first-class for ingestion, but the
+      query and alerting layer remains proprietary. SLA: New Relic guarantees
+      99.8% monthly availability. Customers can request availability attainment
+      reports by filing a support ticket. Support tiers are spend-based: Silver
+      ($1-$9,999/yr), Gold ($10K-$99,999/yr), Platinum ($100K+/yr). Enterprise
+      edition includes priority ticket routing, 1-hour critical initial
+      response, and support via forum, case, chat, phone, and Slack. Pro edition
+      has 2-hour critical response without phone or Slack access."
+    cautions: "High-cardinality metrics are a real operational constraint here, not
+      just a billing smell: New Relic docs say metric cardinality limits are
+      enforced at both the per-metric and account level and are evaluated over
+      each UTC day. Retention is also plan-shaped rather than universally fixed;
+      the pricing docs say the free tier has default retention of at least 8
+      days, Data Plus adds up to 90 days of extra retention over default levels,
+      and longer retention can require add-ons. New Relic AI became billable
+      under Compute Pricing on June 4, 2025, so teams adopting AI-assisted
+      workflows should model Advanced Compute usage explicitly."
+    links:
+      - https://newrelic.com/pricing
+      - https://docs.newrelic.com/docs/opentelemetry/opentelemetry-introduction/
+      - https://docs.newrelic.com/docs/data-apis/ingest-apis/metric-api/nrql-high-cardinality-metrics/
+      - https://docs.newrelic.com/docs/alerts/get-notified/alert-event-workflows/
+      - https://docs.newrelic.com/docs/alerts/alert-event-management/response-intelligence-ai/
+      - https://docs.newrelic.com/docs/agentic-ai/new-relic-ai/
+      - https://docs.newrelic.com/whats-new/2025/06/whats-new-06-04-nrai/
+tags:
+  - observability
+  - comparison
+  - datadog
+  - grafana-cloud
+  - new-relic
+  - opentelemetry
+  - apm
+  - metrics
+  - logs
+  - tracing
+aliases:
+  - datadog vs grafana cloud
+  - datadog vs new relic
+  - grafana cloud vs new relic
+  - observability platform pricing
+  - full stack observability comparison
+  - otel observability vendor comparison
+related_cards:
+  - observability/opentelemetry-vendor-pipeline
+  - infra/monitoring-observability
+  - observability/log-retention-vs-trace-sampling
+  - observability/error-monitoring-sentry-vs-platform-native
+  - observability/incident-alert-routing-strategy
+  - observability/synthetic-monitoring-vs-rum
+  - observability/slo-sli-for-b2b-saas
+  - observability/grafana-agent-vs-alloy-vs-upstream-otel-collector-after-agent-eol
+  - observability/sentry-vs-logrocket-vs-datadog-error-tracking-pricing-2026
+  - observability/otel-logs-vs-fluent-bit-vs-vector-after-logs-stabilization
+  - infra/hosting-platform-lock-in-and-ejection-cost-2026
+  - observability/honeycomb-vs-new-relic-usage-pricing-thresholds-2026
+  - observability/new-relic-original-data-vs-data-plus-2026
+  - observability/pingdom-vs-better-stack-vs-uptimerobot-uptime-pricing-2026
+  - observability/datadog-flex-logs-vs-standard-indexing-after-2025-pricing-shifts-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-08-31
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/datadog
+      name: Datadog
+      category: observability
+    - type: vendor
+      id: vendor/new-relic
+      name: New Relic
+      category: observability
+    - type: protocol
+      id: protocol/dogstatsd
+      name: DogStatsD
+      standard: false
+    - type: protocol
+      id: protocol/nrql
+      name: NRQL
+      standard: false
+  edges:
+    - type: locks_via
+      from: vendor/datadog
+      to: protocol/dogstatsd
+      surface: DogStatsD proprietary metric submission; Datadog-specific semantic
+        conventions/extensions added to OTel ingestion; DD-native SDK
+        instrumentation requires rework for vendor-neutral; Intelligent
+        Retention, Metrics without Limits are proprietary controls
+      severity: high
+    - type: locks_via
+      from: vendor/new-relic
+      to: protocol/nrql
+      surface: NRQL is proprietary query language (SQL-like but NR-specific);
+        dashboards and alerts built on NRQL require translation if migrating;
+        query and alerting layer proprietary despite first-class OTel ingestion
+      severity: medium

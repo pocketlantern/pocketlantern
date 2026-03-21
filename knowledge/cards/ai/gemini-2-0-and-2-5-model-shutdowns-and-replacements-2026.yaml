@@ -1,0 +1,277 @@
+id: "ai/gemini-2-0-and-2-5-model-shutdowns-and-replacements-2026"
+title: "Gemini 2.0 and 2.5 Model Shutdowns and Replacements 2026"
+problem: "Teams pinned to Gemini 2.0 Flash, 2.0 Flash Lite, or early 2.5 model
+  variants need a current migration map with actual shutdown windows and
+  recommended replacements so they do not get surprised by model removals in
+  2026."
+context:
+  - "ai"
+  - "gemini-api"
+  - "google-ai-studio"
+  - "google-gen-ai-sdk"
+  - "api-migration"
+  - "model-lifecycle"
+  - "deprecation"
+  - "pricing"
+constraints:
+  - "serverless"
+  - "low-ops"
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+  - "microservices"
+  - "monorepo"
+  - "high-scale"
+  - "real-time"
+  - "compliance"
+candidates:
+  - name: "Replace `gemini-2.0-flash` and `gemini-2.0-flash-001` with stable
+      `gemini-2.5-flash`"
+    summary: "As of 2026-03-15, Google's Gemini deprecations page says
+      `gemini-2.0-flash` and `gemini-2.0-flash-001` shut down on June 1, 2026
+      and recommends `gemini-2.5-flash`. Google's model page positions
+      `gemini-2.5-flash` as its best price-performance model for low-latency,
+      high-volume reasoning tasks, and the pricing page lists paid Gemini
+      Developer API pricing at $0.30 per 1M text, image, or video input tokens
+      and $2.50 per 1M output tokens, with Batch pricing at $0.15 input and
+      $1.25 output."
+    when_to_use: "Best for serverless + low-ops or microservices + high-scale teams
+      that want the least disruptive path off Gemini 2.0 Flash, already rely on
+      text output only, and need a stable model ID rather than an immediate jump
+      to a preview-only replacement family. Use this when you need the June 1,
+      2026 shutdown fixed first and can accept that this is a short bridge
+      rather than a long-lived endpoint."
+    tradeoffs: "Google's model page says `gemini-2.5-flash` supports text, image,
+      video, and audio input, text output, a 1,048,576-token input limit, a
+      65,536-token output limit, and support for Batch API, caching, code
+      execution, file search, function calling, Google Maps grounding, search
+      grounding, structured outputs, thinking, and URL context. The tradeoff is
+      higher paid token pricing than `gemini-2.5-flash-lite`."
+    cautions: "Do not treat `gemini-2.5-flash` as a long-run endpoint without
+      checking the next migration. Google's deprecations page also lists
+      `gemini-2.5-flash` itself with a June 17, 2026 shutdown date and
+      recommends `gemini-3-flash-preview` next. If you are migrating late in Q2
+      2026, you may prefer to evaluate whether one larger move is safer than two
+      back-to-back cutovers."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/deprecations"
+      - "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+  - name: "Replace `gemini-2.0-flash-lite` and `gemini-2.0-flash-lite-001` with
+      stable `gemini-2.5-flash-lite`"
+    summary: "As of 2026-03-15, Google's Gemini deprecations page says
+      `gemini-2.0-flash-lite` and `gemini-2.0-flash-lite-001` shut down on June
+      1, 2026 and recommends `gemini-2.5-flash-lite`. Google's model and pricing
+      pages position `gemini-2.5-flash-lite` as the cost-focused,
+      high-throughput option, priced at $0.10 per 1M text, image, or video input
+      tokens and $0.40 per 1M output tokens in standard paid usage, with Batch
+      pricing at $0.05 input and $0.20 output."
+    when_to_use: "Best for cost-sensitive + high-scale or small-team + serverless
+      workloads where latency and budget matter more than maximum reasoning
+      depth, and the current 2.0 Flash-Lite usage is high-frequency
+      classification, extraction, routing, or lightweight multimodal handling.
+      This is the cleanest family-preserving swap when you need the June 1, 2026
+      shutdown covered with minimal operational churn."
+    tradeoffs: "Google's model page says `gemini-2.5-flash-lite` supports text,
+      image, video, audio, and PDF input, text output, a 1,048,576-token input
+      limit, a 65,536-token output limit, and support for Batch API, caching,
+      code execution, file search, function calling, Google Maps grounding,
+      search grounding, structured outputs, thinking, and URL context. The
+      tradeoff is that it is optimized for cost and speed rather than for the
+      most complex reasoning."
+    cautions: "This is also a short-run landing zone. Google's deprecations page
+      says `gemini-2.5-flash-lite` shuts down on July 22, 2026 and recommends
+      `gemini-3.1-flash-lite-preview` next, so teams migrating after March 2026
+      should budget for another verification cycle quickly. Recheck rate limits
+      and pricing before rollout as of 2026-03-15."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/deprecations"
+      - "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+  - name: "Move early Gemini 2.5 Flash preview IDs to `gemini-3-flash-preview`"
+    summary: "As of 2026-03-15, Google's Gemini deprecations page lists
+      `gemini-2.5-flash-preview-05-20` with a shutdown date of November 18, 2025
+      and `gemini-2.5-flash-preview-09-25` with a shutdown date of February 17,
+      2026, and recommends `gemini-3-flash-preview` for both. Google's pricing
+      page lists `gemini-3-flash-preview` at $0.50 per 1M text, image, or video
+      input tokens and $3.00 per 1M output tokens in standard paid usage, with
+      Batch pricing at $0.25 input and $1.50 output."
+    when_to_use: "Best for high-scale + real-time or low-ops + small-team teams that
+      were already willing to run preview model IDs and now need the officially
+      recommended successor for old 2.5 Flash preview deployments. Choose this
+      when avoiding a stale or already-shut-down preview ID matters more than
+      staying on a stable 2.5 family name."
+    tradeoffs: "Google's Gemini 3 docs say Gemini 3 Flash has a 1M input context
+      window, up to 64k output tokens, Batch API support, Context Caching
+      support, a free tier in the Gemini API, and support for Google Search
+      grounding. The tradeoff is that it is still a preview model."
+    cautions: "Preview models may change before becoming stable and may have more
+      restrictive rate limits, according to Google's pricing page. Google's
+      Gemini 3 guide also introduces `thinking_level` and says you must not send
+      both `thinking_level` and the legacy `thinking_budget` in the same request
+      or you will get a 400 error. This is a real migration surface if older
+      preview code tuned `thinking_budget` directly."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/deprecations"
+      - "https://ai.google.dev/gemini-api/docs/gemini-3"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+      - "https://ai.google.dev/gemini-api/docs/models"
+  - name: "Move `gemini-2.5-flash-lite-preview-09-2025` to
+      `gemini-3.1-flash-lite-preview`"
+    summary: "As of 2026-03-15, Google's Gemini deprecations page lists
+      `gemini-2.5-flash-lite-preview-09-2025` with a shutdown date of March 31,
+      2026 and recommends `gemini-3.1-flash-lite-preview`. Google's pricing page
+      lists `gemini-3.1-flash-lite-preview` at $0.25 per 1M text, image, or
+      video input tokens and $1.50 per 1M output tokens in standard paid usage,
+      with Batch pricing at $0.125 input and $0.75 output."
+    when_to_use: "Best for cost-sensitive + high-scale or serverless + microservices
+      teams that deliberately chose the 2.5 Flash-Lite preview line for
+      throughput and now need the official successor before the March 31, 2026
+      cutoff. Use this when the workload is still mostly translation, routing,
+      simple extraction, or high-volume agentic plumbing and preview-model churn
+      is acceptable."
+    tradeoffs: "Google's pricing page describes `gemini-3.1-flash-lite-preview` as
+      its most cost-efficient model for high-volume agentic tasks, translation,
+      and simple data processing. Relative to stable `gemini-2.5-flash-lite`,
+      this is a higher-priced but newer preview line intended to replace the
+      retired 2.5 Flash-Lite preview branch."
+    cautions: "The pricing page explicitly says preview models may change before
+      becoming stable and have more restrictive rate limits. Google's Gemini 3
+      guide also says Gemini 3 models use `thinking_level` by default and warns
+      not to mix it with `thinking_budget` in one request. If your old 2.5
+      preview integration used preview-specific behavior, regression-test
+      prompts before swapping IDs."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/deprecations"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+      - "https://ai.google.dev/gemini-api/docs/gemini-3"
+      - "https://ai.google.dev/gemini-api/docs/models"
+  - name: "Move early Gemini 2.5 Pro preview IDs to `gemini-3.1-pro-preview`"
+    summary: "As of 2026-03-15, Google's Gemini deprecations page lists
+      `gemini-2.5-pro-preview-03-25`, `gemini-2.5-pro-preview-05-06`, and
+      `gemini-2.5-pro-preview-06-05` with shutdown dates of December 2, 2025 and
+      recommends `gemini-3.1-pro-preview`. Google's pricing page lists
+      `gemini-3.1-pro-preview` at $2.00 per 1M input tokens and $12.00 per 1M
+      output tokens for prompts up to 200k tokens, or $4.00 input and $18.00
+      output above 200k, with Batch pricing at $1.00 and $6.00 up to 200k."
+    when_to_use: "Best for enterprise + compliance or monorepo + coding-heavy teams
+      that were using early 2.5 Pro previews for hard reasoning or coding tasks
+      and now need the official replacement line rather than a downgrade to
+      Flash-class pricing or capability. Choose this when high-complexity
+      prompting matters more than minimizing spend."
+    tradeoffs: "Google's Gemini 3.1 Pro pricing page positions it as the latest
+      top-tier multimodal and agentic model family, and the Gemini 3 guide shows
+      the new `thinking_level` control on `gemini-3.1-pro-preview`. The tradeoff
+      is materially higher token pricing than any Flash-family replacement and
+      no free tier in the Gemini API."
+    cautions: "Do not confuse `gemini-3-pro-preview` with the current target.
+      Google's pricing page warns that `gemini-3-pro-preview` was deprecated and
+      shut down on March 9, 2026, and the models page says to migrate to
+      `gemini-3.1-pro-preview`. The Gemini 3 guide also warns that using both
+      `thinking_level` and `thinking_budget` together returns a 400 error."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/deprecations"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+      - "https://ai.google.dev/gemini-api/docs/gemini-3"
+      - "https://ai.google.dev/gemini-api/docs/models"
+tags:
+  - "ai"
+  - "gemini-api"
+  - "google-ai-studio"
+  - "google-gen-ai-sdk"
+  - "gemini-2.0-flash"
+  - "gemini-2.0-flash-lite"
+  - "gemini-2.5-flash"
+  - "gemini-2.5-flash-lite"
+  - "gemini-3-flash-preview"
+  - "gemini-3.1-flash-lite-preview"
+  - "gemini-3.1-pro-preview"
+  - "deprecation"
+  - "migration"
+  - "pricing"
+aliases:
+  - "gemini 2.0 flash shutdown june 2026"
+  - "gemini 2.0 flash lite shutdown june 2026"
+  - "gemini 2.5 flash preview shutdown"
+  - "gemini 2.5 pro preview shutdown"
+  - "gemini 2.5 flash lite preview march 2026"
+  - "gemini model deprecations replacements 2026"
+  - "gemini 2.0 to 2.5 migration"
+  - "gemini 2.5 preview to gemini 3 migration"
+related_cards:
+  - "ai/gemini-api-free-vs-paid-tier-quota-and-pricing-2026"
+  - "ai/google-gen-ai-sdk-migration-before-vertex-ai-sdk-generative-module-shut\
+    down-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-04-15"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/gemini-2.0-flash
+      name: gemini-2.0-flash
+      version: "2.0"
+    - type: package
+      id: package/gemini-2.0-flash-lite
+      name: gemini-2.0-flash-lite
+      version: "2.0"
+    - type: package
+      id: package/gemini-2.5-flash
+      name: gemini-2.5-flash
+      version: "2.5"
+    - type: package
+      id: package/gemini-2.5-flash-lite
+      name: gemini-2.5-flash-lite
+      version: "2.5"
+    - type: package
+      id: package/gemini-2.5-pro-preview
+      name: gemini-2.5-pro-preview
+      version: "2.5"
+    - type: package
+      id: package/gemini-3-flash-preview
+      name: gemini-3-flash-preview
+      version: "3.0"
+    - type: package
+      id: package/gemini-3.1-pro-preview
+      name: gemini-3.1-pro-preview
+      version: "3.1"
+  edges:
+    - type: eol_date
+      from: package/gemini-2.0-flash
+      to: null
+      date: 2026-06-01
+      successor: package/gemini-2.5-flash
+    - type: eol_date
+      from: package/gemini-2.0-flash-lite
+      to: null
+      date: 2026-06-01
+      successor: package/gemini-2.5-flash-lite
+    - type: eol_date
+      from: package/gemini-2.5-flash
+      to: null
+      date: 2026-06-17
+      successor: package/gemini-3-flash-preview
+    - type: eol_date
+      from: package/gemini-2.5-flash-lite
+      to: null
+      date: 2026-07-22
+      successor: package/gemini-3.1-flash-lite-preview
+    - type: eol_date
+      from: package/gemini-2.5-pro-preview
+      to: null
+      date: 2025-12-02
+      successor: package/gemini-3.1-pro-preview
+    - type: breaking_change_in
+      from: package/gemini-3-flash-preview
+      to: null
+      change: thinking_budget parameter removed — must use thinking_level instead;
+        sending both returns 400
+      migration_path: replace thinking_budget with thinking_level in all API calls
+    - type: breaking_change_in
+      from: package/gemini-3.1-pro-preview
+      to: null
+      change: thinking_budget parameter removed — must use thinking_level instead;
+        sending both returns 400
+      migration_path: replace thinking_budget with thinking_level in all API calls

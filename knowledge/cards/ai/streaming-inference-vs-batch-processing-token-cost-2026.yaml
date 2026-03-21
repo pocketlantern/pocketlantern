@@ -1,0 +1,291 @@
+id: "ai/streaming-inference-vs-batch-processing-token-cost-2026"
+title: "Streaming Inference vs Batch Processing: Token Pricing Comparison 2026"
+problem: "OpenAI, Anthropic, and Google charge different rates for streaming vs
+  batch token processing. Choosing the wrong approach costs 10-50% more for the
+  same output."
+context:
+  - "ai"
+  - "openai"
+  - "anthropic"
+  - "google"
+  - "gemini"
+  - "pricing"
+  - "batch-api"
+  - "streaming"
+  - "cost-optimization"
+  - "model-routing"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "real-time"
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+candidates:
+  - name: "Standard streaming inference (all providers, real-time tier)"
+    summary: "As of 2026-03-16, all three providers charge full token rates for
+      synchronous real-time API calls. SSE token streaming costs the same
+      per-token rate as waiting for a full non-streaming response — there is no
+      streaming surcharge or discount within the standard tier. Verified
+      standard rates include Anthropic Sonnet 4.6 at $3/$15 per MTok
+      input/output, OpenAI gpt-5.4 at $2.50/$15 per MTok, and Google Gemini 2.5
+      Pro at $1.25/$10 per MTok (≤200k tokens)."
+    when_to_use: "Best for real-time + small-team or serverless + microservices
+      workloads where a user or downstream service is waiting on the response
+      within seconds. The single decisive factor is latency requirement: any
+      component that needs a response faster than a few minutes must use
+      standard inference, because all three providers' batch paths carry at
+      minimum a 1-hour practical turnaround and up to a 24-hour guaranteed
+      window."
+    tradeoffs: "Standard inference gives immediate results plus full access to every
+      provider feature: ZDR, fast mode (Anthropic), prompt caching, tool calls,
+      streaming delivery, and all modalities. The cost tradeoff is paying 2x the
+      per-token rate of batch processing. Prompt caching discounts apply in the
+      standard tier on all three providers and can offset input costs
+      significantly before batch routing is even considered."
+    cautions: "Do not conflate SSE token streaming (free delivery feature) with the
+      pricing tier. The cost penalty in this card's problem comes from routing
+      latency-tolerant jobs through real-time endpoints, not from enabling
+      streaming delivery. Also note that Anthropic's Fast mode for Claude Opus
+      4.6 carries a 6x premium ($30/$150 per MTok input/output) on top of
+      standard rates and is not available in batch — avoid accidentally routing
+      fast-mode traffic through a batch fallback."
+    links:
+      - "https://platform.claude.com/docs/en/about-claude/pricing"
+      - "https://developers.openai.com/api/docs/pricing"
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+  - name: "Anthropic Message Batches API"
+    summary: "As of 2026-03-16, Anthropic's Message Batches API is live and charges
+      50% of standard rates on all active Claude models. Verified batch prices
+      include Claude Sonnet 4.6 at $1.50/$7.50 per MTok input/output, Claude
+      Haiku 4.5 at $0.50/$2.50 per MTok, and Claude Opus 4.6 at $2.50/$12.50 per
+      MTok. Anthropic explicitly documents that the 50% batch discount stacks
+      with prompt caching multipliers, meaning a cache hit in batch mode costs
+      0.1x of 50% of the base input rate — a compounded saving not documented at
+      OpenAI or Google."
+    when_to_use: "Best for cost-sensitive + high-scale or low-ops + small-team
+      workloads running on Claude models that tolerate up to a 24-hour
+      turnaround and have large stable prompt prefixes eligible for caching. The
+      decisive advantage over other providers' batch options is the documented
+      stacking of batch and caching discounts, which is especially impactful for
+      long system-prompt or document-prefixed workloads."
+    tradeoffs: "The batch-plus-caching stack makes Anthropic the most cost-efficient
+      path for heavy-prefix text workloads. Batch is Messages-only: no image
+      generation, video synthesis, or embeddings. The 100,000-request-per-batch
+      limit (256 MB max) is double OpenAI's request cap, making it better for
+      single-file mega-batches. Most batches complete within 1 hour; the hard
+      guarantee is 24 hours."
+    cautions: "The Message Batches API is explicitly documented as NOT eligible for
+      Zero Data Retention (ZDR) — compliance-scoped workloads are disqualified
+      from batch regardless of cost savings. Claude Opus 4.6 Fast mode is also
+      unavailable in batch. If a batch reaches the 24-hour deadline before
+      completing, unfinished requests are cancelled but any already-completed
+      requests within that batch are still billed."
+    links:
+      - "https://platform.claude.com/docs/en/about-claude/pricing"
+      - "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      - "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+  - name: "OpenAI Batch API"
+    summary: "As of 2026-03-16, the OpenAI Batch API offers 50% lower costs than
+      synchronous APIs on both input and output tokens, with a 24-hour
+      completion window. Verified batch prices include gpt-5.4 at $1.25/$7.50
+      per MTok and gpt-5.4-pro at $15/$90 per MTok. The Batch API supports the
+      widest modality surface across providers, covering /v1/responses,
+      /v1/chat/completions, /v1/embeddings, /v1/images/generations, /v1/videos,
+      and /v1/moderations in a single batch endpoint."
+    when_to_use: "Best for cost-sensitive + high-scale or enterprise + low-ops teams
+      on the OpenAI stack who need to batch workloads beyond text — specifically
+      embeddings, image generation, video synthesis, or moderation, since those
+      modalities are unavailable in Anthropic or Google batch paths. Also the
+      right choice when synchronous rate limits are a bottleneck, because OpenAI
+      documents the Batch API as using a separate, substantially larger
+      rate-limit pool."
+    tradeoffs: "OpenAI Batch has the broadest modality coverage and a separate
+      rate-limit pool that does not consume synchronous API quota. The tradeoff
+      is a 50,000-request cap per batch (half of Anthropic's limit), and each
+      input file can only contain requests for one model so mixed-model batch
+      jobs require multiple files. The long-context surcharge for gpt-5.4 and
+      gpt-5.4-pro (2x input pricing above 272K tokens) applies in batch mode
+      exactly as in synchronous mode."
+    cautions: "Verify that your exact model version is listed as batch-supported in
+      the current documentation before building pipelines — not every variant is
+      eligible. For gpt-5.4 and gpt-5.4-pro, the 272K long-context surcharge
+      applies in batch, so very large-context jobs do not avoid the premium by
+      using the Batch API. OpenAI does not explicitly document prompt caching
+      discounts stacking with batch discounts the way Anthropic does; do not
+      assume they compound when cost-modeling stacked savings."
+    links:
+      - "https://developers.openai.com/api/docs/pricing"
+      - "https://developers.openai.com/api/docs/guides/batch"
+  - name: "Google Gemini Batch API (Gemini API and Vertex AI)"
+    summary: "As of 2026-03-16, Google offers batch inference at 50% off standard
+      rates for Gemini models via both the Gemini API (ai.google.dev) and Vertex
+      AI batch prediction. Verified batch prices from the Gemini API pricing
+      page include Gemini 2.5 Pro at $0.625/$5.00 per MTok (≤200k tokens) and
+      Gemini 2.5 Flash at $0.15/$1.25 per MTok. Vertex AI batch jobs can queue
+      up to 72 hours before processing begins, with incomplete jobs cancelled
+      after 24 hours of active processing."
+    when_to_use: "Best for cost-sensitive + high-scale or enterprise + compliance
+      teams already on Google Cloud running Gemini-family models. Use Vertex AI
+      batch for GCP-native pipelines with Cloud Storage inputs up to 1 GB and up
+      to 200,000 requests per job; use the Gemini developer API batch path for
+      simpler setups that do not require full GCP project infrastructure."
+    tradeoffs: "Google's Gemini 2.5 Pro and Flash enable implicit caching by default
+      (up to 90% discount on cached tokens in the standard tier), which can
+      outperform the 50% batch discount for cache-heavy workloads. However,
+      Google explicitly documents that the implicit cache discount and the batch
+      discount do NOT stack: the 90% cache hit discount takes precedence over
+      the 50% batch discount. For workloads with high cache-hit rates, standard
+      inference with implicit caching may be cheaper per effective token than
+      batch mode."
+    cautions: "Explicit caching and RAG are not supported in Gemini batch mode —
+      only implicit caching applies, and even then it does not stack with the
+      batch discount. The Vertex AI 72-hour potential queue time before
+      processing begins is longer than the 24-hour turnarounds at Anthropic and
+      OpenAI; schedule pipelines accordingly. Verify that your specific Gemini
+      model version and region support batch inference in the Vertex AI
+      documentation before building a batch architecture."
+    links:
+      - "https://ai.google.dev/gemini-api/docs/pricing"
+      - "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/multimodal/\
+        batch-prediction-gemini"
+      - "https://cloud.google.com/vertex-ai/generative-ai/pricing"
+tags:
+  - "ai"
+  - "openai"
+  - "anthropic"
+  - "claude"
+  - "google"
+  - "gemini"
+  - "streaming"
+  - "batch-api"
+  - "pricing"
+  - "cost-optimization"
+  - "inference"
+  - "token-cost"
+  - "model-routing"
+aliases:
+  - "streaming vs batch token pricing"
+  - "batch inference cost comparison 2026"
+  - "openai anthropic google batch pricing"
+  - "real-time vs async inference cost"
+  - "batch api cost savings llm"
+  - "when to use batch api vs streaming"
+  - "gemini batch vs streaming pricing"
+  - "claude batch vs streaming pricing"
+  - "50% batch discount openai anthropic google"
+  - "llm batch processing cost"
+related_cards:
+  - "ai/batch-api-pricing-anthropic-vs-openai-bulk-inference-2026"
+  - "ai/openai-batch-api-vs-standard-processing-cost-and-latency-2026"
+  - "ai/anthropic-prompt-caching-vs-openai-cached-input-pricing-2026"
+  - "ai/gemini-api-free-vs-paid-tier-quota-and-pricing-2026"
+  - "ai/ai-feature-cost-governance"
+  - runtime/modal-starter-vs-team-2026
+  - ai/deepgram-stt-vs-assemblyai-pricing-2026
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-07-13"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/openai
+      name: OpenAI
+    - type: vendor
+      id: vendor/anthropic
+      name: Anthropic
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: package
+      id: package/standard-streaming-inference
+      name: Standard streaming inference
+      category: api_tier
+    - type: package
+      id: package/anthropic-message-batches-api
+      name: Anthropic Message Batches API
+      category: batch_api
+    - type: package
+      id: package/openai-batch-api
+      name: OpenAI Batch API
+      category: batch_api
+    - type: package
+      id: package/google-gemini-batch-api
+      name: Google Gemini Batch API
+      category: batch_api
+    - type: framework
+      id: framework/vertex-ai-batch-prediction
+      name: Vertex AI batch prediction
+    - type: capability
+      id: capability/prompt-caching
+      name: prompt caching
+    - type: capability
+      id: capability/implicit-caching
+      name: implicit caching
+    - type: capability
+      id: capability/zdr
+      name: Zero Data Retention (ZDR)
+    - type: capability
+      id: capability/fast-mode
+      name: Fast mode
+    - type: capability
+      id: capability/explicit-caching
+      name: explicit caching
+    - type: capability
+      id: capability/rag
+      name: RAG
+    - type: engine
+      id: engine/claude-sonnet-4.6
+      name: Claude Sonnet 4.6
+    - type: engine
+      id: engine/claude-haiku-4.5
+      name: Claude Haiku 4.5
+    - type: engine
+      id: engine/claude-opus-4.6
+      name: Claude Opus 4.6
+    - type: engine
+      id: engine/gpt-5.4
+      name: gpt-5.4
+    - type: engine
+      id: engine/gpt-5.4-pro
+      name: gpt-5.4-pro
+    - type: engine
+      id: engine/gemini-2.5-pro
+      name: Gemini 2.5 Pro
+    - type: engine
+      id: engine/gemini-2.5-flash
+      name: Gemini 2.5 Flash
+  edges:
+    - type: requires_version
+      from: package/standard-streaming-inference
+      to: engine/claude-sonnet-4.6
+    - type: requires_version
+      from: package/standard-streaming-inference
+      to: engine/gpt-5.4
+    - type: requires_version
+      from: package/standard-streaming-inference
+      to: engine/gemini-2.5-pro
+    - type: requires_version
+      from: package/anthropic-message-batches-api
+      to: engine/claude-sonnet-4.6
+    - type: requires_version
+      from: package/anthropic-message-batches-api
+      to: engine/claude-haiku-4.5
+    - type: requires_version
+      from: package/anthropic-message-batches-api
+      to: engine/claude-opus-4.6
+    - type: requires_version
+      from: package/openai-batch-api
+      to: engine/gpt-5.4
+    - type: requires_version
+      from: package/openai-batch-api
+      to: engine/gpt-5.4-pro
+    - type: requires_version
+      from: package/google-gemini-batch-api
+      to: engine/gemini-2.5-pro
+    - type: requires_version
+      from: package/google-gemini-batch-api
+      to: engine/gemini-2.5-flash

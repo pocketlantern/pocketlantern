@@ -1,0 +1,264 @@
+id: devtools/github-copilot-premium-requests-budgeting-for-business-vs-pro-vs-pro-plus-2026
+title: GitHub Copilot Premium Requests by Plan
+problem: Choose the right GitHub Copilot plan and spending controls now that
+  premium-request economics differ by model and workflow, coding agent pricing
+  is session-based, and organization policies and budgets affect whether
+  overages are allowed or blocked.
+context:
+  - devtools
+  - github
+  - github-copilot
+  - billing
+  - pricing
+  - agents
+  - ai-models
+  - engineering-management
+constraints:
+  - cost-sensitive
+  - small-team
+  - enterprise
+  - low-ops
+  - monorepo
+  - compliance
+candidates:
+  - name: GitHub Copilot Pro
+    summary: As of 2026-03-15, Copilot Pro is the lowest-cost paid individual plan
+      at "$10 USD per month" or "$100 USD per year" with "300 premium requests
+      per month," unlimited completions, premium models in Copilot Chat, and
+      access to Copilot coding agent. Additional premium requests cost "$0.04
+      USD per request," and personal-account budgets can alert or stop usage.
+    when_to_use: Best for cost-sensitive + small-team + low-ops use where a single
+      developer or a few individually billed developers want paid Copilot,
+      expect moderate premium-model or agent use, and want to cap overages with
+      a personal budget. This is the right baseline when included-model usage
+      does most of the work and you only occasionally spend premium requests on
+      higher-cost models or coding-agent sessions, as of 2026-03-15.
+    tradeoffs: This is the cheapest paid entry point, but the request pool is only
+      300 per month and premium consumption varies by model. GitHub documents
+      that paid plans treat GPT-5 mini, GPT-4.1, and GPT-4o as included models
+      with zero premium-request cost, while examples such as Claude Haiku 4.5
+      use 0.33x and Claude Opus 4.5 uses 3x. Coding agent now bills per session
+      rather than by every internal step, but the current docs still apply the
+      model multiplier to that session.
+    cautions: As of 2026-03-15, additional premium requests are not available for
+      users who subscribe, or previously subscribed, to Copilot Pro or Pro+
+      through GitHub Mobile on iOS or Android. Unused premium requests do not
+      roll over, counters reset on the 1st of the month at 00:00:00 UTC, and
+      repeating large premium-model prompts can still burn allowance quickly.
+    links:
+      - https://docs.github.com/en/enterprise-cloud@latest/copilot/concepts/billing/individual-plans
+      - https://docs.github.com/en/copilot/get-started/plans
+      - https://docs.github.com/en/copilot/concepts/billing/copilot-requests
+      - https://docs.github.com/en/billing/how-tos/set-up-budgets
+  - name: GitHub Copilot Pro+
+    summary: As of 2026-03-15, Copilot Pro+ is GitHub's highest-access individual
+      plan at "$39 USD per month" or "$390 USD per year" with "1,500 premium
+      requests per month," full access to all available models in Copilot Chat,
+      and priority access to advanced AI capabilities. Additional premium
+      requests cost "$0.04 USD per request."
+    when_to_use: Best for small-team + low-ops developers who are effectively AI
+      power users, rely on premium models daily, or want materially more
+      headroom for agent mode, code review, CLI, and coding-agent workflows
+      without moving to an organization-managed plan. Choose this when
+      individual billing is acceptable and your own monthly usage is regularly
+      too high for Pro, as of 2026-03-15.
+    tradeoffs: "You get 5x the Pro request allowance and the broadest model access
+      on an individual plan, which reduces the need to micromanage request burn.
+      The tradeoff is price: Pro+ costs the same list price as Copilot
+      Enterprise, but without organization management, enterprise policies, or
+      enterprise-specific controls."
+    cautions: As of 2026-03-15, this is still an individual plan, not a centralized
+      business rollout tool. Additional premium requests are unavailable for
+      users who subscribed through GitHub Mobile on iOS or Android, and request
+      burn still depends on feature plus model multiplier even after the
+      coding-agent move to per-session pricing.
+    links:
+      - https://docs.github.com/en/enterprise-cloud@latest/copilot/concepts/billing/individual-plans
+      - https://docs.github.com/en/copilot/get-started/plans
+      - https://docs.github.com/en/copilot/concepts/billing/copilot-requests
+      - https://docs.github.com/en/billing/how-tos/set-up-budgets
+  - name: GitHub Copilot Business
+    summary: As of 2026-03-15, Copilot Business costs "$19 USD per user per month"
+      and includes "300 per user per month" premium requests, Copilot coding
+      agent, centralized management, and Copilot policy control for organization
+      members. It is available for organizations on GitHub Free or GitHub Team,
+      and for enterprises on GitHub Enterprise Cloud.
+    when_to_use: Best for cost-sensitive + enterprise or small-team + low-ops
+      rollouts where you need admin controls and seat management now, but most
+      developers will stay near the Business allowance or mostly use included
+      models. This is the right managed baseline when you want organization
+      policies, can monitor usage centrally, and prefer enabling paid overages
+      only where teams truly need them, as of 2026-03-15.
+    tradeoffs: Business gives you admin control at a much lower seat price than
+      Enterprise, and coding-agent sessions became more predictable after the
+      July 10, 2025 pricing change. The downside is that heavy agentic workflows
+      can outgrow the 300-request allowance quickly, especially when users
+      choose 1x or 3x premium models. GitHub's own docs say Business users
+      making more than around 800 premium requests per month would save money on
+      Copilot Enterprise.
+    cautions: As of 2026-03-15, premium-request paid usage is enabled by default for
+      organizations and enterprises, but budgets still determine whether usage
+      continues or is blocked once a limit is reached. If a user has licenses
+      from multiple enterprises or standalone organizations, they must choose a
+      "Usage billed to" entity or premium requests are blocked. From November 1,
+      2025, Copilot coding agent and Spark premium requests are tracked in
+      dedicated SKUs, so budget design needs to account for bundled versus
+      SKU-level controls.
+    links:
+      - https://docs.github.com/en/copilot/get-started/plans
+      - https://docs.github.com/en/copilot/concepts/billing/organizations-and-enterprises
+      - https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/manage-request-allowances
+      - https://docs.github.com/en/copilot/concepts/billing/copilot-requests
+      - https://docs.github.com/en/billing/how-tos/set-up-budgets
+  - name: GitHub Copilot Enterprise
+    summary: As of 2026-03-15, Copilot Enterprise costs "$39 USD per user per month"
+      on GitHub Enterprise Cloud and includes "1000 per user per month" premium
+      requests. GitHub documents that it includes all Copilot Business features,
+      a higher premium-request allowance, and enterprise capabilities such as
+      customizing Copilot for your code and processes.
+    when_to_use: Best for enterprise + monorepo + compliance or enterprise + low-ops
+      environments where teams use agentic workflows heavily, want more
+      premium-request headroom by default, and need a centrally managed rollout
+      on GitHub Enterprise Cloud. This is the clean choice when developers are
+      routinely using coding agent, code review, or premium models enough that
+      Business plus overages becomes harder to govern or more expensive, as of
+      2026-03-15.
+    tradeoffs: Enterprise doubles the Business seat price, but it raises the
+      included allowance from 300 to 1000 premium requests per user per month.
+      GitHub explicitly says Business users above roughly 800 premium requests
+      per month would save money on Enterprise, so the higher seat price can be
+      the cheaper option for heavy users. You also keep centralized policies
+      instead of depending on a large shared overage budget.
+    cautions: As of 2026-03-15, this plan is for GitHub Enterprise Cloud, not GitHub
+      Enterprise Server. Even on Enterprise, premium-request burn still varies
+      by model and feature, coding agent usage still also consumes GitHub
+      Actions minutes, and budgets can still block usage if you configure
+      stop-usage thresholds or leave restrictive overlapping budgets in place.
+    links:
+      - https://docs.github.com/en/copilot/get-started/choose-enterprise-plan
+      - https://docs.github.com/en/copilot/get-started/plans
+      - https://docs.github.com/en/copilot/how-tos/manage-and-track-spending/manage-request-allowances
+      - https://docs.github.com/en/copilot/concepts/billing/copilot-requests
+      - https://github.blog/changelog/2025-07-10-github-copilot-coding-agent-now-uses-one-premium-request-per-session/
+tags:
+  - devtools
+  - github
+  - github-copilot
+  - copilot
+  - pricing
+  - billing
+  - premium-requests
+  - agents
+  - coding-agent
+aliases:
+  - github copilot premium requests
+  - copilot pro vs pro plus vs business vs enterprise
+  - github copilot business pricing
+  - github copilot enterprise pricing
+  - copilot coding agent session pricing
+  - copilot premium request budgeting
+  - copilot overage policy
+  - copilot model multipliers
+related_cards:
+  - infra/github-actions-hosted-vs-larger-vs-self-hosted-runner-economics-2026
+  - infra/monorepo-tools
+  - infra/monorepo-tool-cost-and-complexity-nx-vs-turborepo-vs-yarn-workspaces-2026
+  - devtools/jetbrains-ai-free-vs-pro-vs-ultimate-bundling-2026
+  - devtools/jetbrains-ai-top-up-vs-tier-upgrade-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-22
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: package
+      id: package/github-copilot-pro
+      name: GitHub Copilot Pro
+      category: individual_plan
+    - type: package
+      id: package/github-copilot-pro-plus
+      name: GitHub Copilot Pro+
+      category: individual_plan
+    - type: package
+      id: package/github-copilot-business
+      name: GitHub Copilot Business
+      category: organization_plan
+    - type: package
+      id: package/github-copilot-enterprise
+      name: GitHub Copilot Enterprise
+      category: enterprise_plan
+    - type: capability
+      id: capability/personal-budget
+      name: Personal budget
+      category: spending_control
+    - type: capability
+      id: capability/organization-budget
+      name: Budget
+      category: spending_control
+    - type: capability
+      id: capability/usage-billed-to-entity
+      name: Usage billed to entity
+      category: billing_selector
+    - type: capability
+      id: capability/centralized-management
+      name: Centralized management
+      category: admin_control
+    - type: framework
+      id: framework/github-free
+      name: GitHub Free
+      category: plan
+    - type: framework
+      id: framework/github-team
+      name: GitHub Team
+      category: plan
+    - type: framework
+      id: framework/github-enterprise-cloud
+      name: GitHub Enterprise Cloud
+      category: plan
+  edges:
+    - type: locks_via
+      from: package/github-copilot-pro
+      to: capability/personal-budget
+      mechanism: Personal-account budgets can alert or stop additional premium-request
+        usage.
+    - type: locks_via
+      from: package/github-copilot-business
+      to: capability/organization-budget
+      mechanism: Budgets determine whether premium-request usage continues or is
+        blocked once a limit is reached.
+    - type: locks_via
+      from: package/github-copilot-business
+      to: capability/usage-billed-to-entity
+      mechanism: If a user has licenses from multiple enterprises or standalone
+        organizations, they must choose a Usage billed to entity or premium
+        requests are blocked.
+    - type: requires_version
+      from: package/github-copilot-business
+      to: framework/github-free
+      requirement: Available for organizations on GitHub Free.
+    - type: requires_version
+      from: package/github-copilot-business
+      to: framework/github-team
+      requirement: Available for organizations on GitHub Team.
+    - type: requires_version
+      from: package/github-copilot-business
+      to: framework/github-enterprise-cloud
+      requirement: Available for enterprises on GitHub Enterprise Cloud.
+    - type: requires_version
+      from: package/github-copilot-enterprise
+      to: framework/github-enterprise-cloud
+      requirement: This plan is for GitHub Enterprise Cloud, not GitHub Enterprise Server.
+    - type: locks_via
+      from: package/github-copilot-enterprise
+      to: capability/organization-budget
+      mechanism: Budgets can still block usage if stop-usage thresholds or restrictive
+        overlapping budgets are in place.
+    - type: locks_via
+      from: package/github-copilot-business
+      to: capability/centralized-management
+      mechanism: Includes centralized management and Copilot policy control for
+        organization members.

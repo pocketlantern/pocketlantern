@@ -1,0 +1,213 @@
+id: "ai/replicate-serverless-gpu-choice-t4-vs-l40s-vs-a100-2026"
+title: "Replicate Serverless GPU Choice T4 vs L40S vs A100 Pricing in 2026"
+problem: "Choose the right Replicate hardware target when per-second prices
+  across T4, L40S, and A100 materially change inference margins for image and
+  multimodal workloads."
+context:
+  - "ai"
+  - "replicate"
+  - "gpu-inference"
+  - "image-generation"
+  - "multimodal"
+constraints:
+  - "serverless"
+  - "low-ops"
+  - "cost-sensitive"
+  - "real-time"
+candidates:
+  - name: "Nvidia T4 GPU"
+    summary: "As of 2026-03-20, Replicate lists `gpu-t4` at $0.000225/sec ($0.81/hr)
+      with 1 GPU, 4 CPUs, 16GB GPU RAM, and 16GB RAM. Replicate's 2024-04-11
+      changelog says T4-backed models previously had only 8GB of system RAM and
+      were increased because loading larger weights was causing issues. This is
+      the lowest-cost option in the T4 vs L40S vs A100 set, but also the
+      smallest memory tier. It is the best margin default only when the model
+      fits comfortably and does not need the larger CPU/RAM envelope of L40S or
+      A100."
+    when_to_use: "Use this for cost-sensitive inference where the model already runs
+      reliably within 16GB GPU RAM and the lower CPU/RAM allocation is not a
+      bottleneck. The decisive factor is price: T4 is about 4.3x cheaper per
+      second than L40S and about 6.2x cheaper than A100 on Replicate's pricing
+      page."
+    tradeoffs: "Lowest per-second cost and simplest way to protect unit margins, but
+      it offers the least GPU memory and the smallest attached machine. If you
+      hit memory ceilings or need more headroom for larger image or multimodal
+      models, the savings disappear once retries, failures, or forced model
+      changes enter the picture."
+    cautions: "Do not assume old T4 RAM limits still apply; Replicate increased T4
+      model RAM in April 2024. If you change hardware on a public model,
+      Replicate's hardware docs note that this can affect performance and price
+      for other users of that public model."
+    links:
+      - "https://replicate.com/pricing"
+      - "https://replicate.com/docs/topics/models/hardware"
+      - "https://replicate.com/changelog/2024-04-11-t4-models-now-have-more-ram/"
+  - name: "Nvidia L40S GPU"
+    summary: "As of 2026-03-20, Replicate lists `gpu-l40s` at $0.000975/sec
+      ($3.51/hr) with 1 GPU, 10 CPUs, 48GB GPU RAM, and 65GB RAM. As of
+      2026-03-20, Replicate also lists 2x, 4x, and 8x L40S configurations, with
+      4x and 8x called out as available with committed spend contracts.
+      Replicate's May 2025 changelog says multi-GPU A100 and L40S configurations
+      became available for custom models and training runs, not just
+      deployments. L40S is the middle ground when T4 is too small but A100's
+      80GB tier is not yet justified."
+    when_to_use: "Use this when T4 does not fit the model or attached-memory needs,
+      but you still need materially better unit economics than A100. The
+      decisive factor is the 48GB GPU RAM tier at $0.000975/sec, which is much
+      cheaper than A100 while providing far more headroom than T4."
+    tradeoffs: "Much more memory and CPU/RAM than T4 at a lower price than A100, but
+      it is still about 4.3x the price of T4. If your workload truly needs 80GB
+      GPU RAM or the largest high-end configurations, A100 remains the safer
+      fit."
+    cautions: "Replicate's L40S launch notes included automatic migration from A40
+      to L40S and warned deployment users to lower minimum instances to avoid
+      higher bills when moving because the hardware profile changed. For current
+      planning, the practical caveat is to re-check autoscaling and min-instance
+      assumptions when switching existing deployments to L40S."
+    links:
+      - "https://replicate.com/pricing"
+      - "https://replicate.com/docs/topics/models/hardware"
+      - "https://replicate.com/changelog"
+      - "https://replicate.com/blog/nvidia-l40s-gpus-are-here/"
+  - name: "Nvidia A100 (80GB) GPU"
+    summary: "As of 2026-03-20, Replicate lists `gpu-a100-large` at $0.001400/sec
+      ($5.04/hr) with 1 GPU, 10 CPUs, 80GB GPU RAM, and 144GB RAM. As of
+      2026-03-20, Replicate also lists 2x, 4x, and 8x A100 configurations, with
+      4x and 8x noted as available with committed spend contracts. Replicate's
+      May 2025 changelog says multi-GPU A100 setups are available for custom
+      models and training runs, not only deployments. A100 is the highest-cost
+      option in this comparison, but it is also the only one here with the full
+      80GB single-GPU memory tier."
+    when_to_use: "Use this when the model or workload needs 80GB GPU RAM, very large
+      context or batch sizes, or when you need access to Replicate's larger
+      multi-GPU A100 configurations. The decisive factor is capacity, not price:
+      A100 costs about 1.44x more per second than L40S and about 6.2x more than
+      T4."
+    tradeoffs: "Maximum memory headroom in this three-way choice and better fit for
+      larger image and multimodal workloads, but it is the hardest option to
+      make margin-positive on short or price-sensitive inference paths. Smaller
+      jobs that fit on L40S or T4 will usually be overprovisioned here."
+    cautions: "Do not budget assuming every multi-GPU A100 tier is freely
+      self-serve; Replicate's pricing page says additional multi-GPU A100
+      capacity is available with committed spend contracts. If you only need a
+      single GPU and the model fits in 48GB, L40S is the key price-pressure
+      alternative."
+    links:
+      - "https://replicate.com/pricing"
+      - "https://replicate.com/docs/topics/models/hardware"
+      - "https://replicate.com/changelog"
+tags:
+  - "ai"
+  - "replicate"
+  - "gpu-pricing"
+  - "inference"
+aliases:
+  - "replicate gpu pricing"
+  - "replicate t4 vs l40s vs a100"
+  - "replicate hardware pricing"
+related_cards:
+  - "ai/ai-feature-cost-governance"
+  - "ai/model-fallback-strategy"
+  - "ai/together-vs-fireworks-vs-groq-serverless-inference-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/replicate
+      name: Replicate
+    - type: engine
+      id: engine/nvidia-t4
+      name: Nvidia T4 GPU
+      hardware_slug: gpu-t4
+    - type: engine
+      id: engine/nvidia-l40s
+      name: Nvidia L40S GPU
+      hardware_slug: gpu-l40s
+    - type: engine
+      id: engine/nvidia-l40s-4x
+      name: Nvidia L40S GPU (4x)
+    - type: engine
+      id: engine/nvidia-l40s-8x
+      name: Nvidia L40S GPU (8x)
+    - type: engine
+      id: engine/nvidia-a100-80gb
+      name: Nvidia A100 (80GB) GPU
+      hardware_slug: gpu-a100-large
+    - type: engine
+      id: engine/nvidia-a100-4x
+      name: Nvidia A100 (80GB) GPU (4x)
+    - type: engine
+      id: engine/nvidia-a100-8x
+      name: Nvidia A100 (80GB) GPU (8x)
+    - type: capability
+      id: capability/committed-spend-contracts
+      name: Committed spend contracts
+    - type: capability
+      id: capability/custom-models
+      name: Custom models
+    - type: capability
+      id: capability/training-runs
+      name: Training runs
+  edges:
+    - type: breaking_change_in
+      from: vendor/replicate
+      to: engine/nvidia-t4
+      date: 2024-04-11
+      change: Replicate increased RAM for T4-backed models from the previously stated
+        8GB system RAM because loading larger weights was causing issues.
+    - type: locks_via
+      from: engine/nvidia-l40s-4x
+      to: capability/committed-spend-contracts
+      note: As of 2026-03-20, 4x L40S is available with committed spend contracts.
+    - type: locks_via
+      from: engine/nvidia-l40s-8x
+      to: capability/committed-spend-contracts
+      note: As of 2026-03-20, 8x L40S is available with committed spend contracts.
+    - type: locks_via
+      from: engine/nvidia-a100-4x
+      to: capability/committed-spend-contracts
+      note: As of 2026-03-20, 4x A100 is available with committed spend contracts.
+    - type: locks_via
+      from: engine/nvidia-a100-8x
+      to: capability/committed-spend-contracts
+      note: As of 2026-03-20, 8x A100 is available with committed spend contracts.
+    - type: breaking_change_in
+      from: vendor/replicate
+      to: engine/nvidia-l40s
+      date: 2025-05-01
+      change: Replicate's May 2025 changelog says multi-GPU L40S configurations became
+        available for custom models and training runs, not just deployments.
+    - type: breaking_change_in
+      from: vendor/replicate
+      to: engine/nvidia-a100-80gb
+      date: 2025-05-01
+      change: Replicate's May 2025 changelog says multi-GPU A100 setups became
+        available for custom models and training runs, not just deployments.
+    - type: requires_version
+      from: capability/custom-models
+      to: engine/nvidia-l40s
+      as_of: 2025-05-01
+      note: May 2025 changelog states multi-GPU L40S configurations are available for
+        custom models.
+    - type: requires_version
+      from: capability/training-runs
+      to: engine/nvidia-l40s
+      as_of: 2025-05-01
+      note: May 2025 changelog states multi-GPU L40S configurations are available for
+        training runs.
+    - type: requires_version
+      from: capability/custom-models
+      to: engine/nvidia-a100-80gb
+      as_of: 2025-05-01
+      note: May 2025 changelog states multi-GPU A100 setups are available for custom
+        models.
+    - type: requires_version
+      from: capability/training-runs
+      to: engine/nvidia-a100-80gb
+      as_of: 2025-05-01
+      note: May 2025 changelog states multi-GPU A100 setups are available for training
+        runs.

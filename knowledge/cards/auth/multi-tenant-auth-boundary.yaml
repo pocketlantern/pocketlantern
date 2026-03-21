@@ -1,0 +1,180 @@
+id: auth/multi-tenant-auth-boundary
+title: "Multi-Tenant Auth Boundary: Tenant-Scoped Identity and Access Control"
+problem: Designing authentication and authorization boundaries in a multi-tenant
+  B2B SaaS where users belong to organizations, tokens must be tenant-scoped,
+  and cross-tenant access must be impossible
+context:
+  - b2b-saas
+  - multi-tenancy
+  - authentication
+  - authorization
+constraints:
+  - enterprise
+  - compliance
+candidates:
+  - name: Auth0 Organizations
+    summary: Auth0's native multi-tenant feature. Each organization gets isolated
+      login flows, branding, SSO connections, and member management. Tenant ID
+      is embedded in JWT claims automatically.
+    when_to_use: When you already use Auth0 and need organization-level isolation
+      with per-org SSO, MFA policies, and branded login pages. Best for
+      enterprise + compliance constraints where audit trails and per-org
+      policies are required.
+    tradeoffs: Native tenant isolation — login flows, connections, and policies are
+      per-organization out of the box. Limited to Auth0's pricing tiers (B2B
+      plans start at $150/month). Customization of org-level policies is limited
+      to what Auth0 exposes.
+    cautions: Auth0 Organizations pricing scales with connection count, not org
+      count — but each org with SSO needs a connection. Migration from flat
+      Auth0 tenants to Organizations requires user migration. Test cross-org
+      token leakage scenarios explicitly.
+    links:
+      - https://auth0.com/docs/manage-users/organizations
+      - https://auth0.com/blog/demystifying-multi-tenancy-in-b2b-saas/
+  - name: Clerk Organizations
+    summary: Clerk's B2B multi-tenancy feature. Organizations provide team
+      management, role-based access, domain verification, and automatic member
+      invitations with tenant-scoped sessions.
+    when_to_use: When you use Clerk and want the fastest DX for adding
+      multi-tenancy. Best for small-team constraints building React/Next.js apps
+      where drop-in components accelerate development. Good when SCIM is not a
+      hard requirement.
+    tradeoffs: Best DX — React components for org switching, invitations, and member
+      management. Organizations are free on all plans. No native SCIM support —
+      enterprise customers requiring directory sync need workarounds or a
+      separate provider.
+    cautions: Clerk's org model is simpler than Auth0's — fewer policy knobs per
+      organization. Evaluate whether you need per-org SSO connections (requires
+      Pro+ plan). The SCIM gap may block enterprise deals.
+    links:
+      - https://clerk.com/docs/organizations/overview
+      - https://clerk.com/blog/how-to-design-multitenant-saas-architecture
+  - name: Custom tenant-scoped JWT (self-built)
+    summary: Build tenant isolation into your auth layer. On login, resolve the
+      user's organization, embed tenant_id as a JWT claim, and enforce tenant
+      boundaries in middleware and database queries.
+    when_to_use: When you use a lightweight auth provider (Supabase Auth, Lucia,
+      custom) and need full control over tenant resolution logic. Best when your
+      tenant model is complex (users in multiple orgs, org hierarchies,
+      cross-org sharing) and no vendor model fits.
+    tradeoffs: Maximum flexibility — any tenant model you can imagine. Zero vendor
+      lock-in on tenant architecture. Requires building org management,
+      invitations, role assignment, and tenant-scoped middleware from scratch.
+      Every API endpoint must validate tenant_id.
+    cautions: Tenant boundary bugs are data breach bugs. Every query must be scoped
+      to the tenant from the JWT — a single missing check leaks cross-tenant
+      data. Use database-level RLS as a second layer of defense, never rely
+      solely on application-level checks.
+    links:
+      - https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/considerations/identity
+      - https://blog.logto.io/multi-tenant-ultimate-guide
+  - name: WorkOS Organizations + AuthKit
+    summary: WorkOS provides enterprise-grade organization management with SSO,
+      SCIM, and audit logs. AuthKit adds consumer-grade auth (email/password,
+      social login) on top, creating a full multi-tenant auth stack.
+    when_to_use: When you need both consumer auth and enterprise readiness (SSO +
+      SCIM + directory sync) in one stack. Best for enterprise + compliance
+      constraints where the priority is closing enterprise deals with full IT
+      integration requirements.
+    tradeoffs: Most enterprise-complete option — SSO, SCIM, audit logs, admin portal
+      all per-organization. Per-connection pricing ($125/mo per SSO/SCIM
+      connection) makes cost predictable but can be high. AuthKit is newer and
+      less feature-rich than Auth0/Clerk for consumer auth.
+    cautions: WorkOS is enterprise-first — consumer auth features in AuthKit are
+      still maturing. Evaluate whether AuthKit meets your needs for social
+      login, passwordless, and MFA before committing. Two-vendor strategy (e.g.,
+      Clerk for consumer + WorkOS for enterprise) is an alternative.
+    links:
+      - https://workos.com/docs/user-management
+      - https://workos.com/blog/developers-guide-saas-multi-tenant-architecture
+tags:
+  - auth
+  - multi-tenancy
+  - b2b-saas
+  - organizations
+  - tenant-isolation
+aliases:
+  - tenant auth
+  - organization auth
+  - multi-tenant identity
+  - org-level access control
+related_cards:
+  - auth/sso-for-b2b-saas
+  - database/multi-tenant-database-isolation
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/rbac-vs-abac-vs-rebac
+  - auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025
+  - auth/descope-vs-stytch-vs-workos-b2b-auth-pricing-2026
+  - auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026
+  - security/permit-community-vs-startup-vs-pro-quotas-2026
+  - security/permitio-vs-oso-cloud-policy-hosting-2026
+  - auth/descope-free-vs-pro-growth-agent-pricing-2026
+updated: 2026-03-15
+review_by: 2026-09-07
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/auth0
+      name: Auth0
+    - type: vendor
+      id: vendor/clerk
+      name: Clerk
+    - type: vendor
+      id: vendor/workos
+      name: WorkOS
+    - type: capability
+      id: capability/organizations
+      name: Organizations
+      category: multi-tenant feature
+    - type: capability
+      id: capability/authkit
+      name: AuthKit
+      category: auth stack component
+    - type: capability
+      id: capability/per-org-sso-connections
+      name: Per-org SSO connections
+      category: enterprise identity
+    - type: capability
+      id: capability/scim
+      name: SCIM
+      category: directory sync
+    - type: data_format
+      id: format/jwt
+      name: JWT
+      standard: JWT
+    - type: capability
+      id: capability/tenant-id-jwt-claim
+      name: tenant_id JWT claim
+      category: tenant scoping
+    - type: capability
+      id: capability/database-rls
+      name: Database-level RLS
+      category: data isolation
+  edges:
+    - type: locks_via
+      from: vendor/auth0
+      to: capability/organizations
+      note: Auth0's native multi-tenant feature is Organizations.
+    - type: locks_via
+      from: vendor/clerk
+      to: capability/organizations
+      note: Clerk's B2B multi-tenancy feature is Organizations.
+    - type: locks_via
+      from: vendor/workos
+      to: capability/authkit
+      note: WorkOS pairs Organizations with AuthKit for a full multi-tenant auth
+        stack.
+    - type: locks_via
+      from: vendor/workos
+      to: capability/scim
+      note: WorkOS provides SCIM per organization.
+    - type: locks_via
+      from: format/jwt
+      to: capability/tenant-id-jwt-claim
+      note: The custom approach embeds tenant_id as a JWT claim.
+    - type: locks_via
+      from: capability/tenant-id-jwt-claim
+      to: capability/database-rls
+      note: The card recommends database-level RLS as a second layer of defense for
+        tenant isolation.

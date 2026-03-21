@@ -1,0 +1,166 @@
+id: "runtime/python-3-10-eol-october-2026-upgrade-path"
+title: "Python 3.10 EOL in October 2026: when to move to 3.11 or 3.12"
+problem: "Backend and data teams need a change-awareness card for planning
+  upgrades off Python 3.10 before its October 2026 end-of-life, balancing
+  package compatibility and managed-runtime support."
+context:
+  - "python"
+  - "backend"
+  - "data"
+  - "aws"
+  - "lambda"
+constraints:
+  - "low-ops"
+  - "enterprise"
+  - "serverless"
+candidates:
+  - name: "Move first to Python 3.11 for the lowest-friction runtime hop"
+    summary: "As of 2026-03-20, Python 3.10 is in source-only security-fix mode
+      until approximately October 2026, so the upgrade window is already open.
+      Python 3.11.15 is the current 3.11 security release, with source-only
+      security fixes continuing until approximately October 2027. Python 3.11 is
+      officially documented as averaging about 25% faster than 3.10 on the
+      pyperformance benchmark suite, with workload-dependent gains of 10-60%. On
+      AWS Lambda, the managed `python3.11` runtime is supported on Amazon Linux
+      2 and is projected to deprecate on June 30, 2027."
+    when_to_use: "Use this when package and build compatibility matter more than
+      maximizing support runway, especially for teams that want one controlled
+      change before 3.10 reaches end-of-life. It is the pragmatic choice if you
+      need to leave 3.10 in 2026 but are not ready to absorb the packaging and
+      stdlib removals that come with 3.12."
+    tradeoffs: "Pros: shorter code-change path from 3.10, meaningful interpreter
+      speedup, and one extra year of Python security support. Cons: shorter
+      remaining runway than 3.12, and on AWS Lambda it remains tied to Amazon
+      Linux 2 rather than Amazon Linux 2023."
+    cautions: "As of 2026-03-20, 3.11 is already in security-fix-only mode, not full
+      bugfix mode. For managed runtimes, note that AWS Lambda lists `python3.11`
+      on Amazon Linux 2, while Amazon Linux 2 itself reaches end of life on June
+      30, 2026 and AWS says these runtimes continue receiving critical and
+      selected important AL2 patches only until the runtime deprecation date."
+    links:
+      - "https://peps.python.org/pep-0619/"
+      - "https://peps.python.org/pep-0664/"
+      - "https://docs.python.org/3.11/whatsnew/3.11.html"
+      - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
+  - name: "Move directly to Python 3.12 for longer runway and newer managed-runtime
+      base"
+    summary: "As of 2026-03-20, Python 3.12.13 is the current 3.12 security release,
+      with source-only security fixes continuing until approximately October
+      2028. On AWS Lambda, the managed `python3.12` runtime runs on Amazon Linux
+      2023 and is projected to deprecate on October 31, 2028, giving a
+      materially longer managed-runtime runway than 3.11. Python 3.12 removes
+      `distutils`, removes the bundled `setuptools` wheel from `ensurepip`, and
+      stops installing `setuptools` by default in `venv` environments. It also
+      removes older deprecated modules and import APIs including `imp`,
+      `pkgutil.ImpImporter`, `pkgutil.ImpLoader`, and `find_loader()` or
+      `find_module()` support."
+    when_to_use: "Use this when you want to avoid another near-term Python upgrade
+      cycle and your deployment platform already supports 3.12. It is the
+      stronger default for low-ops teams on managed runtimes, provided your
+      packaging, build scripts, and legacy import hooks do not still depend on
+      removed 3.12-era compatibility shims."
+    tradeoffs: "Pros: longest support window of the two options here and better
+      alignment with Amazon Linux 2023 on AWS Lambda. Cons: higher migration
+      risk for older packaging workflows and legacy code paths that still rely
+      on removed stdlib and import machinery."
+    cautions: "The main blocker-level caveat is packaging and environment
+      bootstrapping, not syntax. If internal build scripts, editable-install
+      workflows, or bootstrap code still assume `distutils`, implicit
+      `setuptools` in new virtual environments, or deprecated importlib and
+      `imp` APIs, 3.12 can surface failures that 3.11 is less likely to expose."
+    links:
+      - "https://peps.python.org/pep-0619/"
+      - "https://peps.python.org/pep-0693/"
+      - "https://docs.python.org/3.12/whatsnew/3.12.html"
+      - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
+tags: ["runtime", "python", "upgrade", "aws-lambda"]
+aliases:
+  - "python 3.10 eol"
+  - "python 3.10 to 3.11 or 3.12"
+  - "python 3.10 october 2026 upgrade path"
+related_cards:
+  - "infra/python-3-9-eol-october-2025-no-security-patches"
+  - "serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/python-3.10
+      name: Python 3.10
+      category: language-runtime
+    - type: runtime
+      id: runtime/python-3.11
+      name: Python 3.11
+      category: language-runtime
+    - type: runtime
+      id: runtime/python-3.12
+      name: Python 3.12
+      category: language-runtime
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: runtime
+      id: runtime/aws-lambda-python3.11
+      name: AWS Lambda python3.11
+      category: managed-runtime
+    - type: runtime
+      id: runtime/aws-lambda-python3.12
+      name: AWS Lambda python3.12
+      category: managed-runtime
+    - type: engine
+      id: engine/amazon-linux-2
+      name: Amazon Linux 2
+      category: os-base
+    - type: engine
+      id: engine/amazon-linux-2023
+      name: Amazon Linux 2023
+      category: os-base
+    - type: package
+      id: package/distutils
+      name: distutils
+      category: packaging
+    - type: package
+      id: package/setuptools
+      name: setuptools
+      category: packaging
+    - type: capability
+      id: capability/deprecated-import-apis
+      name: Deprecated import APIs
+      category: import-system
+  edges:
+    - type: locks_via
+      from: runtime/aws-lambda-python3.11
+      to: engine/amazon-linux-2
+    - type: locks_via
+      from: runtime/aws-lambda-python3.12
+      to: engine/amazon-linux-2023
+    - type: eol_date
+      from: engine/amazon-linux-2
+      to: null
+      date: 2026-06-30
+    - type: eol_date
+      from: runtime/aws-lambda-python3.11
+      to: null
+      date: 2027-06-30
+    - type: eol_date
+      from: runtime/aws-lambda-python3.12
+      to: null
+      date: 2028-10-31
+    - type: breaking_change_in
+      from: package/distutils
+      to: runtime/python-3.12
+      change: removed
+    - type: breaking_change_in
+      from: package/setuptools
+      to: runtime/python-3.12
+      change: no longer installed by default in venv; bundled wheel removed from
+        ensurepip
+    - type: breaking_change_in
+      from: capability/deprecated-import-apis
+      to: runtime/python-3.12
+      change: removed including imp, pkgutil.ImpImporter, pkgutil.ImpLoader, and
+        find_loader/find_module support

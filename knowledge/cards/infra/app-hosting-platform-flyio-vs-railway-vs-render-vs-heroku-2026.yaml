@@ -1,0 +1,287 @@
+id: infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+title: "App Hosting Platform Cost: Fly.io vs Railway vs Render vs Heroku
+  Economics 2026"
+problem: As of 2026-03-16, Fly.io, Railway, Render, and Heroku use fundamentally
+  different billing models — per-second machine runtime, per-minute CPU+RAM
+  execution, fixed per-instance monthly rates, and wall-clock dyno billing
+  respectively — causing cost estimates to diverge sharply based on workload
+  shape, traffic burstiness, and network egress patterns.
+context:
+  - infrastructure
+  - deployment
+  - hosting
+  - pricing
+  - docker
+  - containers
+  - autoscaling
+constraints:
+  - cost-sensitive
+  - small-team
+  - low-ops
+  - high-scale
+  - microservices
+candidates:
+  - name: Fly.io
+    summary: As of 2026-03-16, Fly.io bills Fly Machines per second while running,
+      based on named CPU/RAM presets plus roughly $5 per GB of additional RAM
+      per 30 days (baseline US rate; higher in regions with regional markups).
+      Stopped machines incur $0.15/GB/month for rootfs storage. Network egress
+      is charged at $0.02/GB in North America and Europe, $0.04/GB in Asia
+      Pacific, Oceania, and South America, and $0.12/GB in Africa and India.
+      Fly.io deprecated its legacy free-tier plan for new organizations on
+      October 7, 2024; new accounts have no free allowance.
+    when_to_use: Best for microservices + high-scale or real-time + cost-sensitive
+      where workloads run any Docker image, need persistent processes or
+      WebSockets, or require fine-grained global region placement. Prefer Fly.io
+      when you can right-size machines per service, traffic patterns justify
+      per-second billing over flat-rate reservations, and your egress is
+      concentrated in North America or Europe where the $0.02/GB rate applies.
+      Machine reservations offer 40% discounts for predictable baseline compute.
+    tradeoffs: "Per-second billing rewards sporadic or short-lived workloads; idle
+      stopped machines only pay rootfs storage. The global region network and
+      private networking are first-class. Tradeoff: no free tier for new
+      organizations as of late 2024, regional egress variance ($0.02–$0.12/GB)
+      can surprise teams with multi-region or non-US traffic, and operational
+      complexity (flyctl, machines API, volume management) is higher than
+      Railway or Render. Migration/lock-in: standard Docker containers —
+      near-zero app code lock-in; fly.toml is the only proprietary config file.
+      Postgres is open-source (fly-apps/postgres-flex) and pg_dump works
+      normally. Volume export requires app-level data transfer."
+    cautions: As of 2026-03-16, the legacy free-tier plan with included resource
+      allowances is not available to new organizations. Dedicated IPv4 costs
+      $2/month per address; shared IPv4 is free. Egress to Africa and India is
+      6x the North America rate. Stopped machine rootfs storage ($0.15/GB/month)
+      accrues even when machines are not running. Verify region-specific pricing
+      multipliers before estimating multi-region costs.
+    links:
+      - https://fly.io/docs/about/pricing/
+      - https://fly.io/docs/about/billing/
+  - name: Railway
+    summary: "As of 2026-03-16, Railway charges $0.000231 per GB-minute of RAM and
+      $0.000463 per vCPU-minute (equivalent to $10/GB/month and $20/vCPU/month)
+      plus $0.05/GB network egress. Plans (Free: $0/month with $1 credit; Hobby:
+      $5/month with $5 credit; Pro: $20/month with $20 credit; Enterprise:
+      custom) function as credits toward resource usage — if usage stays under
+      the plan fee you pay only the flat rate; overages are billed directly. New
+      Trial accounts receive a one-time $5 grant."
+    when_to_use: Best for small-team + cost-sensitive or low-ops where usage is
+      light and predictable and you want a simple Git-push deployment experience
+      without managing containers or instances directly. Prefer Railway when
+      total monthly compute stays near or below the Hobby or Pro plan credit,
+      team size is small, and a straightforward per-minute billing model is
+      easier to reason about than fixed instance sizing. Well-suited for side
+      projects and early-stage production apps.
+    tradeoffs: "The credit-based subscription model makes costs predictable at low
+      usage; the Hobby plan's $5/month covers meaningful runtime for small apps.
+      Minute-level billing and a clean UI reduce ops overhead. Tradeoff: at
+      higher usage the per-minute rates ($10/GB/month RAM, $20/vCPU/month) can
+      exceed Render's flat instance pricing; egress at $0.05/GB is mid-range;
+      there is no persistent free tier beyond the one-time $5 trial grant.
+      Migration/lock-in: Dockerfile or Nixpacks (open-source) for builds; no
+      proprietary app SDK required. Standard Postgres with pg_dump support.
+      railway.toml is the only proprietary config file."
+    cautions: Included plan credits reset monthly and do not accumulate. Usage above
+      the plan credit amount is billed as overages with no hard cap by default —
+      set spend limits in the dashboard to avoid surprises. The Free plan
+      provides only $1/month of resources, which exhausts quickly under
+      continuous workloads. For database-heavy apps, connect to Railway
+      databases over private networking to reduce egress charges.
+      Post-cancellation invoices may still be issued for usage in the final
+      billing cycle.
+    links:
+      - https://docs.railway.com/pricing
+      - https://docs.railway.com/reference/pricing/plans
+      - https://docs.railway.com/pricing/faqs
+  - name: Render
+    summary: "As of 2026-03-16, Render uses fixed monthly per-instance pricing:
+      Starter at $7/month (512 MB, 0.5 vCPU), Standard at $25/month (2 GB, 1
+      vCPU), Pro at $85/month (4 GB, 2 vCPU), through Pro Ultra at $450/month
+      (32 GB, 8 vCPU). All paid tiers are billed prorated by the second.
+      Horizontal autoscaling is available on Professional workspaces and higher.
+      Bandwidth is included per workspace tier (Hobby: 100 GB/month;
+      Professional: 500 GB/month; Organization: 1 TB/month). Free web services
+      spin down after 15 minutes of inactivity and receive 750 free instance
+      hours per calendar month."
+    when_to_use: Best for low-ops + cost-sensitive or small-team + high-scale where
+      predictable flat-rate monthly instance costs matter more than per-second
+      granularity, and your team wants Blueprint-driven infrastructure-as-code
+      without managing containers directly. Prefer Render when you need
+      horizontal autoscaling on a budget, want included bandwidth to avoid
+      egress line items for moderate-traffic apps, or rely on Render Preview
+      Environments for per-PR isolation. Standard ($25/month) is a practical
+      default for production web services.
+    tradeoffs: "Fixed instance pricing is simple to forecast and avoids per-second
+      billing surprises for always-on services. Included bandwidth per workspace
+      tier covers most small and medium apps. Second-level proration on
+      autoscaling means scale-out events do not waste full-day charges.
+      Tradeoff: instance sizes jump in large increments (Standard $25 to Pro
+      $85), so right-sizing between tiers can be difficult; autoscaling requires
+      Professional workspace or higher; services with persistent disks cannot
+      use horizontal autoscaling. Migration/lock-in: Docker or native runtimes;
+      standard Postgres with pg_dump support. render.yaml (Blueprint) is the
+      only proprietary config file. Persistent disks block horizontal
+      autoscaling, which can constrain ejection timing."
+    cautions: Free instances spin down after 15 minutes of idle time and take
+      approximately one minute to restart — do not use them for
+      latency-sensitive production workloads. Autoscaling is unavailable for
+      services with persistent disks attached. Bandwidth overage pricing is not
+      publicly itemized on the pricing page as of 2026-03-16; check billing docs
+      before running high-egress workloads. Render PostgreSQL free tier expires
+      after 30 days.
+    links:
+      - https://render.com/pricing
+      - https://render.com/docs/scaling
+      - https://render.com/docs/free
+  - name: Heroku
+    summary: As of 2026-03-16, Heroku bills Common Runtime dynos on wall-clock time
+      prorated to the second. Eco dynos cost $5/month flat for 1,000 shared
+      dyno-hours across an account and sleep after inactivity. Basic dynos cost
+      $7/month and are always-on with 0.5 GB RAM. Standard-1X is $25/month (0.5
+      GB), Standard-2X is $50/month (1 GB), Performance-M is $250/month (2.5 GB,
+      100% dedicated CPU), and Performance-L is $500/month (14 GB, 100%
+      dedicated CPU).
+    when_to_use: Best for enterprise + low-ops or small-team + compliance where
+      teams are already standardized on Heroku Pipelines, Review Apps, or Heroku
+      add-ons, and migration cost outweighs potential savings on newer
+      platforms. Prefer Heroku when you need HIPAA-compliant Shield dynos, a
+      mature add-on ecosystem, or well-understood wall-clock billing for cost
+      forecasting. Basic ($7/month) is the lowest-cost always-on option for
+      simple production apps already on Heroku.
+    tradeoffs: "Heroku's billing model is mature and straightforward: per-dyno
+      wall-clock pricing with per-second proration. The Pipelines, Review Apps,
+      and add-on ecosystem are battle-tested. Tradeoff: Standard and Performance
+      dyno prices are significantly higher than Render or Railway equivalents at
+      the same RAM tier; Eco dynos sleep and share a limited monthly hour pool;
+      Basic and Standard dynos allow only one dyno per process type, blocking
+      horizontal scaling. Migration/lock-in: standard container support
+      (heroku.yml or Dockerfile); Postgres export via pg_dump. Procfile is a
+      simple, portable concept. Heroku-specific features (Review Apps,
+      Pipelines) have no direct equivalents elsewhere and require workflow
+      changes on ejection."
+    cautions: Eco dynos sleep after inactivity, causing cold-start latency —
+      unsuitable for latency-sensitive production APIs. Basic and Standard dyno
+      tiers are limited to one dyno per process type, blocking horizontal
+      scaling. Performance dynos require an established payment history before
+      they can be provisioned. Eco plan is not available for Heroku Enterprise
+      customers. Wall-clock billing means an idle dyno scaled above zero accrues
+      charges continuously; scale to zero explicitly when workloads are idle.
+    links:
+      - https://devcenter.heroku.com/articles/dyno-sizes
+      - https://devcenter.heroku.com/articles/dyno-tiers
+      - https://devcenter.heroku.com/articles/usage-and-billing
+tags:
+  - infrastructure
+  - hosting
+  - pricing
+  - flyio
+  - railway
+  - render
+  - heroku
+  - containers
+  - deployment
+  - autoscaling
+  - egress
+aliases:
+  - fly.io vs railway vs render vs heroku cost
+  - railway pricing per minute
+  - render instance pricing 2026
+  - heroku dyno cost 2026
+  - fly.io egress cost
+  - cheapest app hosting 2026
+  - PaaS pricing comparison
+  - app platform billing model
+  - railway cpu ram billing
+  - render autoscaling cost
+related_cards:
+  - deployment/preview-environments-cost-governance
+  - serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+  - database/pgbouncer-vs-rds-proxy-vs-neon-pooling
+  - infra/kubernetes-vs-managed-serverless-cost-tradeoff-2026
+  - infra/hosting-platform-lock-in-and-ejection-cost-2026
+  - runtime/fly-managed-postgres-inter-region-charges-feb-2026
+  - runtime/railway-trial-vs-hobby-vs-pro-2026
+  - runtime/fly-deprecated-plans-vs-usage-based-2026
+  - runtime/fly-reservation-blocks-vs-on-demand-2026
+  - runtime/railway-replica-cap-vs-custom-2026
+  - runtime/render-legacy-postgres-vs-flexible-plans-2026
+  - runtime/heroku-fir-vs-private-shield-2026
+  - web/fly-io-volume-snapshot-billing-after-january-2026
+  - deployment/railway-free-vs-hobby-vs-pro-usage-minimums-2026
+  - deployment/render-free-services-vs-paid-after-suspension-and-billing-changes-2026
+  - infra/fly-volume-snapshots-billing-after-january-1-2026
+  - deployment/heroku-eco-vs-basic-vs-standard-dyno-cost-reset-2026
+  - web/render-basic-256mb-vs-basic-1gb-postgres-pricing-2026
+  - cloud/fly-machines-cpu-vs-gpu-pricing-2026
+  - web/render-vs-fly-vs-railway-small-app-costs-2026
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-08-03
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/fly-io
+      name: Fly.io
+    - type: vendor
+      id: vendor/railway
+      name: Railway
+    - type: vendor
+      id: vendor/render
+      name: Render
+    - type: vendor
+      id: vendor/heroku
+      name: Heroku
+    - type: package
+      id: package/fly-toml
+      name: fly.toml
+    - type: package
+      id: package/railway-toml
+      name: railway.toml
+    - type: package
+      id: package/render-yaml
+      name: render.yaml
+    - type: capability
+      id: capability/heroku-review-apps
+      name: Review Apps
+    - type: capability
+      id: capability/heroku-pipelines
+      name: Pipelines
+    - type: capability
+      id: capability/fly-legacy-free-tier
+      name: legacy free-tier plan
+  edges:
+    - type: locks_via
+      from: vendor/fly-io
+      to: package/fly-toml
+      scope: proprietary_config
+      evidence: fly.toml is the only proprietary config file
+    - type: locks_via
+      from: vendor/railway
+      to: package/railway-toml
+      scope: proprietary_config
+      evidence: railway.toml is the only proprietary config file
+    - type: locks_via
+      from: vendor/render
+      to: package/render-yaml
+      scope: proprietary_config
+      evidence: render.yaml (Blueprint) is the only proprietary config file
+    - type: locks_via
+      from: vendor/heroku
+      to: capability/heroku-review-apps
+      scope: workflow_feature
+      evidence: Heroku-specific features (Review Apps, Pipelines) have no direct
+        equivalents elsewhere
+    - type: locks_via
+      from: vendor/heroku
+      to: capability/heroku-pipelines
+      scope: workflow_feature
+      evidence: Heroku-specific features (Review Apps, Pipelines) have no direct
+        equivalents elsewhere
+    - type: breaking_change_in
+      from: vendor/fly-io
+      to: capability/fly-legacy-free-tier
+      date: 2024-10-07
+      change: deprecated_for_new_organizations
+      evidence: Fly.io deprecated its legacy free-tier plan for new organizations on
+        October 7, 2024

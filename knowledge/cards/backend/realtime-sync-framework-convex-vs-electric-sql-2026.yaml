@@ -1,0 +1,211 @@
+id: "backend/realtime-sync-framework-convex-vs-electric-sql-2026"
+title: "Real-Time Sync Frameworks: Convex vs Electric SQL vs Supabase Realtime 2026"
+problem: "New real-time sync platforms (Convex, Electric SQL) compete with
+  Supabase Realtime on pricing, consistency guarantees, and offline-first
+  support. Teams need to evaluate transactional reactivity, local-first
+  architecture, vendor lock-in, and per-seat vs. usage-based cost models."
+context:
+  - "real-time"
+  - "sync"
+  - "backend"
+  - "database"
+  - "local-first"
+  - "typescript"
+  - "postgres"
+constraints:
+  - "real-time"
+  - "serverless"
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+  - "high-scale"
+candidates:
+  - name: "Convex"
+    summary: "As of 2026-03-16, Convex is a reactive backend-as-a-service with a
+      custom transactional document store. Free plan includes 1M function
+      calls/month and 0.5 GB storage; Professional is $25/developer/month with
+      25M function calls and 50 GB storage. Every query is a live subscription:
+      Convex tracks all data dependencies per query function and automatically
+      reruns it—pushing updates to all active clients—whenever any dependency
+      changes."
+    when_to_use: "Best for small-team + low-ops or real-time + serverless stacks
+      where strong consistency across reads and writes is non-negotiable and you
+      want reactivity by default rather than as an add-on. The decisive factor
+      is Convex's transactional read-write model: unlike WAL-based approaches,
+      subscriptions and mutations share the same channel, eliminating the
+      read-after-write consistency gap common in Supabase Realtime."
+    tradeoffs: "Strongest consistency story of the three: query subscriptions and
+      mutations run inside the same transactional document store, making
+      read-after-write consistency automatic. TypeScript-native schema inference
+      means no SQL or migration files. Includes vector search, file storage,
+      crons, webhooks, auth, and scheduled functions without extra vendors.
+      Tradeoff is no SQL and no offline/local-first support—Convex is fully
+      cloud-dependent; if the subscription drops, clients have no local copy.
+      Actions (for external API calls) explicitly do not carry the same
+      transactional guarantees as queries and mutations."
+    cautions: "Convex uses a custom document store, not Postgres—teams that need SQL
+      joins, existing Postgres tooling, or portable schemas will hit a hard
+      architectural wall mid-project. There is no offline mode; all reactivity
+      requires an active connection, making it unsuitable for local-first or
+      intermittently-connected use cases. The $25/developer/month Professional
+      pricing compounds quickly on larger teams—verify current per-seat costs at
+      convex.dev/pricing before committing."
+    links:
+      - "https://www.convex.dev/"
+      - "https://www.convex.dev/pricing"
+      - "https://www.convex.dev/faq"
+      - "https://www.convex.dev/compare/supabase"
+  - name: "Electric SQL"
+    summary: "As of 2026-03-16, Electric SQL is an open-source (Apache 2.0)
+      read-path sync engine for Postgres, version 1.0 stable. It consumes
+      Postgres logical replication and distributes data via HTTP-based 'Shapes'
+      (partial replicas with WHERE-clause filtering) to clients, CDNs, TanStack
+      DB, or PGlite. Electric Cloud is in public BETA with a stated free tier;
+      no public pricing tiers are listed—contact the team for details on usage
+      beyond the free tier. Self-hosting requires Postgres v14+ with logical
+      replication enabled and a Docker-containerised Elixir service."
+    when_to_use: "Best for real-time + low-ops or local-first + cost-sensitive teams
+      that already run Postgres and want offline-capable or edge-cached sync
+      without replatforming to a new database. The decisive factor is Electric's
+      read-path architecture: it syncs data out of any existing Postgres
+      instance, making it an additive layer rather than a database replacement,
+      and it integrates with standard CDNs for fan-out at scale."
+    tradeoffs: "Works with any Postgres (Supabase, Neon, RDS, self-managed)—no
+      database migration required. Apache 2.0 license means full self-hosting
+      with no vendor lock-in. HTTP+CDN delivery scales fan-out without
+      per-connection infrastructure. TanStack DB and PGlite enable true
+      offline-first clients. Tradeoff is that Electric is a read-path-only
+      engine: it does not handle write-path sync, conflict resolution, or
+      mutations—teams must wire up their own write path (REST, tRPC, or direct
+      Postgres). Cloud BETA pricing is not publicly listed, and the Elixir
+      self-host adds operational complexity."
+    cautions: "Electric is read-path only—it cannot write back to Postgres on behalf
+      of clients; you must implement your own write/conflict strategy, which
+      eliminates it as a drop-in Firebase replacement for bidirectional sync.
+      The Electric Cloud is in public BETA as of 2026-03-16 with no published
+      paid pricing tiers; assume pricing will change before GA and verify
+      current status at electric-sql.com before building production cost models
+      around the managed service. Self-hosted deployments need NVMe-class disk
+      for the Elixir sync service to maintain low-latency WAL streaming."
+    links:
+      - "https://electric-sql.com/"
+      - "https://electric-sql.com/product/electric"
+      - "https://electric-sql.com/docs/intro"
+      - "https://electric-sql.com/docs/guides/deployment"
+      - "https://github.com/electric-sql/electric"
+  - name: "Supabase Realtime"
+    summary: "As of 2026-03-16, Supabase Realtime is a globally distributed
+      WebSocket layer bundled with the Supabase platform, offering three
+      capabilities: Broadcast (low-latency pub/sub between clients), Presence
+      (shared user-state tracking), and Postgres Changes (streaming WAL-based
+      database change events). Free plan includes 2M messages/month and 200 peak
+      connections; Pro and Team plans include 5M messages/month and 500 peak
+      connections, with usage-based overage charges beyond those quotas.
+      Enterprise pricing is custom."
+    when_to_use: "Best for teams already using Supabase (Postgres, Auth, Storage)
+      where adding real-time event notifications and presence avoids a separate
+      vendor. The decisive factor is platform consolidation: Supabase Realtime
+      is not a reactive query system but a Postgres change-event bus, which is
+      the right fit for notification-style use cases (activity feeds, live
+      dashboards) but not for full transactional reactivity where
+      read-after-write consistency is required."
+    tradeoffs: "Tightly integrated with Supabase's Postgres, auth, and storage
+      stack—no separate vendor contract for real-time. Broadcast and Presence
+      are low-latency and don't touch the database. Row-Level Security policies
+      apply to Postgres Changes, giving declarative access control over which
+      change events clients can receive. Tradeoff is that Postgres Changes
+      watches the WAL, not the query result—subscriptions are delivered on a
+      different channel than writes, which means Supabase cannot guarantee the
+      same read-after-write consistency as Convex. No offline/local-first
+      support; Supabase Realtime is purely event-notification."
+    cautions: "Postgres Changes delivers WAL events, not re-evaluated query
+      results—if a client needs the current computed state (not just the raw row
+      delta), it must re-query Postgres after receiving a change event, creating
+      a second round-trip. This architecture also means complex filtered queries
+      cannot be subscribed to with guaranteed consistency in the way Convex
+      query subscriptions work. Supabase Realtime overage pricing (per million
+      messages and per thousand peak connections) is not confirmed on the docs
+      page fetched—verify current exact overage rates at
+      supabase.com/docs/guides/realtime/pricing and supabase.com/pricing before
+      sizing Pro vs. Team plans."
+    links:
+      - "https://supabase.com/docs/guides/realtime/overview"
+      - "https://supabase.com/docs/guides/realtime/pricing"
+      - "https://supabase.com/pricing"
+tags:
+  - "real-time"
+  - "sync"
+  - "convex"
+  - "electric-sql"
+  - "electricsql"
+  - "supabase"
+  - "supabase-realtime"
+  - "local-first"
+  - "backend"
+  - "websocket"
+  - "reactivity"
+  - "postgres"
+  - "comparison"
+aliases:
+  - "real-time sync framework comparison"
+  - "convex vs supabase"
+  - "electric sql vs convex"
+  - "electric sql vs supabase"
+  - "local-first sync 2026"
+  - "firebase realtime alternative"
+  - "reactive database"
+  - "live queries"
+  - "realtime database comparison"
+  - "offline-first sync framework"
+  - "postgres sync engine"
+related_cards:
+  - "database/neon-vs-supabase-vs-planetscale-2026"
+  - "database/prisma-vs-drizzle-for-edge-and-serverless"
+  - "backend/background-job-processing"
+  - game/photon-fusion-vs-realtime-traffic-included-plans-2026
+  - data/instantdb-vs-powersync-vs-convex-realtime-sync-pricing-2026
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-08-03"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/convex
+      name: Convex
+      category: real-time sync framework
+    - type: engine
+      id: engine/electric-sql
+      name: Electric SQL
+      category: read-path sync engine
+    - type: framework
+      id: framework/supabase-realtime
+      name: Supabase Realtime
+      category: real-time framework
+    - type: package
+      id: package/postgres
+      name: Postgres
+      category: database
+    - type: vendor
+      id: vendor/supabase
+      name: Supabase
+    - type: vendor
+      id: vendor/convex
+      name: Convex
+  edges:
+    - type: requires_version
+      from: engine/electric-sql
+      to: package/postgres
+      version: ">=14"
+      basis: Self-hosting requires Postgres v14+ with logical replication enabled.
+    - type: locks_via
+      from: framework/supabase-realtime
+      to: vendor/supabase
+      basis: Supabase Realtime is bundled with the Supabase platform and tightly
+        integrated with Supabase's Postgres, auth, and storage stack.
+    - type: locks_via
+      from: framework/convex
+      to: vendor/convex
+      basis: Convex uses a custom document store, is fully cloud-dependent, and teams
+        needing portable schemas will hit a hard architectural wall.

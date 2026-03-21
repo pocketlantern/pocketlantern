@@ -1,0 +1,181 @@
+id: ai/rag-architecture-choices
+title: "RAG Architecture Choices: Chunking, Retrieval, and Reranking Strategies"
+problem: Designing a Retrieval-Augmented Generation pipeline where chunking
+  strategy, retrieval method, and reranking approach each significantly affect
+  accuracy, latency, and cost
+context:
+  - ai
+  - rag
+  - search
+  - vector-database
+constraints:
+  - high-scale
+  - cost-sensitive
+candidates:
+  - name: Hybrid search with reranking (2026 standard)
+    summary: Run vector search and BM25 keyword search in parallel, combine results
+      using Reciprocal Rank Fusion (RRF), then apply a cross-encoder reranker
+      (BGE-Reranker, Cohere Rerank) for final ranking.
+    when_to_use: When accuracy is critical and you can tolerate 50-100ms additional
+      latency for reranking. Hybrid search with RRF delivers 88-94% accuracy vs.
+      82-88% for vector-only and 65-72% for keyword-only. Best for high-scale
+      production RAG.
+    tradeoffs: Best retrieval accuracy of any approach. Requires both a vector index
+      and a keyword index. Reranking adds latency and cost (cross-encoder
+      inference per query). More complex infrastructure than vector-only.
+    cautions: Reranker model size affects latency — lightweight models
+      (BGE-Reranker-v2-m3) vs. large models (Cohere Rerank) is a
+      latency/accuracy trade-off. Retrieve top 50-100 candidates, rerank to top
+      5-10 for the LLM context.
+    links:
+      - https://www.pinecone.io/learn/hybrid-search-intro/
+      - https://docs.cohere.com/docs/reranking
+  - name: Vector-only retrieval (simple RAG)
+    summary: Embed documents and queries with the same embedding model, retrieve
+      top-k nearest neighbors from a vector database. No keyword search or
+      reranking.
+    when_to_use: When simplicity and speed matter more than maximum accuracy. Good
+      for small-team + cost-sensitive constraints where you want a working RAG
+      pipeline with minimal infrastructure. Sufficient when documents are short,
+      well-structured, and queries are straightforward.
+    tradeoffs: Simplest to implement — one embedding model, one vector store. Misses
+      exact keyword matches that BM25 would catch. Accuracy is 82-88% vs. 88-94%
+      for hybrid. No reranking cost.
+    cautions: Embedding model choice matters more than vector DB choice for
+      accuracy. Use the latest models (Qwen3 embeddings,
+      text-embedding-3-large). Poor chunking torpedoes retrieval accuracy
+      regardless of embedding quality.
+    links:
+      - https://www.pinecone.io/learn/retrieval-augmented-generation/
+  - name: Agentic RAG
+    summary: An AI agent plans retrieval dynamically — deciding which sources to
+      query, what queries to run, and whether to retry with different strategies
+      based on initial results.
+    when_to_use: When queries are complex, ambiguous, or require multi-hop reasoning
+      across different data sources. The 2026 standard for advanced RAG — agents
+      plan retrieval, pick tools, reflect on answers, and retry. Best when you
+      already have a working simple RAG and need to handle harder queries.
+    tradeoffs: Handles complex queries that fixed pipelines cannot. Significantly
+      higher latency and token cost (multiple LLM calls per query). Harder to
+      debug and evaluate. Requires an agent framework (LangGraph, CrewAI,
+      custom).
+    cautions: Start with simple RAG, not agentic RAG. Only add agent complexity when
+      you have evidence that fixed retrieval fails on your query distribution.
+      Agent loops can run away — set max iterations and token budgets.
+    links:
+      - https://redis.io/blog/rag-at-scale/
+      - https://www.langchain.com/langgraph
+  - name: Contextual retrieval (chunk enrichment)
+    summary: Enrich each chunk with surrounding context before embedding — prepend
+      document title, section headers, or LLM-generated summaries to each chunk
+      so embeddings capture broader meaning.
+    when_to_use: When your documents are long and chunks lose context in isolation.
+      Effective for technical docs, legal contracts, or multi-section reports
+      where a chunk about 'pricing' could belong to any of 10 products.
+    tradeoffs: Improves retrieval relevance by 20-30% on context-dependent queries.
+      Increases embedding cost (longer chunks) and storage. Can be combined with
+      hybrid search and reranking for maximum accuracy.
+    cautions: LLM-generated chunk summaries add preprocessing cost and latency to
+      the indexing pipeline. Simpler approaches (prepending title + section
+      header) often get 80% of the benefit at 1% of the cost.
+    links:
+      - https://docs.anthropic.com/en/docs/build-with-claude/retrieval
+tags:
+  - ai
+  - rag
+  - retrieval
+  - vector-search
+  - reranking
+  - chunking
+aliases:
+  - rag pipeline
+  - retrieval augmented generation
+  - semantic search pipeline
+  - document retrieval
+related_cards:
+  - database/vector-storage-where-to-run
+  - ai/ai-feature-cost-governance
+  - ai/gemini-grounding-with-google-search-billing-start-vs-self-managed-search-rag-2026
+  - ai/openai-o1-vs-gpt4o-reasoning-cost-benefit-2026
+  - ai/pinecone-starter-vs-standard-50-dollar-minimum-2026
+  - data/vectorchord-vs-pgvector-vs-qdrant-self-hosted-2026
+  - ai/llamaindex-v0-x-to-v1-breaking-package-migration-2026
+updated: 2026-03-15
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/hybrid-search-reranking
+      name: Hybrid search with reranking
+      category: rag_retrieval
+    - type: capability
+      id: capability/agentic-rag
+      name: Agentic RAG
+      category: rag_retrieval
+    - type: framework
+      id: framework/langgraph
+      name: LangGraph
+    - type: framework
+      id: framework/crewai
+      name: CrewAI
+    - type: engine
+      id: engine/bm25
+      name: BM25
+    - type: protocol
+      id: protocol/rrf
+      name: Reciprocal Rank Fusion
+      standard: RRF
+    - type: engine
+      id: engine/bge-reranker
+      name: BGE-Reranker
+    - type: vendor
+      id: vendor/cohere
+      name: Cohere
+    - type: engine
+      id: engine/cohere-rerank
+      name: Cohere Rerank
+    - type: data_format
+      id: format/vector-index
+      name: Vector index
+    - type: data_format
+      id: format/keyword-index
+      name: Keyword index
+  edges:
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: protocol/rrf
+      note: Hybrid search combines results using Reciprocal Rank Fusion (RRF).
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: engine/bm25
+      note: Hybrid search runs BM25 keyword search in parallel with vector search.
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: engine/bge-reranker
+      note: Hybrid search with reranking can apply a cross-encoder reranker such as
+        BGE-Reranker.
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: engine/cohere-rerank
+      note: Hybrid search with reranking can apply a cross-encoder reranker such as
+        Cohere Rerank.
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: format/vector-index
+      note: Hybrid search requires a vector index.
+    - type: locks_via
+      from: capability/hybrid-search-reranking
+      to: format/keyword-index
+      note: Hybrid search requires a keyword index.
+    - type: requires_version
+      from: capability/agentic-rag
+      to: framework/langgraph
+      note: Agentic RAG requires an agent framework such as LangGraph.
+    - type: requires_version
+      from: capability/agentic-rag
+      to: framework/crewai
+      note: Agentic RAG requires an agent framework such as CrewAI.
+    - type: locks_via
+      from: engine/cohere-rerank
+      to: vendor/cohere
+      note: Cohere Rerank is identified in the card as a Cohere reranker.

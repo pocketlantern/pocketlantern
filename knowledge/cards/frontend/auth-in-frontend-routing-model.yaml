@@ -1,0 +1,162 @@
+id: frontend/auth-in-frontend-routing-model
+title: "Auth in Frontend Routing: Middleware vs Layout vs Route Guard Patterns"
+problem: Implementing authentication and authorization checks in frontend
+  routing where Next.js middleware, layout-based auth, route guards, and server
+  component patterns each have different security guarantees, performance
+  characteristics, and framework coupling
+context:
+  - frontend
+  - auth
+  - routing
+  - next.js
+  - react
+constraints:
+  - small-team
+  - enterprise
+  - serverless
+candidates:
+  - name: Next.js Middleware Auth (Edge)
+    summary: Run auth checks in Next.js middleware (runs at Edge before the page
+      renders). Verify session tokens, redirect unauthenticated users, and set
+      headers/cookies before any server component executes. Runs on every
+      matching request.
+    when_to_use: When you want auth checks to happen before any rendering —
+      unauthenticated users never see protected page content, even in the HTML
+      source. Best for enterprise + serverless constraints where security
+      boundaries must be enforced at the routing layer, not the component layer.
+      The recommended pattern for Next.js apps using cookie-based sessions.
+    tradeoffs: Runs before rendering — zero chance of protected content flash. Edge
+      Runtime has limited API access — cannot query databases directly (use
+      session tokens/JWTs). Runs on every matching request — keep logic
+      lightweight. Centralizes auth logic in one file (middleware.ts) instead of
+      scattering across pages.
+    cautions: Next.js middleware runs at Edge by default — limited to Web APIs, no
+      Node.js modules. Use lightweight JWT verification (jose library, not
+      jsonwebtoken which needs Node.js crypto). Middleware cannot read request
+      body — only headers, cookies, and URL. For role-based access, encode roles
+      in the session token or make a separate API call from the middleware.
+    links:
+      - https://nextjs.org/docs/app/building-your-application/routing/middleware
+      - https://nextjs.org/docs/app/building-your-application/authentication
+  - name: Layout-Level Auth (Server Component)
+    summary: Check auth in the root or nested layout server component. Redirect
+      unauthenticated users from the layout before rendering child pages. Works
+      with any session mechanism since layouts run as server components with
+      full Node.js access.
+    when_to_use: When auth checks need database access or complex role verification
+      that exceeds Edge Runtime capabilities. Best for small-team + enterprise
+      where auth logic is per-section (admin layout, dashboard layout, public
+      layout) and each layout has different permission requirements.
+    tradeoffs: Full Node.js API access — can query databases, call external auth
+      services. Layout-level auth applies to all child routes automatically.
+      Layouts are cached by Next.js — auth checks in static layouts may use
+      stale session data. More granular than middleware (per-section) but less
+      centralized (auth logic in multiple layouts).
+    cautions: Layouts in Next.js App Router do not re-render on navigation between
+      child routes — auth state changes (logout) may not be detected until a
+      full page reload. Use router.refresh() or revalidation to handle session
+      expiry during navigation. Avoid putting auth checks only in layouts
+      without middleware — the layout may serve cached content before the check
+      runs.
+    links:
+      - https://nextjs.org/docs/app/building-your-application/routing/layouts-and-templates
+      - https://nextjs.org/docs/app/building-your-application/authentication
+  - name: Auth Provider Libraries (NextAuth/Auth.js, Clerk, Lucia)
+    summary: "Use an auth library that provides session management, middleware
+      helpers, and component-level auth utilities. NextAuth/Auth.js: free, OSS.
+      Clerk: free up to 50K MAU, Pro $20/month + $0.02/MAU over 10K. These
+      libraries handle the routing integration for you."
+    when_to_use: When you want auth routing handled by a battle-tested library
+      rather than implementing middleware/layout auth manually. Best for
+      small-team + cost-sensitive where building auth routing from scratch is
+      not a good use of engineering time. Clerk's <SignedIn>/<SignedOut>
+      components and middleware helpers cover most patterns.
+    tradeoffs: Minimal code — auth routing works out of the box. Clerk provides
+      middleware + component + API auth in one package. NextAuth/Auth.js is free
+      but requires more configuration. Library coupling — your routing auth is
+      tied to the library's API. Upgrading or migrating auth libraries requires
+      touching routing logic.
+    cautions: Auth.js (NextAuth v5) has undergone significant API changes — verify
+      compatibility with your Next.js version. Clerk's free tier now covers 50K
+      MAU (as of February 2026), making it very cost-effective for startups; Pro
+      plan is $20/month + $0.02/MAU over 10K. Lucia was deprecated in March 2025
+      and is now an educational resource only — use Better Auth or
+      framework-native patterns instead. Always verify that the library's
+      middleware actually blocks unauthorized access rather than just hiding UI
+      elements.
+    links:
+      - https://authjs.dev/getting-started
+      - https://clerk.com/docs/references/nextjs/clerk-middleware
+      - https://nextjs.org/docs/app/building-your-application/authentication
+  - name: Client-Side Route Guards (SPA pattern)
+    summary: Check auth state in a client-side wrapper component or router guard.
+      Redirect to login if not authenticated. Common in React SPA (React Router)
+      and legacy Pages Router patterns. No server-side security boundary.
+    when_to_use: When building a pure SPA without server rendering (Vite + React
+      Router, or legacy Next.js Pages Router). Best for small-team +
+      cost-sensitive SPAs where server-side auth routing is not available. Not
+      recommended for new Next.js App Router projects.
+    tradeoffs: Works in any React app — no server required. Simple to implement with
+      a ProtectedRoute wrapper. No server-side security — protected page
+      JavaScript is always downloaded and can be inspected. Auth check happens
+      after the page loads — users see a loading spinner or flash before
+      redirect. Suitable for apps where the data API enforces auth (the frontend
+      is just UX).
+    cautions: Client-side route guards provide UX protection, not security — the
+      protected page code is always in the browser bundle. Any sensitive data
+      must be protected at the API layer regardless of frontend auth. For
+      Next.js App Router, use middleware or layout auth instead — client-side
+      guards are an anti-pattern in SSR frameworks. Never put secrets or
+      sensitive logic in client-side route guard code.
+    links:
+      - https://reactrouter.com/start/framework/route-module#loader
+      - https://react.dev/reference/react/use
+tags:
+  - frontend
+  - auth
+  - routing
+  - next.js
+  - middleware
+  - security
+aliases:
+  - auth routing
+  - frontend auth
+  - next.js auth middleware
+  - route guard react
+  - protected routes
+  - auth in next.js
+related_cards:
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/jwt-vs-session
+  - auth/session-revocation-with-edge-caches
+  - frontend/nextjs-vs-remix-for-b2b-saas-2026
+  - frontend/sveltekit-2-vs-nextjs-16-vs-remix-fullstack-2026
+  - frontend/react-router-v7-remix-merger-and-v6-maintenance-mode
+updated: 2026-03-15
+review_by: 2026-09-21
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/nextjs
+      name: Next.js
+    - type: package
+      id: package/authjs
+      name: Auth.js
+      category: auth library
+    - type: package
+      id: package/lucia
+      name: Lucia
+      category: auth library
+  edges:
+    - type: breaking_change_in
+      from: package/authjs
+      to: framework/nextjs
+      note: Auth.js (NextAuth v5) has undergone significant API changes; verify
+        compatibility with your Next.js version.
+    - type: eol_date
+      from: package/lucia
+      to: null
+      date: 2025-03
+      note: Lucia was deprecated in March 2025 and is now an educational resource
+        only.

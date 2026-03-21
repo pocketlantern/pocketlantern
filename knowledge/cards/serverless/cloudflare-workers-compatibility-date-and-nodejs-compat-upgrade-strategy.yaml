@@ -1,0 +1,184 @@
+id: serverless/cloudflare-workers-compatibility-date-and-nodejs-compat-upgrade-strategy
+title: Cloudflare Workers Compatibility Date and Node.js Compat Upgrade Strategy
+problem: Determine how aggressively to advance Workers compatibility dates and
+  Node.js compatibility flags across environments without breaking production
+  behavior, dependencies, or edge-runtime assumptions.
+context:
+  - cloudflare-workers
+  - wrangler
+  - nodejs
+  - edge-runtime
+  - runtime-compatibility
+  - environment-promotion
+constraints:
+  - serverless
+  - low-ops
+  - small-team
+  - enterprise
+  - monorepo
+candidates:
+  - name: Ring-based compatibility-date rollout with selective Node flags
+    summary: As of 2026-03-15, Cloudflare documents that old Workers compatibility
+      dates are supported forever, while compatibility flags can enable or
+      disable specific changes independently of the date. This makes a staged
+      rollout the safest default when production must stay stable but you still
+      want to validate newer Node.js behavior in preview or staging first.
+    when_to_use: Choose this for serverless + enterprise or monorepo + small-team
+      setups where production behavior is sensitive, multiple services share
+      packages, or you need to test one Node surface at a time before advancing
+      the full runtime date. Best when you want production pinned, staging
+      closer to current, and explicit flags such as `enable_nodejs_process_v2`,
+      `enable_nodejs_http_modules`, `enable_nodejs_http_server_modules`, or
+      `enable_nodejs_fs_module` to prove dependency compatibility before a
+      broader cutover.
+    tradeoffs: This reduces blast radius because Wrangler supports named
+      environments and most keys, including `compatibility_date` and
+      `compatibility_flags`, can be inherited or overridden per environment. It
+      also lets you trial specific Node APIs before the dates that enable them
+      by default. The cost is more config drift and more test matrix work across
+      environments.
+    cautions: "Do not assume one date change is small. Cloudflare explicitly says to
+      review the compatibility flags page when updating and to test your Worker
+      carefully. Also remember that some Node behavior changes become automatic
+      only after specific dates: `process.env` population after `2025-04-01`,
+      `node:http` and `node:https` client APIs after `2025-08-15`, and `node:fs`
+      plus HTTP server modules after `2025-09-01` when `nodejs_compat` is
+      enabled."
+    links:
+      - https://developers.cloudflare.com/workers/configuration/compatibility-dates/
+      - https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+      - https://developers.cloudflare.com/workers/wrangler/configuration/
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/process/
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/http/
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/fs/
+  - name: Keep compatibility dates current and standardize on full `nodejs_compat`
+    summary: As of 2026-03-15, Cloudflare recommends setting `compatibility_date` to
+      the current date when starting a project, occasionally updating it, and
+      enabling `nodejs_compat` with the latest Wrangler CLI and latest
+      compatibility date to maximize compatibility. This is the fastest-moving
+      option when your codebase already expects Node-oriented npm packages and
+      you have good automated coverage.
+    when_to_use: Choose this for serverless + low-ops or small-team environments
+      where you want the docs, runtime features, and npm compatibility model to
+      match current Cloudflare behavior as closely as possible. Best when your
+      dependencies already rely on Node built-ins, you deploy frequently, and
+      you can absorb Cloudflare's ongoing runtime improvements through CI and
+      canary validation.
+    tradeoffs: You get access to features that may require a current compatibility
+      date, and Cloudflare's current docs will better match your deployed
+      behavior. With `nodejs_compat`, built-in runtime APIs and Wrangler
+      polyfills are enabled, and `nodejs_compat_v2` is included automatically
+      for compatibility dates on or after `2024-09-23`. The downside is a larger
+      bundle from v2 and a higher chance that newly defaulted Node APIs change
+      assumptions in old edge-native code.
+    cautions: Cloudflare does not expect `nodejs_compat` to become default
+      automatically, so you must opt into it intentionally. If you need to avoid
+      the v2 bundle-size increase on newer dates, Cloudflare documents
+      `no_nodejs_compat_v2`. Verify edge-runtime assumptions around
+      `process.env`, HTTP modules, and virtual `node:fs` before promoting
+      directly to production.
+    links:
+      - https://developers.cloudflare.com/workers/configuration/compatibility-dates/
+      - https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/
+      - https://developers.cloudflare.com/changelog/post/2026-02-15-workers-best-practices/
+      - https://developers.cloudflare.com/workers/wrangler/configuration/
+  - name: Minimize Node surface and opt into only the needed compatibility features
+    summary: As of 2026-03-15, Cloudflare documents that full `nodejs_compat`
+      enables additional runtime APIs and polyfills, while `nodejs_als` can
+      enable only `AsyncLocalStorage`. This is the conservative edge-native
+      option when you want newer compatibility dates without broadly shifting
+      the runtime model toward Node.
+    when_to_use: Choose this for serverless + high-scale or low-ops workloads that
+      are already Web API native and only need a narrow Node feature such as
+      request-scoped context via `AsyncLocalStorage`. Best when you want current
+      Workers behavior, smaller compatibility surface, and fewer surprises from
+      Node-style globals, `process.env`, HTTP modules, or virtual filesystem
+      support.
+    tradeoffs: This keeps the runtime closer to the Workers platform model and
+      avoids enabling Node features you do not need. It can also avoid the extra
+      polyfills and globals that come with `nodejs_compat_v2`. The tradeoff is
+      lower npm package compatibility, so Node-oriented dependencies may still
+      fail unless you later move to full `nodejs_compat`.
+    cautions: This is not a good fit if your dependencies expect broad Node
+      built-ins. Cloudflare states that many npm packages rely on Node APIs, and
+      some unsupported APIs are only polyfilled for import but may throw when
+      called. If package compatibility issues appear, Cloudflare recommends
+      first updating the compatibility date and using the latest Wrangler CLI or
+      Cloudflare Vite plugin.
+    links:
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/
+      - https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/asynclocalstorage/
+tags:
+  - cloudflare-workers
+  - cloudflare
+  - wrangler
+  - nodejs
+  - edge-runtime
+  - compatibility-date
+  - compatibility-flags
+aliases:
+  - workers compatibility date strategy
+  - cloudflare workers nodejs compat
+  - nodejs_compat upgrade plan
+  - workers compatibility flags rollout
+  - workers current compatibility date
+  - cloudflare wrangler compatibility_date
+related_cards:
+  - serverless/cloudflare-workers-vs-lambda
+  - deployment/node-upgrade-lts-breakage
+  - infra/js-runtime
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - serverless/cloudflare-browser-rendering-rest-vs-workers-bindings-pricing-2026
+  - serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-07-13
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+      category: serverless
+    - type: capability
+      id: capability/nodejs-compat
+      name: Workers nodejs_compat
+    - type: capability
+      id: capability/nodejs-compat-v2
+      name: Workers nodejs_compat_v2
+    - type: capability
+      id: capability/workers-compatibility-date
+      name: Workers Compatibility Date
+  edges:
+    - type: breaking_change_in
+      from: capability/workers-compatibility-date
+      to: null
+      change: process.env population automatic after 2025-04-01; node:http/https
+        client APIs after 2025-08-15; node:fs and HTTP server modules after
+        2025-09-01 when nodejs_compat enabled
+      migration_path: "Ring-based rollout: pin production date, advance staging, test
+        with explicit flags before promoting"
+    - type: breaking_change_in
+      from: capability/nodejs-compat-v2
+      to: null
+      change: nodejs_compat_v2 included automatically for compatibility dates on or
+        after 2024-09-23; adds polyfills and built-in runtime APIs that increase
+        bundle size
+      migration_path: Use no_nodejs_compat_v2 flag to opt out of v2 bundle-size
+        increase on newer dates
+    - type: locks_via
+      from: vendor/cloudflare
+      to: capability/workers-compatibility-date
+      surface: Old compatibility dates supported forever — creates drift between
+        deployed and current behavior; reviewing compatibility flags page
+        required when updating dates
+      severity: medium
+    - type: locks_via
+      from: vendor/cloudflare
+      to: capability/nodejs-compat
+      surface: nodejs_compat must be opted into intentionally; not expected to become
+        default; some Node APIs polyfilled for import but throw when called
+      severity: low

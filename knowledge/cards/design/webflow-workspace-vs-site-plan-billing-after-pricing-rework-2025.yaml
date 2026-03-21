@@ -1,0 +1,247 @@
+id: design/webflow-workspace-vs-site-plan-billing-after-pricing-rework-2025
+title: Webflow Workspace vs Site Plan Billing After Pricing Rework
+problem: Decide how to structure Webflow costs across client sites and internal
+  teams after Workspace and Site plan changes reshaped staging, seat, and
+  hosting economics.
+context:
+  - design
+  - webflow
+  - website-ops
+  - billing
+  - hosting
+  - agencies
+  - marketing-sites
+constraints:
+  - cost-sensitive
+  - small-team
+  - low-ops
+  - enterprise
+  - compliance
+candidates:
+  - name: Client-owned Workspace plus guest agency or freelancer access
+    summary: As of 2026-03-15, this is the safest default when the client should own
+      the site long-term. Webflow says Site plans are billed separately from
+      Workspace plans, each custom-domain site needs its own Site plan, and
+      guest role lets the client keep Workspace ownership while inviting an
+      agency or freelancer to collaborate for free.
+    when_to_use: Best for compliance + enterprise or small-team + low-ops setups
+      where the client wants billing control, ownership clarity, and a clean
+      vendor handoff from day one. Use this when the agency needs build access
+      but should not control Workspace billing, and especially when contract
+      language says the client must own the Webflow account and production site
+      as of 2026-03-15.
+    tradeoffs: This keeps ownership simple because Webflow says the Workspace that
+      contains the site owns it, and the client can still invite an external
+      agency team without paying guest-seat charges. The tradeoff is that the
+      client must maintain its own Workspace and pay for each production Site
+      plan separately, while the agency needs its own Freelancer or Agency
+      Workspace to join as a guest.
+    cautions: Guests cannot access the host Workspace's General, Team, Plans,
+      Billing, or Partner Settings. Webflow says the client must have a
+      Workspace and the guest must have an Agency or Freelancer Workspace plan.
+      If the client has multiple sites and needs site-specific access,
+      site-level roles, publishing permissions, staged-site password protection,
+      or 301 redirects, the official plan comparison shows those controls on
+      Growth rather than Core.
+    links:
+      - https://webflow.com/pricing
+      - https://help.webflow.com/hc/en-us/articles/33961218263059-Choose-a-Workspace-plan
+      - https://help.webflow.com/hc/en-us/articles/33961349456915-Agency-or-Freelancer-guest-role-overview
+      - https://help.webflow.com/hc/en-us/articles/46084277246483-Site-ownership
+      - https://help.webflow.com/hc/en-us/articles/33961232582419-Choose-a-Site-plan
+  - name: Agency-owned Freelancer or Agency Workspace plus client payments
+    summary: As of 2026-03-15, this is the most flexible service-provider billing
+      model when the agency wants to keep sites in its own Workspace during
+      delivery but offload hosting spend to clients. Webflow says client
+      payments are automatically available on Freelancer and Agency Workspace
+      plans, clients can be charged for Site plans and add-ons directly, and
+      paid sites can later be transferred to the client's Workspace without
+      downgrading or downtime.
+    when_to_use: Best for cost-sensitive + small-team agencies managing several
+      client sites where the build stays centralized in the agency Workspace,
+      but the client should cover recurring hosting and add-on charges. Choose
+      Freelancer when one free client seat per site is enough; choose Agency
+      when you need three free client seats per site, unlimited staging, and the
+      extra agency-focused collaboration features as of 2026-03-15.
+    tradeoffs: "This model reduces agency cash-flow burden because the client can
+      pay for Site plans, bandwidth, Localization, Optimize, and Analyze
+      directly while the agency continues working in its own Workspace. The
+      tradeoff is that billing responsibility and ownership are separate in
+      Webflow: the client may pay, but the agency Workspace still owns the site
+      until it is actually transferred."
+    cautions: Client payments are only available on Agency or Freelancer Workspace
+      plans. Webflow says you can have only one client attached to a site at a
+      time, a maximum of ten pending client payment requests per Workspace, and
+      you cannot transfer the Site plan of a site using client payments to
+      another site within the same Workspace. On transfer, libraries are
+      uninstalled from the site and converted to site-level assets and
+      components, and if the site has exceeded Analyze, Optimize, or bandwidth
+      usage for two consecutive months, the client must pay for the matching
+      plan and add-ons to complete the transfer.
+    links:
+      - https://webflow.com/pricing
+      - https://help.webflow.com/hc/en-us/articles/35335039878035-Client-payments
+      - https://help.webflow.com/hc/en-us/articles/48418767041427-Manage-client-seats
+      - https://help.webflow.com/hc/en-us/articles/33961238786963-How-do-I-transfer-a-site-or-plan-to-another-workspace
+      - https://help.webflow.com/hc/en-us/articles/46084277246483-Site-ownership
+  - name: Single in-house Workspace with one Site plan per live site
+    summary: As of 2026-03-15, this is the simplest internal-team model for a
+      company that owns all of its own Webflow sites. Webflow's pricing and Help
+      Center say any Workspace can hold unlimited paid hosted sites, but
+      Workspace plans do not provide hosting, so every site published to a
+      custom domain still needs its own Site plan billed separately.
+    when_to_use: Best for low-ops + small-team internal marketing or design teams
+      that manage multiple company-owned sites and want one shared Workspace
+      instead of separate client handoff flows. Choose Core when you only need
+      up to 10 staged webflow.io sites and can live without site-specific access
+      or staged-site password protection; choose Growth when you need unlimited
+      staging, per-site access control, publishing permissions, 301 redirects,
+      or multiple brands with tighter role boundaries as of 2026-03-15.
+    tradeoffs: "This centralizes seats, libraries, and staging while keeping
+      production hosting attached per site. The tradeoff is that costs scale in
+      two dimensions: Workspace plan plus seats for collaborators, and a
+      separate Site plan for every production custom-domain site."
+    cautions: Webflow says Site plans are billed separately from Workspace plans and
+      charged using the default payment card associated with the Workspace the
+      site is in. After the December 2024 pricing rework, Core no longer
+      includes staged-site password protection or site-level roles, while Growth
+      adds site-specific access and 301 redirects. Do not assume Workspace spend
+      replaces hosting spend; each live site still requires its own Site plan.
+    links:
+      - https://webflow.com/pricing
+      - https://help.webflow.com/hc/en-us/articles/33961218263059-Choose-a-Workspace-plan
+      - https://help.webflow.com/hc/en-us/articles/33961232582419-Choose-a-Site-plan
+      - https://help.webflow.com/hc/en-us/articles/36037948441363-Updates-to-our-pricing-and-product-strategy-for-December-2024
+tags:
+  - design
+  - webflow
+  - pricing
+  - billing
+  - workspace
+  - site-plan
+  - hosting
+  - agency
+  - freelancer
+  - client-payments
+  - seats
+aliases:
+  - webflow workspace vs site plan
+  - webflow site plan vs workspace plan
+  - webflow billing for client sites
+  - webflow client payments
+  - webflow guest role
+  - webflow freelancer vs agency workspace
+  - webflow staging and hosting pricing
+related_cards:
+  - design/figma-dev-seats-vs-full-seats-after-dev-mode-pricing-2026
+  - frontend/design-system-build-vs-buy
+  - design/framer-legacy-vs-new-pricing-plan-migration-2026
+  - design/webflow-legacy-editor-migration-before-2026-08-04-removal
+  - design/zeplin-plan-limits-and-dev-seat-economics-2026
+  - design/framer-basic-vs-pro-vs-scale-overages-2026
+  - web/webflow-cloud-usage-based-hosting-vs-export-and-self-host-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-04
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/webflow
+      name: Webflow
+    - type: package
+      id: package/webflow-workspace-plan
+      name: Workspace plan
+      category: plan
+    - type: package
+      id: package/webflow-site-plan
+      name: Site plan
+      category: plan
+    - type: package
+      id: package/webflow-workspace-plan-freelancer
+      name: Freelancer Workspace plan
+      category: workspace_plan
+    - type: package
+      id: package/webflow-workspace-plan-agency
+      name: Agency Workspace plan
+      category: workspace_plan
+    - type: package
+      id: package/webflow-workspace-plan-core
+      name: Core Workspace plan
+      category: workspace_plan
+    - type: package
+      id: package/webflow-workspace-plan-growth
+      name: Growth Workspace plan
+      category: workspace_plan
+    - type: capability
+      id: capability/guest-role
+      name: Guest role
+      category: collaboration
+    - type: capability
+      id: capability/client-payments
+      name: Client payments
+      category: billing
+    - type: capability
+      id: capability/custom-domain-publishing
+      name: Custom-domain publishing
+      category: hosting
+    - type: capability
+      id: capability/site-specific-access
+      name: Site-specific access
+      category: access_control
+    - type: capability
+      id: capability/site-level-roles
+      name: Site-level roles
+      category: access_control
+    - type: capability
+      id: capability/staged-site-password-protection
+      name: Staged-site password protection
+      category: security
+    - type: capability
+      id: capability/301-redirects
+      name: 301 redirects
+      category: routing
+    - type: engine
+      id: engine/webflow-pricing-rework-2024-12
+      name: December 2024 pricing rework
+  edges:
+    - type: requires_version
+      from: capability/guest-role
+      to: package/webflow-workspace-plan-agency
+    - type: requires_version
+      from: capability/guest-role
+      to: package/webflow-workspace-plan-freelancer
+    - type: requires_version
+      from: capability/client-payments
+      to: package/webflow-workspace-plan-agency
+    - type: requires_version
+      from: capability/client-payments
+      to: package/webflow-workspace-plan-freelancer
+    - type: requires_version
+      from: capability/custom-domain-publishing
+      to: package/webflow-site-plan
+    - type: requires_version
+      from: capability/site-specific-access
+      to: package/webflow-workspace-plan-growth
+    - type: requires_version
+      from: capability/site-level-roles
+      to: package/webflow-workspace-plan-growth
+    - type: requires_version
+      from: capability/staged-site-password-protection
+      to: package/webflow-workspace-plan-growth
+    - type: requires_version
+      from: capability/301-redirects
+      to: package/webflow-workspace-plan-growth
+    - type: breaking_change_in
+      from: capability/staged-site-password-protection
+      to: engine/webflow-pricing-rework-2024-12
+    - type: breaking_change_in
+      from: capability/site-level-roles
+      to: engine/webflow-pricing-rework-2024-12
+    - type: breaking_change_in
+      from: capability/site-specific-access
+      to: engine/webflow-pricing-rework-2024-12
+    - type: breaking_change_in
+      from: capability/301-redirects
+      to: engine/webflow-pricing-rework-2024-12

@@ -1,0 +1,154 @@
+id: "infra/trigger-dev-v4-migration-after-sdk-and-runtime-breaking-changes-2026"
+title: "Trigger.dev v4 Migration After SDK and Runtime Breaking Changes 2026"
+problem: "Teams already on Trigger.dev need to decide whether to absorb the v4
+  SDK and runtime breaks now or keep v3 infrastructure in place for a short
+  period longer."
+context:
+  - "trigger.dev"
+  - "node.js"
+  - "bun"
+  - "background-jobs"
+constraints:
+  - "low-ops"
+  - "cost-sensitive"
+  - "enterprise"
+candidates:
+  - name: "Migrate to Trigger.dev v4 now on Cloud"
+    summary: 'As of 2026-03-19, Trigger.dev says v4 is stable, fully supported, and
+      recommended for all users, while v3 is being retired. New v3 deploys will
+      stop working on 2026-04-01, and v3 will be fully shut down on 2026-07-01.
+      The v4 migration requires updating `@trigger.dev/*` packages to `4.x`,
+      moving imports from `@trigger.dev/sdk/v3` to `@trigger.dev/sdk`, and
+      adapting breaking changes such as predeclared queues, lifecycle hook
+      signatures, batch retrieval, and some `ctx` fields. Current Cloud pricing
+      as of 2026-03-19 starts at Free `"$0/month"` with `"$5 free monthly
+      usage"`, Hobby `"$10/month"` with `"$10 monthly usage included"`, and
+      Pro `"$50/month"` with `"$50 monthly usage included"`, plus
+      `"$0.000025"` per run and per-second compute charges.'
+    when_to_use: "Use this when you are low-ops and need Trigger.dev Cloud to remain
+      a supported part of production after April 2026. The decisive factor is
+      the hard retirement schedule: if you need ongoing new deploys, staying on
+      v3 is not a durable option."
+    tradeoffs: "You stay on the supported path and keep Cloud-only capabilities, but
+      you must absorb code changes and perform a controlled cutover."
+    cautions: "During activation, old runs can continue on v3 while new runs use v4,
+      so Trigger.dev warns you may temporarily see up to double concurrent
+      execution. Trigger.dev also warns infrastructure IPs may change during
+      migration, so IP allowlists may need updating. v4 runtime options differ
+      from v3 and are explicitly `node`, `node-22`, or `bun` in
+      `trigger.config.ts`."
+    links:
+      - "https://trigger.dev/docs/migrating-from-v3"
+      - "https://trigger.dev/pricing"
+      - "https://trigger.dev/docs/limits"
+  - name: "Hold on existing v3 deploys only as a short bridge"
+    summary: "As of 2026-03-19, this remains possible only as a temporary bridge,
+      not a long-term strategy. Trigger.dev states that from 2026-04-01 new v3
+      deploys will no longer work, although existing v3 runs will continue to
+      execute until the full shutdown on 2026-07-01. That means teams with a
+      production freeze can defer the migration briefly, but only if they can
+      tolerate no fresh v3 deploys after April 1. The practical blocker is
+      schedule risk, not pricing: Cloud pricing is already usage-based and
+      publicly listed, but the platform support window for v3 is closing."
+    when_to_use: "Use this only if you already have a working v3 deployment and need
+      a very short buffer to test migration changes before 2026-04-01. The
+      decisive factor is whether your org can complete validation and cutover
+      before the deploy cutoff, not whether v3 remains a supported destination."
+    tradeoffs: "You avoid immediate migration churn for a short time, but you
+      increase deadline pressure and compress testing near a hard service
+      cutoff."
+    cautions: "This is not viable if you expect to keep shipping v3 task deploys
+      after 2026-04-01. You should still rehearse the documented migration
+      order, because Trigger.dev notes that backend and task deploy sequencing
+      matters and mixed v3/v4 execution can temporarily affect concurrency."
+    links:
+      - "https://trigger.dev/docs/migrating-from-v3"
+      - "https://trigger.dev/pricing"
+tags:
+  - "infra"
+  - "trigger-dev"
+  - "background-jobs"
+  - "migration"
+aliases:
+  - "trigger.dev v4 migration"
+  - "trigger.dev v3 deprecation"
+  - "trigger.dev runtime breaking changes"
+related_cards:
+  - "backend/background-job-processing"
+  - "infra/js-runtime"
+  - "_archived/migration-strategy"
+  - infra/inngest-free-vs-paid-concurrency-and-step-limits-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: framework
+      id: framework/trigger-dev-v3
+      name: Trigger.dev v3
+      category: background-jobs
+    - type: framework
+      id: framework/trigger-dev-v4
+      name: Trigger.dev v4
+      category: background-jobs
+    - type: package
+      id: package/trigger-dev-packages
+      name: "@trigger.dev/*"
+      category: sdk
+    - type: package
+      id: package/trigger-dev-sdk-v3-import
+      name: "@trigger.dev/sdk/v3"
+      category: import_path
+    - type: package
+      id: package/trigger-dev-sdk
+      name: "@trigger.dev/sdk"
+      category: import_path
+    - type: runtime
+      id: runtime/node
+      name: node
+      category: javascript_runtime
+    - type: runtime
+      id: runtime/node-22
+      name: node-22
+      category: javascript_runtime
+    - type: runtime
+      id: runtime/bun
+      name: bun
+      category: javascript_runtime
+  edges:
+    - type: eol_date
+      from: framework/trigger-dev-v3
+      to: null
+      date: 2026-04-01
+      scope: new v3 deploys stop working
+    - type: eol_date
+      from: framework/trigger-dev-v3
+      to: null
+      date: 2026-07-01
+      scope: fully shut down
+    - type: requires_version
+      from: framework/trigger-dev-v4
+      to: package/trigger-dev-packages
+      version: 4.x
+    - type: breaking_change_in
+      from: framework/trigger-dev-v4
+      to: package/trigger-dev-sdk-v3-import
+      change: imports move from @trigger.dev/sdk/v3
+    - type: breaking_change_in
+      from: framework/trigger-dev-v4
+      to: package/trigger-dev-sdk
+      change: imports move to @trigger.dev/sdk
+    - type: locks_via
+      from: framework/trigger-dev-v4
+      to: runtime/node
+      via: trigger.config.ts runtime option
+    - type: locks_via
+      from: framework/trigger-dev-v4
+      to: runtime/node-22
+      via: trigger.config.ts runtime option
+    - type: locks_via
+      from: framework/trigger-dev-v4
+      to: runtime/bun
+      via: trigger.config.ts runtime option

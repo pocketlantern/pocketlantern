@@ -1,0 +1,163 @@
+id: "testing/browserbase-vs-browserless-browser-session-pricing-2026"
+title: "Browserbase vs Browserless Browser Session Pricing and Concurrency 2026"
+problem: "Compare Browserbase and Browserless for hosted headless-browser
+  workloads where hourly cost, included concurrency, and session timeout
+  behavior can change the cheaper or safer choice."
+context:
+  - "playwright"
+  - "puppeteer"
+  - "browser-automation"
+  - "e2e-testing"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+candidates:
+  - name: "Browserbase"
+    summary: "Browserbase sells browser time directly. As of 2026-03-20, its
+      official plans page lists Developer at $20/month with 100 browser hours,
+      25 concurrency, and 6-hour session duration, and Startup at $99/month with
+      500 browser hours, 100 concurrency, and 6-hour session duration; overages
+      are $0.12/hour on Developer and $0.10/hour on Startup. Browserbase also
+      documents a 5-minute connect window for new sessions, optional keep-alive
+      on paid plans, and a maximum session duration of 6 hours."
+    when_to_use: "Use Browserbase when your workload is long-lived enough that
+      browser-hour accounting is easier to budget than per-connection units,
+      especially if you need paid-plan reconnectable sessions and up to 6-hour
+      runtimes. It is the cleaner fit when timeout ceilings and reconnect
+      behavior are blocker-level requirements, not just cost details."
+    tradeoffs: "Pros: straightforward browser-hour pricing, strong included
+      concurrency on Startup, long 6-hour session ceiling, and paid-plan
+      keep-alive. Cons: session creation is separately rate-limited per minute,
+      and every session has a one-minute minimum billable runtime."
+    cautions: "As of 2026-03-20, Browserbase enforces both max concurrency and
+      session-creation-per-minute caps; hitting either returns HTTP 429. New
+      sessions also terminate if you do not connect within 5 minutes, and custom
+      timeout alone does not preserve a session after disconnect unless
+      keep-alive is enabled."
+    links:
+      - "https://docs.browserbase.com/account/plans"
+      - "https://docs.browserbase.com/guides/concurrency-rate-limits"
+      - "https://docs.browserbase.com/fundamentals/using-browser-session"
+      - "https://docs.browserbase.com/guides/long-running-sessions"
+  - name: "Browserless"
+    summary: "Browserless prices Browser-as-a-Service in units rather than
+      browser-hours. As of 2026-03-20, its pricing page lists Prototyping at
+      $25/month with 20k units and 15-minute max session time, Starter at
+      $140/month with 180k units and 30-minute max session time, and Scale at
+      $350/month with 500k units and 60-minute max session time. The pricing
+      page defines 1 unit as up to 30 seconds per browser connection, and the
+      session docs cap reconnect TTL at 60 seconds on Starter and 5 minutes on
+      Scale and above."
+    when_to_use: "Use Browserless when your workload is short-session,
+      connection-oriented, and you want high concurrency from a unit budget
+      instead of a browser-hour budget. It is the better fit when your
+      automations are typically under 15 to 60 minutes and you can tolerate
+      plan-based reconnect TTL limits."
+    tradeoffs: "Pros: explicit unit pricing, broad browser support, and high
+      concurrency at upper self-serve tiers. Cons: cost depends on connection
+      churn, every 30 seconds adds another unit, reconnects are billed again,
+      and self-serve session ceilings are shorter than Browserbase."
+    cautions: "As of 2026-03-20, Browserless reconnect TTL is plan-limited: 10
+      seconds on Free, 30 seconds on Prototyping, 60 seconds on Starter, and 5
+      minutes on Scale and above. If your agent disconnects and reconnects
+      often, unit consumption can rise faster than expected because reconnects
+      count as new browser connections."
+    links:
+      - "https://www.browserless.io/pricing"
+      - "https://docs.browserless.io/baas/session-management/standard-sessions"
+tags:
+  - "testing"
+  - "browser-automation"
+  - "pricing"
+  - "playwright"
+  - "puppeteer"
+aliases:
+  - "browserbase vs browserless pricing"
+  - "browserbase browserless concurrency"
+  - "browserless unit pricing vs browserbase browser hours"
+related_cards:
+  - "testing/playwright-cloud-vs-managed-browser-grid-2026"
+  - "testing/e2e-testing-framework-playwright-vs-cypress-vs-selenium-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/browserbase
+      name: Browserbase
+    - type: vendor
+      id: vendor/browserless
+      name: Browserless
+    - type: package
+      id: package/browserbase-developer
+      name: Browserbase Developer
+      vendor: vendor/browserbase
+    - type: package
+      id: package/browserbase-startup
+      name: Browserbase Startup
+      vendor: vendor/browserbase
+    - type: package
+      id: package/browserless-prototyping
+      name: Browserless Prototyping
+      vendor: vendor/browserless
+    - type: package
+      id: package/browserless-starter
+      name: Browserless Starter
+      vendor: vendor/browserless
+    - type: package
+      id: package/browserless-scale
+      name: Browserless Scale
+      vendor: vendor/browserless
+    - type: capability
+      id: capability/6-hour-session-duration
+      name: 6-hour session duration
+    - type: capability
+      id: capability/paid-plan-keep-alive
+      name: Paid-plan keep-alive
+    - type: capability
+      id: capability/15-minute-max-session-time
+      name: 15-minute max session time
+    - type: capability
+      id: capability/30-minute-max-session-time
+      name: 30-minute max session time
+    - type: capability
+      id: capability/60-minute-max-session-time
+      name: 60-minute max session time
+    - type: capability
+      id: capability/60-second-reconnect-ttl
+      name: 60-second reconnect TTL
+    - type: capability
+      id: capability/5-minute-reconnect-ttl
+      name: 5-minute reconnect TTL
+  edges:
+    - type: requires_version
+      from: capability/6-hour-session-duration
+      to: package/browserbase-developer
+    - type: requires_version
+      from: capability/6-hour-session-duration
+      to: package/browserbase-startup
+    - type: requires_version
+      from: capability/paid-plan-keep-alive
+      to: package/browserbase-developer
+    - type: requires_version
+      from: capability/paid-plan-keep-alive
+      to: package/browserbase-startup
+    - type: requires_version
+      from: capability/15-minute-max-session-time
+      to: package/browserless-prototyping
+    - type: requires_version
+      from: capability/30-minute-max-session-time
+      to: package/browserless-starter
+    - type: requires_version
+      from: capability/60-minute-max-session-time
+      to: package/browserless-scale
+    - type: requires_version
+      from: capability/60-second-reconnect-ttl
+      to: package/browserless-starter
+    - type: requires_version
+      from: capability/5-minute-reconnect-ttl
+      to: package/browserless-scale

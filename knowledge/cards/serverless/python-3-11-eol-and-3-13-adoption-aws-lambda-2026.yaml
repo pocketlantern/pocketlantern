@@ -1,0 +1,217 @@
+id: "serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026"
+title: "Python 3.11 EOL and Python 3.13 Adoption on AWS Lambda and Serverless 2026"
+problem: "Python 3.11 on AWS Lambda runs on Amazon Linux 2, which reaches end of
+  life on June 30, 2026. AWS recommends migrating to Amazon Linux 2023-based
+  runtimes (Python 3.12, 3.13, or 3.14) before that date. Teams must choose a
+  target Python version, understand AL2-to-AL2023 OS-level breaking changes, and
+  verify third-party dependency compatibility — especially for Python 3.13 where
+  19 standard library modules were removed in PEP 594."
+context:
+  - "aws-lambda"
+  - "gcp-cloud-run-functions"
+  - "serverless"
+  - "python"
+  - "amazon-linux-2"
+  - "amazon-linux-2023"
+  - "runtime-migration"
+  - "dependency-compatibility"
+constraints:
+  - "serverless"
+  - "low-ops"
+  - "cost-sensitive"
+  - "compliance"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Migrate to Python 3.13 on AL2023 (recommended forward path)"
+    summary: "As of 2026-03-16, Python 3.13 is available on AWS Lambda running on
+      Amazon Linux 2023 (since November 14, 2024), with a Lambda deprecation
+      date of June 30, 2029 — the longest available support window among current
+      managed runtimes. On GCP Cloud Run Functions, Python 3.13 deprecates
+      October 10, 2029."
+    when_to_use: "Best for serverless + low-ops or enterprise teams starting new
+      Lambda projects, running greenfield rewrites, or willing to invest in a
+      full dependency audit now to avoid a second migration before 2029. Choose
+      this when your codebase does not use any of the 19 modules removed in PEP
+      594 (cgi, cgitb, aifc, audioop, chunk, crypt, imghdr, mailcap, msilib,
+      nis, nntplib, ossaudiodev, pipes, sndhdr, spwd, sunau, telnetlib, uu,
+      xdrlib) and your key dependencies — especially C-extension packages —
+      publish Python 3.13 wheels."
+    tradeoffs: "Provides the longest Lambda support window (Lambda EOL June 30, 2027
+      for 3.11 vs June 30, 2029 for 3.13). AL2023 brings a smaller deployment
+      footprint, updated glibc (2.34 vs 2.26 in AL2), and microdnf/dnf as the
+      package manager replacing yum. Python 3.13 includes improved error
+      messages with typo suggestions, PEP 667 defined locals() semantics, and
+      PEP 696 TypeVar defaults. The tradeoff is the largest migration surface:
+      PEP 594 removed 19 standard library modules deprecated since Python 3.11,
+      and locals() mutation in optimized scopes no longer persists."
+    cautions: "The free-threaded CPython build (PEP 703, python3.13t) is NOT
+      available in the AWS Lambda managed runtime — only the standard
+      GIL-enabled build is deployed. The experimental JIT compiler is also not
+      enabled. Verify all C-extension dependencies publish cp313 wheels on PyPI
+      before migrating; packages like numpy have cp313 wheels but others may
+      lag. Container image Dockerfiles using the python3.11 base image must
+      switch from yum to dnf/microdnf when moving to the python3.13 AL2023 base
+      image."
+    links:
+      - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
+      - "https://aws.amazon.com/about-aws/whats-new/2024/11/aws-lambda-support-\
+        python-313/"
+      - "https://docs.python.org/3/whatsnew/3.13.html"
+      - "https://docs.cloud.google.com/functions/docs/runtime-support"
+  - name: "Migrate to Python 3.12 on AL2023 (conservative step-up)"
+    summary: "As of 2026-03-16, Python 3.12 is available on AWS Lambda running on
+      Amazon Linux 2023, with a Lambda deprecation date of October 31, 2028. On
+      GCP Cloud Run Functions, Python 3.12 deprecates October 2, 2028. This is
+      the smallest code-change migration from Python 3.11 that escapes the
+      Amazon Linux 2 EOL on June 30, 2026."
+    when_to_use: "Best for serverless + enterprise or cost-sensitive + small-team
+      teams that need to exit Amazon Linux 2 before June 30, 2026, but carry
+      legacy dependencies or internal tooling that has not yet published Python
+      3.13 wheels. Choose this when you want to minimize code changes and
+      dependency audit scope while still moving to AL2023 and gaining the glibc
+      2.34 and dnf package manager improvements."
+    tradeoffs: "Python 3.12 does not remove the 19 PEP 594 modules that Python 3.13
+      drops, so dependency compatibility risk is lower than a 3.13 migration.
+      The AL2→AL2023 OS-level changes still apply: container image Dockerfiles
+      must replace yum with dnf, and PEP 709 inlines comprehensions which
+      changes locals() behavior inside them. Lambda deprecation is October 31,
+      2028 — about 14 months shorter than Python 3.13's June 2029 window,
+      meaning a second migration may be needed sooner."
+    cautions: "Migrating to Python 3.12 does not eliminate the need to eventually
+      move to 3.13 or later before 2029. If your team plans only one migration
+      cycle, going directly to Python 3.13 avoids compounding migration costs.
+      The AL2023 base image uses microdnf (symlinked as dnf) — any Lambda
+      container images or build scripts that call yum must be updated regardless
+      of whether you choose 3.12 or 3.13."
+    links:
+      - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
+      - "https://docs.cloud.google.com/functions/docs/runtime-support"
+      - "https://docs.python.org/3/whatsnew/3.12.html"
+  - name: "Stay on Python 3.11 past AL2 EOL with explicit risk acceptance"
+    summary: "As of 2026-03-16, Python 3.11 on AWS Lambda has a Lambda deprecation
+      date of June 30, 2027 (Block Create: July 31, 2027; Block Update: August
+      31, 2027). After the Amazon Linux 2 EOL on June 30, 2026, AWS will
+      continue to apply only critical and selected important AL2 security
+      patches to the Python 3.11 runtime until that Lambda deprecation date."
+    when_to_use: "Only appropriate for compliance + enterprise or cost-sensitive +
+      small-team cases where migration is blocked by a specific, time-bounded
+      constraint — such as a frozen audit window, a critical third-party
+      dependency without Python 3.12/3.13 wheels, or a contractual freeze period
+      — and you have an explicit remediation plan and stakeholder sign-off on
+      the reduced post-June-2026 security posture."
+    tradeoffs: "Lambda functions continue to run and deploy without interruption
+      through June 30, 2027. AWS will still apply critical AL2 security patches
+      after the June 30, 2026 AL2 EOL. This avoids migration risk in the short
+      term and allows more time for dependency ecosystem readiness. The hard
+      limit is August 31, 2027, after which existing Python 3.11 Lambda
+      functions cannot be updated at all."
+    cautions: "AWS explicitly states it recommends customers upgrade to AL2023-based
+      runtimes as soon as possible. After June 30, 2026, the security patch
+      coverage narrows to critical and selected important issues only —
+      non-critical CVEs in AL2 or Python 3.11 will not be remediated. Do not
+      treat this as a no-action path: the block-update deadline of August 31,
+      2027 is a hard stop. GCP Cloud Functions Python 3.11 deprecates October
+      24, 2027 and decommissions April 24, 2028 on a separate but similar
+      timeline."
+    links:
+      - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
+      - "https://docs.cloud.google.com/functions/docs/runtime-support"
+tags:
+  - "python"
+  - "aws-lambda"
+  - "gcp-cloud-functions"
+  - "amazon-linux-2"
+  - "amazon-linux-2023"
+  - "python-3-11"
+  - "python-3-12"
+  - "python-3-13"
+  - "runtime-migration"
+  - "eol"
+  - "deprecation"
+aliases:
+  - "python 3.11 lambda deprecation"
+  - "aws lambda python eol 2026"
+  - "python 3.13 lambda migration"
+  - "amazon linux 2 eol lambda python"
+  - "lambda python runtime upgrade"
+  - "python 3.11 end of life serverless"
+  - "gcp cloud functions python 3.11 deprecation"
+  - "lambda al2 to al2023 python migration"
+  - "PEP 594 lambda compatibility"
+related_cards:
+  - "serverless/cloudflare-workers-compatibility-date-and-nodejs-compat-upgrade\
+    -strategy"
+  - "serverless/file-upload-strategy-on-serverless"
+  - "devtools/github-actions-node24-migration-after-node20-deprecation-2026"
+  - runtime/python-3-10-eol-october-2026-upgrade-path
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-07-01"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: runtime
+      id: runtime/python-3.11
+      name: Python 3.11
+      current_lts: "3.11"
+      eol_date: 2027-06-30
+    - type: runtime
+      id: runtime/python-3.12
+      name: Python 3.12
+      current_lts: "3.12"
+      eol_date: 2028-10-31
+    - type: runtime
+      id: runtime/python-3.13
+      name: Python 3.13
+      current_lts: "3.13"
+      eol_date: 2029-06-30
+    - type: engine
+      id: engine/amazon-linux-2
+      name: Amazon Linux 2
+    - type: engine
+      id: engine/amazon-linux-2023
+      name: Amazon Linux 2023
+  edges:
+    - type: eol_date
+      from: engine/amazon-linux-2
+      to: null
+      date: 2026-06-30
+      successor: engine/amazon-linux-2023
+    - type: eol_date
+      from: runtime/python-3.11
+      to: null
+      date: 2027-06-30
+      successor: runtime/python-3.13
+    - type: breaking_change_in
+      from: runtime/python-3.11
+      to: null
+      change: Lambda deprecation June 30, 2027; block-create July 31, 2027;
+        block-update August 31, 2027; after AL2 EOL June 30, 2026 only critical
+        and selected important security patches
+      migration_path: migrate to Python 3.12 or 3.13 on AL2023 before June 30, 2026
+    - type: eol_date
+      from: runtime/python-3.12
+      to: null
+      date: 2028-10-31
+      successor: runtime/python-3.13
+    - type: breaking_change_in
+      from: runtime/python-3.13
+      to: null
+      change: "PEP 594 removed 19 standard library modules: cgi, cgitb, aifc, audioop,
+        chunk, crypt, imghdr, mailcap, msilib, nis, nntplib, ossaudiodev, pipes,
+        sndhdr, spwd, sunau, telnetlib, uu, xdrlib"
+      migration_path: audit imports for removed modules before upgrading; find
+        third-party replacements
+    - type: breaking_change_in
+      from: runtime/python-3.13
+      to: null
+      change: free-threaded CPython build (PEP 703) NOT available in AWS Lambda
+        managed runtime; experimental JIT compiler also not enabled
+      migration_path: do not depend on free-threading or JIT in Lambda deployments
+    - type: breaking_change_in
+      from: engine/amazon-linux-2023
+      to: null
+      change: AL2023 uses microdnf/dnf instead of yum; glibc 2.34 (vs 2.26 in AL2)
+      migration_path: update container image Dockerfiles from yum to dnf/microdnf

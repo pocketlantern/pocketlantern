@@ -1,0 +1,40 @@
+{
+  "name": "@pocketlantern/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CLI for PocketLantern — validate, search, and manage decision cards",
+  "license": "MIT",
+  "homepage": "https://pocketlantern.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketlantern/pocketlantern.git",
+    "directory": "apps/cli"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "pocketlantern": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@pocketlantern/schema": "workspace:*",
+    "@pocketlantern/mcp-server": "workspace:*",
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

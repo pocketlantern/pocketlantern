@@ -1,0 +1,213 @@
+id: serverless/vercel-edge-vs-node-runtime
+title: Vercel Edge Runtime vs Node.js Runtime
+problem: Choose the right Vercel runtime for a Next.js app based on package
+  compatibility, execution placement, streaming behavior, cold-start
+  sensitivity, and cost controls.
+context:
+  - next.js
+  - vercel
+  - serverless
+  - edge
+  - route-handlers
+  - middleware
+  - streaming
+  - regional-placement
+constraints:
+  - serverless
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - real-time
+  - compliance
+candidates:
+  - name: Vercel Node.js Runtime
+    summary: Default runtime for Next.js route handlers and server rendering, with
+      full Node.js API support and larger function bundle headroom. As of
+      2026-03-14, Next.js recommends the Node.js runtime for rendering, and
+      Vercel documents Node.js functions as the better fit for computationally
+      intense or large functions.
+    when_to_use: Best for serverless + low-ops + small-team or enterprise +
+      compliance setups where your Next.js app depends on Node-only packages,
+      native modules, larger server bundles, or a database that should live in
+      one chosen region. As of 2026-03-14, this is the safest default when you
+      want predictable package compatibility, full Node APIs, and streaming
+      without taking on Edge runtime restrictions.
+    tradeoffs: 'You get full Node.js compatibility, streaming by default, and more
+      room for heavier functions. The main downside is placement: as of
+      2026-03-14, Vercel Functions are region-first, default to `iad1`, and
+      should run near the database for lowest latency, so globally distributed
+      users may see higher cross-region latency than an Edge-first design when
+      requests must go back to one data region. Pricing is shared with other
+      Vercel Functions on Fluid compute: as of 2026-03-14, billing is based on
+      Active CPU, provisioned memory, and invocations; Pro is listed as "$20/mo
+      + additional usage" with "$20 of included usage credit," and Pro spend
+      management can notify, webhook, or pause projects when thresholds are
+      reached.'
+    cautions: "As of 2026-03-14, new Vercel projects default to Node.js `24.x`, with
+      `22.x` and `20.x` also available. Duration is platform-controlled rather
+      than purely a Next.js concern: with Fluid compute enabled by default,
+      Vercel documents 300-second defaults and up to 800 seconds maximum on Pro
+      and Enterprise, so verify your project settings before relying on
+      long-running handlers or background work."
+    links:
+      - https://vercel.com/docs/functions/runtimes/node-js
+      - https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+      - https://vercel.com/docs/regions
+      - https://vercel.com/docs/functions/limitations
+      - https://vercel.com/docs/functions/usage-and-pricing
+      - https://vercel.com/pricing
+      - https://vercel.com/docs/plans/pro-plan
+      - https://vercel.com/docs/spend-management
+      - https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+  - name: Vercel Edge Runtime
+    summary: Web-API-based runtime for request-near execution, optimized for
+      lightweight front-door logic and globally distributed handling. As of
+      2026-03-14, Vercel's Edge Runtime docs recommend migrating from Edge to
+      Node.js for improved performance and reliability, and Next.js documents
+      Edge as the more limited runtime.
+    when_to_use: Best for serverless + real-time + low-ops paths where request-near
+      execution matters more than full Node compatibility, such as
+      geolocation-aware personalization, lightweight auth or header logic, thin
+      read-heavy endpoints, or request preprocessing backed by global or nearby
+      data. As of 2026-03-14, choose Edge only when your code fits Web Standard
+      APIs, your dependencies avoid Node internals, and the latency gain from
+      running close to the requester outweighs the tighter runtime limits.
+    tradeoffs: "Edge executes closest to the incoming request by default and
+      supports streaming, which can reduce front-door latency for globally
+      distributed traffic. The main downside is compatibility and headroom: as
+      of 2026-03-14, Vercel says the runtime exposes a subset of Web APIs and
+      that many Node-style libraries will not work, Next.js says the Edge
+      Runtime does not support all Node.js APIs and does not support ISR, and
+      Vercel documents compressed code-size limits of 1 MB on Hobby, 2 MB on
+      Pro, and 4 MB on Enterprise. Cost is not a separate Edge discount path: as
+      of 2026-03-14, Edge also runs on Fluid compute pricing, and Vercel's docs
+      tie usage to Active CPU pricing and standard function invocation billing
+      surfaces."
+    cautions: As of 2026-03-14, Edge functions must begin sending a response within
+      25 seconds to keep streaming and can continue streaming for up to 300
+      seconds. Vercel also limits Edge Functions and Middleware to 5 KB per
+      environment variable, and its docs warn that running Edge close to the
+      user can still be slower overall if the function must round-trip to a
+      far-away database, so validate data placement before standardizing on
+      Edge.
+    links:
+      - https://vercel.com/docs/functions/runtimes/edge
+      - https://nextjs.org/docs/pages/api-reference/edge
+      - https://vercel.com/docs/functions/limitations
+      - https://vercel.com/docs/environment-variables
+      - https://vercel.com/docs/functions/usage-and-pricing
+      - https://vercel.com/docs/regions
+  - name: Node.js Default with Selective Edge Usage
+    summary: Use Node.js as the default runtime for rendering and most route
+      handlers, then opt only narrow request-edge logic into Edge. As of
+      2026-03-14, this lines up with Next.js recommending Node.js for rendering
+      while Vercel still lets individual functions and routing middleware use
+      Edge where it materially helps.
+    when_to_use: Best for small-team + low-ops or cost-sensitive + serverless
+      Next.js apps where most server code wants Node compatibility, but a few
+      thin paths benefit from running near the requester. This is the most
+      practical fit when your app has one main database region, you want to
+      minimize runtime surprises, and you only need Edge for targeted redirects,
+      header or cookie inspection, geo-based logic, or other lightweight
+      request-front logic.
+    tradeoffs: "This pattern preserves Node.js as the stable default while still
+      using Edge where locality matters. The tradeoff is architectural
+      split-brain: you must be explicit about which handlers export `runtime =
+      'edge'`, keep shared code compatible with both environments when reused,
+      and remember that Vercel Routing Middleware defaults to Edge unless you
+      switch its runtime. As of 2026-03-14, this usually gives a better
+      risk-reward balance than making the whole app Edge-first."
+    cautions: As of 2026-03-14, Next.js route segment config documents `runtime` as
+      either `"nodejs"` or `"edge"`, `preferredRegion` support as
+      platform-dependent, and `maxDuration` as something the deployment platform
+      ultimately enforces. Avoid older examples that still use deprecated Edge
+      runtime naming, and test every shared dependency in the actual runtime
+      where it executes.
+    links:
+      - https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+      - https://vercel.com/docs/functions/runtimes/node-js
+      - https://vercel.com/docs/functions/runtimes/edge
+      - https://vercel.com/docs/routing-middleware
+      - https://vercel.com/docs/functions/configuring-functions/duration
+tags:
+  - vercel
+  - next.js
+  - node.js
+  - edge-runtime
+  - fluid-compute
+  - runtime-selection
+  - comparison
+aliases:
+  - vercel edge vs node
+  - vercel edge runtime vs nodejs runtime
+  - next.js edge runtime vs nodejs runtime
+  - vercel functions edge vs node
+  - nextjs route handler runtime choice
+  - vercel middleware edge vs node
+  - vercel edge cold starts vs node
+related_cards:
+  - serverless/nextjs-platform-lockin
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - security/secrets-on-edge-and-build-systems
+  - serverless/cold-start-mitigation-by-runtime
+  - serverless/cron-jobs-on-serverless
+  - serverless/file-upload-strategy-on-serverless
+  - serverless/websocket-vs-sse-on-serverless
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - deployment/vercel-edge-config-per-unit-pricing-vs-redis-config-store-2026
+  - deployment/vercel-edge-functions-and-middleware-deprecation-to-functions-and-routing-middleware-2025
+  - infra/cdn-cost-optimization-bunny-vs-cloudflare-vs-aws-cloudfront-2026
+  - runtime/vercel-fluid-vs-legacy-functions-2026
+  - web/vercel-function-duration-limits-with-fluid-compute-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: framework
+      id: framework/nextjs
+      name: Next.js
+    - type: runtime
+      id: runtime/vercel-nodejs-runtime
+      name: Vercel Node.js Runtime
+      category: server runtime
+    - type: runtime
+      id: runtime/vercel-edge-runtime
+      name: Vercel Edge Runtime
+      category: edge runtime
+    - type: engine
+      id: engine/vercel-fluid-compute
+      name: Fluid compute
+    - type: capability
+      id: capability/nextjs-route-segment-runtime-config
+      name: Next.js route segment runtime config
+  edges:
+    - type: locks_via
+      from: runtime/vercel-nodejs-runtime
+      to: engine/vercel-fluid-compute
+      vendor: Vercel
+      scope: pricing and duration behavior
+    - type: locks_via
+      from: runtime/vercel-edge-runtime
+      to: engine/vercel-fluid-compute
+      vendor: Vercel
+      scope: pricing surface
+    - type: locks_via
+      from: runtime/vercel-nodejs-runtime
+      to: capability/nextjs-route-segment-runtime-config
+      framework: Next.js
+      setting: runtime
+      value: nodejs
+    - type: locks_via
+      from: runtime/vercel-edge-runtime
+      to: capability/nextjs-route-segment-runtime-config
+      framework: Next.js
+      setting: runtime
+      value: edge

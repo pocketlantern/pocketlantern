@@ -1,0 +1,198 @@
+id: design/figma-dev-seats-vs-full-seats-after-dev-mode-pricing-2026
+title: Figma Dev Seats vs Full Seats After Dev Mode Pricing Changes
+problem: Choose the cheapest Figma seat mix for designers, PMs, and engineers
+  after Figma split Dev Mode access from full editor seats and repackaged seats
+  across plans.
+context:
+  - figma
+  - design
+  - dev-handoff
+  - product-management
+  - engineering
+  - seat-pricing
+constraints:
+  - cost-sensitive
+  - small-team
+  - enterprise
+  - low-ops
+candidates:
+  - name: Full for designers, Dev for engineers, View for PMs who only review
+    summary: As of 2026-03-15, this is the cheapest mix when PMs only need review
+      and comment access. Figma says Full seats include all products, Dev seats
+      include Dev Mode plus Figma Slides and FigJam with view/comment in Figma
+      Design, and View seats are free with view/comment plus basic inspection
+      only.
+    when_to_use: Best for cost-sensitive + small-team or enterprise teams where
+      designers actively edit Figma Design files, engineers need real Dev Mode,
+      and PMs mostly review files, comment, and occasionally inspect but do not
+      need to edit FigJam or Figma Slides. On Professional annual pricing as
+      shown on Figma's pricing page, this beats giving PMs Collab or Full seats;
+      as of 2026-03-15, the pattern is effectively Full for design authors, Dev
+      for implementers, free View for reviewers.
+    tradeoffs: This minimizes spend, but PMs lose editing rights in FigJam and Figma
+      Slides and only get basic inspection rather than full Dev Mode. Engineers
+      still get the developer workflow they need without paying for design
+      editing.
+    cautions: As of 2026-03-15, View seats cannot use Dev Mode and only have basic
+      inspection. As of 2026-03-15, when you downgrade someone to View, Figma
+      says draft files they own can become inaccessible to collaborators unless
+      moved to a shared project or transferred first. As of 2026-03-15, seat
+      downgrades also do not automatically reduce your billed seat count until
+      the next renewal on annual plans.
+    links:
+      - https://www.figma.com/pricing/
+      - https://help.figma.com/hc/en-us/articles/19813618057623-Dev-Mode-for-admins
+      - https://help.figma.com/hc/en-us/articles/360039960434-Manage-seats-in-Figma
+      - https://help.figma.com/hc/en-us/articles/13839214115607-Professional-plan-overview
+  - name: Full for designers, Dev for engineers, Collab for PMs who need FigJam or
+      Slides editing
+    summary: As of 2026-03-15, this is the usual lowest-cost practical mix for
+      cross-functional product teams. Figma documents that Collab seats include
+      full access to Figma Slides and FigJam plus view/comment access in Figma
+      Design, but no Dev Mode.
+    when_to_use: "Best for cost-sensitive + low-ops teams where PMs run workshops,
+      edit FigJam boards, or maintain Slides decks, but do not need Figma Design
+      editing or Dev Mode. This is usually the cheapest role-based setup once
+      Dev Mode is split from Full seats: designers stay on Full, engineers move
+      to Dev, PMs use Collab."
+    tradeoffs: You preserve PM collaboration workflows at far lower cost than giving
+      PMs Full seats, while engineers still get Dev Mode. The tradeoff is that
+      PMs still cannot edit Figma Design files and only get basic inspection
+      there.
+    cautions: As of 2026-03-15, Collab does not include Dev Mode. As of 2026-03-15,
+      if a PM later needs design editing, Figma will require a higher seat. As
+      of 2026-03-15, Figma also notes that if the lower-cost seat type is not
+      already available in your plan, changing someone down can still add a new
+      paid seat immediately, and you remove excess seats at renewal.
+    links:
+      - https://www.figma.com/pricing/
+      - https://help.figma.com/hc/en-us/articles/27468498501527-Updates-to-Figma-s-pricing-seats-and-billing-experience
+      - https://help.figma.com/hc/en-us/articles/360039960434-Manage-seats-in-Figma
+      - https://help.figma.com/hc/en-us/articles/19813618057623-Dev-Mode-for-admins
+  - name: All Full seats
+    summary: As of 2026-03-15, Full seats remain the simplest but most expensive
+      default because they include full access to all Figma products, including
+      Figma Design and Dev Mode. This avoids role-by-role seat planning, but it
+      overpays for users who only need developer handoff or collaboration
+      features.
+    when_to_use: Best for low-ops + enterprise or small-team environments where most
+      people genuinely need to edit Figma Design files, use advanced design
+      workflows, or where frequent seat churn makes strict role segmentation
+      operationally annoying. It is also the safe choice when PMs or engineers
+      must edit design files rather than only inspect or comment.
+    tradeoffs: Operationally simplest because everyone gets the same access and
+      there is no ambiguity about missing capabilities. Financially worst in
+      mixed teams, because Figma now offers cheaper Dev and Collab seats for
+      users who do not need design editing.
+    cautions: As of 2026-03-15, this is usually not the cheapest mix after the March
+      11, 2025 seat migration. As of 2026-03-15, Figma's pricing page shows
+      materially lower seat prices for Dev and Collab than Full across
+      Professional, Organization, and Enterprise. Recheck the official pricing
+      page before renewal if you have been carrying legacy assumptions from the
+      old Dev Mode packaging.
+    links:
+      - https://www.figma.com/pricing/
+      - https://help.figma.com/hc/en-us/articles/27468498501527-Updates-to-Figma-s-pricing-seats-and-billing-experience
+      - https://help.figma.com/hc/en-us/articles/360039960434-Manage-seats-in-Figma
+tags:
+  - design
+  - figma
+  - dev-mode
+  - pricing
+  - seats
+  - billing
+  - collaboration
+aliases:
+  - figma dev seat vs full seat
+  - figma dev mode pricing
+  - figma seat mix
+  - figma full vs dev vs collab
+  - figma seats for engineers and pm
+  - figma dev mode seat changes
+related_cards:
+  - frontend/design-system-build-vs-buy
+  - design/webflow-workspace-vs-site-plan-billing-after-pricing-rework-2025
+  - design/framer-legacy-vs-new-pricing-plan-migration-2026
+  - design/canva-developer-platform-api-policy-2026
+  - design/miro-ai-credits-and-plan-entitlements-2026
+  - design/zeplin-plan-limits-and-dev-seat-economics-2026
+  - design/penpot-self-hosted-vs-cloud-license-and-support-2026
+  - design/figma-ai-shared-credits-vs-seat-included-credits-march-2026
+  - design/miro-free-vs-starter-vs-business-after-2025-ai-credit-packaging-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-08-17
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/figma
+      name: Figma
+    - type: package
+      id: package/figma-full-seat
+      name: Full seat
+    - type: package
+      id: package/figma-dev-seat
+      name: Dev seat
+    - type: package
+      id: package/figma-collab-seat
+      name: Collab seat
+    - type: package
+      id: package/figma-view-seat
+      name: View seat
+    - type: capability
+      id: capability/dev-mode
+      name: Dev Mode
+    - type: capability
+      id: capability/figma-design-editing
+      name: Figma Design editing
+    - type: capability
+      id: capability/figjam-editing
+      name: FigJam editing
+    - type: capability
+      id: capability/figma-slides-editing
+      name: Figma Slides editing
+    - type: capability
+      id: capability/basic-inspection
+      name: Basic inspection
+    - type: capability
+      id: capability/view-comment-figma-design
+      name: View/comment in Figma Design
+  edges:
+    - type: locks_via
+      from: capability/dev-mode
+      to: package/figma-dev-seat
+    - type: locks_via
+      from: capability/dev-mode
+      to: package/figma-full-seat
+    - type: locks_via
+      from: capability/figma-design-editing
+      to: package/figma-full-seat
+    - type: locks_via
+      from: capability/figjam-editing
+      to: package/figma-collab-seat
+    - type: locks_via
+      from: capability/figjam-editing
+      to: package/figma-full-seat
+    - type: locks_via
+      from: capability/figma-slides-editing
+      to: package/figma-collab-seat
+    - type: locks_via
+      from: capability/figma-slides-editing
+      to: package/figma-dev-seat
+    - type: locks_via
+      from: capability/figma-slides-editing
+      to: package/figma-full-seat
+    - type: locks_via
+      from: capability/basic-inspection
+      to: package/figma-view-seat
+    - type: locks_via
+      from: capability/view-comment-figma-design
+      to: package/figma-view-seat
+    - type: locks_via
+      from: capability/view-comment-figma-design
+      to: package/figma-collab-seat
+    - type: locks_via
+      from: capability/view-comment-figma-design
+      to: package/figma-dev-seat

@@ -1,0 +1,182 @@
+id: database/prisma-vs-drizzle-for-edge-and-serverless
+title: Prisma vs Drizzle for Edge and Serverless Deployments
+problem: Choose an ORM/query layer given current support for edge runtimes,
+  migration workflows, generated client size, connection patterns, transaction
+  semantics, and breaking changes across releases.
+context:
+  - database
+  - typescript
+  - serverless
+  - edge
+  - sql
+constraints:
+  - serverless
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - small-team
+  - monorepo
+  - enterprise
+candidates:
+  - name: Prisma ORM
+    summary: Schema-first ORM with a generated client, Prisma Migrate, and an
+      increasingly Rust-free runtime story. As of 2026-03-15, Prisma ORM v7
+      defaults to the TypeScript-based query compiler without Rust binaries
+      (~1.6 MB runtime), while native edge support for Cloudflare Workers and
+      Vercel Edge remains preview-only when you use compatible drivers directly.
+    when_to_use: Choose this for small-team + low-ops or monorepo + serverless
+      deployments where you want a schema-first workflow, generated types,
+      customizable SQL migrations, and a managed path for connection
+      pooling/cache via Prisma Accelerate or a fully edge-supported path via
+      Prisma Postgres. It is the stronger fit when consistency of DX, migration
+      ergonomics, and Prisma's platform features matter more than using the
+      thinnest possible abstraction over the database driver.
+    tradeoffs: Prisma gives you a high-level data model, generated client, nested
+      writes, interactive transactions, and a mature migration workflow where
+      `migrate dev` generates SQL and `migrate deploy` applies pending
+      migrations in production without a shadow database. In serverless
+      environments, direct database access still needs careful connection
+      planning because each function instance has its own PrismaClient pool;
+      Prisma's answer is to instantiate outside the handler and use a small
+      pool, an external pooler, Prisma Postgres, or Prisma Accelerate. For edge
+      runtimes, Prisma works best today with compatible adapters or with Prisma
+      Postgres/Accelerate rather than assuming unrestricted TCP access
+      everywhere.
+    cautions: "Review the Prisma ORM v7 upgrade guide before standardizing on it: v7
+      introduces breaking changes including ESM packaging, a required custom
+      `output` path for the new `prisma-client` generator, and required driver
+      adapters for direct database connectivity; MongoDB is not yet supported on
+      v7. Also note that direct native edge support is still documented as
+      Preview for Cloudflare Workers and Vercel Edge Functions/Middleware, and
+      if you rely on Accelerate or Prisma Postgres features/limits you should
+      verify current pricing and plan details as of 2026-03-14 on Prisma's
+      pricing page."
+    links:
+      - https://www.prisma.io/docs/orm/prisma-client/deployment/edge/overview
+      - https://docs.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections
+      - https://www.prisma.io/docs/orm/prisma-client/queries/transactions
+      - https://docs.prisma.io/docs/orm/prisma-migrate
+      - https://docs.prisma.io/docs/cli/migrate/deploy
+      - https://docs.prisma.io/docs/guides/upgrade-prisma-orm/v7
+      - https://www.prisma.io/docs/orm/more/internals/engines
+      - https://www.prisma.io/pricing
+  - name: Drizzle ORM
+    summary: SQL-like TypeScript ORM/query layer designed as a slim library (~12 KB,
+      130x smaller than Prisma) with opt-in tooling, 0 dependencies, and direct
+      use of underlying database drivers. As of 2026-03-15, Drizzle's docs
+      position it as serverless-ready by design, with native edge support
+      depending on whether you choose an edge-compatible driver such as Neon
+      serverless, Vercel Postgres, PlanetScale serverless, or libSQL.
+    when_to_use: Choose this for serverless + cost-sensitive or edge + high-scale
+      deployments where bundle slimness, direct control over the driver, and
+      SQL-shaped APIs matter more than a schema-first generated-client workflow.
+      It is the better fit when your team is comfortable reasoning about
+      database drivers, wants to mix database-first and codebase-first migration
+      flows, and prefers the thinnest abstraction that still provides strong
+      TypeScript ergonomics.
+    tradeoffs: "Drizzle lets you manage schema and migrations in multiple ways:
+      `push` for rapid prototyping, `generate` plus `migrate` for SQL-file
+      workflows, and `pull` for database-first adoption. The ORM supports
+      explicit transactions plus nested transactions via savepoints, and its
+      relational query API is documented to emit exactly one SQL query. In
+      serverless functions, the docs recommend creating the connection and
+      prepared statements outside the handler for reuse, but on edge functions
+      the same page says runtimes often clean up immediately, so those reuse
+      benefits are limited."
+    cautions: "Edge support is driver-dependent, not universal: on Vercel Edge the
+      docs explicitly require edge-compatible drivers rather than standard
+      Node.js database clients. You should also read release notes carefully
+      before upgrades, because Drizzle has shipped documented breaking changes
+      in non-major lines and beta releases, including timestamp mapping changes
+      in `0.30.0`, PostgreSQL indexes API changes in `0.31.0`, and substantial
+      RQBv2 migration changes in `1.0.0-beta.2`."
+    links:
+      - https://orm.drizzle.team/docs/overview
+      - https://orm.drizzle.team/docs/perf-serverless
+      - https://orm.drizzle.team/docs/tutorials/drizzle-with-vercel-edge-functions
+      - https://orm.drizzle.team/docs/migrations
+      - https://orm.drizzle.team/docs/drizzle-kit-migrate
+      - https://orm.drizzle.team/docs/drizzle-kit-check
+      - https://orm.drizzle.team/docs/transactions
+      - https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0300
+      - https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v0310
+      - https://orm.drizzle.team/docs/latest-releases/drizzle-orm-v1beta2
+tags:
+  - database
+  - orm
+  - prisma
+  - drizzle
+  - edge
+  - typescript
+  - comparison
+aliases:
+  - prisma vs drizzle
+  - drizzle vs prisma
+  - edge orm
+  - serverless orm
+  - prisma accelerate vs drizzle
+  - drizzle orm edge
+  - prisma edge runtime
+related_cards:
+  - serverless/cloudflare-workers-vs-lambda
+  - serverless/nextjs-platform-lockin
+  - serverless/vercel-edge-vs-node-runtime
+  - database/pgbouncer-vs-rds-proxy-vs-neon-pooling
+  - database/neon-vs-supabase-vs-planetscale-2026
+  - serverless/cloudflare-workers-compatibility-date-and-nodejs-compat-upgrade-strategy
+  - backend/realtime-sync-framework-convex-vs-electric-sql-2026
+tier: "core"
+status: active
+updated: 2026-03-15
+review_by: 2026-08-17
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/prisma-v7
+      name: Prisma ORM v7
+      version: 7.x
+    - type: package
+      id: package/drizzle
+      name: Drizzle ORM
+      version: 1.x
+    - type: vendor
+      id: vendor/vercel-edge
+      name: Vercel Edge Functions
+      category: edge
+  edges:
+    - type: breaking_change_in
+      from: package/prisma-v7
+      to: null
+      change: ESM packaging — custom output path required for prisma-client generator
+      migration_path: update schema.prisma generator config with output path
+    - type: breaking_change_in
+      from: package/prisma-v7
+      to: null
+      change: driver adapters required for direct database connectivity
+      migration_path: install and configure appropriate driver adapter
+    - type: breaking_change_in
+      from: package/prisma-v7
+      to: null
+      change: MongoDB not supported on v7
+      migration_path: stay on Prisma v6 for MongoDB
+    - type: breaking_change_in
+      from: package/drizzle
+      to: null
+      change: timestamp mapping changed in 0.30.0
+      migration_path: review and update timestamp columns
+    - type: breaking_change_in
+      from: package/drizzle
+      to: null
+      change: PostgreSQL indexes API changed in 0.31.0
+      migration_path: update index definitions
+    - type: breaking_change_in
+      from: package/drizzle
+      to: null
+      change: RQBv2 migration changes in 1.0.0-beta.2
+      migration_path: review RQBv2 migration guide
+    - type: requires_version
+      from: package/drizzle
+      to: vendor/vercel-edge
+      min_version: edge-compatible driver required
+      reason: standard Node.js database clients not supported on edge runtimes

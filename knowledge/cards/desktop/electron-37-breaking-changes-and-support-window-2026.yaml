@@ -1,0 +1,159 @@
+id: "desktop/electron-37-breaking-changes-and-support-window-2026"
+title: "Electron 37 Breaking Changes vs Staying on Supported 38+ in 2026"
+problem: "Decide whether to absorb Electron 37-era breaking changes now or jump
+  directly to a newer supported Electron line given the short support window and
+  fast EOL cadence."
+context:
+  - "desktop"
+  - "electron"
+  - "chromium"
+  - "nodejs"
+  - "macos"
+  - "linux"
+constraints:
+  - "small-team"
+  - "low-ops"
+  - "enterprise"
+candidates:
+  - name: "Use Electron 39 only as a short bridge release"
+    summary: "As of 2026-03-20, Electron 37 reached end of life on 2026-01-13 and
+      Electron 38 reached end of life on 2026-03-10, so neither is a supported
+      destination. Electron 39 is still supported as of 2026-03-20, with stable
+      release on 2025-10-28 and end of life on 2026-05-05. It stays on Node
+      22.20.0, which reduces runtime churn compared with Electron 40 and 41. You
+      still inherit the Electron 37 and 38 blockers, including utility-process
+      behavior changes, removal of `ProtocolResponse.session = null`, the macOS
+      12 floor, and Wayland-default behavior on Linux."
+    when_to_use: "Use this only when Node 24 migration work is the real blocker and
+      you need a currently supported landing zone immediately. The decisive
+      factor is whether you can commit to a second Electron upgrade within
+      weeks, because Electron 39 support ends on 2026-05-05."
+    tradeoffs: "Lower immediate runtime churn and smaller hop from old Node 22-based
+      Electron lines, but it creates a deliberate two-step migration and a very
+      short remaining support runway."
+    cautions: "As of 2026-03-20, this is a bridge, not a destination. Upgrading to
+      Electron 39 does not avoid Electron 37 or 38 breakage; it only postpones
+      the Node 24 jump."
+    links:
+      - "https://releases.electronjs.org/schedule"
+      - "https://www.electronjs.org/blog/electron-37-0"
+      - "https://www.electronjs.org/blog/electron-38-0"
+  - name: "Jump directly to Electron 40 or 41 and absorb 37 plus 38 breaks once"
+    summary: "As of 2026-03-20, Electron supports only the latest three stable
+      majors, and those are 39, 40, and 41. Electron 40 was released on
+      2026-01-13 and is scheduled for end of life on 2026-06-30; Electron 41 was
+      released on 2026-03-10 and is scheduled for end of life on 2026-08-25.
+      Electron 40 also moves from Node 22.20.0 to Node 24.11.1, and Electron 41
+      uses Node 24.14.0. This path folds the unavoidable Electron 37 and 38
+      migration work into one supported upgrade instead of spending effort on
+      already-expired lines."
+    when_to_use: "Use this as the default choice for small-team or low-ops
+      maintenance, especially if you want one migration cycle with a longer
+      support runway. The decisive factor is whether you can test the Node 24
+      jump now; if yes, skipping 37 and 38 is the cleaner move."
+    tradeoffs: "Best support runway and avoids paying for a bridge release, but the
+      runtime jump is larger and you need to validate both the 37 and 38
+      blockers plus newer 40-era deprecations."
+    cautions: "Electron 38 and higher require macOS 12 or later, and Electron 38
+      removed `ELECTRON_OZONE_PLATFORM_HINT`, making Wayland the default on
+      Wayland sessions unless you force `--ozone-platform=x11`. Electron 40
+      deprecates direct renderer access to the `clipboard` API and changes macOS
+      debug symbol archives from `dsym.zip` to `dsym.tar.xz`."
+    links:
+      - "https://releases.electronjs.org/schedule"
+      - "https://www.electronjs.org/docs/latest/breaking-changes"
+      - "https://www.electronjs.org/blog/electron-38-0"
+      - "https://www.electronjs.org/blog/electron-40-0"
+tags:
+  - "desktop"
+  - "electron"
+  - "upgrade"
+  - "release-policy"
+aliases:
+  - "electron 37 eol"
+  - "electron 38 support window"
+  - "electron latest three stable releases"
+related_cards:
+  - "_archived/electron-33-34-upgrade-native-modules-cpp20-and-macos-baseline-2\
+    026"
+  - "deployment/node-upgrade-lts-breakage"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: package
+      id: package/electron-37
+      name: Electron 37
+      version: "37"
+    - type: package
+      id: package/electron-38
+      name: Electron 38
+      version: "38"
+    - type: package
+      id: package/electron-39
+      name: Electron 39
+      version: "39"
+    - type: package
+      id: package/electron-40
+      name: Electron 40
+      version: "40"
+    - type: package
+      id: package/electron-41
+      name: Electron 41
+      version: "41"
+    - type: runtime
+      id: runtime/macos-12
+      name: macOS 12
+      version: "12"
+    - type: runtime
+      id: runtime/nodejs-22-20-0
+      name: Node.js 22.20.0
+      version: 22.20.0
+    - type: runtime
+      id: runtime/nodejs-24-11-1
+      name: Node.js 24.11.1
+      version: 24.11.1
+    - type: runtime
+      id: runtime/nodejs-24-14-0
+      name: Node.js 24.14.0
+      version: 24.14.0
+  edges:
+    - type: eol_date
+      from: package/electron-37
+      to: null
+      date: 2026-01-13
+    - type: eol_date
+      from: package/electron-38
+      to: null
+      date: 2026-03-10
+    - type: eol_date
+      from: package/electron-39
+      to: null
+      date: 2026-05-05
+    - type: eol_date
+      from: package/electron-40
+      to: null
+      date: 2026-06-30
+    - type: eol_date
+      from: package/electron-41
+      to: null
+      date: 2026-08-25
+    - type: requires_version
+      from: package/electron-38
+      to: runtime/macos-12
+      note: Electron 38 and higher require macOS 12 or later.
+    - type: requires_version
+      from: package/electron-39
+      to: runtime/nodejs-22-20-0
+      note: Electron 39 stays on Node 22.20.0.
+    - type: requires_version
+      from: package/electron-40
+      to: runtime/nodejs-24-11-1
+      note: Electron 40 moves to Node 24.11.1.
+    - type: requires_version
+      from: package/electron-41
+      to: runtime/nodejs-24-14-0
+      note: Electron 41 uses Node 24.14.0.

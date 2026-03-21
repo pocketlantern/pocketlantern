@@ -1,0 +1,205 @@
+id: devtools/github-actions-node24-migration-after-node20-deprecation-2026
+title: GitHub Actions Node24 Migration After Node20 Deprecation in 2026
+problem: Teams maintaining JavaScript actions or self-hosted runners need to
+  prepare for GitHub Actions moving from Node20 to Node24 in 2026, including
+  runner compatibility, operating system fallout, and temporary workflow
+  overrides.
+context:
+  - devtools
+  - ci-cd
+  - github-actions
+  - github
+  - nodejs
+  - javascript-actions
+  - self-hosted-runners
+  - runner-upgrades
+constraints:
+  - enterprise
+  - small-team
+  - low-ops
+  - compliance
+  - cost-sensitive
+  - monorepo
+candidates:
+  - name: Migrate custom JavaScript actions and pinned GitHub-maintained actions to
+      Node24 now
+    summary: "As of 2026-03-15, GitHub says Node20 reaches end of life in April
+      2026, runners begin using Node24 by default on June 2, 2026, and all
+      actions are planned to move to Node24 later in fall 2026. GitHub's
+      metadata syntax now documents `runs.using: 'node24'`, and current
+      GitHub-maintained action releases such as `actions/checkout@v5`,
+      `actions/setup-node@v5`, and `actions/upload-artifact@v6` explicitly moved
+      to Node24-compatible releases."
+    when_to_use: Best for low-ops + small-team or enterprise + monorepo teams where
+      you control internal JavaScript actions, can update `action.yml`, and can
+      refresh pinned first-party actions across many workflows before June 2,
+      2026. Choose this when you want one forward migration path instead of
+      carrying temporary runtime overrides into the default-switch window.
+    tradeoffs: This aligns your action metadata and dependency graph with GitHub's
+      documented runtime direction and reduces the chance of getting stuck on
+      the temporary Node20 escape hatch. The cost is audit work across every
+      pinned action version, plus runner upgrades on any self-hosted estate that
+      is older than the Node24-capable runner line.
+    cautions: Changing `runs.using` to `node24` is necessary for custom JavaScript
+      actions, but not sufficient by itself if your workflow still pins older
+      third-party actions that only declare `node20`. GitHub-maintained action
+      releases that moved to Node24 also document minimum runner versions, so
+      self-hosted fleets must be updated before bumping those action versions.
+    links:
+      - https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+      - https://docs.github.com/en/enterprise-cloud@latest/actions/reference/workflows-and-actions/metadata-syntax
+      - https://github.com/actions/checkout/releases
+      - https://github.com/actions/setup-node/releases
+      - https://github.com/actions/upload-artifact/releases
+  - name: Use the Node24 force flag now to validate workflows before the June 2,
+      2026 default switch
+    summary: As of 2026-03-15, GitHub says runner v2.328.0 supports both Node20 and
+      Node24 and still defaults to Node20, while
+      `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true` can force JavaScript actions
+      onto Node24 either in workflow `env` or on the runner machine. This gives
+      teams a supported pre-cutover test mode without waiting for GitHub to flip
+      the default.
+    when_to_use: Best for enterprise + compliance or monorepo + cost-sensitive teams
+      where many repositories share reusable workflows, self-hosted images, or
+      third-party actions and you need a staged validation window before June 2,
+      2026. Choose this when the main risk is hidden breakage in marketplace
+      actions, internal tooling, or runner OS baselines rather than the metadata
+      change itself.
+    tradeoffs: This exposes Node24 compatibility problems early while Node20 remains
+      available as the default. The downside is temporary operational complexity
+      because you now manage a test-mode runtime override, plus you still need a
+      real remediation plan for any failing actions, unsupported runner
+      operating systems, or outdated self-hosted images.
+    cautions: GitHub states Node24 is incompatible with macOS 13.4 and lower and
+      says Node 24 does not have official ARM32 support, so validation will
+      surface infrastructure issues that cannot be fixed by pinning package
+      versions alone. On self-hosted runners, GitHub's published
+      supported-architecture reference still lists ARM32 only for Linux on the
+      older baseline docs, which is exactly the class of fleet that needs
+      replacement rather than more override time.
+    links:
+      - https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+      - https://github.com/actions/runner/releases
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+      - https://docs.github.com/en/enterprise-server@3.14/actions/reference/runners/self-hosted-runners
+  - name: Use the temporary Node20 opt-out only as a short bridge while replacing
+      unsupported runners or lagging actions
+    summary: As of 2026-03-15, GitHub says that starting June 2, 2026 runners will
+      begin using Node24 by default, and teams can temporarily opt out with
+      `ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true` to keep using Node20 until
+      GitHub upgrades the runner again and removes Node20 later in fall 2026.
+      This is an officially documented delay mechanism, not a long-term runtime
+      choice.
+    when_to_use: Best for enterprise + compliance or cost-sensitive + small-team
+      cases where you have a concrete blocker such as a critical third-party
+      action that has not shipped a Node24 build yet, a self-hosted macOS fleet
+      at 13.4 or lower, or ARM32 self-hosted runners that must be replaced on a
+      scheduled maintenance window. Use it only when the blocker is specific and
+      time-bounded.
+    tradeoffs: This buys time to keep production workflows running through the June
+      2, 2026 default flip while you complete action upgrades or fleet
+      refreshes. The tradeoff is explicit security and lifecycle debt because
+      GitHub labels the setting as allowing an unsecure Node version and has
+      already stated the opt-out stops working once Node20 is removed later in
+      fall 2026.
+    cautions: Do not treat this as a steady-state policy. GitHub has already
+      published the deprecation timeline, the override is temporary by design,
+      and unsupported self-hosted platforms still need replacement because
+      GitHub also says Node24 drops support for macOS 13.4 and lower and for
+      ARM32 self-hosted runners after Node20 deprecation.
+    links:
+      - https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+      - https://github.com/actions/runner/releases
+      - https://docs.github.com/en/enterprise-server@3.14/actions/reference/runners/self-hosted-runners
+tags:
+  - devtools
+  - github-actions
+  - github
+  - nodejs
+  - node24
+  - node20
+  - javascript-actions
+  - self-hosted-runners
+  - ci-cd
+  - migration
+  - deprecation
+aliases:
+  - github actions node24 migration
+  - github actions node20 deprecation
+  - FORCE_JAVASCRIPT_ACTIONS_TO_NODE24
+  - ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION
+  - github actions node24 self hosted runner
+  - github actions runs using node24
+related_cards:
+  - infra/github-actions-self-hosted-runner-minimum-version-enforcement-2026
+  - infra/github-actions-hosted-vs-larger-vs-self-hosted-runner-economics-2026
+  - serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-01
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/github-actions
+      name: GitHub Actions
+      category: ci-cd
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+      current_lts: false
+      eol_date: 2026-04-30
+    - type: runtime
+      id: runtime/nodejs-24
+      name: Node.js 24
+      current_lts: true
+      eol_date: 2028-04-30
+    - type: package
+      id: package/actions-checkout-v5
+      name: actions/checkout@v5
+      version: v5
+    - type: package
+      id: package/actions-setup-node-v5
+      name: actions/setup-node@v5
+      version: v5
+    - type: package
+      id: package/actions-upload-artifact-v6
+      name: actions/upload-artifact@v6
+      version: v6
+  edges:
+    - type: eol_date
+      from: runtime/nodejs-20
+      to: null
+      date: 2026-04
+      successor: runtime/nodejs-24
+    - type: breaking_change_in
+      from: vendor/github-actions
+      to: null
+      change: Runners begin using Node24 by default on June 2, 2026; Node20 removal
+        planned Fall 2026
+      migration_path: Update action.yml runs.using to node24; pin GitHub-maintained
+        actions to Node24-compatible releases (checkout@v5, setup-node@v5,
+        upload-artifact@v6)
+    - type: breaking_change_in
+      from: runtime/nodejs-24
+      to: null
+      change: Node24 is incompatible with macOS 13.4 and lower; no official ARM32
+        support
+      migration_path: Replace macOS 13 runners and ARM32 self-hosted runners before
+        Node20 removal
+    - type: requires_version
+      from: package/actions-checkout-v5
+      to: runtime/nodejs-24
+      min_version: Node 24
+      reason: v5 releases moved to Node24-compatible runtime
+    - type: requires_version
+      from: package/actions-setup-node-v5
+      to: runtime/nodejs-24
+      min_version: Node 24
+      reason: v5 releases moved to Node24-compatible runtime
+    - type: requires_version
+      from: package/actions-upload-artifact-v6
+      to: runtime/nodejs-24
+      min_version: Node 24
+      reason: v6 releases moved to Node24-compatible runtime

@@ -1,0 +1,283 @@
+id: database/managed-postgres-major-upgrade-with-extension-compatibility-2026
+title: Managed Postgres Major Upgrade with Extension Compatibility (2026)
+problem: Plan Postgres 17/18 upgrades on managed platforms when production
+  depends on extensions such as pgvector, PostGIS, Timescale, or logical
+  replication features with provider-specific rollout timing and breakage risk.
+context:
+  - database
+  - postgresql
+  - managed-services
+  - major-version-upgrade
+  - extensions
+  - pgvector
+  - postgis
+  - timescaledb
+  - logical-replication
+  - production
+constraints:
+  - low-ops
+  - enterprise
+  - high-scale
+  - real-time
+  - compliance
+  - small-team
+candidates:
+  - name: Amazon RDS for PostgreSQL
+    summary: Best when you are already standardized on AWS and your required
+      extensions are in the current RDS matrix. As of 2026-03-15, Amazon RDS
+      documents PostgreSQL 18 and 17 support, says major upgrades are manual
+      rather than automatic, upgrades read replicas with the primary for
+      Single-AZ and Multi-AZ DB instance deployments, and warns that most
+      PostgreSQL extensions are not upgraded during the engine upgrade.
+    when_to_use: Best for enterprise + low-ops or compliance + high-scale teams that
+      want a managed in-place upgrade path and can tolerate a maintenance window
+      or use RDS Blue/Green with its PostgreSQL-specific logical replication
+      limits. Choose this when your production extension set is already verified
+      in the RDS extension table, and when you can explicitly rehearse slot
+      cleanup, extension upgrades, and replica behavior before touching
+      production.
+    tradeoffs: RDS has a broad official extension matrix for PostgreSQL 17 and 18,
+      including `pgvector`, `pglogical`, and `PostGIS`, and AWS documents both
+      direct major-version upgrade and Blue/Green patterns. The tradeoff is that
+      the engine upgrade and the extension upgrade are separate concerns, and
+      Blue/Green major upgrades inherit logical replication limits such as
+      single-threaded apply on the green side.
+    cautions: "Check extension-by-extension compatibility, not just engine
+      availability. AWS says logical replication slots can still block or fail
+      upgrades in some cases, but on source version 17 and later logical
+      replication slots on non-read-replicas can be retained through upgrades;
+      most extensions are not upgraded automatically. The current RDS extension
+      table also shows a real PG18 compatibility edge: `postgis_topology` is
+      `N/A` for PostgreSQL 18 even though `PostGIS` 3.6.1, `pglogical` 2.4.6,
+      and `pgvector` 0.8.1 are supported. If you use Blue/Green for major
+      upgrades, AWS documents additional limits including no replication of
+      unlogged tables, DDL-sensitive partition management, `pg_partman` needing
+      to be disabled, and `pg_cron` needing to remain disabled on green
+      databases."
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-extensions.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-versions.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments-considerations.html
+  - name: Google Cloud SQL for PostgreSQL
+    summary: Best when you want a managed precheck-driven upgrade workflow with
+      explicit extension and dependency blockers. As of 2026-03-15, Cloud SQL
+      lists PostgreSQL 18 as the default major version and 18.1 as the default
+      minor version, says new major versions are supported within 90 days of
+      community GA, uses `pg_upgrade` for in-place upgrades, and offers three
+      years of extended support after community end of life.
+    when_to_use: Best for low-ops + compliance or high-scale + real-time teams that
+      want strong official prechecks, automatic minor-version rollout during
+      maintenance, and the option to include cross-region or cascading replicas
+      in a major upgrade through `gcloud` or the Admin API. Choose this when
+      your main risk is upgrade blocker detection rather than custom platform
+      behavior, and when your team is comfortable using CLI or API workflows for
+      replica-inclusive upgrades.
+    tradeoffs: Cloud SQL documents many upgrade blockers directly in the
+      major-version-upgrade flow, including event-trigger ownership, deprecated
+      flags, extension ownership, and extension-specific version requirements.
+      It also supports logical decoding and `pglogical`, but some operations are
+      more opinionated than on self-managed PostgreSQL, and replica-inclusive
+      major upgrades are not available through the console or Terraform.
+    cautions: "Treat extension state and maintenance version as separate checks.
+      Cloud SQL's extension page still documents `pgvector` 0.8.0 for PostgreSQL
+      13 and later, while the official release notes say the rollout to
+      `pgvector` 0.8.1 completed on November 19, 2025 and requires maintenance
+      version `R20251004.01_19`; verify the instance maintenance version before
+      assuming the newer extension build. Cloud SQL also documents hard upgrade
+      prerequisites for some extensions: PostgreSQL 18 upgrades require
+      `PostGIS` 3.6.0 first, `pg_squeeze` must be upgraded to the
+      target-compatible version, and `pg_ivm` must be removed before a major
+      upgrade. For logical replication, `cloudsql.logical_decoding` must be
+      enabled, and `pglogical` requires `cloudsql.enable_pglogical=on`."
+    links:
+      - https://docs.cloud.google.com/sql/docs/postgres/db-versions
+      - https://docs.cloud.google.com/sql/docs/postgres/upgrade-major-db-version-inplace
+      - https://docs.cloud.google.com/sql/docs/postgres/extensions
+      - https://docs.cloud.google.com/sql/docs/postgres/replication/configure-logical-replication
+      - https://docs.cloud.google.com/sql/docs/postgres/release-notes
+  - name: Azure Database for PostgreSQL Flexible Server
+    summary: Best when you want a built-in in-place major-version-upgrade feature
+      but need to watch region rollout and extension exceptions carefully. As of
+      2026-03-15, Azure documents PostgreSQL 18 support, says in-place upgrades
+      use `pg_upgrade`, automatically move the server to the latest supported
+      minor version during upgrade, and notes that MVU to PostgreSQL 18 is being
+      enabled in phases by region.
+    when_to_use: Best for enterprise + low-ops or small-team + compliance teams
+      already on Azure that want one-click in-place upgrades, automatic minor
+      servicing, and an official extension catalog with current per-version
+      extension numbers. Choose this when your required extensions are
+      Azure-supported and you can validate that your region, HA posture, and
+      extension mix are compatible with Azure's MVU feature before scheduling
+      production downtime.
+    tradeoffs: "Azure's documentation is unusually explicit about what the service
+      does during upgrade: prechecks run first, HA is disabled and then
+      re-enabled during the operation, and most upgrades are offline but usually
+      complete in under 15 minutes. The tradeoff is that the extension story is
+      split between what Azure supports on a given major version and what Azure
+      allows through the in-place MVU feature."
+    cautions: Do not assume 'supported on PG18' means 'supported for in-place
+      upgrade to PG18.' Azure's extension catalog currently lists PostgreSQL 18
+      support for `vector` 0.8.1, `pglogical` 2.4.6, `PostGIS` 3.6.1, and
+      `timescaledb` 2.24.0, and the March 2026 maintenance notes say TimescaleDB
+      support was enabled for PostgreSQL 18. But Azure's
+      extension-considerations page still says `anon`, `Apache AGE`, `dblink`,
+      `orafce`, `postgres_fdw`, and `timescaledb` are unsupported when using the
+      in-place major-version-upgrade feature. Also verify region availability
+      for MVU to PostgreSQL 18, because Azure explicitly says rollout is phased.
+    links:
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-major-version-upgrade
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-version-policy
+      - https://learn.microsoft.com/en-us/azure/postgresql/extensions/concepts-extensions-considerations
+      - https://learn.microsoft.com/en-us/azure/postgresql/extensions/concepts-extensions-versions
+      - https://learn.microsoft.com/en-us/azure/postgresql/release-notes-maintenance/2026-march
+tags:
+  - database
+  - postgres
+  - postgresql
+  - managed-postgres
+  - upgrade
+  - major-version-upgrade
+  - extensions
+  - pgvector
+  - postgis
+  - timescaledb
+  - logical-replication
+  - aws-rds
+  - cloud-sql
+  - azure-postgresql
+aliases:
+  - managed postgres 17 upgrade
+  - managed postgres 18 upgrade
+  - postgres extension compatibility upgrade
+  - rds postgres extension upgrade
+  - cloud sql postgres major upgrade
+  - azure postgres major version upgrade
+  - pgvector postgis timescaledb upgrade
+related_cards:
+  - database/postgres-major-version-upgrade
+  - deployment/rollback-strategy-for-schema-plus-app
+  - database/vector-storage-where-to-run
+  - database/aurora-serverless-v1-forced-migration-to-v2-vs-provisioned-2026
+  - database/postgresql-13-eol-upgrade-path-after-november-2025
+  - cloud/azure-postgresql-single-server-retirement-and-backup-stop-2025
+  - database/aurora-postgresql-17-5-lts-vs-16-after-256-tib-storage-limit-2025
+  - database/postgres-major-upgrade-extension-compatibility-2026
+  - runtime/render-legacy-postgres-vs-flexible-plans-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-08
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/amazon-rds-for-postgresql
+      name: Amazon RDS for PostgreSQL
+    - type: vendor
+      id: vendor/google-cloud-sql-for-postgresql
+      name: Google Cloud SQL for PostgreSQL
+    - type: vendor
+      id: vendor/azure-database-for-postgresql-flexible-server
+      name: Azure Database for PostgreSQL Flexible Server
+    - type: engine
+      id: engine/postgresql-18
+      name: PostgreSQL 18
+    - type: engine
+      id: engine/postgresql-17
+      name: PostgreSQL 17
+    - type: package
+      id: package/postgis-3.6.0
+      name: PostGIS
+      version: 3.6.0
+    - type: package
+      id: package/postgis-3.6.1
+      name: PostGIS
+      version: 3.6.1
+    - type: package
+      id: package/postgis-topology
+      name: postgis_topology
+    - type: package
+      id: package/pgvector-0.8.0
+      name: pgvector
+      version: 0.8.0
+    - type: package
+      id: package/pgvector-0.8.1
+      name: pgvector
+      version: 0.8.1
+    - type: package
+      id: package/pglogical-2.4.6
+      name: pglogical
+      version: 2.4.6
+    - type: package
+      id: package/timescaledb-2.24.0
+      name: timescaledb
+      version: 2.24.0
+    - type: package
+      id: package/pg-squeeze
+      name: pg_squeeze
+    - type: package
+      id: package/pg-ivm
+      name: pg_ivm
+    - type: capability
+      id: capability/cloud-sql-major-upgrade-to-postgresql-18
+      name: Cloud SQL major upgrade to PostgreSQL 18
+      category: major-version-upgrade
+    - type: capability
+      id: capability/cloud-sql-logical-replication
+      name: Cloud SQL logical replication
+      category: logical-replication
+    - type: capability
+      id: capability/cloud-sql-pglogical
+      name: Cloud SQL pglogical
+      category: extension-configuration
+    - type: capability
+      id: capability/azure-in-place-major-version-upgrade
+      name: Azure in-place major-version upgrade
+      category: major-version-upgrade
+    - type: runtime
+      id: runtime/cloud-sql-maintenance-r20251004-01-19
+      name: Cloud SQL maintenance version R20251004.01_19
+    - type: runtime
+      id: runtime/cloudsql-logical-decoding-enabled
+      name: cloudsql.logical_decoding enabled
+    - type: runtime
+      id: runtime/cloudsql-enable-pglogical-on
+      name: cloudsql.enable_pglogical=on
+  edges:
+    - type: requires_version
+      from: capability/cloud-sql-major-upgrade-to-postgresql-18
+      to: package/postgis-3.6.0
+      note: PostgreSQL 18 upgrades require PostGIS 3.6.0 first.
+    - type: requires_version
+      from: package/pgvector-0.8.1
+      to: runtime/cloud-sql-maintenance-r20251004-01-19
+      note: Cloud SQL says pgvector 0.8.1 requires maintenance version
+        R20251004.01_19.
+    - type: locks_via
+      from: capability/cloud-sql-logical-replication
+      to: runtime/cloudsql-logical-decoding-enabled
+      note: Logical replication requires cloudsql.logical_decoding to be enabled.
+    - type: locks_via
+      from: capability/cloud-sql-pglogical
+      to: runtime/cloudsql-enable-pglogical-on
+      note: pglogical requires cloudsql.enable_pglogical=on.
+    - type: breaking_change_in
+      from: package/postgis-topology
+      to: engine/postgresql-18
+      note: On Amazon RDS, postgis_topology is N/A for PostgreSQL 18.
+    - type: breaking_change_in
+      from: package/timescaledb-2.24.0
+      to: capability/azure-in-place-major-version-upgrade
+      note: Azure says timescaledb is unsupported when using the in-place
+        major-version-upgrade feature.
+    - type: breaking_change_in
+      from: package/pg-ivm
+      to: capability/cloud-sql-major-upgrade-to-postgresql-18
+      note: Cloud SQL says pg_ivm must be removed before a major upgrade.
+    - type: requires_version
+      from: package/pg-squeeze
+      to: capability/cloud-sql-major-upgrade-to-postgresql-18
+      note: Cloud SQL says pg_squeeze must be upgraded to the target-compatible
+        version before a major upgrade.

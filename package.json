@@ -1,0 +1,49 @@
+{
+  "name": "pocketlantern-toolkit",
+  "private": true,
+  "type": "module",
+  "description": "Factual decision cache for AI agents — MCP server, CLI, and schema",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketlantern/pocketlantern.git"
+  },
+  "homepage": "https://pocketlantern.dev",
+  "bugs": "https://github.com/pocketlantern/pocketlantern/issues",
+  "license": "MIT",
+  "author": "PocketLantern",
+  "keywords": [
+    "mcp",
+    "ai-agents",
+    "decision-cache",
+    "factual-accuracy",
+    "llm"
+  ],
+  "bin": {
+    "pocketlantern": "apps/cli/dist/index.js"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^4.1.0"
+  }
+}

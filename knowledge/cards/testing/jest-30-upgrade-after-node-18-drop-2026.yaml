@@ -1,0 +1,189 @@
+id: "testing/jest-30-upgrade-after-node-18-drop-2026"
+title: "Jest 30 Upgrade After Node 18 Drop in 2026"
+problem: "Teams maintaining large test suites need a current change-awareness
+  card on Jest 30, especially Node version support changes and matcher or config
+  breakage that can disrupt CI at scale."
+context:
+  - "testing"
+  - "jest"
+  - "nodejs"
+  - "typescript"
+  - "ci"
+constraints:
+  - "enterprise"
+  - "monorepo"
+  - "high-scale"
+candidates:
+  - name: "Upgrade to Jest 30 after standardizing CI on Node 20 or 22"
+    summary: "As of 2026-03-18, Jest 30 is the current major release track on
+      jestjs.io. The official upgrade guide says Jest 30 drops support for Node
+      14, 16, 19, and 21, sets the minimum supported Node version to 18.x, and
+      raises the minimum TypeScript version to 5.4 for Jest type packages. The
+      same guide and release blog call out blocker-level breakage:
+      `jest-environment-jsdom` moved to JSDOM v26, alias matcher names were
+      removed, `--testPathPattern` was renamed to `--testPathPatterns`, `jest
+      --init` was removed, and unofficial deep imports into Jest packages may
+      break because packages now rely on `exports` and bundled internals. The
+      blog also reports performance and memory improvements in real projects,
+      which matters for large CI suites."
+    when_to_use: "Use this when you have already decided to get off Node 18 in your
+      runtime and CI fleet, and you want one coordinated test-platform upgrade
+      instead of carrying legacy Jest behavior longer. It is the decisive choice
+      when your bigger risk is lingering on unmaintained docs and deprecated
+      matcher or config patterns rather than absorbing one concentrated
+      migration."
+    tradeoffs: "You get the current major line, better performance potential, newer
+      ESM and TypeScript support, and fewer false positives for asynchronously
+      handled promise rejections. The cost is migration work across matcher
+      aliases, snapshots, jsdom-dependent tests, CLI wrappers, custom
+      sequencers, and any tool that touched Jest internals."
+    cautions: "Do not assume Node uplift alone is enough. The official migration
+      guide says TypeScript `CalledWith` matcher inference is stricter, snapshot
+      output can change, custom `--filter` implementations now need a
+      `{filtered: Array<string>}` return shape, and deep imports such as
+      internal `build/*` paths are likely to fail."
+    links:
+      - "https://jestjs.io/docs/upgrading-to-jest30"
+      - "https://jestjs.io/blog/2025/06/04/jest-30"
+      - "https://github.com/jestjs/jest/releases"
+  - name: "Hold on Jest 29 briefly while completing the Node migration first"
+    summary: "As of 2026-03-18, the Jest 29.7 docs remain available, but the
+      official site labels them as no longer actively maintained and directs
+      readers to 30.0 as the latest version. The Jest 29 upgrade guide documents
+      support for Node 14.15, 16.10, and 18.0 and above, which makes it a
+      temporary compatibility plateau for older CI images or long-lived
+      branches. Compared with Jest 30, this path avoids the immediate
+      matcher-alias removals, JSDOM v26 jump, `--testPathPatterns` rename, and
+      internal package export breakage. It is a deferral strategy, not a
+      steady-state target."
+    when_to_use: "Use this when your immediate blocker is the runtime move itself
+      and you need to narrow blast radius by separating 'Node migration' from
+      'Jest major upgrade.' It is most defensible for large monorepos where CI
+      stability is worth a short-lived freeze, but only if you schedule the Jest
+      30 work immediately after."
+    tradeoffs: "You reduce simultaneous change surface and keep existing Jest 29
+      behavior while moving runners and containers. In exchange, you stay on
+      documentation that the official site says is no longer actively
+      maintained, so you preserve technical debt and delay the inevitable Jest
+      30 cleanup."
+    cautions: "This option does not solve the current-state problem permanently. If
+      your org or platform has already dropped Node 18 as of 2026-03-18, staying
+      on Jest 29 only helps if your remaining blockers are Jest-specific
+      breakages rather than runtime support; check your CI platform policy
+      separately because Jest 29 itself is not the authoritative source for Node
+      lifecycle decisions."
+    links:
+      - "https://jestjs.io/docs/29.7/upgrading-to-jest29"
+      - "https://jestjs.io/docs/upgrading-to-jest30"
+      - "https://jestjs.io/blog/2025/06/04/jest-30"
+tags:
+  - "testing"
+  - "jest"
+  - "nodejs"
+  - "typescript"
+  - "ci"
+aliases:
+  - "jest 30 node support"
+  - "jest 30 migration guide"
+  - "jest 30 breaking changes"
+  - "jest 30 upgrade"
+  - "jest 30 node 20"
+  - "jest 30 node 18 drop"
+  - "jest v30 breaking changes"
+  - "jest 30 config changes"
+  - "jest 30 matcher changes"
+  - "jest 30 typescript issues"
+  - "jest 30 ci failures"
+  - "jest30 migration"
+  - "upgrade to jest 30"
+related_cards:
+  - "deployment/node-upgrade-lts-breakage"
+  - "infra/nodejs-22-lts-adoption-breaking-changes-worker-threads-2026"
+  - "testing/mocking-strategy"
+  - runtime/node-18-nes-vs-jump-to-22-2026
+  - testing/jest-30-node18-typescript54-upgrade-breakage-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/jest-30
+      name: Jest 30
+    - type: package
+      id: package/jest-29-7
+      name: Jest 29.7
+    - type: runtime
+      id: runtime/node-18
+      name: Node.js 18
+      category: javascript-runtime
+    - type: runtime
+      id: runtime/node-20
+      name: Node.js 20
+      category: javascript-runtime
+    - type: runtime
+      id: runtime/node-22
+      name: Node.js 22
+      category: javascript-runtime
+    - type: package
+      id: package/typescript-5-4
+      name: TypeScript 5.4
+    - type: package
+      id: package/jest-environment-jsdom
+      name: jest-environment-jsdom
+    - type: framework
+      id: framework/jsdom-26
+      name: JSDOM v26
+    - type: capability
+      id: capability/jest-alias-matchers
+      name: Alias matcher names
+    - type: capability
+      id: capability/testpathpattern-cli
+      name: --testPathPattern CLI flag
+    - type: capability
+      id: capability/jest-init
+      name: jest --init
+    - type: capability
+      id: capability/jest-deep-imports
+      name: Unofficial deep imports into Jest packages
+    - type: capability
+      id: capability/package-exports
+      name: Package exports
+  edges:
+    - type: requires_version
+      from: package/jest-30
+      to: runtime/node-18
+      version: 18.x
+      relation: minimum_supported
+    - type: requires_version
+      from: package/jest-30
+      to: package/typescript-5-4
+      version: "5.4"
+      scope: Jest type packages
+      relation: minimum_supported
+    - type: requires_version
+      from: package/jest-environment-jsdom
+      to: framework/jsdom-26
+      version: "26"
+    - type: breaking_change_in
+      from: capability/jest-alias-matchers
+      to: package/jest-30
+      change: removed
+    - type: breaking_change_in
+      from: capability/testpathpattern-cli
+      to: package/jest-30
+      change: renamed_to_--testPathPatterns
+    - type: breaking_change_in
+      from: capability/jest-init
+      to: package/jest-30
+      change: removed
+    - type: breaking_change_in
+      from: capability/jest-deep-imports
+      to: package/jest-30
+      change: may_break_due_to_exports_and_bundled_internals
+    - type: locks_via
+      from: capability/jest-deep-imports
+      to: capability/package-exports
+      mechanism: packages now rely on exports

@@ -1,0 +1,174 @@
+id: "web/treblle-free-vs-starter-vs-team-api-request-limits-2026"
+title: "Treblle Free vs Starter vs Team API Request Limits and Pricing 2026"
+problem: "Choose between Treblle Free, Starter, and Team when request limits,
+  retention, and included products determine the right tier."
+context:
+  - "api-observability"
+  - "api-governance"
+  - "api-analytics"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "small-team"
+candidates:
+  - name: "Treblle Free"
+    summary: "Treblle Free is the no-cost tier for one workspace and one API. As of
+      2026-03-20, Treblle lists 250,000 requests per month, 7 days of retention,
+      and only API Intelligence plus API Documentation. No credit card is
+      required. The main limit is that over-cap requests stop appearing in
+      Treblle until you upgrade or the billing period resets."
+    when_to_use: "Use this when you are cost-sensitive, have one API, and monthly
+      volume is comfortably below 250k. It fits evaluation, dev, staging, or
+      very small production workloads where documentation plus basic API
+      intelligence is enough."
+    tradeoffs: "Zero cost and no card requirement are strong advantages, but you
+      give up API Analytics, Security, Governance, Assistant, and higher
+      retention. The low request cap makes it easy to outgrow in production."
+    cautions: "Do not treat the 250k cap as soft overage. As of 2026-03-20, Treblle
+      says your API keeps running, but Treblle stops showing new requests until
+      upgrade or reset."
+    links:
+      - "https://treblle.com/pricing"
+      - "https://docs.treblle.com/explore-treblle/admin/billing"
+  - name: "Treblle Starter"
+    summary: "Treblle Starter is the first paid tier for small API teams. As of
+      2026-03-20, Treblle shows $25 per month billed yearly, 5 APIs, 5 million
+      requests per month, 15 days retention, and API Intelligence, API
+      Documentation, plus API Analytics. The billing docs also show $30 per
+      month for standard monthly billing. The main step up from Free is
+      analytics and a much higher request cap."
+    when_to_use: "Use this when you need production visibility for a small API
+      estate and your traffic is in the low millions per month. It is the
+      practical fit when Free is too small but you do not yet need Treblle's
+      security, governance, assistant, problems, or traceability features."
+    tradeoffs: "Starter materially increases usable production headroom at a modest
+      annualized price, but feature scope is still limited compared with Team.
+      Retention remains short at 15 days, which may be inadequate for incident
+      review or audit workflows."
+    cautions: "As of 2026-03-20, the pricing page shows the discounted annual
+      figure, while the billing docs show the standard monthly price. Use the
+      billing-doc number if you are comparing monthly cash cost."
+    links:
+      - "https://treblle.com/pricing"
+      - "https://docs.treblle.com/explore-treblle/admin/billing"
+  - name: "Treblle Team"
+    summary: "Treblle Team is the higher production tier. As of 2026-03-20, Treblle
+      shows $233 per month billed yearly, 10 APIs, 50 million requests per
+      month, 30 days retention, and six included products: API Intelligence, API
+      Security, API Governance, API Assistant, API Documentation, and API
+      Analytics. The billing docs also show $300 per month for standard monthly
+      billing. Compared with Starter, the main change is a 10x request increase
+      plus bundled security and governance."
+    when_to_use: "Use this when monthly traffic is in the tens of millions or when
+      governance and security are buying criteria, not nice-to-haves. It is the
+      right tier if you want one platform for observability, analytics, runtime
+      security, governance, and assistant features without moving to
+      Enterprise."
+    tradeoffs: "The bundle is much stronger for production API programs, but the
+      price jump from Starter is large. If you only need higher request volume
+      and analytics, Team may be over-bundled relative to your actual needs."
+    cautions: "As of 2026-03-20, new accounts automatically receive a 14-day Team
+      trial, so pilot results can reflect Team-only capabilities that disappear
+      on downgrade. Validate which workflows depend on Security, Governance, or
+      Assistant before standardizing on a lower tier."
+    links:
+      - "https://treblle.com/pricing"
+      - "https://docs.treblle.com/explore-treblle/admin/billing"
+      - "https://treblle.com/news/release-notes/march-2025-release"
+tags:
+  - "web"
+  - "treblle"
+  - "api-observability"
+  - "pricing"
+aliases:
+  - "treblle pricing 2026"
+  - "treblle free vs starter vs team"
+  - "treblle api request limits"
+  - "treblle plan limits"
+  - "treblle tier comparison"
+  - "treblle pricing tiers"
+  - "treblle request caps"
+  - "treblle retention limits"
+  - "treblle starter team pricing"
+  - "treblle free plan limits"
+  - "treblle api pricing"
+  - "treble pricing tiers"
+
+  - "treblle pricing 2026"
+  - "treblle free vs starter vs team"
+  - "treblle api request limits"
+related_cards:
+  - "infra/monitoring-observability"
+  - "observability/opentelemetry-vendor-pipeline"
+  - "backend/rate-limiting"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/treblle
+      name: Treblle
+    - type: package
+      id: package/treblle-free
+      name: Treblle Free
+    - type: package
+      id: package/treblle-starter
+      name: Treblle Starter
+    - type: package
+      id: package/treblle-team
+      name: Treblle Team
+    - type: capability
+      id: capability/api-intelligence
+      name: API Intelligence
+    - type: capability
+      id: capability/api-documentation
+      name: API Documentation
+    - type: capability
+      id: capability/api-analytics
+      name: API Analytics
+    - type: capability
+      id: capability/api-security
+      name: API Security
+    - type: capability
+      id: capability/api-governance
+      name: API Governance
+    - type: capability
+      id: capability/api-assistant
+      name: API Assistant
+  edges:
+    - type: locks_via
+      from: capability/api-intelligence
+      to: package/treblle-free
+    - type: locks_via
+      from: capability/api-documentation
+      to: package/treblle-free
+    - type: locks_via
+      from: capability/api-intelligence
+      to: package/treblle-starter
+    - type: locks_via
+      from: capability/api-documentation
+      to: package/treblle-starter
+    - type: locks_via
+      from: capability/api-analytics
+      to: package/treblle-starter
+    - type: locks_via
+      from: capability/api-intelligence
+      to: package/treblle-team
+    - type: locks_via
+      from: capability/api-security
+      to: package/treblle-team
+    - type: locks_via
+      from: capability/api-governance
+      to: package/treblle-team
+    - type: locks_via
+      from: capability/api-assistant
+      to: package/treblle-team
+    - type: locks_via
+      from: capability/api-documentation
+      to: package/treblle-team
+    - type: locks_via
+      from: capability/api-analytics
+      to: package/treblle-team

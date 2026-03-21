@@ -1,0 +1,328 @@
+id: "testing/e2e-testing-framework-playwright-vs-cypress-vs-selenium-2026"
+title: "E2E Testing Framework Adoption: Playwright vs Cypress vs Selenium
+  Breaking Changes 2026"
+problem: "Teams choosing or upgrading E2E test frameworks in 2026 must navigate
+  Playwright 1.58 removing _react/_vue selectors and the devtools launch option,
+  Cypress 15.x requiring Node.js 20+ after dropping Node.js 16 in Cypress 14
+  (January 2025) and Node.js 18 in Cypress 15 (August 2025), and Selenium 4.41
+  removing CDP for Firefox in 4.29 in favor of WebDriver BiDi. Test suite
+  migration scope, CI runner OS compatibility, and browser coverage vary
+  significantly by framework and current version."
+context:
+  - "testing"
+  - "e2e"
+  - "playwright"
+  - "cypress"
+  - "selenium"
+  - "ci-cd"
+  - "migration"
+  - "version-upgrade"
+constraints:
+  - "enterprise"
+  - "small-team"
+  - "monorepo"
+  - "compliance"
+  - "high-scale"
+candidates:
+  - name: "Playwright 1.58"
+    summary: "As of 2026-03-16, Playwright 1.58.0 (released January 30, 2026) is the
+      latest stable version, requiring Node.js 20, 22, or 24 and macOS 14+ for
+      local runs. WebSocket routing via routeWebSocket() has been available
+      since v1.48; v1.58 removes the _react and _vue selectors, the :light
+      selector suffix, and the devtools option from browserType.launch(); Ubuntu
+      20.04 and Debian 11 lost WebKit support in v1.49, and macOS 13 WebKit was
+      discontinued in v1.58."
+    when_to_use: "Best for enterprise + compliance or high-scale + monorepo where
+      true cross-browser coverage (Chromium, Firefox, and WebKit) and CI
+      parallelization via sharding are non-negotiable. The single most decisive
+      factor is WebKit/Safari engine coverage: Playwright is the only framework
+      in this comparison that runs tests against the WebKit engine."
+    tradeoffs: "Supports all three major browser engines with real parallel test
+      isolation, a built-in trace viewer, and first-class CI sharding; official
+      docs ship ready-made config for GitHub Actions, Azure Pipelines, CircleCI,
+      Jenkins, Bitbucket, and GitLab. The tradeoff is that upgrading through
+      recent minor versions requires auditing selectors (_react/_vue removed in
+      1.58, devtools option removed, headless Chrome switched to Chrome for
+      Testing builds in 1.57) and confirming CI runner OS meets the updated
+      minimums."
+    cautions: "Teams whose locator strategies depend on _react or _vue selectors
+      must replace them before upgrading to 1.58, as those were removed with no
+      direct drop-in; the official release notes point to role and text-based
+      locators as replacements. CI pipelines on Ubuntu 20.04 or Debian 11 will
+      silently lose WebKit test coverage as of v1.49 unless the runner image is
+      upgraded; the recommended CI setup is npx playwright install --with-deps
+      run after npm ci, with workers set to 1 for stability."
+    links:
+      - "https://playwright.dev/docs/intro"
+      - "https://playwright.dev/docs/release-notes"
+      - "https://playwright.dev/docs/api/class-websocketroute"
+      - "https://playwright.dev/docs/ci"
+  - name: "Cypress 15.x"
+    summary: "As of 2026-03-16, Cypress 15.12.0 (released March 13, 2026) is the
+      latest stable version. Cypress 14.0.0 (January 16, 2025) dropped Node.js
+      16 and 21, required cy.origin() for all cross-subdomain tests due to
+      Chrome's document.domain deprecation, and removed React <18 and Vue 2
+      component testing harnesses; Cypress 15.0.0 (August 20, 2025) then dropped
+      Node.js 18 and 23, replaced ts-node with tsx, and deprecated Cypress.env()
+      in favor of cy.env(). There is no WebKit or Safari support, and only the
+      latest three major versions of Chrome, Firefox, and Edge are officially
+      supported."
+    when_to_use: "Best for small-team + low-ops where interactive time-travel
+      debugging and a low learning curve accelerate test adoption, or for
+      projects using Cypress component testing alongside E2E in the same
+      toolchain. The single most decisive factor is the Node.js floor: Cypress
+      15.x requires Node.js 20 or higher and will not install on Node.js 18 or
+      lower."
+    tradeoffs: "Best-in-class developer experience with interactive test runner,
+      time-travel debugging, automatic waiting, and component testing built in;
+      the official migration guide covers each major version with explicit
+      steps. The tradeoff is no Safari/WebKit support, a narrow browser matrix
+      (latest 3 Chrome/Firefox/Edge only), and repeated Node.js floor bumps
+      across major releases (Node 16 dropped in Cypress 14, Node 18 dropped in
+      Cypress 15) that break CI images faster than competing frameworks."
+    cautions: "Tests that previously navigated across subdomains without cy.origin()
+      will break after upgrading past Cypress 14 because Chrome's
+      document.domain injection is gone and cy.origin() is now mandatory even
+      for same-superdomain hops. Linux CI runners on glibc < 2.28 (Ubuntu 18 and
+      earlier, RHEL 7, CentOS 7, Amazon Linux 2) cannot run Cypress 14+ prebuilt
+      binaries, and this failure is not always surfaced as a clear error until
+      binary extraction fails mid-pipeline."
+    links:
+      - "https://docs.cypress.io/app/references/changelog"
+      - "https://docs.cypress.io/app/references/migration-guide"
+      - "https://www.cypress.io/blog/cypress-14-is-here-see-whats-new"
+  - name: "Selenium WebDriver 4.41"
+    summary: "As of 2026-03-16, Selenium 4.41.0 (released February 20, 2026) is the
+      latest stable release across Java, Python, Ruby, .NET, and JavaScript
+      bindings. CDP support for Firefox was removed starting in Selenium 4.29
+      after Firefox 129 disabled CDP by default; teams using CDP on Firefox must
+      now use WebDriver BiDi, which is available across all language bindings.
+      Java teams using BiDi APIs must use the .module subpackage introduced in
+      4.19; the non-W3C NetworkConnection interface was removed in 4.30;
+      selenium-manager handles automatic browser and driver installation across
+      all bindings."
+    when_to_use: "Best for enterprise + compliance or high-scale polyglot
+      environments where test suites span Java, Python, Ruby, .NET, and
+      JavaScript and must target arbitrary browsers or legacy browser versions
+      through Selenium Grid. The single most decisive factor is language
+      ecosystem breadth: Selenium is the only framework in this comparison with
+      mature, officially maintained bindings for all five major languages."
+    tradeoffs: "Broadest language binding support, the only self-hosted Grid option
+      for distributed execution across real browsers, and the only framework
+      aligned with both W3C WebDriver and the emerging WebDriver BiDi
+      specification as the cross-vendor standard. The tradeoff is the most
+      operational overhead: BiDi migration from CDP, per-language binding
+      differences, and Grid setup require more configuration work than
+      Playwright or Cypress, even after selenium-manager reduces driver
+      friction."
+    cautions: "Firefox automation that relied on CDP will fail at runtime on Firefox
+      129+ if teams did not migrate to WebDriver BiDi before upgrading past
+      Selenium 4.29, because the removal is not a compile-time error—CDP
+      commands are dispatched and rejected silently until a runtime exception
+      surfaces. Java teams referencing BiDi classes such as
+      org.openqa.selenium.bidi.LogInspector without the .module subpackage added
+      in 4.19 will see ClassNotFoundException at startup, which IDEs may mask by
+      still completing the old import path from cached indexes."
+    links:
+      - "https://www.selenium.dev/downloads/"
+      - "https://www.selenium.dev/documentation/webdriver/bidi/"
+      - "https://www.selenium.dev/blog/2025/remove-cdp-firefox/"
+      - "https://www.selenium.dev/blog/2024/bidi-java-breaking-change/"
+      - "https://www.selenium.dev/documentation/webdriver/getting_started/"
+tags:
+  - "testing"
+  - "e2e"
+  - "playwright"
+  - "cypress"
+  - "selenium"
+  - "webdriver"
+  - "browser-testing"
+  - "ci-cd"
+  - "migration"
+  - "breaking-changes"
+  - "websocket"
+aliases:
+  - "playwright vs cypress vs selenium 2026"
+  - "e2e framework comparison 2026"
+  - "playwright 1.58 breaking changes"
+  - "cypress 14 node 16 dropped"
+  - "cypress 15 node 18 dropped"
+  - "selenium bidi migration"
+  - "selenium cdp firefox removed"
+  - "routeWebSocket playwright"
+  - "cypress cy.origin subdomain"
+  - "end-to-end test framework upgrade"
+related_cards:
+  - "testing/e2e-testing"
+  - testing/sauce-labs-web-vs-real-device-cloud-pricing-2026
+  - testing/playwright-headless-chrome-breaking-changes-2025-2026
+  - testing/grafana-k6-browser-recorder-deprecation-2026
+  - testing/browserstack-percy-free-vs-paid-screenshot-limits-2026
+  - testing/mabl-vs-qawolf-vs-testim-e2e-ai-pricing-2026
+  - testing/playwright-cloud-vs-managed-browser-grid-2026
+  - testing/browserbase-free-vs-developer-vs-scale-after-2025-price-cut-2026
+  - testing/browserbase-vs-browserless-browser-session-pricing-2026
+  - testing/cypress-cloud-results-overage-vs-self-hosted-reporting-2026
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-08-31"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/playwright
+      name: Playwright
+      category: e2e testing framework
+    - type: framework
+      id: framework/playwright/1.58.0
+      name: Playwright 1.58.0
+      category: e2e testing framework
+    - type: framework
+      id: framework/cypress
+      name: Cypress
+      category: e2e testing framework
+    - type: framework
+      id: framework/cypress/14.0.0
+      name: Cypress 14.0.0
+      category: e2e testing framework
+    - type: framework
+      id: framework/cypress/15.x
+      name: Cypress 15.x
+      category: e2e testing framework
+    - type: framework
+      id: framework/cypress/15.0.0
+      name: Cypress 15.0.0
+      category: e2e testing framework
+    - type: framework
+      id: framework/selenium
+      name: Selenium WebDriver
+      category: e2e testing framework
+    - type: framework
+      id: framework/selenium/4.29
+      name: Selenium 4.29
+      category: e2e testing framework
+    - type: framework
+      id: framework/selenium/4.30
+      name: Selenium 4.30
+      category: e2e testing framework
+    - type: framework
+      id: framework/selenium/4.41.0
+      name: Selenium 4.41.0
+      category: e2e testing framework
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+      category: javascript runtime
+    - type: runtime
+      id: runtime/nodejs/16
+      name: Node.js 16
+      category: javascript runtime
+    - type: runtime
+      id: runtime/nodejs/18
+      name: Node.js 18
+      category: javascript runtime
+    - type: runtime
+      id: runtime/nodejs/20plus
+      name: Node.js 20+
+      category: javascript runtime
+    - type: protocol
+      id: protocol/cdp
+      name: CDP
+      standard: Chrome DevTools Protocol
+    - type: protocol
+      id: protocol/webdriver-bidi
+      name: WebDriver BiDi
+      standard: WebDriver BiDi
+    - type: engine
+      id: engine/webkit
+      name: WebKit
+      category: browser engine
+    - type: engine
+      id: engine/firefox
+      name: Firefox
+      category: browser
+    - type: capability
+      id: capability/react-selector
+      name: _react selector
+      category: locator
+    - type: capability
+      id: capability/vue-selector
+      name: _vue selector
+      category: locator
+    - type: capability
+      id: capability/devtools-launch-option
+      name: devtools launch option
+      category: browser launch option
+    - type: capability
+      id: capability/networkconnection-interface
+      name: NetworkConnection interface
+      category: API
+    - type: package
+      id: package/selenium-java-bidi-module-subpackage
+      name: .module subpackage
+      category: Java package path
+  edges:
+    - type: requires_version
+      from: framework/playwright/1.58.0
+      to: runtime/nodejs
+      version_spec: 20, 22, or 24
+    - type: requires_version
+      from: framework/cypress/15.x
+      to: runtime/nodejs/20plus
+      version_spec: 20+
+    - type: breaking_change_in
+      from: runtime/nodejs/16
+      to: framework/cypress/14.0.0
+      change: dropped
+    - type: eol_date
+      from: runtime/nodejs/16
+      to: null
+      date: 2025-01-16
+      label: dropped in Cypress 14.0.0
+    - type: breaking_change_in
+      from: runtime/nodejs/18
+      to: framework/cypress/15.0.0
+      change: dropped
+    - type: eol_date
+      from: runtime/nodejs/18
+      to: null
+      date: 2025-08-20
+      label: dropped in Cypress 15.0.0
+    - type: breaking_change_in
+      from: capability/react-selector
+      to: framework/playwright/1.58.0
+      change: removed
+    - type: breaking_change_in
+      from: capability/vue-selector
+      to: framework/playwright/1.58.0
+      change: removed
+    - type: breaking_change_in
+      from: capability/devtools-launch-option
+      to: framework/playwright/1.58.0
+      change: removed from browserType.launch()
+    - type: breaking_change_in
+      from: engine/webkit
+      to: framework/playwright/1.58.0
+      change: macOS 13 WebKit discontinued
+    - type: breaking_change_in
+      from: engine/webkit
+      to: framework/playwright
+      change: Ubuntu 20.04 and Debian 11 lost WebKit support in v1.49
+    - type: breaking_change_in
+      from: protocol/cdp
+      to: framework/selenium/4.29
+      change: removed for Firefox
+    - type: locks_via
+      from: engine/firefox
+      to: protocol/webdriver-bidi
+      reason: Firefox automation must use WebDriver BiDi after CDP removal in Selenium
+        4.29
+    - type: breaking_change_in
+      from: capability/networkconnection-interface
+      to: framework/selenium/4.30
+      change: removed
+    - type: requires_version
+      from: framework/selenium/4.41.0
+      to: package/selenium-java-bidi-module-subpackage
+      version_spec: Java teams using BiDi APIs must use .module subpackage introduced in 4.19

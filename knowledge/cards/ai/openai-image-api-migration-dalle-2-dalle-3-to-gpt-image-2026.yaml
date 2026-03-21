@@ -1,0 +1,208 @@
+id: "ai/openai-image-api-migration-dalle-2-dalle-3-to-gpt-image-2026"
+title: "OpenAI Image Stack Migration After DALL-E Deprecations"
+problem: "Decide whether to migrate image generation and editing flows from
+  DALL-E 2/3 to GPT Image models now or keep legacy integrations until shutdown,
+  balancing feature parity, pricing, and migration risk."
+context:
+  - "ai"
+  - "openai"
+  - "image-generation"
+  - "image-editing"
+  - "api-migration"
+  - "responses-api"
+  - "image-api"
+  - "dall-e"
+  - "gpt-image"
+constraints:
+  - "low-ops"
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+  - "serverless"
+  - "compliance"
+candidates:
+  - name: "Migrate now to GPT Image 1.5 on the Image API"
+    summary: 'As of 2026-03-15, OpenAI says `gpt-image-1.5` is its latest and most
+      advanced image generation model and recommends it for the best experience.
+      The official pricing page lists 1024x1024 image generation at "$0.009"
+      for low quality, "$0.034" for medium, and "$0.133" for high.'
+    when_to_use: "Best for low-ops + small-team or enterprise + compliance teams
+      where the main workload is single-prompt generation or editing rather than
+      conversational image workflows, and where better instruction following,
+      text rendering, detailed editing, and current-platform support matter more
+      than preserving DALL-E-specific behavior. As of 2026-03-15, this is the
+      clean default migration target if you want off deprecated models without
+      redesigning your product around multi-turn chat."
+    tradeoffs: "Compared with the Responses API, this is the simpler migration
+      because it stays close to legacy one-shot `images.generate` and
+      `images.edit` patterns, but you give up built-in multi-turn image context
+      and conversational editing flows. Compared with `gpt-image-1-mini`, you
+      get OpenAI's best image experience and stronger quality, but at materially
+      higher per-image cost, so it is a worse fit for bulk or background jobs
+      where price matters more than top-end output."
+    cautions: "OpenAI says you may need API Organization Verification before using
+      GPT Image models. High input fidelity uses more image input tokens per
+      request, and if you want conversational or iterative editing with image
+      context over multiple turns, OpenAI recommends the Responses API instead
+      of the plain Image API."
+    links:
+      - "https://developers.openai.com/api/docs/guides/image-generation"
+      - "https://developers.openai.com/api/docs/models/gpt-image-1.5"
+      - "https://developers.openai.com/api/docs/pricing"
+      - "https://developers.openai.com/api/docs/deprecations"
+  - name: "Migrate now to GPT Image via the Responses API"
+    summary: "As of 2026-03-15, OpenAI documents the Responses API as the preferred
+      option for conversational, editable image experiences with GPT Image. The
+      image generation tool supports `gpt-image-1.5`, `gpt-image-1`, and
+      `gpt-image-1-mini`, and the guide says Responses adds multi-turn editing
+      and support for image File IDs in context."
+    when_to_use: "Best for serverless + low-ops or small-team + real-time style
+      product flows where image generation is part of a conversation, an agent
+      loop, or an iterative editor, and where you want to keep image inputs and
+      outputs in context across turns. Choose this when migration is also a
+      product upgrade, not just a deprecated-model replacement."
+    tradeoffs: "Compared with the Image API, this gives you multi-turn editing and
+      richer context handling, but the integration is heavier because you must
+      adopt the Responses tool-call shape instead of a near-drop-in model swap.
+      It is also more operationally complex for simple one-shot generation or
+      editing paths, where the extra conversation state and orchestration add
+      migration work without much benefit. Compared with choosing
+      `gpt-image-1-mini` on either API surface, this candidate is about workflow
+      flexibility, not lower cost."
+    cautions: "OpenAI documents that if you force `action` to `edit` without
+      providing an image in context, the call returns an error. This path also
+      changes the integration shape compared with legacy `images.generate` or
+      `images.edit` flows, so it is a larger migration than a straight model
+      swap."
+    links:
+      - "https://developers.openai.com/api/docs/guides/image-generation"
+      - "https://developers.openai.com/api/docs/models/gpt-image-1.5"
+      - "https://developers.openai.com/api/docs/models/gpt-image-1-mini"
+      - "https://developers.openai.com/api/docs/deprecations"
+  - name: "Migrate cost-sensitive paths to gpt-image-1-mini"
+    summary: 'As of 2026-03-15, OpenAI describes `gpt-image-1-mini` as a
+      cost-efficient version of GPT Image and recommends it when image quality
+      is not a priority. The official pricing page lists 1024x1024 image
+      generation at "$0.005" for low quality, "$0.011" for medium, and
+      "$0.036" for high.'
+    when_to_use: "Best for cost-sensitive + high-scale or serverless + small-team
+      workloads where image generation volume matters more than top-end
+      fidelity, and where you want the GPT Image API surface now without paying
+      `gpt-image-1.5` rates. As of 2026-03-15, this is the pragmatic migration
+      target for bulk or background image jobs that do not need the best text
+      rendering or strongest prompt adherence."
+    tradeoffs: "This is the cheapest modern migration path, and lower cost is the
+      main reason to choose it. Compared with `gpt-image-1.5`, you are accepting
+      weaker image quality and a lower-priority option when text rendering,
+      prompt adherence, or premium visual output matter. Compared with moving to
+      the Responses API for richer workflows, `gpt-image-1-mini` does not solve
+      conversational product needs by itself; it mainly reduces spend while
+      keeping you on the current GPT Image stack."
+    cautions: 'OpenAI''s model page labels `gpt-image-1-mini` as cost-efficient but
+      also marks its speed as "Slowest," so do not assume it is the
+      latency-optimized option. The docs also position it as the lower-priority
+      choice when image quality matters; OpenAI recommends `gpt-image-1.5` for
+      the best experience.'
+    links:
+      - "https://developers.openai.com/api/docs/guides/image-generation"
+      - "https://developers.openai.com/api/docs/models/gpt-image-1-mini"
+      - "https://developers.openai.com/api/docs/pricing"
+      - "https://developers.openai.com/api/docs/deprecations"
+  - name: "Keep DALL-E 2 or DALL-E 3 only as a short-lived bridge until shutdown"
+    summary: 'As of 2026-03-15, this is a containment strategy, not OpenAI''s forward
+      path. OpenAI''s deprecations page says both `dall-e-2` and `dall-e-3` will
+      be removed on "2026-05-12" and recommends `gpt-image-1` or
+      `gpt-image-1-mini` as replacements.'
+    when_to_use: "Best only for frozen legacy + low-ops situations where you need a
+      brief bridge while scheduling migration work, especially if you still
+      depend on DALL-E-specific behavior such as DALL-E 2 image variations or an
+      existing DALL-E 2 mask-based flow that you cannot swap immediately. Use
+      this only when the integration is effectively in maintenance mode and you
+      can commit to removal before 2026-05-12."
+    tradeoffs: "DALL-E 2 still has official documentation for generations, edits,
+      and variations, and OpenAI's image guide calls out lower cost, concurrent
+      requests, and inpainting with a mask. DALL-E 3 remains the higher-quality
+      legacy generation-only option with larger published resolutions than
+      DALL-E 2, but it does not have image edits."
+    cautions: "Do not start new work on DALL-E 2 or DALL-E 3. OpenAI says DALL-E 3
+      image edits are not available and recommends GPT Image for editing, and
+      the guide says image variations are available for DALL-E 2 only. Both
+      models have a fixed shutdown date of 2026-05-12, so every week spent on
+      legacy code increases forced-migration risk."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations"
+      - "https://developers.openai.com/api/docs/guides/image-generation"
+      - "https://developers.openai.com/api/docs/models/dall-e-2"
+      - "https://developers.openai.com/api/docs/models/dall-e-3"
+tags:
+  - "ai"
+  - "openai"
+  - "image-generation"
+  - "image-editing"
+  - "image-api"
+  - "responses-api"
+  - "gpt-image"
+  - "gpt-image-1.5"
+  - "gpt-image-1-mini"
+  - "dall-e-2"
+  - "dall-e-3"
+  - "deprecation"
+  - "pricing"
+  - "migration"
+aliases:
+  - "openai image api migration"
+  - "dall-e deprecation migration"
+  - "dall-e 2 to gpt image"
+  - "dall-e 3 to gpt image"
+  - "gpt image pricing 2026"
+  - "openai image generation migration"
+  - "openai image edits migration"
+related_cards:
+  - "ai/openai-responses-api-migration-before-assistants-shutdown-2026"
+  - "ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026"
+  - "ai/ai-feature-cost-governance"
+  - "ai/model-fallback-strategy"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-05-01"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/dall-e-2
+      name: DALL-E 2
+      version: "2"
+    - type: package
+      id: package/dall-e-3
+      name: DALL-E 3
+      version: "3"
+    - type: package
+      id: package/gpt-image-1.5
+      name: gpt-image-1.5
+      version: "1.5"
+    - type: package
+      id: package/gpt-image-1-mini
+      name: gpt-image-1-mini
+      version: 1-mini
+  edges:
+    - type: eol_date
+      from: package/dall-e-2
+      to: null
+      date: 2026-05-12
+      successor: package/gpt-image-1
+    - type: eol_date
+      from: package/dall-e-3
+      to: null
+      date: 2026-05-12
+      successor: package/gpt-image-1
+    - type: breaking_change_in
+      from: package/gpt-image-1.5
+      to: null
+      change: DALL-E 2 image variations endpoint not available — removed capability
+      migration_path: use gpt-image-1.5 with edit action for similar results
+    - type: breaking_change_in
+      from: package/gpt-image-1-mini
+      to: null
+      change: marked as 'Slowest' speed — not latency-optimized despite lower cost
+      migration_path: use gpt-image-1.5 for latency-sensitive paths

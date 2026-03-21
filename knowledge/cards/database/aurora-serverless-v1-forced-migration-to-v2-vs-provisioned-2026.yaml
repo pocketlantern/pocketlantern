@@ -1,0 +1,194 @@
+id: database/aurora-serverless-v1-forced-migration-to-v2-vs-provisioned-2026
+title: "Aurora Serverless v1 Forced Migration: v2 vs Provisioned"
+problem: Choose how to handle remaining Aurora Serverless v1 estates after AWS
+  end-of-life behavior forces migration or conversion, including whether to land
+  on Serverless v2 or provisioned clusters under extension and version
+  constraints.
+context:
+  - database
+  - aws
+  - amazon-aurora
+  - serverless
+  - mysql
+  - postgresql
+  - migration
+  - engine-lifecycle
+constraints:
+  - serverless
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - high-scale
+  - compliance
+  - small-team
+candidates:
+  - name: Aurora Serverless v2 as the target landing zone
+    summary: "Best default if you still want an Aurora serverless operating model
+      after Aurora Serverless v1 end-of-life behavior. As of 2026-03-15, AWS
+      documents that unmigrated Aurora Serverless v1 clusters are migrated
+      during the maintenance window, but the path is never a direct v1-to-v2
+      conversion: there is always an intermediate provisioned stage first."
+    when_to_use: Best for serverless + low-ops or cost-sensitive + small-team teams
+      where workload is intermittent or unpredictable and you can run on Aurora
+      Serverless v2-supported engine versions. This is the cleanest end state
+      when you want pay-for-consumed-capacity pricing, reader support, and
+      modern Aurora features instead of freezing on a converted provisioned
+      cluster.
+    tradeoffs: "Aurora Serverless v2 bills in ACUs per second and AWS says 1 ACU has
+      approximately 2 GiB of memory with corresponding CPU and networking. It
+      scales in increments as small as 0.5 ACU, supports readers, and can be
+      used in all-serverless or mixed clusters. Auto-pause to 0 ACUs is
+      available only on newer minors: Aurora MySQL 3.08.0 and higher, or Aurora
+      PostgreSQL 13.15, 14.12, 15.7, and 16.3 and higher."
+    cautions: Do not plan around a direct mode switch from v1 to v2. AWS explicitly
+      says the upgrade always passes through provisioned first. Aurora MySQL v1
+      estates are especially constrained because the current Aurora Serverless
+      v1 availability page lists Aurora MySQL version 2.11.4 only, while Aurora
+      Serverless v2 starts at Aurora MySQL 3.02.0 and higher, so a MySQL
+      major-version jump is inherent. For production, AWS recommends using
+      Blue/Green Deployments for this upgrade path, with switchover downtime
+      typically under one minute.
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.upgrade.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.Aurora_Fea_Regions_DB-eng.Feature.ServerlessV2.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/blue-green-deployments.html
+      - https://aws.amazon.com/rds/aurora/pricing/
+  - name: Mixed cluster with a provisioned writer and Aurora Serverless v2 readers
+    summary: "Best compromise when the forced migration off v1 is really two
+      separate decisions: stabilize the write path first, then regain elasticity
+      on reads. As of 2026-03-15, AWS explicitly documents mixed-configuration
+      Aurora clusters that combine provisioned and Aurora Serverless v2
+      instances in the same cluster."
+    when_to_use: Best for high-scale + serverless or enterprise + real-time teams
+      where write demand is steady or high but read demand is bursty, or where
+      you want a lower-risk phased landing after the v1 forced conversion
+      behavior. Choose this when a provisioned writer gives you predictable
+      primary capacity, but serverless readers still help absorb unpredictable
+      read spikes without fully committing the whole cluster to provisioned
+      sizing.
+    tradeoffs: "This is an explicit middle ground: you keep a provisioned writer for
+      predictable write capacity and failover behavior, while using Aurora
+      Serverless v2 readers for bursty reads. Compared with a fully serverless
+      v2 cluster, you give up full-cluster elasticity on the write path;
+      compared with a fully provisioned cluster, you still accept ACU-based
+      reader behavior and mixed-capacity planning."
+    cautions: Mixed clusters still require careful reader layout. AWS says reader
+      promotion tiers 0 and 1 scale with the writer, while tiers 2 through 15
+      scale independently. If you are counting on auto-pause for cost control,
+      AWS also documents several blockers, including open client connections,
+      RDS Proxy, logical replication or binlog replication on primary paths,
+      Aurora Global Database roles, and zero-ETL integrations.
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.how-it-works.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.upgrade.html
+      - https://aws.amazon.com/rds/aurora/pricing/
+  - name: Stay on fully provisioned Aurora after conversion, then upgrade on your
+      own schedule
+    summary: Best fallback when version or workload constraints make a clean Aurora
+      Serverless v2 landing too risky right now. As of 2026-03-15, AWS documents
+      both a manual Aurora Serverless v1-to-provisioned conversion path and an
+      automatic fallback where failed v1 forced migrations convert to
+      provisioned clusters with the equivalent engine version during the
+      maintenance window.
+    when_to_use: Best for enterprise + compliance or cost-sensitive + high-scale
+      teams with steady utilization, reservation economics, or a need to
+      separate the engine-mode change from a later engine-version upgrade. This
+      is the pragmatic landing zone when you need the most predictable cost
+      model, want Provisioned Reserved Instances for steady-state fleets, or
+      need to hold a converted cluster stable before tackling a MySQL 5.7-to-8.0
+      or Aurora PostgreSQL support-window change.
+    tradeoffs: Provisioned Aurora gives simpler capacity forecasting because pricing
+      is per DB instance-hour, with On-Demand or Reserved Instance options. As
+      of 2026-03-15, the AWS Aurora pricing page says 1-year Reserved Instances
+      provide discounts up to 45 percent and 3-year Reserved Instances provide
+      discounts of up to 66 percent over On-Demand for steady-state usage. This
+      model is usually easier to budget, but you give up
+      pay-for-consumed-capacity behavior and must size the fleet yourself.
+    cautions: "The v1-to-provisioned conversion is not a lightweight no-op. AWS says
+      it is applied immediately, cannot be undone as part of the same operation,
+      cannot be combined with other modifications, creates a reader, promotes
+      that reader to writer, deletes the original v1 instance, and takes a
+      backup snapshot first. AWS also says the converted cluster uses the
+      current default DB minor engine version for provisioned Aurora. Check
+      engine support windows before deciding to park here: Aurora major versions
+      past standard support can incur RDS Extended Support charges, and Aurora
+      eventually auto-upgrades clusters that remain past the extended-support
+      window."
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.modifying.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/extended-support-charges.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.Versioning.html
+      - https://aws.amazon.com/rds/aurora/pricing/
+tags:
+  - database
+  - aws
+  - amazon-aurora
+  - aurora-serverless-v1
+  - aurora-serverless-v2
+  - aurora-provisioned
+  - rds-extended-support
+  - mysql
+  - postgresql
+  - migration
+  - upgrade
+aliases:
+  - aurora serverless v1 end of life
+  - aurora serverless v1 forced migration
+  - aurora serverless v1 to v2
+  - aurora serverless v1 to provisioned
+  - aurora mysql 5.7 to v3
+  - aurora postgres 13 serverless v2
+  - aurora extended support after serverless v1
+related_cards:
+  - database/managed-postgres-major-upgrade-with-extension-compatibility-2026
+  - database/postgres-major-version-upgrade
+  - database/aurora-postgresql-17-5-lts-vs-16-after-256-tib-storage-limit-2025
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-01
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/aurora-serverless-v1
+      name: Aurora Serverless v1
+      version: v1
+    - type: package
+      id: package/aurora-serverless-v2
+      name: Aurora Serverless v2
+      version: v2
+    - type: package
+      id: package/aurora-mysql-3.02.0
+      name: Aurora MySQL 3.02.0+ (Serverless v2 min)
+      version: 3.02.0
+  edges:
+    - type: eol_date
+      from: package/aurora-serverless-v1
+      to: null
+      date: forced migration during maintenance window
+      successor: package/aurora-provisioned
+    - type: requires_version
+      from: package/aurora-serverless-v2
+      to: package/aurora-mysql-3.02.0
+      min_version: 3.02.0
+      reason: Aurora Serverless v2 minimum for Aurora MySQL
+    - type: breaking_change_in
+      from: package/aurora-serverless-v2
+      to: null
+      change: auto-pause to 0 ACUs requires Aurora MySQL 3.08.0+, or Aurora PostgreSQL
+        13.15, 14.12, 15.7, 16.3 and higher
+      migration_path: verify engine minor version supports auto-pause before relying
+        on it for cost control
+    - type: breaking_change_in
+      from: package/aurora-serverless-v2
+      to: null
+      change: auto-pause blocked by open client connections, RDS Proxy, logical
+        replication, binlog replication, Aurora Global Database, and zero-ETL
+        integrations
+      migration_path: audit auto-pause blockers before assuming cost savings from
+        pause behavior

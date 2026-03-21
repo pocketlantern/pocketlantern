@@ -1,0 +1,175 @@
+id: serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+title: "Vercel Fluid Compute vs Classic Functions: Cost and Concurrency (2026)"
+problem: Choose between Fluid Compute and classic serverless execution models
+  based on burstiness, latency sensitivity, memory duration, background work,
+  and the latest platform pricing and concurrency semantics.
+context:
+  - vercel
+  - serverless
+  - functions
+  - pricing
+  - concurrency
+  - background-jobs
+  - nextjs
+constraints:
+  - serverless
+  - low-ops
+  - cost-sensitive
+  - small-team
+  - high-scale
+  - real-time
+  - enterprise
+candidates:
+  - name: Enable Fluid Compute
+    summary: As of 2026-03-15, Fluid Compute is the default for new Vercel projects
+      and uses active CPU, provisioned memory, and invocation pricing instead of
+      legacy wall-clock duration billing. Official docs state that multiple
+      invocations can share one instance, Vercel prioritizes idle resources
+      before allocating new ones, and U.S. regional pricing starts at $0.128 per
+      active CPU-hour and $0.0106 per GB-hour in `iad1`, `cle1`, and `pdx1`.
+    when_to_use: Best for serverless + high-scale or real-time + low-ops where
+      traffic is bursty, requests spend meaningful time waiting on databases,
+      APIs, or AI calls, cold-start sensitivity matters, and you want longer
+      request windows or post-response work. Prefer this as of 2026-03-15 when
+      you need Node.js or Python functions to run up to 300 seconds on Hobby or
+      up to 800 seconds on Pro or Enterprise, and you want to use `waitUntil()`
+      for background tasks after sending the response.
+    tradeoffs: Fluid Compute separates active CPU billing from provisioned memory
+      billing, and Vercel documents that CPU billing pauses while your code
+      waits on external services. It also allows optimized concurrency inside
+      one instance, which can reduce cold starts and lower resource usage for
+      I/O-bound workloads. The tradeoff is that provisioned memory is billed for
+      the full instance lifetime until the last in-flight request finishes, even
+      while requests are waiting on I/O.
+    cautions: "Shared-instance concurrency changes operational behavior: Vercel
+      documents that multiple invocations can run concurrently in the same
+      process, and file descriptors are limited to 1,024 across all concurrent
+      executions on a function instance. Use care with global state, database
+      pools, and socket-heavy code. Pricing is region-dependent, so cost
+      estimates should use the exact regions you run in. New projects use Fluid
+      Compute by default, so choosing classic requires an explicit opt-out."
+    links:
+      - https://vercel.com/docs/fluid-compute
+      - https://vercel.com/docs/functions/usage-and-pricing
+      - https://vercel.com/docs/functions/limitations
+      - https://vercel.com/docs/functions/functions-api-reference
+      - https://vercel.com/docs/functions
+  - name: Keep Classic Functions (Disable Fluid Compute)
+    summary: As of 2026-03-15, classic Vercel Functions use the legacy billing model
+      for projects that do not use Fluid Compute. Official docs describe this as
+      wall-clock duration billing for the Node.js runtime in GB-hours, with
+      Hobby including the first 100 GB-hours and 100,000 invocations, and Pro
+      on-demand pricing at $0.18 per GB-hour plus $0.60 per 1,000,000
+      invocations.
+    when_to_use: Best for serverless + cost-sensitive or enterprise + compliance
+      where requests are short, predictable, and mostly CPU-active rather than
+      waiting on external services, and you want the older per-invocation
+      microVM isolation model. Choose this only when you intentionally do not
+      want Fluid Compute's shared-instance concurrency, your request lifetimes
+      fit the lower classic limits, and you have verified that wall-clock
+      billing still matches your workload better as of 2026-03-15.
+    tradeoffs: Classic Functions keep the more traditional serverless isolation
+      model that Vercel documents as microVM-based per invocation. This can be
+      simpler to reason about for some workloads, but wall-clock billing
+      includes time spent waiting for external services or streamed responses,
+      and duration limits are materially lower than with Fluid Compute on Hobby
+      and Pro.
+    cautions: All new projects use Fluid Compute by default, so classic is now a
+      legacy choice. Official limits are 10 seconds default and 60 seconds max
+      on Hobby, 15 seconds default and 300 seconds max on Pro, and 15 seconds
+      default and 900 seconds max on Enterprise when Fluid Compute is disabled.
+      Vercel also documents burst concurrency scaling of 1,000 concurrent
+      executions per 10 seconds per region, that large surges can take several
+      minutes to scale, and that exceeding limits can return `503
+      FUNCTION_THROTTLED`.
+    links:
+      - https://vercel.com/docs/functions/usage-and-pricing/legacy-pricing
+      - https://vercel.com/docs/functions/limitations
+      - https://vercel.com/docs/functions/runtimes/concurrency-scaling
+      - https://vercel.com/docs/fluid-compute
+tags:
+  - vercel
+  - vercel-functions
+  - fluid-compute
+  - pricing
+  - concurrency
+  - nextjs
+aliases:
+  - vercel fluid compute pricing
+  - vercel classic functions pricing
+  - vercel functions wall clock billing
+  - vercel active cpu pricing
+  - vercel fluid compute concurrency
+  - vercel waituntil background work
+  - disable fluid compute vercel
+related_cards:
+  - deployment/preview-environments-cost-governance
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - serverless/cloudflare-workers-vs-lambda
+  - deployment/vercel-edge-functions-and-middleware-deprecation-to-functions-and-routing-middleware-2025
+  - infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+  - runtime/vercel-fluid-vs-legacy-functions-2026
+  - runtime/vercel-fluid-regional-cost-bands-2026
+  - web/vercel-function-duration-limits-with-fluid-compute-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-01
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: capability
+      id: capability/fluid-compute
+      name: Fluid Compute
+      category: serverless_execution_model
+    - type: capability
+      id: capability/classic-functions
+      name: Classic Functions
+      category: serverless_execution_model
+    - type: capability
+      id: capability/shared-instance-concurrency
+      name: shared-instance concurrency
+      category: concurrency_model
+    - type: capability
+      id: capability/explicit-opt-out
+      name: explicit opt-out
+      category: configuration
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: runtime
+      id: runtime/python
+      name: Python
+    - type: capability
+      id: capability/waituntil
+      name: waitUntil()
+      category: background_work
+  edges:
+    - type: breaking_change_in
+      from: capability/fluid-compute
+      to: capability/shared-instance-concurrency
+      summary: Multiple invocations can run concurrently in the same process under
+        Fluid Compute.
+    - type: locks_via
+      from: capability/classic-functions
+      to: capability/explicit-opt-out
+      mechanism: Choosing classic requires an explicit opt-out because new projects
+        use Fluid Compute by default.
+    - type: requires_version
+      from: capability/waituntil
+      to: capability/fluid-compute
+      requirement: Use Fluid Compute when you want to use waitUntil() for background
+        tasks after sending the response.
+    - type: requires_version
+      from: capability/fluid-compute
+      to: runtime/nodejs
+      requirement: Fluid Compute is described for Node.js functions running up to
+        plan-specific limits.
+    - type: requires_version
+      from: capability/fluid-compute
+      to: runtime/python
+      requirement: Fluid Compute is described for Python functions running up to
+        plan-specific limits.

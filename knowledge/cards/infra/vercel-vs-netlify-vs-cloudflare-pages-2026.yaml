@@ -1,0 +1,139 @@
+id: infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+title: "Vercel vs Netlify vs Cloudflare Pages: Frontend Hosting Platforms (2026)"
+problem: Choosing a frontend hosting and deployment platform for a B2B SaaS
+  product, considering pricing models, bandwidth costs, and serverless function
+  limits.
+context:
+  - hosting
+  - deployment
+  - frontend
+  - serverless
+  - saas
+constraints:
+  - serverless
+  - cost-sensitive
+  - small-team
+  - low-ops
+candidates:
+  - name: Vercel
+    summary: Next.js-native hosting platform. Pro plan $20/seat/month with
+      credit-based billing since September 2025 restructuring. 1 TB Fast Data
+      Transfer included.
+    when_to_use: When you're building with Next.js and want the tightest framework
+      integration (ISR, RSC, Server Actions). Best for small-team + serverless
+      where developer velocity matters most.
+    tradeoffs: Best DX for Next.js but most expensive at scale. Credit-based model
+      since Sep 2025 makes costs more predictable but overage at $0.15/GB beyond
+      1 TB adds up fast — 1.5 TB monthly traffic means $75 overage.
+    cautions: "Pro plan: $20/seat/month, 1 TB bandwidth, 10M edge requests, $20
+      monthly credits for overages. Hobby plan not for commercial use.
+      Enterprise pricing is opaque — get quotes early."
+    links:
+      - https://vercel.com/pricing
+      - https://vercel.com/docs/pricing
+  - name: Netlify
+    summary: JAMstack pioneer with credit-based pricing since September 2025. Pro
+      plan $19/member/month with 1 TB bandwidth and 25K build minutes.
+    when_to_use: When you want framework-agnostic hosting with strong build pipeline
+      and form/identity add-ons. Best for teams using Astro, SvelteKit, or other
+      non-Next.js frameworks.
+    tradeoffs: More framework-agnostic than Vercel but Next.js support lags.
+      Generous build minutes (25K vs Vercel's credit-based). Per-seat pricing
+      adds up for larger teams.
+    cautions: "Pro: $19/member/month, 1 TB bandwidth, 25K build minutes, 3
+      concurrent builds. Free plan: 100 GB bandwidth, 300 build minutes. Legacy
+      plans being phased out — new accounts get credit-based plans."
+    links:
+      - https://www.netlify.com/pricing/
+      - https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/
+  - name: Cloudflare Pages
+    summary: Static site and full-stack hosting on Cloudflare's edge network. Free
+      tier with unlimited bandwidth and 500 builds/month. Functions billed as
+      Workers requests.
+    when_to_use: When bandwidth cost is critical — CF Pages has unlimited free
+      bandwidth vs $0.15/GB on Vercel. Best for cost-sensitive deployments or
+      high-traffic marketing sites alongside your SaaS.
+    tradeoffs: Unlimited free bandwidth is unmatched, but DX for full-stack apps is
+      rougher than Vercel/Netlify. Functions run as Workers ($5/month paid plan
+      for 10M requests). No built-in preview comments or analytics.
+    cautions: "Free: unlimited bandwidth, 500 builds/month, 100K Workers
+      requests/day. Paid Workers: $5/month for 10M requests. Durable Objects
+      storage billing enabled Jan 2026. Pages Functions = Workers under the
+      hood."
+    links:
+      - https://developers.cloudflare.com/pages/functions/pricing/
+      - https://developers.cloudflare.com/workers/platform/pricing/
+tags:
+  - hosting
+  - deployment
+  - vercel
+  - netlify
+  - cloudflare
+  - frontend
+  - comparison
+  - pricing
+aliases:
+  - vercel vs netlify
+  - cloudflare pages vs vercel
+  - frontend hosting
+  - deployment platform 2026
+  - jamstack hosting
+related_cards:
+  - serverless/vercel-edge-vs-node-runtime
+  - serverless/nextjs-platform-lockin
+  - deployment/preview-environments-cost-governance
+  - serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+  - deployment/vercel-edge-config-per-unit-pricing-vs-redis-config-store-2026
+  - frontend/static-site-generation-astro-5-vs-nextjs-16-vs-remix-3-2026
+  - infra/cdn-cost-optimization-bunny-vs-cloudflare-vs-aws-cloudfront-2026
+  - web/netlify-bandwidth-build-minutes-and-seat-pricing-2026
+  - runtime/netlify-credit-based-functions-pricing-2026
+  - runtime/vercel-fluid-vs-legacy-functions-2026
+  - runtime/vercel-fluid-regional-cost-bands-2026
+  - web/cloudflare-pages-to-workers-migration-after-file-limit-and-static-asset-changes-2026
+tier: "core"
+status: active
+updated: 2026-03-15
+review_by: 2026-08-03
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+      category: hosting
+    - type: vendor
+      id: vendor/cloudflare-pages
+      name: Cloudflare Pages
+      category: hosting
+    - type: capability
+      id: capability/edge-functions
+      name: Edge/Serverless Functions
+    - type: protocol
+      id: protocol/workers
+      name: Cloudflare Workers
+      standard: false
+    - type: protocol
+      id: protocol/durable-objects
+      name: Durable Objects
+      standard: false
+  edges:
+    - type: locks_via
+      from: vendor/vercel
+      to: capability/edge-functions
+      surface: Tightest Next.js integration (ISR, RSC, Server Actions); credit-based
+        billing since Sep 2025; Hobby plan not for commercial use; Enterprise
+        pricing opaque
+      severity: medium
+    - type: locks_via
+      from: vendor/cloudflare-pages
+      to: protocol/workers
+      surface: Functions run as Workers runtime; Durable Objects storage billing
+        enabled Jan 2026
+      severity: medium
+    - type: locks_via
+      from: vendor/cloudflare-pages
+      to: protocol/durable-objects
+      surface: Durable Objects is proprietary stateful edge primitive; storage billing
+        enabled Jan 2026; no equivalent in other platforms
+      severity: high

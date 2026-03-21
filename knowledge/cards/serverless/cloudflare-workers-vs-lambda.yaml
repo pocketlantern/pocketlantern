@@ -1,0 +1,180 @@
+id: serverless/cloudflare-workers-vs-lambda
+title: Cloudflare Workers vs AWS Lambda for API Workloads
+problem: Decide between Cloudflare Workers and AWS Lambda for latency-sensitive
+  APIs given current runtime limits, networking constraints, durable state
+  options, observability tooling, and pricing changes.
+context:
+  - api
+  - serverless
+  - edge
+  - observability
+  - stateful workloads
+constraints:
+  - serverless
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - real-time
+  - compliance
+candidates:
+  - name: Cloudflare Workers
+    summary: "Edge-first isolate runtime for globally distributed APIs with very low
+      user-to-compute latency. As of 2026-03-14, Workers Paid uses the Standard
+      pricing model by default: $5/month minimum, 10M included requests then
+      $0.30/million, and 30M included CPU ms then $0.02/million; HTTP duration
+      has no hard limit while the client stays connected, but CPU time is 10 ms
+      on Free and defaults to 30s on Paid, configurable up to 5 minutes."
+    when_to_use: Choose this for latency-sensitive public APIs, request/response
+      transforms, auth gateways, geo-distributed personalization, and small-team
+      + low-ops + serverless setups where global edge placement matters more
+      than deep VPC integration. Best fit when you want state close to users via
+      Durable Objects, can work within a V8/isolate model, and do not need
+      private subnet access or heavyweight Node/container assumptions.
+    tradeoffs: "Strong global latency profile and simple edge deployment. Durable
+      Objects give transactional strongly consistent per-object state, while KV
+      is eventually consistent and better for read-heavy caches/config; D1 adds
+      serverless SQLite-style relational storage. Built-in logs, traces,
+      metrics, Tail Workers, and OTLP export reduce observability setup.
+      Networking is more constrained than Lambda: only six simultaneous outbound
+      connections per top-level request, and there is no AWS-style VPC
+      attachment model for reaching private subnets."
+    cautions: Do not assume full Node.js or traditional server semantics. Legacy
+      Bundled/Unbound plans are deprecated for new accounts, Durable Objects add
+      separate request/duration/storage billing, and KV propagation can take 60
+      seconds or more across locations. If your API depends on private VPC
+      resources, long-lived TCP-heavy fan-out, or libraries that expect
+      unrestricted Node/container behavior, validate those assumptions early.
+    links:
+      - https://developers.cloudflare.com/workers/platform/limits/
+      - https://developers.cloudflare.com/workers/platform/pricing/
+      - https://developers.cloudflare.com/workers/observability/
+      - https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/
+      - https://developers.cloudflare.com/kv/concepts/how-kv-works/
+  - name: AWS Lambda
+    summary: Regional serverless compute with broad AWS integration and stronger
+      private-network/compliance options than edge-isolate platforms. As of
+      2026-03-14, Lambda pricing remains request-plus-duration based with 1M
+      free requests and 400,000 GB-seconds per month in the free tier; request
+      pricing is $0.20 per million, while total cost also depends on memory,
+      duration, architecture, region, and optional features such as Provisioned
+      Concurrency and logging.
+    when_to_use: Choose this for latency-sensitive APIs that must live inside AWS,
+      need VPC access to RDS/ElastiCache/private services, or require enterprise
+      + compliance + serverless constraints with mature IAM, networking, and
+      service integrations. Best fit when regional latency is acceptable or you
+      can pay for cold-start mitigation, and when durable state should live in
+      external services such as DynamoDB, S3, SQS, EFS, or other AWS data planes
+      rather than inside the function runtime.
+    tradeoffs: "Lambda is stateless by design, scales deeply inside AWS, and
+      supports up to 15-minute execution with default regional concurrency of
+      1,000 and higher by quota increase. Observability is richer but more
+      composable: CloudWatch metrics/logs, X-Ray, Lambda Insights, and
+      Application Signals are available, but they add more moving parts and cost
+      surfaces than Workers' integrated platform view. For cold-start-sensitive
+      APIs, Provisioned Concurrency can deliver double-digit millisecond
+      startup, while SnapStart helps supported runtimes such as Java 11+, Python
+      3.12+, and .NET 8+."
+    cautions: "Attaching a function to a VPC changes its network behavior: by
+      default Lambda has public internet access, but once attached it can only
+      reach resources in that VPC unless you configure internet egress such as
+      NAT. Provisioned Concurrency adds separate charges, SnapStart does not
+      support Node.js runtimes such as nodejs24.x, and CloudWatch observability
+      is billed separately; Lambda logs have used CloudWatch's tiered pricing
+      model since May 1, 2025, with S3 and Firehose delivery options available."
+    links:
+      - https://aws.amazon.com/lambda/pricing/
+      - https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/lambda-monitoring.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/monitoring-application-signals.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/concepts-application-design.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-cloudwatch-tiered-pricing-additional-destinations-aws-lambda-logs/
+tags:
+  - infra
+  - api
+  - edge
+  - cloudflare-workers
+  - aws-lambda
+  - cloudflare
+  - aws
+  - comparison
+aliases:
+  - cloudflare workers vs lambda
+  - workers vs lambda
+  - edge workers vs lambda
+  - cloudflare edge vs aws lambda
+  - serverless api runtime comparison
+  - lambda cold starts vs workers
+  - cloudflare durable objects vs dynamodb lambda
+related_cards:
+  - infra/monitoring-observability
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - deployment/bluegreen-vs-canary-on-serverless
+  - serverless/nextjs-platform-lockin
+  - database/object-storage-s3-vs-r2-vs-gcs
+  - serverless/cold-start-mitigation-by-runtime
+  - serverless/cron-jobs-on-serverless
+  - serverless/file-upload-strategy-on-serverless
+  - serverless/websocket-vs-sse-on-serverless
+  - database/pgbouncer-vs-rds-proxy-vs-neon-pooling
+  - ai/mcp-server-hosting-and-distribution-2026
+  - serverless/cloudflare-workers-compatibility-date-and-nodejs-compat-upgrade-strategy
+  - serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+  - cloud/aws-public-ipv4-charge-avoidance-vpc-and-load-balancer-design-2026
+  - serverless/cloudflare-durable-objects-sqlite-storage-billing-enablement-2026
+  - serverless/cloudflare-browser-rendering-rest-vs-workers-bindings-pricing-2026
+  - infra/aws-lambda-log-destination-vs-cloudwatch-standard-vs-infrequent-access-vs-s3-firehose-2026
+  - backend/supabase-vs-firebase-baas-pricing-and-features-2026
+  - infra/kubernetes-vs-managed-serverless-cost-tradeoff-2026
+  - web/cloudflare-pages-to-workers-migration-after-file-limit-and-static-asset-changes-2026
+  - cloud/digitalocean-droplets-vs-app-platform-vs-functions-pricing-2026
+  - web/fastly-compute-vs-akamai-edgeworkers-vs-lambda-edge-pricing-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-09-14
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/cloudflare-workers
+      name: Cloudflare Workers
+    - type: framework
+      id: framework/aws-lambda
+      name: AWS Lambda
+    - type: capability
+      id: capability/aws-lambda-snapstart
+      name: AWS Lambda SnapStart
+    - type: runtime
+      id: runtime/java
+      name: Java
+    - type: runtime
+      id: runtime/python
+      name: Python
+    - type: runtime
+      id: runtime/dotnet
+      name: .NET
+    - type: capability
+      id: capability/cloudwatch-tiered-pricing-for-lambda-logs
+      name: CloudWatch tiered pricing for Lambda logs
+  edges:
+    - type: requires_version
+      from: capability/aws-lambda-snapstart
+      to: runtime/java
+      version: ">=11"
+    - type: requires_version
+      from: capability/aws-lambda-snapstart
+      to: runtime/python
+      version: ">=3.12"
+    - type: requires_version
+      from: capability/aws-lambda-snapstart
+      to: runtime/dotnet
+      version: ">=8"
+    - type: breaking_change_in
+      from: capability/cloudwatch-tiered-pricing-for-lambda-logs
+      to: framework/aws-lambda
+      date: 2025-05-01

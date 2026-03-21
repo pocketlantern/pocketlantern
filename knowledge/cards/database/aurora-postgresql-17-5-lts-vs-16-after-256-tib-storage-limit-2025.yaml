@@ -1,0 +1,225 @@
+id: database/aurora-postgresql-17-5-lts-vs-16-after-256-tib-storage-limit-2025
+title: Aurora PostgreSQL 17 Current Line vs 16 After 256 TiB Storage Limit
+  Increase 2025
+problem: Aurora PostgreSQL operators need help deciding whether the 17.x line is
+  worth adopting now that AWS doubled the storage ceiling to 256 TiB and changed
+  upgrade behavior, or whether to remain on 16.x for stability.
+context:
+  - database
+  - aws
+  - amazon-aurora
+  - aurora-postgresql
+  - postgresql-16
+  - postgresql-17
+  - engine-lifecycle
+  - major-version-upgrade
+  - minor-version-upgrade
+  - storage-scaling
+constraints:
+  - high-scale
+  - low-ops
+  - enterprise
+  - compliance
+  - cost-sensitive
+  - small-team
+  - microservices
+  - real-time
+candidates:
+  - name: Move to Aurora PostgreSQL 17 current line
+    summary: Best choice when you want PostgreSQL 17 features and the longer
+      major-version runway, not because of any Aurora LTS designation. As of
+      2026-03-15, AWS documents Aurora PostgreSQL 17 standard support through
+      2030-02-28. AWS also documents released 17 minors including 17.7, 17.6,
+      17.5, and 17.4, with 256 TiB storage eligibility starting at 17.5. AWS's
+      current Aurora PostgreSQL LTS page does not list any 17.x LTS release.
+    when_to_use: "Best for high-scale + real-time or enterprise + microservices
+      teams where a manual major upgrade is acceptable and you want PostgreSQL
+      17 capabilities such as JSON_TABLE, streaming-I/O-related performance
+      work, and improved logical replication upgrade behavior. Use this when you
+      need 256 TiB anyway and want the extra year of Aurora major-version
+      standard support versus Aurora PostgreSQL 16. Accept that this is a
+      current-feature line rather than an LTS line. Pricing note as of
+      2026-03-15: Aurora version choice does not by itself change Aurora
+      Standard versus Aurora I/O-Optimized pricing; check the Aurora pricing
+      page for your chosen cluster configuration and Region."
+    tradeoffs: Aurora PostgreSQL 17 gives you the newest major-version feature set
+      AWS currently supports in Aurora, and 17.5 was the first 17.x minor that
+      unlocked the 256 TiB cluster-volume ceiling. PostgreSQL 17 upstream adds
+      JSON_TABLE, SQL/JSON constructors and query functions, sequential-read
+      improvements using streaming I/O, and logical replication improvements
+      including pg_upgrade preservation of logical replication slots and
+      subscription state for future upgrades from 17-and-later clusters. The
+      downside is that major upgrades are manual, extensions are upgraded
+      separately, and Aurora minor auto-upgrade behavior can move you to the
+      default minor version or a newer minor version rather than a specifically
+      pinned target.
+    cautions: Do not describe 17.5 as an Aurora LTS release as of 2026-03-15; AWS's
+      current LTS page lists 16.8 and 15.10 instead. Aurora major upgrades are
+      not automatic under normal operation, require testing, use pg_upgrade, and
+      still cause brief outages while reader instances are upgraded. PostgreSQL
+      17 also has compatibility changes that can break assumptions, including
+      maintenance operations now using a safe search_path, restrictions on
+      interval ago placement, removal of old_snapshot_threshold, and removal of
+      the adminpack extension. Aurora PostgreSQL engine upgrades do not upgrade
+      extensions at the same time.
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/aurorapostgresql-release-calendar.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Updates.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Upgrading.ExtensionUpgrades.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Limits.html
+      - https://www.postgresql.org/docs/release/17.0/
+      - https://aws.amazon.com/rds/aurora/pricing/
+  - name: Stay on Aurora PostgreSQL 16 current non-LTS line and upgrade to 16.9 or
+      higher
+    summary: Best default if your real requirement is the new 256 TiB storage
+      ceiling without taking a PostgreSQL 17 major-version jump yet. As of
+      2026-03-15, AWS documents that Aurora PostgreSQL 16.9 and higher get the
+      same 256 TiB maximum cluster volume as 17.5 and higher. Current released
+      Aurora 16 minors include 16.11, 16.10, 16.9, and 16.8.
+    when_to_use: "Best for high-scale + low-ops or enterprise + compliance teams
+      where the storage-limit increase matters now but major-version change risk
+      does not. Choose this when you want to stay on the PostgreSQL 16 major
+      line, pick up the 256 TiB limit by moving to 16.9 or later, and preserve a
+      simpler rollback and application-validation story than a 16-to-17 major
+      upgrade. Pricing note as of 2026-03-15: choose Aurora Standard or Aurora
+      I/O-Optimized based on I/O profile, because those storage modes drive cost
+      more than 16 versus 17."
+    tradeoffs: This is the pragmatic middle path. You get the doubled Aurora storage
+      ceiling at 16.9+, avoid a major-version migration for now, and can move to
+      later 16 minors such as 16.10 or 16.11 with longer minor-version support
+      windows than 16.9 itself. You give up PostgreSQL 17-only engine features
+      and the extra year of Aurora 17 major-version standard support. AWS also
+      documents that auto minor version upgrades can target the default minor
+      version or a newer minor version, so staying on 16 does not guarantee
+      exact-version pinning unless you manage upgrade settings intentionally.
+    cautions: Do not confuse Aurora PostgreSQL 16 current-line releases with Aurora
+      LTS. AWS marks 16.8 as the current Aurora PostgreSQL 16 LTS release, but
+      16.9 and higher are the releases that unlock 256 TiB. If you leave Auto
+      minor version upgrade enabled, Aurora typically schedules upgrades during
+      maintenance windows and may still perform mandatory upgrades at
+      end-of-support or for critical fixes. If you need the stability posture of
+      LTS, 16.9+ is already a different choice. Also remember that engine
+      upgrades and extension upgrades are separate tasks.
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Updates.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/aurorapostgresql-release-calendar.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Limits.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.Upgrading.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.Versioning.html
+      - https://aws.amazon.com/rds/aurora/pricing/
+  - name: Stay on Aurora PostgreSQL 16.8 LTS
+    summary: Best stability-first option when fewer engine upgrade cycles matter
+      more than the doubled storage limit. As of 2026-03-15, AWS's Aurora
+      PostgreSQL LTS page lists 16.8 as the current Aurora PostgreSQL 16 LTS
+      release, and the Aurora release calendar shows 16.8 LTS with Aurora end of
+      standard support on 2029-02-28.
+    when_to_use: "Best for enterprise + compliance or small-team + low-ops teams
+      where the database is hard to revalidate, 128 TiB is still enough, and
+      minimizing upgrade churn is more important than getting PostgreSQL 17
+      features or the new storage ceiling. Use this when your cluster has long
+      certification cycles, tightly controlled change windows, or
+      extension-heavy application behavior that makes even minor-version changes
+      expensive to retest. Pricing note as of 2026-03-15: this is a stability
+      decision, not a cheaper-version decision; check the Aurora pricing page
+      for your actual Standard versus I/O-Optimized and provisioned versus
+      Serverless costs."
+    tradeoffs: AWS says LTS releases let clusters stay on the same version longer
+      and undergo fewer upgrade cycles than non-LTS releases. LTS minor versions
+      include only bug fixes through patch releases for critical stability and
+      security issues, not new features released after the LTS version was
+      introduced. AWS also says clusters on an LTS minor are patched to the
+      latest patch version of that LTS release once a year, with more frequent
+      patching possible for critical fixes. The cost of this stability posture
+      is that 16.8 remains on the old 128 TiB storage ceiling and does not pick
+      up 16.9's 256 TiB storage capability.
+    cautions: If you want to remain on an LTS minor version for its lifecycle, AWS
+      says to disable automatic minor version upgrade on any DB instance in the
+      Aurora cluster. Even then, AWS can still apply required upgrades for
+      critical issues. Do not pick 16.8 LTS if your storage growth expects the
+      256 TiB limit, because AWS documents that only 17.5+, 16.9+, and 15.13+
+      qualify for the increased ceiling.
+    links:
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Updates.LTS.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/aurorapostgresql-release-calendar.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_Limits.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.VersionPolicy.Upgrading.html
+      - https://aws.amazon.com/rds/aurora/pricing/
+tags:
+  - database
+  - aws
+  - amazon-aurora
+  - aurora-postgresql
+  - postgresql
+  - postgresql-16
+  - postgresql-17
+  - lts
+  - storage-limit
+  - major-version-upgrade
+  - minor-version-upgrade
+  - engine-lifecycle
+aliases:
+  - aurora postgresql 17.5 vs 16
+  - aurora postgresql 17 lts
+  - aurora postgresql 16.8 lts vs 17
+  - aurora postgres 256 tib
+  - aurora postgres 128 tib to 256 tib
+  - aurora postgresql 16.9 storage limit
+  - aurora postgres upgrade to 17 or stay on 16
+related_cards:
+  - database/managed-postgres-major-upgrade-with-extension-compatibility-2026
+  - database/postgres-major-version-upgrade
+  - database/aurora-serverless-v1-forced-migration-to-v2-vs-provisioned-2026
+  - database/postgres-major-upgrade-extension-compatibility-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-11
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/aws-aurora
+      name: Amazon Aurora
+      category: database
+    - type: package
+      id: package/aurora-pg-17
+      name: Aurora PostgreSQL 17
+      version: "17"
+    - type: package
+      id: package/aurora-pg-16.8-lts
+      name: Aurora PostgreSQL 16.8 LTS
+      version: "16.8"
+  edges:
+    - type: eol_date
+      from: package/aurora-pg-17
+      to: null
+      date: 2030-02-28
+      successor: null
+    - type: eol_date
+      from: package/aurora-pg-16.8-lts
+      to: null
+      date: 2029-02-28
+      successor: package/aurora-pg-17
+    - type: breaking_change_in
+      from: package/aurora-pg-17
+      to: null
+      change: Maintenance operations now use safe search_path; restrictions on
+        interval ago placement; old_snapshot_threshold removed; adminpack
+        extension removed
+      migration_path: Run pg_upgrade; test search_path changes; update interval
+        expressions; remove adminpack references
+    - type: breaking_change_in
+      from: vendor/aws-aurora
+      to: null
+      change: 256 TiB storage available only on 17.5+, 16.9+, 15.13+; 16.8 LTS stays
+        at 128 TiB; auto minor version upgrade may target default or newer
+        minor, not pinned
+      migration_path: Upgrade to 16.9+ for 256 TiB without major version change; or
+        upgrade to 17.5+ for both features and storage
+    - type: locks_via
+      from: vendor/aws-aurora
+      to: package/aurora-pg-16.8-lts
+      surface: LTS minor patched once yearly (more for critical fixes); 128 TiB
+        storage limit; must disable auto minor upgrade to stay on LTS
+      severity: low

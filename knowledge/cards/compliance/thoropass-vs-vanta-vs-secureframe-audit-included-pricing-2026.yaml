@@ -1,0 +1,186 @@
+id: "compliance/thoropass-vs-vanta-vs-secureframe-audit-included-pricing-2026"
+title: "Thoropass vs Vanta vs Secureframe Audit-Included Pricing 2026"
+problem: "Buyers need to know whether 2026 audit-bundled offerings from
+  Thoropass are cheaper or riskier than platform-first vendors once assessor
+  fees, annual renewals, and framework expansion are priced in."
+context:
+  - "soc-2"
+  - "iso-27001"
+  - "compliance-automation"
+  - "security-audits"
+constraints:
+  - "compliance"
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Thoropass"
+    summary: 'As of 2026-03-19, Thoropass does not publish a list price, but its
+      official site says pricing depends on audit scope, frameworks needed, and
+      environment complexity. Thoropass explicitly states that most customers
+      save "25-50%" versus traditional audit firms while getting both the
+      platform and audit services included. Its current positioning is an
+      integrated model: Thoropass says it is both the platform and the auditor,
+      and it highlights single-audit-cycle support across shared controls for
+      SOC 2, ISO 27001, PCI, and HITRUST. This is the clearest official
+      audit-included option of the three.'
+    when_to_use: "Use when you want one vendor accountable for readiness plus the
+      actual audit, especially for small-team plus cost-sensitive buying where
+      handoff risk matters more than feature-by-feature platform packaging. It
+      is the strongest fit when you expect multi-framework expansion and want
+      that discussed up front in a single quote rather than split across
+      software and assessor contracts."
+    tradeoffs: "Pros: audit services are explicitly included, fixed-price language
+      is stated on the site, and shared-control multi-framework handling is part
+      of the core pitch. Cons: no public list pricing, so competitive
+      benchmarking still requires a quote."
+    cautions: "Pentesting is listed as an optional add-on, so do not assume every
+      adjacent security requirement is bundled. Savings claims are
+      vendor-reported; verify the quote against your current auditor scope,
+      renewal terms, and any extra framework or workspace expansion."
+    links:
+      - "https://www.thoropass.com/"
+      - "https://www.thoropass.com/solutions/thoropass-vanta"
+      - "https://www.thoropass.com/frameworks/soc-2/"
+      - "https://www.thoropass.com/frameworks/iso-27001/"
+  - name: "Vanta"
+    summary: 'As of 2026-03-19, Vanta''s official pricing page is package-based but
+      does not publish dollar pricing; it says to request a demo for
+      personalized pricing. The current plans shown are Essentials, Plus,
+      Professional, and Enterprise. Vanta publicly states Essentials includes
+      "one compliance framework," and its pricing/partner pages emphasize an
+      auditor directory, access to expert partners for additional compliance
+      services, and the ability to bring your own auditor. Inference from those
+      official pages: buyers should budget audit and assessor fees separately
+      unless a sales quote explicitly bundles them.'
+    when_to_use: "Use when you want a platform-first compliance program with broad
+      framework coverage, partner flexibility, and room to scale into risk and
+      trust workflows beyond the first framework. It is the better fit when your
+      team already has a preferred auditor or wants to shop assessor pricing
+      independently."
+    tradeoffs: "Pros: mature platform packaging, broad framework catalog, and
+      explicit partner ecosystem flexibility. Cons: public pricing is
+      non-numeric, Essentials is framed around one compliance framework, and
+      total cost is less predictable if external audit fees are added later."
+    cautions: "Do not compare Vanta's software quote directly against Thoropass's
+      bundled quote without separately pricing the assessor, annual re-audit,
+      and any added frameworks. The official pages support external-auditor
+      workflows, so audit scope drift can show up outside the platform
+      contract."
+    links:
+      - "https://www.vanta.com/pricing"
+      - "https://www.vanta.com/partners/find-a-partner?filters=Auditor+Partner"
+      - "https://www.vanta.com/all-categories/compliance-frameworks"
+  - name: "Secureframe"
+    summary: 'As of 2026-03-19, Secureframe''s official pricing page also requires a
+      quote and does not publish dollar pricing. The current package names shown
+      are Fundamentals, Complete, and Defense. Its pricing table publicly shows
+      "1" compliance framework in both Fundamentals and Complete, and it
+      includes access to the Secureframe Audit Partner Network rather than
+      stating that an audit is bundled. Secureframe''s audit partner page
+      separately describes outside audit firms joining its partner program, so
+      buyers should treat assessor cost as separate unless the quote says
+      otherwise.'
+    when_to_use: "Use when you want a platform-first option and expect to choose
+      among partner auditors rather than commit to an integrated auditor from
+      day one. It is strongest when you want a simpler initial package and are
+      comfortable validating expansion economics directly in the quote."
+    tradeoffs: "Pros: clear package structure, explicit audit partner network, and
+      platform features for evidence collection and control monitoring. Cons: no
+      public dollar pricing, publicly shown one-framework packaging, and likely
+      separate auditor contracting or pricing."
+    cautions: "Framework expansion is a quote-stage discussion, because the public
+      page shows one compliance framework for both main packages but does not
+      publish the cost of adding more. Do not assume renewal pricing or audit
+      partner fees will track the platform quote."
+    links:
+      - "https://secureframe.com/pricing"
+      - "https://secureframe.com/audit-partner"
+      - "https://secureframe.com/frameworks/soc-2"
+      - "https://secureframe.com/frameworks/iso-27001"
+tags:
+  - "compliance"
+  - "soc-2"
+  - "iso-27001"
+  - "pricing"
+aliases:
+  - "thoropass vs vanta vs secureframe pricing"
+  - "audit included compliance pricing 2026"
+  - "soc 2 platform plus auditor cost comparison"
+  - "thoropass audit pricing"
+  - "vanta secureframe soc 2 cost"
+  - "thoropass vs vanta cost"
+  - "secureframe vs thoropass pricing"
+  - "soc2 audit bundled pricing"
+  - "iso 27001 compliance cost"
+  - "thoropass vanta secureframe comparison"
+  - "soc 2 auditor fee comparison"
+  - "thoropass pricing with audit"
+  - "securefram pricing 2026"
+related_cards:
+  - "compliance/drata-foundations-50-employee-cap-and-framework-limits-2026"
+  - compliance/scrut-vs-sprinto-vs-scytale-startup-compliance-pricing-2026
+  - compliance/iso-42001-certification-vs-soc2-only-for-ai-vendors-2026
+  - compliance/secureframe-fundamentals-vs-complete-vs-defense-2026
+  - compliance/logicgate-vs-auditboard-vs-onspring-enterprise-risk-pricing-2026
+  - compliance/whistic-questionnaire-ai-vs-conveyor-vs-safebase-2026
+  - compliance/hitrust-e1-vs-i1-vs-r2-pricing-and-assurance-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/thoropass
+      name: Thoropass
+    - type: vendor
+      id: vendor/vanta
+      name: Vanta
+    - type: vendor
+      id: vendor/secureframe
+      name: Secureframe
+    - type: package
+      id: package/vanta/essentials
+      name: Essentials
+    - type: package
+      id: package/vanta/plus
+      name: Plus
+    - type: package
+      id: package/vanta/professional
+      name: Professional
+    - type: package
+      id: package/vanta/enterprise
+      name: Enterprise
+    - type: package
+      id: package/secureframe/fundamentals
+      name: Fundamentals
+    - type: package
+      id: package/secureframe/complete
+      name: Complete
+    - type: package
+      id: package/secureframe/defense
+      name: Defense
+  edges:
+    - type: locks_via
+      from: vendor/vanta
+      to: package/vanta/essentials
+    - type: locks_via
+      from: vendor/vanta
+      to: package/vanta/plus
+    - type: locks_via
+      from: vendor/vanta
+      to: package/vanta/professional
+    - type: locks_via
+      from: vendor/vanta
+      to: package/vanta/enterprise
+    - type: locks_via
+      from: vendor/secureframe
+      to: package/secureframe/fundamentals
+    - type: locks_via
+      from: vendor/secureframe
+      to: package/secureframe/complete
+    - type: locks_via
+      from: vendor/secureframe
+      to: package/secureframe/defense

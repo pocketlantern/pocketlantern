@@ -1,0 +1,224 @@
+id: "infra/nodejs-22-lts-adoption-breaking-changes-worker-threads-2026"
+title: "Node.js 22 LTS Adoption: Breaking Changes, Worker Thread Module Hooks,
+  Support Timeline 2026"
+problem: "Node.js 20 (Iron) reaches end-of-life April 30, 2026. Teams must
+  migrate to Node.js 22 (Maintenance LTS, EOL April 2027) or Node.js 24 (Active
+  LTS, EOL April 2028). Node.js 22 removes import assertion syntax, enables
+  require(ESM) by default, changes worker thread module hook behavior, and
+  raises the stream high-water mark default. Skipping to Node.js 24 adds OpenSSL
+  3.5 security-level-2 enforcement and stricter fetch/stream behavior. Migration
+  path and EOL runway differ significantly between the two targets."
+context:
+  - "nodejs"
+  - "javascript"
+  - "backend"
+  - "runtime"
+  - "lts"
+  - "eol"
+  - "migration"
+constraints:
+  - "enterprise"
+  - "high-scale"
+  - "small-team"
+  - "low-ops"
+  - "compliance"
+candidates:
+  - name: "Migrate Node.js 20 to Node.js 22 (Maintenance LTS)"
+    summary: "As of 2026-03-16, Node.js 22 (Jod) is in Maintenance LTS and receives
+      critical security fixes only until its EOL of April 30, 2027. It removes
+      the deprecated import-assert syntax, enables require(ESM) by default since
+      v22.12.0, enables the WebSocket client by default, and raises the stream
+      default high-water mark from 16 KiB to 64 KiB."
+    when_to_use: "Best for enterprise + compliance or small-team + low-ops teams
+      that need a lower-risk migration step before Node.js 20 EOL on April 30,
+      2026. Choose this if your codebase uses import assertions, native addons
+      with V8 bindings, or CommonJS packages with synchronous require paths
+      benefiting from require(ESM), and you want more time before absorbing the
+      larger OpenSSL and stream-behavior changes that come with Node.js 24.
+      Node.js 22 Maintenance LTS gives you until April 30, 2027 — plan your next
+      hop to Node.js 24 within that window."
+    tradeoffs: "Fewer breaking changes from Node.js 20 than jumping directly to
+      Node.js 24. The one required code change is replacing import assert {
+      type: 'json' } with import ... with { type: 'json' } — an official codemod
+      is available via npx codemod run @nodejs/import-assertions-to-attributes.
+      Worker thread module hooks changed at v22.2.0: calling register() from a
+      new Worker execArgv now registers hooks on a single shared hooks thread
+      rather than per-worker threads, which can silently change APM and tracing
+      behavior for tools using module-level instrumentation. The stream
+      high-water mark increase (16 KiB to 64 KiB) improves throughput but raises
+      peak memory under backpressure."
+    cautions: "Node.js 22 is already in Maintenance LTS as of late 2025, meaning no
+      new features are added — only critical security patches. EOL is April 30,
+      2027, leaving roughly 13 months of runway from today. APM tools and test
+      frameworks that use module-level worker thread hooks (e.g. Jest workers,
+      instrumentation layers) must be verified against the v22.2.0+ module hooks
+      behavior change documented in nodejs/node issue 53182. Native addons built
+      against V8 APIs must be rebuilt for V8 12.4. The WebSocket client is
+      enabled by default — if you polyfill or mock globalThis.WebSocket in
+      tests, those shims may now conflict."
+    links:
+      - "https://nodejs.org/en/about/previous-releases"
+      - "https://nodejs.org/en/blog/migrations/v20-to-v22"
+      - "https://nodejs.org/en/blog/announcements/v22-release-announce"
+      - "https://endoflife.date/nodejs"
+  - name: "Skip directly to Node.js 24 (Active LTS)"
+    summary: "As of 2026-03-16, Node.js 24 (Krypton) is the Active LTS release with
+      EOL April 30, 2028. It includes all Node.js 22 changes plus OpenSSL 3.5 at
+      security level 2 (blocking RSA/DSA/DH keys under 2048 bits and ECC keys
+      under 224 bits), stricter fetch() spec compliance, stream/pipe errors that
+      now throw instead of silently failing, and removal of 32-bit Windows and
+      armv7 Linux support."
+    when_to_use: "Best for enterprise + compliance or high-scale teams that want
+      maximum LTS runway and can absorb both the Node.js 22 import-assertion and
+      require(ESM) changes and the Node.js 24 OpenSSL and stream-behavior
+      changes in a single migration. Choose this if your infrastructure already
+      uses 2048-bit or larger keys everywhere, you have no legacy 32-bit Windows
+      or armv7 Linux build targets, and you want to avoid a second major
+      migration before April 2027."
+    tradeoffs: "Active LTS means ongoing feature additions and full security-patch
+      commitment through April 2028 — the longest runway of any current option.
+      Migration from Node.js 20 requires both the import-attributes codemod and
+      an audit of TLS/crypto key sizes for OpenSSL 3.5 level-2 compliance.
+      Stream pipelines that previously swallowed pipe errors silently will now
+      surface thrown errors and must be updated with explicit error handlers."
+    cautions: "Verify all TLS certificates, key sizes, and cipher suites before
+      deploying on Node.js 24: RSA/DSA/DH keys under 2048 bits and ECC keys
+      under 224 bits are rejected at OpenSSL 3.5 security level 2, and RC4
+      cipher suites are prohibited. macOS build environments require Xcode 16.1+
+      and macOS 13.5+. C/C++ addons linked against V8 APIs may need updates for
+      V8 13.6 and possible C++20 requirements — use NODE-API to reduce native
+      addon rebuild churn. The Node.js team provides migration codemods for
+      crypto-rsa-pss-update and fs-access-mode-constants deprecations."
+    links:
+      - "https://nodejs.org/en/about/previous-releases"
+      - "https://nodejs.org/en/blog/migrations/v22-to-v24"
+      - "https://endoflife.date/nodejs"
+  - name: "Commercial extended support for Node.js 20 (emergency bridge only)"
+    summary: "Vendors offer post-EOL commercial security patches for Node.js 20
+      after April 30, 2026. This is a short-term bridge only and is not a
+      substitute for migration — it does not provide new features, ecosystem
+      support, or guarantee that npm packages will remain compatible with
+      Node.js 20."
+    when_to_use: "Only consider this for compliance or enterprise teams with frozen
+      production environments (e.g. fintech, healthcare, government) that have
+      hard change-freeze windows extending past April 30, 2026 and cannot
+      complete a runtime migration in time. Not suitable for teams with active
+      development or package dependency updates."
+    tradeoffs: "Provides continued security patching past EOL without a code-level
+      migration, buying weeks or months of runway. The ecosystem will stop
+      testing against Node.js 20: packages will drop it from their engines field
+      and CI matrices, and version mismatches accumulate over time. AWS Lambda
+      and other managed runtimes enforce their own deprecation schedules
+      independently of commercial support."
+    cautions: "AWS Lambda's Node.js 20 deprecation schedule runs independently:
+      function creation is blocked August 31, 2026 and function updates are
+      blocked September 30, 2026 — commercial extended support does not override
+      platform-level enforcement. npm package authors will stop supporting
+      Node.js 20 in their engines field after EOL, and incompatibilities
+      compound over time. Treat commercial support as an emergency bridge only;
+      execute the Node.js 22 or 24 migration as the primary path."
+    links:
+      - "https://nodejs.org/en/blog/announcements/node-18-eol-support"
+      - "https://endoflife.date/nodejs"
+      - "https://www.cloudquery.io/blog/aws-lambda-nodejs-20-eol"
+tags:
+  - "infra"
+  - "nodejs"
+  - "lts"
+  - "eol"
+  - "migration"
+  - "runtime"
+  - "javascript"
+  - "breaking-changes"
+  - "worker-threads"
+  - "esm"
+aliases:
+  - "node.js 20 eol"
+  - "node 20 end of life april 2026"
+  - "migrate node 20 to node 22"
+  - "node.js 22 lts breaking changes"
+  - "node.js 22 import assertions removed"
+  - "node.js 22 require esm"
+  - "node.js 22 worker thread module hooks"
+  - "node 22 vs node 24"
+  - "node.js eol 2026"
+related_cards:
+  - "infra/js-runtime"
+  - "infra/package-manager"
+  - "security/supply-chain-security-for-node"
+  - "security/npm-trusted-publishing-vs-granular-tokens-after-classic-token-rev\
+    ocation"
+  - testing/jest-30-upgrade-after-node-18-drop-2026
+  - runtime/node-18-nes-vs-jump-to-22-2026
+  - runtime/node-20-eol-april-2026-upgrade-path
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-06-30"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+      current_lts: false
+      eol_date: 2026-04-30
+    - type: runtime
+      id: runtime/nodejs-22
+      name: Node.js 22
+      current_lts: false
+      eol_date: 2027-04-30
+    - type: runtime
+      id: runtime/nodejs-24
+      name: Node.js 24
+      current_lts: true
+      eol_date: 2028-04-30
+  edges:
+    - type: eol_date
+      from: runtime/nodejs-20
+      to: null
+      date: 2026-04-30
+      successor: runtime/nodejs-22
+    - type: eol_date
+      from: runtime/nodejs-22
+      to: null
+      date: 2027-04-30
+      successor: runtime/nodejs-24
+    - type: eol_date
+      from: runtime/nodejs-24
+      to: null
+      date: 2028-04-30
+      successor: null
+    - type: breaking_change_in
+      from: runtime/nodejs-22
+      to: null
+      change: import assert syntax removed — must use import...with instead
+      migration_path: npx codemod run @nodejs/import-assertions-to-attributes
+    - type: breaking_change_in
+      from: runtime/nodejs-22
+      to: null
+      change: require(ESM) enabled by default since v22.12.0
+      migration_path: verify CJS/ESM interop in dependencies
+    - type: breaking_change_in
+      from: runtime/nodejs-22
+      to: null
+      change: worker thread module hooks changed — register() now uses shared hooks
+        thread (v22.2.0+)
+      migration_path: verify APM tools (Jest workers, instrumentation layers) against
+        new behavior
+    - type: breaking_change_in
+      from: runtime/nodejs-22
+      to: null
+      change: stream default high-water mark raised from 16 KiB to 64 KiB
+      migration_path: check memory under backpressure scenarios
+    - type: breaking_change_in
+      from: runtime/nodejs-24
+      to: null
+      change: OpenSSL 3.5 security level 2 — blocks RSA/DSA/DH < 2048 bits, ECC < 224
+        bits, RC4 prohibited
+      migration_path: audit all TLS certificates and key sizes
+    - type: breaking_change_in
+      from: runtime/nodejs-24
+      to: null
+      change: stream/pipe errors now throw instead of silently failing
+      migration_path: add explicit error handlers to stream pipelines

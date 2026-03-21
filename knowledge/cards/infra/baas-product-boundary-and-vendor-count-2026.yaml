@@ -1,0 +1,264 @@
+id: infra/baas-product-boundary-and-vendor-count-2026
+title: "BaaS Product Boundary and Vendor Lock-in: Supabase vs Firebase vs Convex
+  vs PocketBase vs Appwrite 2026"
+problem: Each BaaS bundles different capabilities — how does the bundle scope
+  affect your actual vendor count, lock-in depth, and escape path when you need
+  to migrate or add missing pieces?
+context:
+  - backend
+  - infrastructure
+  - vendor-lock-in
+  - data-portability
+  - self-hosting
+constraints:
+  - compliance
+  - small-team
+  - low-ops
+  - enterprise
+  - cost-sensitive
+candidates:
+  - name: Supabase
+    summary: "Bundles Postgres DB, GoTrue Auth, S3-compatible Storage, Realtime
+      (Postgres logical replication), Edge Functions (Deno), AI/Vectors
+      (pgvector), Cron, and Queues. Exposes standard Postgres connection strings
+      — you can use psql, pg_dump, or any Postgres driver directly, bypassing
+      supabase-js entirely. Self-hostable via Docker Compose with all services
+      included."
+    when_to_use: "Choose when data portability is a hard requirement. The entire
+      data layer is standard Postgres: pg_dump works, auth.users lives in a
+      Postgres schema you can query directly, and storage is S3-compatible. You
+      can connect any Postgres client (Postgres.js, Prisma, Drizzle) alongside
+      or instead of supabase-js. Self-hosting runs the full stack — DB, Auth
+      (GoTrue), Storage, Realtime, Edge Functions — via Docker Compose. NOT
+      bundled: transactional email delivery, push notifications, analytics/event
+      tracking, full-text search beyond Postgres tsvector. Expect 1-3 additional
+      vendors (email service like Resend/Postmark, push via FCM/APNs, analytics
+      via PostHog/Mixpanel) for a complete production stack."
+    tradeoffs: "Highest data portability of any managed BaaS — standard Postgres
+      means zero schema redesign on exit. supabase-js is a thin wrapper over
+      PostgREST (open-source HTTP-to-Postgres proxy), not a proprietary query
+      language. Auth (GoTrue) is open-source and can run standalone. Storage
+      uses S3-compatible API. Self-hosting requires managing Postgres, GoTrue,
+      PostgREST, Realtime, Kong, and storage containers — operational overhead
+      is real. Missing capabilities (email, push, analytics) mean you will have
+      additional vendor dependencies regardless."
+    cautions: "Self-hosting means you own uptime, backups, and security patching for
+      ~7 Docker containers. supabase-js query builder syntax is
+      Supabase-specific (not raw SQL), so application code needs rewriting if
+      you switch to a raw Postgres client — but the data itself is fully
+      portable. Edge Functions use Deno runtime, which is not directly portable
+      to AWS Lambda or Cloudflare Workers without code changes."
+    links:
+      - https://supabase.com/docs/guides/self-hosting
+      - https://supabase.com/docs/guides/database/connecting-to-postgres
+      - https://github.com/supabase/supabase
+  - name: Firebase
+    summary: "The widest bundle of any BaaS: Firestore (NoSQL), Realtime Database,
+      Auth, Cloud Storage, Cloud Functions, Hosting, App Hosting, Analytics,
+      Crashlytics, Remote Config, A/B Testing, Cloud Messaging (push), In-App
+      Messaging, Performance Monitoring, App Check, App Distribution, Test Lab,
+      and Firebase AI Logic. All proprietary, all Google-operated, no
+      self-hosting path."
+    when_to_use: "Choose when you want the maximum number of capabilities from a
+      single vendor and accept full Google dependency. Firebase eliminates the
+      need for separate analytics, push notification, A/B testing, crash
+      reporting, and performance monitoring vendors — reducing vendor count to
+      potentially 1 for mobile-heavy apps. But the tradeoff is absolute: there
+      is no self-hosting option, no standard data format, and no incremental
+      escape path. Firestore exports go to Google Cloud Storage in a proprietary
+      format usable only for re-import into Firestore or BigQuery — not portable
+      to Postgres, MySQL, or any other database without custom ETL. Auth user
+      export requires contacting Firebase support directly; there is no
+      self-service bulk export."
+    tradeoffs: "Lowest additional vendor count for mobile apps (analytics, push,
+      crash reporting all built in). Highest lock-in depth of any option —
+      Firestore's document model, subcollections, and security rules have no
+      equivalent elsewhere. Migrating away requires complete schema redesign
+      (NoSQL documents to relational tables), rewriting all queries, replacing
+      the SDK throughout your codebase, and rebuilding auth flows. Firebase Auth
+      user data cannot be bulk-exported without support intervention. Cloud
+      Functions are Google Cloud Functions under the hood — migration to AWS
+      Lambda or Cloudflare Workers requires rewriting."
+    cautions: "Google has a history of deprecating products. Firebase is currently
+      strategic, but there is zero contractual guarantee against future changes.
+      The SDK (firebase-js-sdk) is deeply coupled — there is no standard
+      alternative client. Every line of Firestore query code is proprietary.
+      Cloud Storage now requires Blaze plan as of February 2026. No self-hosting
+      means no compliance option for data residency requirements that mandate
+      on-premises storage."
+    links:
+      - https://firebase.google.com/docs
+      - https://firebase.google.com/docs/firestore/manage-data/export-import
+  - name: Convex
+    summary: "Bundles a reactive TypeScript-native database, server functions
+      (queries/mutations/actions), scheduling (cron + one-shot), and file
+      storage. Auth is available via built-in Convex Auth or third-party
+      integrations (Clerk, Auth0, WorkOS). Open-source backend (FSL Apache 2.0
+      license) with Docker-based self-hosting. Query language is proprietary
+      TypeScript — no SQL."
+    when_to_use: "Choose when you want end-to-end TypeScript type safety with
+      built-in reactivity and are willing to accept a proprietary query
+      language. Data export is available via CLI (npx convex export) or
+      dashboard backup, producing a ZIP file containing JSONL per table —
+      structured and parseable but not a standard database dump. Self-hosting
+      runs on a single machine by default via Docker; the open-source backend
+      stores data in Postgres or SQLite. NOT bundled: email, push notifications,
+      analytics, search. Auth requires either Convex Auth (built-in) or an
+      external provider (Clerk, Auth0), adding 0-1 vendors. Expect 2-4
+      additional vendors for a complete stack."
+    tradeoffs: "Open-source backend (github.com/get-convex/convex-backend) is the
+      same code as the cloud service — genuine self-host parity. FSL Apache 2.0
+      license prohibits creating a competing hosted service but allows all other
+      uses. Export format (JSONL in ZIP) preserves Convex-specific types (Int64,
+      Bytes) but requires transformation to load into Postgres or another DB. No
+      SQL means all query logic must be rewritten on migration — lock-in is at
+      the query layer, not the data layer. Single-machine self-hosting limits
+      horizontal scaling without modifying the open-source code."
+    cautions: "Proprietary query language means every query, mutation, and action is
+      Convex-specific code. Migration cost is proportional to your function
+      count, not your data size. FSL license converts to Apache 2.0 after 2
+      years, but during the FSL period you cannot build a competing hosted
+      service. Self-hosting documentation and community support are newer —
+      expect less operational maturity than Supabase self-hosting."
+    links:
+      - https://docs.convex.dev/
+      - https://github.com/get-convex/convex-backend
+      - https://docs.convex.dev/database/import-export/export
+      - https://docs.convex.dev/self-hosting
+  - name: PocketBase
+    summary: "Single Go binary bundling SQLite database, Auth (email/password + 15+
+      OAuth2 providers), file storage (local or S3), realtime subscriptions,
+      REST API, and admin dashboard UI. The entire backend is one file — no
+      containers, no orchestration, no managed service."
+    when_to_use: "Choose when you want zero vendor dependencies and maximum
+      portability. The database is a SQLite file you can copy, query with any
+      SQLite client, or migrate to Postgres via standard tooling. There is no
+      managed hosting — you deploy the binary yourself on any server, VPS, or
+      container. NOT bundled: edge/serverless functions (you write Go hooks or
+      use the REST API from external functions), managed hosting, analytics,
+      email delivery, push notifications. Vendor count for PocketBase itself: 0.
+      Total vendor count for a production app: 2-4 (hosting provider + email +
+      push + analytics). As of 2026-03-16: latest version is v0.36.3 (pre-1.0).
+      Official docs state PocketBase is NOT recommended for production-critical
+      applications yet. Full backward compatibility is not guaranteed before
+      v1.0."
+    tradeoffs: "Maximum data portability — SQLite file is the most portable database
+      format in existence. Zero vendor lock-in by design: no proprietary SDK
+      required (standard REST API), no managed service dependency, no account
+      needed. Single-binary deployment is operationally simplest to start but
+      hardest to scale — SQLite is single-writer, single-node. No horizontal
+      scaling path without switching databases. Pre-1.0 status means breaking
+      changes between versions requiring manual migration steps."
+    cautions: "Pre-1.0 stability warning is official and serious — the maintainer
+      explicitly says not recommended for production-critical applications.
+      Single-node SQLite ceiling means you will hit write throughput limits at
+      moderate scale (hundreds of concurrent writers). No managed offering means
+      you own all ops: backups, TLS, monitoring, updates. Community is active
+      but small compared to Supabase or Firebase. If PocketBase development
+      slows, you have a Go codebase to maintain yourself."
+    links:
+      - https://pocketbase.io/docs/
+      - https://github.com/pocketbase/pocketbase
+  - name: Appwrite
+    summary: "Bundles databases, Auth (email/password + 30+ OAuth2 providers),
+      storage, serverless functions (multiple runtimes), realtime, messaging
+      (email + SMS + push notifications), and sites hosting. Self-hosted via
+      Docker Compose. Backend uses MariaDB for data storage, Redis for caching,
+      and InfluxDB for analytics. Current version: 1.8.0 (stable, post-1.0)."
+    when_to_use: "Choose when you want Firebase-like breadth with self-hosting
+      capability. Appwrite is the only BaaS in this comparison that bundles
+      messaging (email, SMS, push) natively — reducing additional vendor count.
+      Data lives in MariaDB (SQL, exportable via mysqldump/mariadb-dump).
+      Self-hosting runs via Docker Compose with MariaDB, Redis, and InfluxDB
+      containers. REST API and GraphQL are available without using proprietary
+      SDKs. NOT bundled: analytics dashboards, crash reporting, A/B testing.
+      Expect 1-2 additional vendors (analytics, error tracking) for a complete
+      stack."
+    tradeoffs: "Widest bundle among self-hostable options — messaging alone
+      eliminates 1-2 vendor dependencies. MariaDB backend means data is in
+      standard SQL tables, exportable with standard tooling. SDKs are
+      proprietary wrappers but the underlying REST API follows standard patterns
+      — you can use raw HTTP if needed. Docker Compose self-hosting requires
+      managing 5+ containers (Appwrite, MariaDB, Redis, InfluxDB, workers).
+      Post-1.0 stability is a significant advantage over PocketBase. Migration
+      paths exist from Firebase, Supabase, and NHost (official migration guides
+      provided)."
+    cautions: "MariaDB is the internal database — but Appwrite's data model
+      (collections, documents, attributes) adds an abstraction layer over raw
+      MariaDB tables. Direct MariaDB access for export may require understanding
+      Appwrite's internal schema. Docker Compose deployment with multiple
+      containers is heavier than PocketBase's single binary. The project is
+      open-source (github.com/appwrite/appwrite) but development is driven by
+      Appwrite Inc — evaluate bus factor. Function runtimes support many
+      languages but each runtime adds container overhead."
+    links:
+      - https://appwrite.io/docs
+      - https://appwrite.io/docs/advanced/self-hosting
+      - https://github.com/appwrite/appwrite
+tags:
+  - infrastructure
+  - baas
+  - vendor-lock-in
+  - data-portability
+  - self-hosting
+  - supabase
+  - firebase
+  - convex
+  - pocketbase
+  - appwrite
+  - comparison
+  - "2026"
+aliases:
+  - baas vendor lock-in comparison
+  - baas data portability 2026
+  - firebase lock-in alternatives
+  - self-hosted baas comparison
+  - baas escape path
+  - supabase vs firebase vs convex vs pocketbase vs appwrite
+related_cards:
+  - backend/supabase-vs-firebase-baas-pricing-and-features-2026
+  - backend/pocketbase-vs-supabase-open-source-managed-2026
+  - backend/realtime-sync-framework-convex-vs-electric-sql-2026
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/auth-provider-migration-and-lock-in-2026
+  - auth/firebase-auth-base-vs-identity-platform-pricing-2026
+  - storage/firebase-storage-blaze-plan-deadline-after-feb-3-2026
+  - game/lootlocker-free-1000-players-vs-paid-scale-2026
+  - game/accelbyte-gaming-services-seatless-usage-pricing-2026
+  - game/heroic-cloud-managed-nakama-vs-self-hosted-2026
+  - game/discord-social-sdk-free-vs-building-social-features-in-house-2026
+  - messaging/sendbird-vs-stream-vs-pubnub-chat-mau-and-message-pricing-2026
+  - game/playfab-metered-services-vs-backend-in-house-cost-2026
+status: active
+tier: core
+updated: "2026-03-16"
+review_by: "2026-06-22"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/firebase
+      name: Firebase
+      category: baas
+    - type: vendor
+      id: vendor/convex
+      name: Convex
+      category: baas
+    - type: capability
+      id: capability/database
+      name: Database
+  edges:
+    - type: locks_via
+      from: vendor/firebase
+      to: capability/database
+      surface: Firestore document model + subcollections + security rules — no SQL, no
+        equivalent elsewhere; firebase-js-sdk deeply coupled with no standard
+        alternative
+      severity: high
+    - type: locks_via
+      from: vendor/convex
+      to: capability/database
+      surface: Proprietary TypeScript query language — no SQL; all
+        queries/mutations/actions must be rewritten on migration; lock-in
+        proportional to function count not data size
+      severity: high

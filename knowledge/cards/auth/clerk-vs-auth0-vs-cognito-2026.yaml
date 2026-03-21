@@ -1,0 +1,198 @@
+id: auth/clerk-vs-auth0-vs-cognito-2026
+title: Clerk vs Auth0 vs Cognito Under Current Pricing and Feature Changes
+problem: Select an auth vendor for a SaaS app given recent pricing shifts, MAU
+  economics, B2B org support, passkey support, webhook reliability, and
+  compliance requirements.
+context:
+  - saas
+  - b2b
+  - authentication
+  - pricing
+  - passkeys
+  - webhooks
+  - compliance
+constraints:
+  - cost-sensitive
+  - low-ops
+  - enterprise
+  - compliance
+  - serverless
+  - small-team
+  - high-scale
+candidates:
+  - name: Clerk
+    summary: "As of 2026-03-14, Clerk is the most opinionated low-ops option: Pro
+      starts at $20/mo billed annually, includes 50,000 MRUs per app, and B2B
+      Authentication is included with 100 MROs per app. It has first-class
+      Organizations, passkeys, and webhook delivery through Svix with retry and
+      replay support."
+    when_to_use: Choose Clerk for small-team + low-ops + cost-sensitive SaaS when
+      you want polished prebuilt auth UI, fast setup, and built-in B2B org flows
+      without designing tenancy from scratch. It is especially strong when you
+      need passkeys and reliable user/org sync webhooks, and your org count or
+      member-count economics still fit the MRU + MRO + add-on model.
+    tradeoffs: Best DX and fastest implementation of the three. Organizations,
+      invitations, basic RBAC, and passkeys are straightforward, but the bill
+      can become a stack of base plan, enterprise connections, B2B
+      Authentication add-on, and compliance/enterprise upgrades. Migration out
+      is relatively smooth — password hashes are exportable as bcrypt via CSV on
+      all plans, and GetUserList API is available at 100 req/10s (dev) or 1000
+      req/10s (prod).
+    cautions: Be precise about org-member limits. Clerk's current pricing says B2B
+      Authentication includes up to 20 members per Organization without the
+      enhanced add-on, while the Organizations settings docs say orgs start at 5
+      members by default and can be raised to 20 without the add-on and
+      unlimited with it. Treat the limit as plan-and-setting dependent, not a
+      single universal cap. Also note that exceeding 50,000 MRUs forces Pro,
+      exceeding 100 MROs forces the B2B add-on, and HIPAA with BAA plus the
+      99.99% SLA are Enterprise-level commitments. SLA is 99.99% on Enterprise
+      only; lower tiers carry no uptime SLA.
+    links:
+      - https://clerk.com/pricing
+      - https://clerk.com/docs/guides/organizations/configure
+      - https://clerk.com/docs/guides/development/custom-flows/authentication/passkeys
+      - https://clerk.com/docs/guides/development/webhooks/overview
+  - name: Auth0
+    summary: As of 2026-03-14, Auth0 remains the most enterprise-oriented B2B
+      identity platform here. Public pricing currently shows a B2B Free
+      configuration with up to 25,000 MAUs and 5 Organizations, while self-serve
+      Essentials starts at $35/mo for 500 MAUs and 10 Organizations; passkeys
+      are supported for database connections, and audit/log streaming is built
+      in at higher tiers.
+    when_to_use: Choose Auth0 for enterprise + compliance + high-scale SaaS when
+      customer SSO, enterprise federation, SCIM, org-scoped RBAC, audit export,
+      and extensibility are more important than simple pricing. It is the best
+      fit when your product sells to larger customers that expect IdP federation
+      and admin controls, and you can tolerate plan gating plus more
+      configuration work than Clerk.
+    tradeoffs: Strongest enterprise identity surface of the three, with mature
+      Organizations, Actions extensibility, attack protection, and audit/log
+      streaming. The downside is more pricing complexity, more plan-dependent
+      feature availability, and less predictable self-serve economics for B2B
+      cases. Migration out is harder than Clerk — password hash export requires
+      a support ticket and is not available on Free tier, with no guaranteed
+      timeline. Actions logic is proprietary and not portable to other
+      providers.
+    cautions: "Auth0 passkeys are for database connections, not every login shape,
+      and the passkey policy docs note that users cannot use passkeys when
+      creating an account through an Organization invitation email. Also, Rules
+      and Hooks are end-of-life on November 18, 2026 and have already been
+      unavailable to new tenants since October 16, 2023, so new builds should
+      target Actions. For event delivery, Auth0's custom webhook story is mainly
+      Log Streams and Actions: useful and robust enough for audit/security
+      flows, but not the same as a broad first-class lifecycle webhook platform.
+      SLA is 99.99% on Enterprise only."
+    links:
+      - https://auth0.com/pricing
+      - https://auth0.com/docs/manage-users/organizations/organizations-overview
+      - https://auth0.com/docs/authenticate/database-connections/passkeys
+      - https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkey-policy
+      - https://auth0.com/docs/customize/actions
+      - https://auth0.com/docs/customize/log-streams
+      - https://auth0.com/docs/customize/hooks/enable-disable-hooks
+      - https://auth0.com/docs/secure/data-privacy-and-compliance
+  - name: Amazon Cognito
+    summary: As of 2026-03-14, Cognito is usually the cheapest AWS-native path at
+      scale. Lite and Essentials have a standing free tier of 10,000
+      direct-sign-in MAUs per month, new user pools default to Essentials,
+      SAML/OIDC federation above the 50-MAU free tier is priced at $0.015/MAU,
+      and passkeys are available in feature plans except Lite.
+    when_to_use: Choose Cognito for serverless + high-scale + cost-sensitive +
+      compliance workloads already anchored on AWS, especially when you prefer
+      Lambda triggers, IAM, and AWS-native operations over vendor-managed B2B
+      UX. It is the strongest fit when cost per active user and AWS integration
+      matter more than having a first-class organizations product.
+    tradeoffs: Best raw AWS alignment, strong compliance scope, high quotas, and
+      flexible trigger-based customization. It has the weakest out-of-the-box
+      B2B SaaS experience here because groups and custom attributes are
+      primitives, not a polished tenant/org/admin system. Migration out carries
+      the highest lock-in of the three — password hash export is impossible (no
+      API, no support workaround), TOTP seeds are not exportable, and ListUsers
+      is capped at 30 RPS. The only path that preserves passwords is a gradual
+      Lambda-based migration proxy.
+    cautions: "Do not treat Cognito groups as equivalent to Clerk Organizations or
+      Auth0 Organizations; you will build most multi-tenant admin, invitations,
+      and verified-domain behavior yourself. Cognito also has no generic managed
+      outbound webhook product, so you compose eventing with Lambda triggers,
+      messaging, or your own workflows, and some trigger types such as custom
+      sender triggers must be configured through API or CLI instead of the
+      console. Watch feature-plan boundaries: passkeys require the choice-based
+      auth flow and are unavailable on Lite, and advanced security settings can
+      push you to Plus. In 2026, budget against the current 10,000 direct-MAU
+      free tier for Lite/Essentials, not the older 50,000-MAU transition terms.
+      SLA is 99.9% (not 99.99%), lower than both Clerk Enterprise and Auth0
+      Enterprise."
+    links:
+      - https://aws.amazon.com/cognito/pricing/
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow-methods.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-user-groups.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/quotas.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/compliance-validation.html
+tags:
+  - auth
+  - clerk
+  - auth0
+  - amazon cognito
+  - pricing
+  - passkeys
+  - b2b
+  - compliance
+  - comparison
+aliases:
+  - clerk vs auth0 vs cognito
+  - auth vendor pricing 2026
+  - b2b auth pricing
+  - clerk pricing vs auth0 pricing
+  - cognito pricing tiers
+  - passkeys auth vendor comparison
+  - saas authentication provider comparison
+related_cards:
+  - auth/oauth2-flows
+  - auth/google-microsoft-github-oauth-policy-drift
+  - auth/sso-for-b2b-saas
+  - auth/multi-tenant-auth-boundary
+  - auth/rbac-vs-abac-vs-rebac
+  - frontend/auth-in-frontend-routing-model
+  - auth/enterprise-passkeys-synced-vs-device-bound-for-b2b-2026
+  - backend/supabase-vs-firebase-baas-pricing-and-features-2026
+  - infra/retool-vs-budibase-vs-appsmith-internal-tools-cost-2026
+  - backend/pocketbase-vs-supabase-open-source-managed-2026
+  - auth/auth-provider-migration-and-lock-in-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-12
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/auth0
+      name: Auth0
+      category: auth
+    - type: vendor
+      id: vendor/cognito
+      name: AWS Cognito
+      category: auth
+    - type: protocol
+      id: protocol/otlp-actions
+      name: Auth0 Actions
+      standard: false
+    - type: protocol
+      id: protocol/lambda-triggers
+      name: Cognito Lambda Triggers
+      standard: false
+  edges:
+    - type: locks_via
+      from: vendor/auth0
+      to: protocol/otlp-actions
+      surface: Actions extensibility is proprietary; Rules/Hooks EOL November 18,
+        2026; Actions logic not portable
+      severity: medium
+    - type: locks_via
+      from: vendor/cognito
+      to: protocol/lambda-triggers
+      surface: Password hashes permanently locked; TOTP seeds not exportable; Lambda
+        triggers are AWS-native; custom sender triggers require API/CLI config
+      severity: high

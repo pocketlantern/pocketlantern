@@ -1,0 +1,194 @@
+id: "auth/enterprise-passkeys-synced-vs-device-bound-for-b2b-2026"
+title: "Enterprise Passkeys: Synced vs Device-Bound for B2B (2026)"
+problem: "Decide how to roll out passkeys for workforce and external users given
+  platform support changes, cross-device portability, phishing-resistance
+  requirements, hardware key policies, and SSO/IdP interoperability."
+context:
+  - "b2b"
+  - "enterprise"
+  - "authentication"
+  - "passkeys"
+  - "webauthn"
+  - "sso"
+  - "workforce"
+  - "external-users"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+  - "cost-sensitive"
+candidates:
+  - name: "Synced passkeys as the default for mainstream workforce and external
+      users"
+    summary: "As of 2026-03-15, synced passkeys are the lowest-friction way to roll
+      out phishing-resistant sign-in for most users when cross-device
+      portability and recovery matter more than hardware provenance. Microsoft
+      says synced passkeys are the best option for most users and organizations,
+      while Apple and Google both support cloud-synced passkey providers and
+      nearby-device sign-in."
+    when_to_use: "Best for enterprise + low-ops + cost-sensitive B2B deployments
+      where most users are on modern Apple, Android, Chrome, or Windows
+      platforms, need to move between devices, and do not require approved
+      hardware attestation. Strong fit for customer-facing and general workforce
+      sign-in when you want passkeys beside existing federation or password
+      recovery instead of issuing physical security keys."
+    tradeoffs: "You get better portability, simpler recovery, and lower
+      issuance/helpdesk burden than device-bound credentials. The downside is
+      weaker enterprise control over where the credential lives, no attestation
+      for synced passkeys, and dependence on provider-specific platform support
+      and ecosystem boundaries."
+    cautions: "Do not assume every provider works on every platform in the same way.
+      Microsoft's current Entra synced-passkey documentation still labels the
+      feature as preview, Apple Passwords in that matrix are limited to Apple
+      platforms, and Google Password Manager behavior varies by OS version and
+      selected password manager. Shared-device and single-profile workflows
+      remain a poor fit for synced credentials."
+    links:
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/synced\
+        -passkey-faq"
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/how-to\
+        -authentication-synced-passkeys"
+      - "https://developer.apple.com/passkeys/"
+      - "https://developers.google.com/identity/passkeys/"
+      - "https://developers.google.com/identity/passkeys/supported-environments\
+        ?hl=en"
+  - name: "Device-bound passkeys with attestation and hardware-key policy for
+      privileged or regulated access"
+    summary: "As of 2026-03-15, device-bound passkeys remain the stronger choice
+      when you need authenticator provenance, attestation, or approved hardware
+      for phishing-resistant MFA. Microsoft Entra only allows
+      attestation-enforced profiles for device-bound passkeys, and Microsoft
+      explicitly recommends FIDO2 security keys for highly regulated industries
+      or elevated-privilege users."
+    when_to_use: "Best for enterprise + compliance B2B environments where admin
+      accounts, production access, regulated workloads, or contractual
+      hardware-key requirements matter more than cross-device convenience. Use
+      this when you need approved authenticator lists, attestation-backed
+      policy, managed authenticators, or tighter lifecycle control than synced
+      passkeys provide."
+    tradeoffs: "You get stronger policy control and clearer hardware provenance,
+      which is useful for high-assurance populations. You also take on higher
+      rollout cost, physical key or managed-device logistics, harder recovery,
+      and more user friction when people switch devices or lose authenticators."
+    cautions: "Attestation coverage and authenticator support must be validated
+      before rollout. Windows nearby-device passkey use requires Bluetooth and
+      Internet for cross-device scenarios, and Bluetooth-restricted environments
+      need explicit policy handling. This model is usually too heavy for broad
+      customer populations unless the business or regulatory requirement is
+      clear."
+    links:
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/concep\
+        t-authentication-passkeys-fido2"
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/how-to\
+        -authentication-passkey-profiles"
+      - "https://learn.microsoft.com/en-us/windows/security/identity-protection\
+        /passkeys/"
+      - "https://fidoalliance.org/white-paper-high-assurance-enterprise-fido-au\
+        thentication/"
+      - "https://fidoalliance.org/white-paper-fido-deploying-passkeys-in-the-en\
+        terprise-introduction/"
+  - name: "Segmented rollout by persona: synced for most users, device-bound for
+      admins, federation or password bootstrap where needed"
+    summary: "As of 2026-03-15, the most defensible B2B rollout is usually segmented
+      rather than universal: synced passkeys for mainstream users, device-bound
+      passkeys for admins and high-assurance roles, and existing federation or
+      password bootstrap where SSO, invitations, or older client paths still
+      shape onboarding. This matches Microsoft's staged-rollout guidance and
+      FIDO's position that enterprises often need different authenticator types
+      across assurance levels."
+    when_to_use: "Best for enterprise + compliance + low-ops teams serving both
+      workforce and external users, especially when you need SSO/IdP
+      interoperability and cannot force one authenticator model across
+      employees, contractors, guests, and customer admins. Choose this when your
+      auth stack must support passkeys alongside federation and passwords during
+      a long migration."
+    tradeoffs: "This gives the best balance of adoption, assurance, and operational
+      realism. The cost is more policy routing, more testing across sign-in
+      journeys, and more documentation for support, recovery, and enrollment by
+      user segment."
+    cautions: "Verify that your chosen auth surface can present passkeys together
+      with passwords and federation. Android Credential Manager explicitly
+      supports passkeys, passwords, and federated sign-in in one API, but some
+      identity platforms still scope passkeys to native database flows or
+      require a password backup path. Auth0, for example, documents passkeys for
+      database connections, requires passwords as backup, and notes that
+      Organization invitation email flows cannot use passkeys for account
+      creation."
+    links:
+      - "https://learn.microsoft.com/en-us/entra/identity/authentication/synced\
+        -passkey-faq"
+      - "https://fidoalliance.org/white-paper-fido-authentication-for-moderate-\
+        assurance-use-cases/"
+      - "https://developer.android.com/identity/credential-manager"
+      - "https://auth0.com/docs/authenticate/database-connections/passkeys"
+      - "https://auth0.com/docs/authenticate/database-connections/passkeys/conf\
+        igure-passkey-policy"
+tags:
+  - "auth"
+  - "passkeys"
+  - "webauthn"
+  - "fido2"
+  - "enterprise"
+  - "b2b"
+  - "sso"
+  - "microsoft entra"
+  - "google password manager"
+  - "apple passwords"
+aliases:
+  - "enterprise passkeys"
+  - "synced vs device-bound passkeys"
+  - "workforce passkey rollout"
+  - "hardware security keys vs passkeys"
+  - "b2b passkey strategy"
+  - "webauthn enterprise rollout"
+related_cards:
+  - "auth/passkeys-vs-passwords-plus-2fa"
+  - "auth/sso-for-b2b-saas"
+  - "auth/clerk-vs-auth0-vs-cognito-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-07-06"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/synced-passkeys
+      name: Synced passkeys
+      category: authentication
+    - type: capability
+      id: capability/device-bound-passkeys
+      name: Device-bound passkeys
+      category: authentication
+    - type: framework
+      id: framework/microsoft-entra
+      name: Microsoft Entra
+    - type: capability
+      id: capability/attestation-enforced-profiles
+      name: Attestation-enforced profiles
+      category: policy
+    - type: framework
+      id: framework/auth0
+      name: Auth0
+    - type: capability
+      id: capability/auth0-passkeys
+      name: Auth0 passkeys
+      category: authentication
+    - type: capability
+      id: capability/passwords
+      name: Passwords
+      category: authentication
+    - type: capability
+      id: capability/database-connections
+      name: Database connections
+      category: authentication
+  edges:
+    - type: locks_via
+      from: capability/attestation-enforced-profiles
+      to: capability/device-bound-passkeys
+    - type: locks_via
+      from: capability/auth0-passkeys
+      to: capability/database-connections
+    - type: locks_via
+      from: capability/auth0-passkeys
+      to: capability/passwords

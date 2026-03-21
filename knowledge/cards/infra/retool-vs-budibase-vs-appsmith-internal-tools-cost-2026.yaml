@@ -1,0 +1,206 @@
+id: "infra/retool-vs-budibase-vs-appsmith-internal-tools-cost-2026"
+title: "Retool vs Budibase vs Appsmith—Internal Tool Platform Cost 2026"
+problem: "Teams building internal dashboards and CRUD tools must choose between
+  commercial Retool (per-user SaaS), open-source Budibase, and self-hosted
+  Appsmith. Pricing per user, deployment complexity, and build velocity differ."
+context:
+  - "internal tools"
+  - "low-code"
+  - "no-code"
+  - "dashboard"
+  - "crud"
+  - "self-hosted"
+  - "pricing"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Retool"
+    summary: "As of 2026-03-16, Retool is the most component-rich commercial
+      low-code platform for internal tools. Cloud plans: Free ($0, up to 5
+      users), Team ($10/mo per builder + $5/mo per internal user), Business
+      ($50/mo per builder + $15/mo per internal user), Enterprise (custom).
+      Self-hosted deployment is now Enterprise-only—as of February 2026, Retool
+      no longer accepts new self-hosted signups via self-serve and requires
+      going through Enterprise sales."
+    when_to_use: "Best for enterprise + low-ops teams where build velocity, a large
+      pre-built component library, and native integrations matter more than
+      cost. Choose Retool when app builders outnumber app consumers and you can
+      absorb the Business-tier per-builder cost, or when your security policy
+      requires self-hosting and you can engage Enterprise sales."
+    tradeoffs: "Widest library of pre-built components and data-source connectors,
+      making complex dashboards and admin panels faster to build than either
+      alternative. Grid-based canvas limits pixel-precise layout control.
+      Business plan cost scales steeply with builder headcount—a team with 10
+      active builders on Business is $500/mo before internal users. Self-hosted
+      no longer available outside Enterprise, removing the cost-control lever
+      that previously made large deployments predictable."
+    cautions: "Self-hosted is now Enterprise-only as of February 2026—teams that
+      planned to self-host on Team or Business plans cannot start new instances
+      without Enterprise sales involvement. Existing self-hosted accounts
+      continue to operate but will receive at least six months notice before any
+      sunsetting. Builder vs. internal-user billing is based on edit activity
+      each billing cycle, so developers who touch apps incidentally can trigger
+      builder-rate billing unexpectedly. Verify current plan limits and
+      self-hosting eligibility at retool.com/pricing before committing."
+    links:
+      - "https://retool.com/pricing"
+      - "https://retool.com/self-hosted"
+      - "https://community.retool.com/t/self-hosted-docs-now-state-enterprise-o\
+        nly/64586"
+  - name: "Budibase"
+    summary: "As of 2026-03-16, Budibase is a fully open-source (AGPL/BSL) low-code
+      platform with cloud and self-hosted options. Cloud plans: Pro ($19/mo),
+      Premium ($49/mo), Business ($299/mo with 3 creators included), Enterprise
+      (custom). Self-hosted Community Edition is free indefinitely but capped at
+      20 combined users (admins + creators + app users) on versions from
+      November 2023 onwards. Multiple deployment targets supported: Docker,
+      Docker Compose, Kubernetes, Azure, GCP, DigitalOcean, and more."
+    when_to_use: "Best for cost-sensitive + low-ops teams that need self-hosted
+      deployment without Enterprise pricing, or small teams building CRUD apps
+      and automations on top of existing databases. Choose Budibase when the
+      20-user self-hosted cap fits your internal team size and you want a
+      GUI-first builder with minimal JavaScript."
+    tradeoffs: "Lowest cost entry: self-hosted Community Edition is free for up to
+      20 users and includes SSO, RBAC, multiplayer collaboration, and embeds.
+      Cloud Business plan ($299/mo) includes 3 creators and 30 end users, making
+      it predictable for medium teams. Weaker component ecosystem and fewer
+      pre-built integrations than Retool. Best suited for data-centric CRUD apps
+      and form-based workflows rather than complex dashboards."
+    cautions: "The 20-user cap on self-hosted free applies to all users combined
+      (admins, creators, app users)—teams that upgrade Budibase beyond
+      pre-November 2023 versions and exceed 20 users will be blocked from adding
+      new users without a paid plan. Cloud Pro/Premium plans meter by 'actions'
+      per month; burst automation workloads can exhaust action quotas and
+      require plan upgrades unexpectedly. AWS App Runner is explicitly
+      unsupported for self-hosting due to missing persistent storage. Verify
+      current plan limits at budibase.com/pricing before committing."
+    links:
+      - "https://budibase.com/pricing/"
+      - "https://docs.budibase.com/docs/hosting-methods"
+      - "https://budibase.com/blog/updates/pricing-v3/"
+  - name: "Appsmith"
+    summary: "As of 2026-03-16, Appsmith is an open-source (Apache 2.0)
+      developer-oriented internal tool builder. Cloud Free is $0 for up to 5
+      users. Business is $15/user/mo (up to 99 users) and adds custom roles,
+      audit logs, workflows, reusable packages, and removes branding. Enterprise
+      is $2,500/mo for 100+ users with SAML/OIDC SSO, SCIM, CI/CD, and optional
+      air-gapped edition. Community Edition self-hosted is free with no user
+      limit. System requirement for self-hosting: 2 vCPUs, 8 GB RAM minimum."
+    when_to_use: "Best for small-team + cost-sensitive teams where self-hosting is
+      required but Enterprise pricing is off the table. Community Edition's
+      unlimited-user self-hosted plan makes it the most cost-effective
+      open-source choice for engineering-led teams comfortable running Docker or
+      Kubernetes. Choose Appsmith when developers want to write custom
+      JavaScript logic alongside drag-and-drop components."
+    tradeoffs: "Community Edition is genuinely free with no user limits—the most
+      permissive self-hosted offering of the three. Business at $15/user/mo is
+      the lowest per-seat cost among paid plans when comparing apples to apples
+      with Retool Business. JavaScript customization is a first-class concept,
+      making it strong for developer-built tools. Component library and
+      pre-built integrations are narrower than Retool. Cloud paid plans cap at
+      99 users on Business, requiring Enterprise for larger organizations."
+    cautions: "Appsmith's self-hosted instance requires outbound internet access to
+      cs.appsmith.com for features like templates and Google Sheets integration;
+      air-gapped deployments require an Enterprise add-on and must be arranged
+      through sales. The cloud Free plan is limited to 5 users, so teams
+      expecting cloud hosting beyond prototyping must immediately start paying
+      $15/user/mo on Business. Verify current plan details and Community vs.
+      Commercial edition feature boundaries at appsmith.com/pricing and
+      docs.appsmith.com/getting-started/setup."
+    links:
+      - "https://www.appsmith.com/pricing"
+      - "https://docs.appsmith.com/getting-started/setup"
+      - "https://docs.appsmith.com/getting-started/setup/installation-guides/do\
+        cker"
+      - "https://docs.appsmith.com/getting-started/setup/manage-editions"
+tags:
+  - "internal tools"
+  - "low-code"
+  - "retool"
+  - "budibase"
+  - "appsmith"
+  - "pricing"
+  - "self-hosted"
+  - "open-source"
+  - "crud"
+  - "dashboard"
+  - "comparison"
+  - "2026"
+aliases:
+  - "retool vs budibase vs appsmith"
+  - "internal tool builder pricing 2026"
+  - "low-code internal tools comparison"
+  - "retool alternative open source"
+  - "appsmith vs retool cost"
+  - "budibase self-hosted free"
+  - "internal dashboard builder"
+related_cards:
+  - "frontend/design-system-build-vs-buy"
+  - "backend/supabase-vs-firebase-baas-pricing-and-features-2026"
+  - "auth/clerk-vs-auth0-vs-cognito-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-09-28"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/retool
+      name: Retool
+    - type: vendor
+      id: vendor/budibase
+      name: Budibase
+    - type: vendor
+      id: vendor/appsmith
+      name: Appsmith
+    - type: capability
+      id: capability/self-hosted-deployment
+      name: self-hosted deployment
+    - type: capability
+      id: capability/enterprise-sales
+      name: Enterprise sales involvement
+    - type: package
+      id: package/budibase/community-edition
+      name: Budibase Community Edition
+    - type: package
+      id: package/budibase/version-2023-11-onward
+      name: Budibase versions from November 2023 onwards
+    - type: package
+      id: package/appsmith/community-edition
+      name: Appsmith Community Edition
+    - type: capability
+      id: capability/outbound-internet-access
+      name: outbound internet access
+    - type: capability
+      id: capability/air-gapped-deployment
+      name: air-gapped deployment
+  edges:
+    - type: locks_via
+      from: vendor/retool
+      to: capability/enterprise-sales
+      capability: self-hosted deployment
+      effective_date: 2026-02
+      fact: New self-hosted signups are Enterprise-only and require going through
+        Enterprise sales.
+    - type: breaking_change_in
+      from: package/budibase/community-edition
+      to: package/budibase/version-2023-11-onward
+      change: 20 combined-user cap on self-hosted free applies from versions released
+        November 2023 onwards.
+    - type: locks_via
+      from: package/appsmith/community-edition
+      to: capability/outbound-internet-access
+      scope: self-hosted features like templates and Google Sheets integration
+      fact: Self-hosted requires outbound internet access to cs.appsmith.com for these
+        features.
+    - type: locks_via
+      from: capability/air-gapped-deployment
+      to: capability/enterprise-sales
+      vendor: Appsmith
+      fact: Air-gapped deployments require an Enterprise add-on and must be arranged
+        through sales.

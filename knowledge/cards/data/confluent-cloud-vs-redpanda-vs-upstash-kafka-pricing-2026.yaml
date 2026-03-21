@@ -1,0 +1,198 @@
+id: "data/confluent-cloud-vs-redpanda-vs-upstash-kafka-pricing-2026"
+title: "Confluent Cloud vs Redpanda vs Upstash Kafka Serverless Pricing and
+  Published Limits as of 2026-03"
+problem: "Teams choosing managed Kafka-compatible messaging need a current
+  comparison of publicly documented serverless pricing models, partition limits,
+  retention behavior, and egress treatment."
+context:
+  - "kafka"
+  - "event-streaming"
+  - "aws"
+  - "gcp"
+  - "azure"
+constraints:
+  - "serverless"
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+candidates:
+  - name: "Confluent Cloud"
+    summary: "As of 2026-03-19, Confluent's current serverless-style Kafka tiers are
+      eCKU-based Basic, Standard, Enterprise, and Freight. Official pricing
+      shows Basic with the first eCKU free then $0.14 per eCKU-hour, $0.05 per
+      GB ingress/egress, and $0.08 per GB-month storage; Standard is $0.75 per
+      eCKU-hour, $0.035-$0.050 per GB networking, and $0.08 per GB-month
+      storage; Enterprise is $1.75-$2.25 per eCKU-hour, $0.020-$0.050 per GB
+      networking, and $0.08 per GB-month storage. Official docs also state
+      Confluent does not separately bill partitions on any cluster type, but
+      partition count still affects eCKU consumption. Storage is billed on
+      post-replication data, and Confluent's built-in replication factor of 3 is
+      not configurable, so long retention multiplies cost."
+    when_to_use: "Use this when you need the most explicit enterprise feature
+      ladder, broad cloud coverage, and predictable Kafka compatibility with
+      private networking and higher SLAs. It is the safer choice for enterprise
+      plus compliance or multi-team platforms, but it is usually the one to
+      scrutinize hardest for storage and network cost."
+    tradeoffs: "Strong docs, mature managed ecosystem, and scale-to-zero behavior
+      for idle general-purpose clusters. Tradeoff is that billing is
+      multidimensional and storage is charged after replication, so
+      retention-heavy workloads can become expensive faster than the headline
+      eCKU price suggests."
+    cautions: "As of 2026-03-19, organizations created before 2024-04-16 may still
+      be on Confluent's legacy Basic or Standard partition-billing model; new
+      orgs use eCKU pricing. Scale-to-zero only applies when there is truly zero
+      dimensional consumption, which Confluent defines as no topics or
+      partitions and no billable ingress, egress, connections, attempts, or
+      requests."
+    links:
+      - "https://www.confluent.io/pricing/"
+      - "https://docs.confluent.io/cloud/current/billing/overview.html"
+      - "https://docs.confluent.io/cloud/current/clusters/cluster-types.html"
+  - name: "Redpanda Serverless"
+    summary: "As of 2026-03-19, the latest official Redpanda Serverless pricing
+      announcement describes one serverless product that replaced the older Pro
+      and Standard tiers, and the same page links to a 2026-02-03 GA
+      announcement. Official Redpanda pricing in that announcement starts at
+      $0.10 per hour base compute, $0.045 per GB ingress, $0.04 per GB egress,
+      $0.0015 per partition-hour, and $0.09 per GB-month storage. The same
+      official announcement states 100 MBps ingress, 300 MBps egress, 5,000
+      partitions, and unlimited storage for Serverless. This makes Redpanda the
+      clearest alternative if you want public list pricing with explicit
+      serverless throughput and partition ceilings."
+    when_to_use: "Use this when you want high serverless throughput with simpler
+      public pricing and you can accept explicit partition-hour billing. It fits
+      high-scale plus low-ops teams that want a managed Kafka-compatible
+      platform without Confluent's replication-amplified storage framing."
+    tradeoffs: "Higher published serverless throughput and a cleaner price sheet
+      than Confluent. Tradeoff is that partitions are directly billed, so
+      topic-heavy designs or many small consumer groups can turn partition count
+      into a first-class cost driver."
+    cautions: "The most specific public pricing details are in Redpanda's official
+      serverless announcement rather than a standalone pricing table in the
+      docs. Re-check the live calculator or sales quote before purchase if
+      committed-use discounts or private connectivity charges matter."
+    links:
+      - "https://www.redpanda.com/blog/new-redpanda-serverless"
+      - "https://docs.redpanda.com/redpanda-cloud/reference/tiers/dedicated-tie\
+        rs/"
+      - "https://docs.redpanda.com/redpanda-cloud/"
+  - name: "Upstash Kafka"
+    summary: "As of 2026-03-19, the official Upstash material publicly available
+      here supports a narrower claim set than Confluent or Redpanda: Upstash
+      Kafka is positioned as serverless, scale-to-zero, and priced primarily by
+      messages plus storage with a monthly price cap. Upstash's official launch
+      post states $0.2 per 100K messages for single-zone, $0.6 per 100K messages
+      for multi-zone, $0.25 per GB storage, no separate bandwidth or partition
+      charge, and monthly caps of $120 single-zone or $360 multi-zone. That
+      gives Upstash the simplest published pricing shape in this comparison, but
+      the currently surfaced official sources do not provide the same current,
+      dedicated Kafka limits documentation for throughput ceilings or other hard
+      capacity numbers."
+    when_to_use: "Use this when you are a small team plus cost-sensitive plus
+      low-ops, and your workload is modest enough that REST-friendly serverless
+      messaging beats classic Kafka scaling concerns. It is the strongest fit
+      for prototypes, webhooks, edge functions, and lightweight event streams
+      where operational simplicity matters more than peak throughput."
+    tradeoffs: "Very low operational burden and a friendly pay-as-you-go shape for
+      small workloads. Tradeoff is thinner current public documentation for hard
+      Kafka capacity limits, which makes it a worse choice for
+      throughput-sensitive or compliance-heavy production commitments unless you
+      confirm the live product details directly."
+    cautions: "Use Upstash as a simplicity-first option, not as the best-documented
+      choice for hard throughput planning. Before production commitment, confirm
+      current Kafka-specific limits and any pricing-page changes in the live
+      Upstash docs or dashboard."
+    links:
+      - "https://upstash.com/pricing"
+      - "https://upstash.com/blog/serverless-kafka-launch"
+      - "https://upstash.com/blog/aws-msk-confluent-serverless"
+tags:
+  - "data"
+  - "kafka"
+  - "messaging"
+  - "pricing"
+aliases:
+  - "managed kafka pricing"
+  - "confluent vs redpanda vs upstash kafka"
+  - "serverless kafka pricing 2026"
+related_cards:
+  - "messaging/redpanda-vs-kafka-vs-pulsar-scaling-cost-2026"
+  - "messaging/queue-vs-stream-for-product-events"
+  - "backend/message-queue"
+  - data/risingwave-basic-vs-pro-vs-self-managed-rwu-pricing-2026
+  - data/confluent-freight-vs-enterprise-private-networking-after-pni-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: protocol
+      id: protocol/kafka
+      name: Kafka
+      standard: kafka-compatible
+    - type: vendor
+      id: vendor/confluent-cloud
+      name: Confluent Cloud
+    - type: vendor
+      id: vendor/redpanda-serverless
+      name: Redpanda Serverless
+    - type: vendor
+      id: vendor/upstash-kafka
+      name: Upstash Kafka
+    - type: capability
+      id: capability/serverless
+      name: Serverless
+      category: deployment
+    - type: capability
+      id: capability/scale-to-zero
+      name: Scale-to-zero
+      category: scaling
+    - type: capability
+      id: capability/confluent-fixed-replication-factor-3
+      name: Built-in replication factor of 3
+      category: replication
+    - type: capability
+      id: capability/upstash-monthly-price-cap
+      name: Monthly price cap
+      category: pricing
+    - type: capability
+      id: capability/redpanda-partition-hour-billing
+      name: Partition-hour billing
+      category: pricing
+  edges:
+    - type: locks_via
+      from: vendor/confluent-cloud
+      to: capability/confluent-fixed-replication-factor-3
+      note: Built-in replication factor of 3 is not configurable.
+    - type: locks_via
+      from: vendor/upstash-kafka
+      to: capability/upstash-monthly-price-cap
+      note: Official launch post states monthly caps of $120 single-zone or $360
+        multi-zone.
+    - type: locks_via
+      from: vendor/redpanda-serverless
+      to: capability/redpanda-partition-hour-billing
+      note: Official pricing includes $0.0015 per partition-hour.
+    - type: locks_via
+      from: vendor/confluent-cloud
+      to: capability/serverless
+      note: Current serverless-style Kafka tiers are eCKU-based Basic, Standard,
+        Enterprise, and Freight.
+    - type: locks_via
+      from: vendor/redpanda-serverless
+      to: capability/serverless
+      note: Latest official announcement describes one serverless product.
+    - type: locks_via
+      from: vendor/upstash-kafka
+      to: capability/serverless
+      note: Upstash Kafka is positioned as serverless.
+    - type: locks_via
+      from: vendor/confluent-cloud
+      to: capability/scale-to-zero
+      note: Scale-to-zero behavior is described for idle general-purpose clusters.
+    - type: locks_via
+      from: vendor/upstash-kafka
+      to: capability/scale-to-zero
+      note: Upstash Kafka is positioned as scale-to-zero.

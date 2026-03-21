@@ -1,0 +1,171 @@
+id: "cloud/northflank-network-pricing-cut-december-2025-impact-2026"
+title: "Northflank Network Egress Cut to $0.06 per GB and Disk Price Halving
+  After 2025-12-11"
+problem: "Reassess Northflank for bandwidth-heavy workloads after request
+  pricing was removed and egress and disk rates were cut in December 2025."
+context:
+  - "paas"
+  - "containers"
+  - "bandwidth-pricing"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+candidates:
+  - name: "Use Northflank for bandwidth-heavy or storage-heavy services"
+    summary: "As of 2026-03-20, Northflank's 2025-12-11 pricing change has already
+      occurred. Northflank's changelog states request pricing was removed
+      entirely, network egress dropped from $0.15 to $0.06 per GB, and NVMe disk
+      pricing dropped from $0.30 to $0.15 per GB per month. Northflank's pricing
+      page currently lists network egress at $0.06 per GB, disk at $0.15 per GB
+      per month, and example bundled compute plans such as 1 dedicated vCPU with
+      2 GB RAM at $24.00 per month. This materially improves Northflank's fit
+      for workloads where public egress and attached storage are a meaningful
+      part of total cost."
+    when_to_use: "Use this when you want a managed PaaS and bandwidth plus disk are
+      blocker-level cost drivers. The decisive factor is that Northflank no
+      longer adds request-based charges and now prices egress and disk at levels
+      that are much closer to other usage-metered PaaS options."
+    tradeoffs: "Pros: request pricing is gone, egress and disk are both lower than
+      Northflank's pre-2025-12-11 rates, and compute is available as predefined
+      bundled plans. Cons: Northflank egress is still not the absolute lowest
+      among comparable PaaS options in this card, and compute is plan-based
+      rather than fully unbundled by resource line item."
+    cautions: "Do not evaluate Northflank using older pre-December-2025 calculators
+      or internal assumptions. As of 2026-03-20, the key blocker facts are the
+      removal of request pricing and the new $0.06 per GB egress and $0.15 per
+      GB per month disk rates."
+    links:
+      - "https://northflank.com/changelog/reduced-network-pricing-and-introduce\
+        d-melbourne-and-tokyo"
+      - "https://northflank.com/pricing"
+      - "https://northflank.com/docs/v1/application/billing/pricing-on-northfla\
+        nk"
+  - name: "Keep Railway if slightly lower egress and pure usage metering matter more"
+    summary: "As of 2026-03-20, Railway documents a subscription-plus-usage model:
+      Free at $0 per month, Hobby at $5 per month, Pro at $20 per month, with
+      the subscription fee counting toward usage. Railway's pricing docs list
+      RAM at $10 per GB per month, CPU at $20 per vCPU per month, network egress
+      at $0.05 per GB, and volume storage at $0.15 per GB per month. Relative to
+      Northflank, Railway's listed egress is $0.01 per GB lower while volume
+      storage is the same listed price. The main distinction is pricing
+      structure: Railway exposes resource line items directly, while Northflank
+      surfaces bundled compute plans."
+    when_to_use: "Use this when you prefer explicit per-resource metering and your
+      workload economics are dominated by steady CPU, RAM, storage, and egress
+      line items. The decisive factor is Railway's currently listed $0.05 per GB
+      egress with usage offset by the monthly subscription fee."
+    tradeoffs: "Pros: slightly lower listed egress than Northflank and
+      straightforward per-resource pricing. Cons: paid plans start with a
+      subscription fee, and the decision benefit versus Northflank may be small
+      if request pricing removal was the main blocker."
+    cautions: "Do not compare Railway only on headline subscription price. As of
+      2026-03-20, the relevant comparison is total usage cost after applying the
+      included subscription credit, especially if your workload has persistent
+      CPU and RAM usage."
+    links:
+      - "https://docs.railway.com/pricing"
+      - "https://docs.railway.com/reference/pricing/plans"
+tags:
+  - "cloud"
+  - "northflank"
+  - "pricing"
+  - "egress"
+  - "paas"
+aliases:
+  - "northflank egress pricing 2026"
+  - "northflank request pricing removed"
+  - "northflank disk pricing december 2025"
+  - "northflank bandwidth pricing"
+  - "northflank egress cost"
+  - "northflank network pricing"
+  - "northflank storage pricing"
+  - "northflank disk cost"
+  - "northflank pricing update"
+  - "northflank december pricing"
+  - "northflank 2026 pricing"
+  - "northflank bandwidth costs"
+  - "northflank egress fee"
+
+  - "northflank egress pricing 2026"
+  - "northflank request pricing removed"
+  - "northflank disk pricing december 2025"
+related_cards:
+  - "deployment/coolify-vs-dokploy-vs-northflank-paas-pricing-2026"
+  - "deployment/railway-free-vs-hobby-vs-pro-usage-minimums-2026"
+  - "serverless/cloud-run-vs-heroku-vs-render-idle-and-egress-costs-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/northflank
+      name: Northflank
+    - type: vendor
+      id: vendor/railway
+      name: Railway
+    - type: capability
+      id: capability/request-pricing
+      name: Request pricing
+      category: billing
+    - type: capability
+      id: capability/network-egress
+      name: Network egress
+      category: billing
+    - type: capability
+      id: capability/nvme-disk-storage
+      name: NVMe disk storage
+      category: billing
+    - type: capability
+      id: capability/volume-storage
+      name: Volume storage
+      category: billing
+    - type: capability
+      id: capability/bundled-compute-plans
+      name: Bundled compute plans
+      category: compute-pricing
+    - type: capability
+      id: capability/per-resource-metering
+      name: Per-resource metering
+      category: compute-pricing
+  edges:
+    - type: breaking_change_in
+      from: vendor/northflank
+      to: capability/request-pricing
+      date: 2025-12-11
+      change: removed entirely
+    - type: breaking_change_in
+      from: vendor/northflank
+      to: capability/network-egress
+      date: 2025-12-11
+      old_price_usd_per_gb: 0.15
+      new_price_usd_per_gb: 0.06
+    - type: breaking_change_in
+      from: vendor/northflank
+      to: capability/nvme-disk-storage
+      date: 2025-12-11
+      old_price_usd_per_gb_month: 0.3
+      new_price_usd_per_gb_month: 0.15
+    - type: breaking_change_in
+      from: vendor/northflank
+      to: capability/bundled-compute-plans
+      date: 2026-03-20
+      detail: compute is available as predefined bundled plans
+    - type: breaking_change_in
+      from: vendor/railway
+      to: capability/network-egress
+      date: 2026-03-20
+      price_usd_per_gb: 0.05
+    - type: breaking_change_in
+      from: vendor/railway
+      to: capability/volume-storage
+      date: 2026-03-20
+      price_usd_per_gb_month: 0.15
+    - type: breaking_change_in
+      from: vendor/railway
+      to: capability/per-resource-metering
+      date: 2026-03-20
+      detail: pricing exposes resource line items directly

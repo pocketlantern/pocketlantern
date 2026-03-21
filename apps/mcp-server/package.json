@@ -1,0 +1,56 @@
+{
+  "name": "@pocketlantern/mcp-server",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "MCP server for PocketLantern — factual decision cards for AI agents",
+  "license": "MIT",
+  "homepage": "https://pocketlantern.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketlantern/pocketlantern.git",
+    "directory": "apps/mcp-server"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./loader": {
+      "types": "./dist/loader.d.ts",
+      "default": "./dist/loader.js"
+    },
+    "./search": {
+      "types": "./dist/search.d.ts",
+      "default": "./dist/search.js"
+    }
+  },
+  "bin": {
+    "pocketlantern-mcp": "dist/server.js"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "start": "node dist/server.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.0",
+    "@pocketlantern/schema": "workspace:*",
+    "yaml": "^2.8.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  }
+}

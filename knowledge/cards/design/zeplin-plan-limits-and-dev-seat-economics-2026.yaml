@@ -1,0 +1,221 @@
+id: "design/zeplin-plan-limits-and-dev-seat-economics-2026"
+title: "Zeplin Project Limits and Developer Seat Economics in 2026"
+problem: "Teams already using Zeplin need a current answer on plan limits,
+  developer-seat billing, and legacy-plan status before expanding usage or
+  moving developer handoff elsewhere."
+context:
+  - "design-handoff"
+  - "figma"
+  - "developer-workflows"
+  - "saas-pricing"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Zeplin Basic"
+    summary: "As of 2026-03-19, Zeplin Basic is the pay-per-project option rather
+      than a seat-based workspace plan. Official pricing shows annual
+      project-pack pricing of $13.75/month for 1 project, $35.75/month for 3,
+      $63.25/month for 6, $90.75/month for 9, and $118.25/month for 12, with
+      unlimited members per project and up to 1,000 screens per project. Basic
+      keeps all members on the same access level, so developers do not consume
+      separate paid seats. It is the clearest way to expand collaborator count
+      without triggering per-developer seat costs."
+    when_to_use: "Use this when the main constraint is cost-sensitive growth and you
+      can organize work by a limited number of active projects instead of by a
+      centrally managed workspace. It is the decisive choice when unlimited
+      designers and developers inside each project matters more than role
+      controls, SSO, or cross-project governance."
+    tradeoffs: "Strong seat economics for external collaborators and client-style
+      projects, but weaker governance because all members can edit and there are
+      no role-based permissions. You also cap out at preset project packs and
+      1,000 screens per project."
+    cautions: "Basic is a personal workspace plan, not a team workspace. If your
+      team later needs role-based access, project sections/statuses, or
+      centralized user management, moving to Advanced changes the cost model
+      from project packs to paid seats."
+    links:
+      - "https://zeplin.io/pricing"
+      - "https://support.zeplin.io/en/articles/9891555-guide-to-zeplin-plans-se\
+        ptember-2024"
+  - name: "Zeplin Advanced"
+    summary: "As of 2026-03-19, Zeplin Advanced is Zeplin's main pay-per-seat
+      workspace plan for teams that need controls across multiple projects.
+      Official pricing lists it at $12 per seat per month when paid annually,
+      with 50 projects, unlimited screens, role-based access, and free Reviewer
+      users. Admin, Editor, and Developer are paid seat roles; Reviewer is free
+      and can comment but does not get developer specs. For developer handoff
+      economics, this means every developer who needs specs or asset download
+      access becomes a billable seat."
+    when_to_use: "Use this when you need a shared team workspace, role-based
+      permissions, and cross-project organization across many active projects.
+      It is the decisive option when developers need Zeplin specs and assets,
+      but you still want predictable self-serve pricing instead of sales-led
+      enterprise procurement."
+    tradeoffs: "You get stronger governance, forever version history, and project
+      organization features, but the economics shift directly with each added
+      developer seat. Reviewer being free helps for stakeholders, but it does
+      not reduce cost for engineers who need technical specs."
+    cautions: "The 50-project limit is a real downgrade path boundary; Zeplin says
+      excess projects are archived when downgrading with more than 50. If you
+      are comparing against older Team or Org packaging, do not assume those
+      legacy project limits or role rules still apply to new purchases."
+    links:
+      - "https://zeplin.io/pricing"
+      - "https://support.zeplin.io/en/articles/9891555-guide-to-zeplin-plans-se\
+        ptember-2024"
+      - "https://support.zeplin.io/en/articles/387773-assigning-roles-to-worksp\
+        ace-members"
+  - name: "Zeplin Enterprise"
+    summary: "As of 2026-03-19, Zeplin Enterprise remains a sales-priced per-seat
+      plan with unlimited projects, unlimited screens, free Reviewer users, and
+      the security/admin features not included in Advanced. Official pricing
+      does not publish a seat number; teams must contact sales. Enterprise adds
+      SSO, MFA, SCIM-style user provisioning controls, domain capture, activity
+      logs, invoiced billing, custom terms, and priority support. Developer
+      access still follows the same paid-seat logic because Developer is a
+      seat-based role."
+    when_to_use: "Use this when enterprise controls, procurement requirements, or
+      more than 50 projects matter more than public list pricing. It is the
+      decisive choice when security and identity requirements block Advanced or
+      when project count growth makes the 50-project cap operationally awkward."
+    tradeoffs: "Unlimited projects and stronger controls remove operational
+      blockers, but price transparency drops because seat cost is quote-based.
+      Budgeting developer expansion becomes a sales and contract exercise rather
+      than a simple self-serve calculation."
+    cautions: "Do not assume Enterprise changes the basic seat economics for
+      developers; Reviewer stays free, but Developer remains a paid role. If you
+      need an exact seat price, check official sales materials because Zeplin's
+      public pricing page does not publish one."
+    links:
+      - "https://zeplin.io/pricing"
+      - "https://support.zeplin.io/en/articles/9891555-guide-to-zeplin-plans-se\
+        ptember-2024"
+  - name: "Stay on grandfathered Team or Organization if already subscribed"
+    summary: "As of 2026-03-19, this is only relevant to existing customers because
+      Zeplin's Team and Organization plans stopped being available for new
+      purchases in September 2024. Zeplin states active subscribers are
+      grandfathered, keep their existing subscription terms, and can renew on
+      the original plan unless they choose to move. This matters because older
+      teams may still have materially different project and seat packaging than
+      current buyers. Organization-plan help docs also confirm Reviewer is free,
+      paid-seat roles include Owner, Admin, Editor, and Developer, and a minimum
+      of 12 seats applies there."
+    when_to_use: "Use this as the baseline comparison if your company already has a
+      legacy Team or Organization workspace and is deciding whether expansion
+      should stay on that contract or move to current plans. It is the decisive
+      path when your legacy packaging is cheaper or better aligned than
+      Advanced's current 50-project and per-seat model."
+    tradeoffs: "Grandfathering can preserve better economics or limits, but it also
+      creates internal confusion because public pricing pages no longer match
+      your workspace. Migration to current plans may simplify procurement while
+      worsening seat economics for developers."
+    cautions: "As of 2026-03-19, new customers cannot buy Team or Organization. If
+      your expansion depends on adding net-new workspaces rather than renewing
+      an existing one, treat legacy terms as non-replicable and verify renewal
+      terms with Zeplin before modeling costs."
+    links:
+      - "https://support.zeplin.io/en/articles/9891555-guide-to-zeplin-plans-se\
+        ptember-2024"
+      - "https://support.zeplin.io/en/articles/5024589-team-plan"
+      - "https://support.zeplin.io/en/articles/4647906-faq-about-the-organizati\
+        on-plan-subscription"
+tags:
+  - "design"
+  - "zeplin"
+  - "pricing"
+  - "developer-handoff"
+aliases:
+  - "zeplin developer seat pricing"
+  - "zeplin advanced vs basic pricing"
+  - "zeplin team org legacy plans"
+  - "zeplin seat pricing"
+  - "zeplin dev seats"
+  - "zeplin pricing 2026"
+  - "zeplin plan limits"
+  - "zeplin project limits"
+  - "zeplin legacy plans"
+  - "zeplin org pricing"
+  - "zeplin basic vs advanced"
+  - "zeplin developer billing"
+  - "zepln dev seat cost"
+related_cards:
+  - "design/figma-dev-seats-vs-full-seats-after-dev-mode-pricing-2026"
+  - "design/webflow-workspace-vs-site-plan-billing-after-pricing-rework-2025"
+  - "design/jira-product-discovery-pricing-per-creator-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/zeplin
+      name: Zeplin
+    - type: package
+      id: package/zeplin-basic
+      name: Zeplin Basic
+      category: plan
+    - type: package
+      id: package/zeplin-advanced
+      name: Zeplin Advanced
+      category: plan
+    - type: package
+      id: package/zeplin-enterprise
+      name: Zeplin Enterprise
+      category: plan
+    - type: package
+      id: package/zeplin-team-legacy
+      name: Zeplin Team
+      category: legacy_plan
+    - type: package
+      id: package/zeplin-organization-legacy
+      name: Zeplin Organization
+      category: legacy_plan
+    - type: capability
+      id: capability/project-pack-pricing
+      name: pay-per-project pricing
+      category: billing_model
+    - type: capability
+      id: capability/paid-developer-seat
+      name: developer is a paid seat role
+      category: billing_model
+    - type: capability
+      id: capability/free-reviewer-role
+      name: Reviewer is free
+      category: role_pricing
+    - type: capability
+      id: capability/project-limit-50
+      name: 50-project limit
+      category: plan_limit
+    - type: capability
+      id: capability/new-purchases-stopped-september-2024
+      name: stopped being available for new purchases in September 2024
+      category: availability_change
+  edges:
+    - type: locks_via
+      from: package/zeplin-basic
+      to: capability/project-pack-pricing
+    - type: locks_via
+      from: package/zeplin-advanced
+      to: capability/paid-developer-seat
+    - type: locks_via
+      from: package/zeplin-advanced
+      to: capability/free-reviewer-role
+    - type: locks_via
+      from: package/zeplin-advanced
+      to: capability/project-limit-50
+    - type: locks_via
+      from: package/zeplin-enterprise
+      to: capability/paid-developer-seat
+    - type: locks_via
+      from: package/zeplin-enterprise
+      to: capability/free-reviewer-role
+    - type: breaking_change_in
+      from: package/zeplin-team-legacy
+      to: capability/new-purchases-stopped-september-2024
+    - type: breaking_change_in
+      from: package/zeplin-organization-legacy
+      to: capability/new-purchases-stopped-september-2024

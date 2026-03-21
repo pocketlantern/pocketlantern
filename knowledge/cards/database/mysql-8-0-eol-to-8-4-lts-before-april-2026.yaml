@@ -1,0 +1,175 @@
+id: "database/mysql-8-0-eol-to-8-4-lts-before-april-2026"
+title: "MySQL 8.0 End of Life to 8.4 LTS Before April 2026"
+problem: "MySQL teams need a decision card for whether to move from 8.0 to 8.4
+  LTS or to an Innovation release before MySQL 8.0 reaches end of life in April
+  2026, including support-window and operational-risk implications."
+context:
+  - "database"
+  - "mysql"
+  - "mysql-8-0"
+  - "mysql-8-4"
+  - "mysql-9"
+  - "lts"
+  - "innovation"
+  - "major-version-upgrade"
+  - "self-managed"
+  - "enterprise-support"
+constraints:
+  - "enterprise"
+  - "low-ops"
+  - "compliance"
+  - "high-scale"
+  - "small-team"
+  - "real-time"
+  - "microservices"
+candidates:
+  - name: "Move from MySQL 8.0 to MySQL 8.4 LTS as the default landing zone"
+    summary: "As of 2026-03-15, MySQL 8.4 is the safest default target for most
+      MySQL 8.0 estates. Oracle's support chart lists MySQL Database 8.0
+      Extended Support ending in April 2026, while MySQL Database 8.4 has
+      Premier Support through April 2029 and Extended Support through April
+      2032, and the MySQL release model defines LTS as the stable track with
+      only necessary fixes and no removals within the LTS series."
+    when_to_use: "Best for enterprise + compliance, low-ops + small-team, or
+      high-scale + real-time fleets where you need a supported version before
+      April 2026 but want the lowest behavior-change risk. Choose this when
+      quarterly feature churn is a liability, when rollback flexibility matters,
+      or when you need one major upgrade that buys a long support runway."
+    tradeoffs: "You get the longest clearly documented support window available from
+      the current 8.0 decision point and a direct supported 8.0.x to 8.4.x
+      upgrade path using in-place upgrade, logical dump and load, or
+      replication. The tradeoff is that you delay 9.x features and still need to
+      remediate 8.4 compatibility changes before cutover."
+    cautions: "Do not treat 8.4 as a no-op patch train. Oracle documents that
+      `mysql_native_password` is disabled by default in 8.4,
+      `default_authentication_plugin` is removed, several SSL and
+      keyring-related options and variables were removed in 8.4.0, multiple
+      InnoDB defaults changed, some identifiers can become illegal because of
+      reserved-word changes, and upgrades to 8.4.4 or later should drop and
+      recreate spatial indexes. Oracle also recommends running MySQL Shell's
+      Upgrade Checker Utility before the upgrade."
+    links:
+      - "https://www.oracle.com/us/support/library/lsp-tech-chart-069290.pdf"
+      - "https://dev.mysql.com/doc/refman/8.4/en/mysql-releases.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/upgrade-paths.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/upgrading-from-previous-series\
+        .html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/upgrade-prerequisites.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/native-pluggable-authenticatio\
+        n.html"
+      - "https://dev.mysql.com/doc/relnotes/mysql/8.4/en/"
+  - name: "Adopt the MySQL Innovation track only if you can keep upgrading after
+      first landing on 8.4"
+    summary: "As of 2026-03-15, MySQL 9.6 is actively supported for production use
+      and is the current Innovation series documented by Oracle. The official
+      MySQL release model says Innovation releases are supported only until the
+      next major or minor release, so this path is for teams that deliberately
+      accept a shorter support window in exchange for the newest features and
+      fixes."
+    when_to_use: "Best for high-scale + microservices, real-time + enterprise, or
+      monorepo-like application teams with strong CI, upgrade rehearsal, and
+      connector validation where getting the newest server behavior matters more
+      than long support runway. Choose this only when you can first move off 8.0
+      to 8.4 and then stay current on the 9.x Innovation track without long
+      upgrade freezes."
+    tradeoffs: "You get the newest MySQL capabilities sooner and stay on the branch
+      Oracle presents as the current production-ready Innovation release. The
+      tradeoff is more operational churn, a shorter documented support horizon
+      for each release, and a need for repeated upgrade work rather than one
+      conservative LTS move."
+    cautions: "Oracle's release model explicitly says behavior changes are expected
+      in Innovation releases, and the official downgrade matrix says downgrades
+      within an Innovation series such as 9.6 to 9.5 are only supported for
+      rollback purposes using logical dump and load or replication if no new
+      server functionality has been applied to the data. Oracle also documents
+      that `mysql_native_password` is removed as of MySQL 9.0.0, so any
+      temporary dependency you tolerate on 8.4 must be removed before moving
+      onto 9.x. For 8.0 estates, do not plan a direct jump to 9.x after the LTS
+      boundary; Oracle's documented model requires first moving to 8.4."
+    links:
+      - "https://dev.mysql.com/doc/refman/8.4/en/faqs-general.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/which-version.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/mysql-releases.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/upgrade-paths.html"
+      - "https://dev.mysql.com/doc/refman/8.4/en/downgrading.html"
+      - "https://dev.mysql.com/doc/relnotes/mysql/9.6/en/"
+      - "https://dev.mysql.com/blog-archive/introducing-mysql-innovation-and-lo\
+        ng-term-support-lts-versions/"
+tags:
+  - "database"
+  - "mysql"
+  - "mysql-8.0"
+  - "mysql-8.4"
+  - "mysql-9"
+  - "lts"
+  - "innovation"
+  - "eol"
+  - "end-of-life"
+  - "upgrade"
+  - "major-version-upgrade"
+  - "support-policy"
+  - "oracle"
+aliases:
+  - "mysql 8.0 eol"
+  - "mysql 8.0 end of life"
+  - "mysql 8.0 to 8.4"
+  - "mysql 8.0 to 9.6"
+  - "mysql innovation vs lts"
+  - "mysql 8.4 support window"
+  - "mysql april 2026"
+  - "mysql 8.0 upgrade path"
+related_cards: []
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-04-30"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/mysql-8.0
+      name: MySQL 8.0
+      version: "8.0"
+    - type: package
+      id: package/mysql-8.4
+      name: MySQL 8.4 LTS
+      version: "8.4"
+    - type: package
+      id: package/mysql-9.6
+      name: MySQL 9.6 Innovation
+      version: "9.6"
+  edges:
+    - type: eol_date
+      from: package/mysql-8.0
+      to: null
+      date: 2026-04
+      successor: package/mysql-8.4
+    - type: breaking_change_in
+      from: package/mysql-8.4
+      to: null
+      change: mysql_native_password disabled by default; default_authentication_plugin
+        removed
+      migration_path: migrate clients to caching_sha2_password before upgrade
+    - type: breaking_change_in
+      from: package/mysql-8.4
+      to: null
+      change: several SSL and keyring-related options and variables removed
+      migration_path: audit and update SSL/keyring configuration before upgrade
+    - type: breaking_change_in
+      from: package/mysql-8.4
+      to: null
+      change: multiple InnoDB defaults changed; some identifiers become illegal
+        (reserved-word changes)
+      migration_path: run MySQL Shell Upgrade Checker Utility to identify all breaking
+        identifiers
+    - type: breaking_change_in
+      from: package/mysql-8.4
+      to: null
+      change: upgrades to 8.4.4+ should drop and recreate spatial indexes
+      migration_path: script spatial index drop/recreate as part of upgrade runbook
+    - type: breaking_change_in
+      from: package/mysql-9.6
+      to: null
+      change: mysql_native_password completely removed (not just disabled) — no
+        temporary workaround
+      migration_path: all clients must use caching_sha2_password before moving to 9.x

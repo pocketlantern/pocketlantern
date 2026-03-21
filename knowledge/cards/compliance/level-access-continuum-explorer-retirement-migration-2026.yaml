@@ -1,0 +1,185 @@
+id: "compliance/level-access-continuum-explorer-retirement-migration-2026"
+title: "Level Access Continuum Explorer Retirement Migration 2026"
+problem: "Existing Level Access customers need a change-awareness card on the
+  Continuum Explorer retirement and the migration path to supported tooling so
+  audit evidence and developer testing workflows do not break in 2026."
+context:
+  - "accessibility"
+  - "wcag"
+  - "browser-extension"
+  - "audit-evidence"
+constraints:
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Replace Continuum Explorer with the Level Access browser extension"
+    summary: "As of 2026-03-19, Continuum Explorer's retirement has already
+      occurred: official support ended on 2024-05-31, it stopped receiving
+      Access Engine updates after that date, and it was retired and removed from
+      the Chrome Web Store on 2024-06-07. Level Access's official replacement is
+      the Level Access browser extension for Chrome. The replacement keeps the
+      core browser-based workflow for single-page scans, iframe scanning,
+      manual-review findings, and highlight-in-page inspection, while adding
+      support for WCAG 2.2. Official docs do not publish public self-serve
+      pricing for this extension; check official docs and your Level Access
+      contract."
+    when_to_use: "Use this when your main need is a direct developer-workflow
+      replacement for Continuum Explorer in 2026. It is the decisive choice when
+      engineers need supported local, pre-production, protected-page, or
+      dynamic-flow testing without staying on an unsupported extension."
+    tradeoffs: "Closest workflow match to Continuum Explorer and officially
+      supported, but it does not automatically retest when the page changes,
+      does not preserve Continuum Explorer's 1-10 severity model, and does not
+      keep Continuum Explorer's in-extension sorting by severity, noticeability,
+      and tractability."
+    cautions: "If teams rely on exported evidence, note the migration caveat:
+      Continuum Explorer could download results directly as .json, while the
+      Level Access browser extension requires sending results to the platform
+      before downloading them as .xlsx or .csv. The browser extension is
+      documented as Chrome-compatible, and platform-connected result sending is
+      limited to Accelerate and Enterprise customers."
+    links:
+      - "https://client.levelaccess.com/hc/en-us/articles/22817150522135-Retiri\
+        ng-Continuum-Explorer"
+      - "https://client.levelaccess.com/hc/en-us/articles/18183776223639-Get-st\
+        arted-with-the-Level-Access-browser-extension"
+      - "https://client.levelaccess.com/hc/en-us/articles/18183852987671-Instal\
+        l-the-Level-Access-browser-extension"
+      - "https://client.levelaccess.com/hc/en-us/articles/23537954120727-What-s\
+        -the-difference-between-Level-Access-browser-extension-and-Continuum-Ex\
+        plorer"
+  - name: "Move evidence capture into the Level Access Platform with
+      browser-extension and platform scans"
+    summary: "As of 2026-03-19, the durable supported path for saved scan evidence
+      is the Level Access Platform rather than Continuum Explorer itself. The
+      browser extension can send scan results to the platform, and platform docs
+      separate on-demand scans from scheduled monitoring for ongoing evidence,
+      trend comparison, remediation validation, and automated flow testing.
+      Platform docs also show package-gated capabilities: sending extension
+      results to the platform is for Accelerate and Enterprise customers, while
+      scan and monitoring limits vary by Essentials, Accelerate, and Enterprise.
+      Official docs name these packages but do not publish public pricing
+      numbers; check official docs and your contract."
+    when_to_use: "Use this when the blocker is not just developer testing, but
+      preserving auditable scan history, exported reports, and repeatable
+      remediation validation in 2026. It is the decisive choice when unsupported
+      local-only extension output would break compliance evidence or team
+      reporting workflows."
+    tradeoffs: "Gives stronger evidence retention and richer reporting than a
+      browser-only workflow, but it introduces package dependency and platform
+      setup. Some functionality differs from AMP, and page limits are finite per
+      scan and per monitoring configuration."
+    cautions: "Do not assume a one-for-one export path from Continuum Explorer. The
+      official comparison says the browser extension's downloadable results come
+      only after sending results to the platform, and the file formats change
+      from Continuum Explorer's .json to platform-oriented .xlsx and .csv.
+      Platform docs also distinguish one-time scans from recurring monitoring,
+      so teams should map old ad hoc workflows to the correct mode before audit
+      periods."
+    links:
+      - "https://client.levelaccess.com/hc/en-us/articles/21692215028887-What-s\
+        -the-difference-between-platform-scans-and-AMP-scans"
+      - "https://client.levelaccess.com/hc/en-us/articles/35340125071895-Access\
+        -Engine-updates-2023"
+      - "https://client.levelaccess.com/hc/en-us/articles/18183852987671-Instal\
+        l-the-Level-Access-browser-extension"
+      - "https://client.levelaccess.com/hc/en-us/articles/23537954120727-What-s\
+        -the-difference-between-Level-Access-browser-extension-and-Continuum-Ex\
+        plorer"
+tags:
+  - "compliance"
+  - "accessibility"
+  - "level-access"
+  - "wcag"
+  - "migration"
+aliases:
+  - "continuum explorer retirement"
+  - "level access browser extension migration"
+  - "continuum explorer replacement"
+  - "level access retirement 2026"
+  - "continuum explorer sunset"
+  - "level access explorer sunset"
+  - "continuum explorer end of life"
+  - "level access extension replacement"
+  - "level access audit migration"
+  - "continuum explorer migration 2026"
+  - "continuum browser extension retirement"
+  - "level access ce migration"
+  - "continuum explorer eol"
+related_cards:
+  - "_archived/migration-strategy"
+  - "_archived/testing-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/continuum-explorer
+      name: Continuum Explorer
+      category: browser_extension
+    - type: package
+      id: package/level-access-browser-extension
+      name: Level Access browser extension
+      category: browser_extension
+    - type: package
+      id: package/accelerate
+      name: Accelerate
+      category: customer_package
+    - type: package
+      id: package/enterprise
+      name: Enterprise
+      category: customer_package
+    - type: engine
+      id: engine/access-engine
+      name: Access Engine
+    - type: capability
+      id: capability/send-extension-results-to-platform
+      name: Send extension results to the platform
+    - type: data_format
+      id: format/json
+      name: .json
+    - type: data_format
+      id: format/xlsx
+      name: .xlsx
+    - type: data_format
+      id: format/csv
+      name: .csv
+  edges:
+    - type: eol_date
+      from: package/continuum-explorer
+      to: null
+      date: 2024-05-31
+      label: official_support_ended
+    - type: eol_date
+      from: package/continuum-explorer
+      to: null
+      date: 2024-06-07
+      label: retired_and_removed_from_chrome_web_store
+    - type: breaking_change_in
+      from: engine/access-engine
+      to: package/continuum-explorer
+      date: 2024-05-31
+      label: stopped_receiving_updates_after_this_date
+    - type: locks_via
+      from: capability/send-extension-results-to-platform
+      to: package/accelerate
+      scope: customer_package
+    - type: locks_via
+      from: capability/send-extension-results-to-platform
+      to: package/enterprise
+      scope: customer_package
+    - type: breaking_change_in
+      from: format/json
+      to: package/level-access-browser-extension
+      label: continuum_explorer_downloaded_results_were_json_while_browser_extension_downloads_are_platform_oriented_formats
+    - type: breaking_change_in
+      from: format/xlsx
+      to: package/level-access-browser-extension
+      label: browser_extension_downloadable_results_after_sending_to_platform
+    - type: breaking_change_in
+      from: format/csv
+      to: package/level-access-browser-extension
+      label: browser_extension_downloadable_results_after_sending_to_platform

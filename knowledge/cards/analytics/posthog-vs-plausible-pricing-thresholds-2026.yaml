@@ -1,0 +1,182 @@
+id: "analytics/posthog-vs-plausible-pricing-thresholds-2026"
+title: "PostHog vs Plausible Pricing Thresholds for Event/Product vs
+  Privacy-First Website Analytics in 2026"
+problem: "Choose between event-based product analytics pricing and
+  pageview-based privacy-first website analytics pricing using current 2026
+  free-tier thresholds, retention limits, and add-on or plan costs that
+  materially change total cost at scale."
+context:
+  - "product-analytics"
+  - "web-analytics"
+  - "saas"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "high-scale"
+candidates:
+  - name: "PostHog Cloud"
+    summary: "PostHog uses usage-based pricing centered on events. As of 2026-03-18,
+      Product Analytics includes a free tier of 1 million events per month, then
+      starts at $0.00005 per event and gets cheaper at higher volumes. The free
+      cloud plan includes 1 project and 1-year data retention; adding a card for
+      usage-based billing expands that to 6 projects and 7-year data retention
+      while keeping the monthly free volume. Session Replay is a separate meter
+      with 5,000 free recordings per month and paid usage starting at $0.005 per
+      recording."
+    when_to_use: "Use PostHog when you need product analytics with event-level
+      instrumentation, user or cohort analysis, and retention beyond simple site
+      traffic reporting. It fits best when you expect high custom-event volume,
+      need authenticated or user-level analysis, or want flexible in-app funnels
+      and breakdowns. It is most cost-effective when your event volume stays
+      inside the free threshold or scales cleanly under event-based billing and
+      replay usage is limited."
+    tradeoffs: "Strong free allowance and volume discounts favor teams with heavy
+      product instrumentation. Costs become more complex because multiple meters
+      exist, and replay or adjacent products can outgrow the base analytics line
+      item."
+    cautions: "As of 2026-03-18, retention differs sharply by billing state: 1 year
+      on the free cloud plan versus 7 years once you add a card for usage-based
+      billing. Do not model cost from analytics events alone if you also want
+      session replay or other separately metered products."
+    links:
+      - "https://posthog.com/pricing"
+      - "https://posthog.com/"
+  - name: "Plausible Analytics Cloud"
+    summary: "Plausible uses subscription pricing based on total monthly pageviews
+      and custom events across all sites in the account. As of 2026-03-18, it
+      does not advertise a permanent free tier; it offers a 30-day free trial,
+      with Starter at $9 per month for up to 10k monthly pageviews, Growth at
+      $14 per month, and Business at $19 per month for the same traffic tier
+      with more features. Starter includes 3 years of data retention, while
+      Business includes 5 years. Funnels, custom properties, the Stats API, and
+      the Looker Studio connector are Business-plan features."
+    when_to_use: "Use Plausible when your primary need is privacy-first website
+      analytics and your traffic is mostly pageview-driven rather than
+      product-event-heavy. It is the better fit for marketing sites, docs,
+      blogs, and content properties where predictable subscription pricing
+      matters more than user-level or authenticated-product analysis. Choose it
+      when custom events are light to moderate, long-term product retention
+      analysis is not required, and anonymous aggregate reporting is
+      sufficient."
+    tradeoffs: "Pricing is easier to forecast because usage is tied to pageview
+      tiers instead of multiple product meters. The tradeoff is a narrower model
+      built around anonymous website measurement rather than deep user-level
+      product analytics."
+    cautions: "As of 2026-03-18, custom events count toward the same subscription
+      usage pool as pageviews, so event-heavy setups can still push you into
+      higher traffic tiers. Its no-cookie, no-personal-data,
+      no-persistent-identifier model is useful for privacy-sensitive sites but
+      limits user-centric product analysis."
+    links:
+      - "https://plausible.io/"
+      - "https://plausible.io/docs/trial-to-paid"
+tags:
+  - "analytics"
+  - "posthog"
+  - "plausible"
+  - "pricing"
+aliases:
+  - "posthog pricing vs plausible"
+  - "event based vs pageview based analytics pricing"
+  - "posthog free tier 2026"
+  - "plausible pricing 2026"
+related_cards:
+  - "analytics/product-analytics-posthog-vs-amplitude-vs-mixpanel-2026"
+  - "analytics/heap-free-plan-session-cap-and-retention-2026"
+  - "compliance/cookie-consent-platform-onetrust-vs-cookiebot-vs-privacy-first-\
+    2026"
+  - analytics/simple-analytics-vs-aptabase-vs-telemetrydeck-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/posthog
+      name: PostHog
+    - type: vendor
+      id: vendor/plausible
+      name: Plausible
+    - type: package
+      id: package/posthog-cloud-free-plan
+      name: PostHog Cloud free plan
+      category: plan
+    - type: package
+      id: package/posthog-usage-based-billing-card
+      name: PostHog usage-based billing card
+      category: billing
+    - type: package
+      id: package/plausible-starter
+      name: Plausible Starter
+      category: plan
+    - type: package
+      id: package/plausible-business
+      name: Plausible Business
+      category: plan
+    - type: capability
+      id: capability/posthog-7-year-retention
+      name: 7-year data retention
+      category: retention
+    - type: capability
+      id: capability/posthog-6-projects
+      name: 6 projects
+      category: project_limit
+    - type: capability
+      id: capability/plausible-funnels
+      name: Funnels
+      category: feature
+    - type: capability
+      id: capability/plausible-custom-properties
+      name: Custom properties
+      category: feature
+    - type: capability
+      id: capability/plausible-stats-api
+      name: Stats API
+      category: feature
+    - type: capability
+      id: capability/plausible-looker-studio-connector
+      name: Looker Studio connector
+      category: feature
+    - type: capability
+      id: capability/plausible-3-year-retention
+      name: 3 years of data retention
+      category: retention
+    - type: capability
+      id: capability/plausible-5-year-retention
+      name: 5 years of data retention
+      category: retention
+    - type: capability
+      id: capability/posthog-session-replay
+      name: Session Replay
+      category: feature
+  edges:
+    - type: requires_version
+      from: capability/posthog-7-year-retention
+      to: package/posthog-usage-based-billing-card
+    - type: requires_version
+      from: capability/posthog-6-projects
+      to: package/posthog-usage-based-billing-card
+    - type: requires_version
+      from: capability/plausible-funnels
+      to: package/plausible-business
+    - type: requires_version
+      from: capability/plausible-custom-properties
+      to: package/plausible-business
+    - type: requires_version
+      from: capability/plausible-stats-api
+      to: package/plausible-business
+    - type: requires_version
+      from: capability/plausible-looker-studio-connector
+      to: package/plausible-business
+    - type: requires_version
+      from: capability/plausible-3-year-retention
+      to: package/plausible-starter
+    - type: requires_version
+      from: capability/plausible-5-year-retention
+      to: package/plausible-business
+    - type: locks_via
+      from: capability/posthog-session-replay
+      to: package/posthog-usage-based-billing-card
+      mechanism: separate meter

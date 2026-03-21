@@ -1,0 +1,99 @@
+id: auth/oauth2-flows
+title: OAuth 2.0 Flow Selection
+problem: Choosing the right OAuth 2.0 flow for your application type
+context:
+  - web
+  - mobile
+  - api
+  - third-party-auth
+constraints:
+  - microservices
+  - enterprise
+  - compliance
+candidates:
+  - name: Authorization Code + PKCE
+    summary: Most secure flow for public clients. Uses a temporary code exchanged
+      for tokens with a code verifier.
+    when_to_use: SPAs, mobile apps, any public client. Now recommended for all web
+      apps. Best for small-team + low-ops where a single secure flow covers web
+      and mobile.
+    tradeoffs: Slightly more complex to implement than implicit flow.
+    cautions: Always use PKCE even for confidential clients. Implicit flow is deprecated.
+    links:
+      - https://datatracker.ietf.org/doc/html/rfc7636
+  - name: Client Credentials
+    summary: Machine-to-machine auth. The client authenticates with its own
+      credentials, no user involved.
+    when_to_use: Backend services, daemons, CLI tools that act on their own behalf.
+      Best for microservices + enterprise where machine-to-machine auth needs no
+      user interaction.
+    tradeoffs: No user context. Cannot represent a specific user's permissions.
+    cautions: Client secret must be stored securely. Not suitable for user-facing apps.
+    links:
+      - https://datatracker.ietf.org/doc/html/rfc6749#section-4.4
+  - name: Device Authorization Grant
+    summary: For devices with limited input capabilities. User authorizes on a
+      separate device.
+    when_to_use: Smart TVs, IoT devices, CLI tools where browser login is preferred.
+      Best for real-time + cost-sensitive IoT/TV apps with limited input
+      capabilities.
+    tradeoffs: Requires polling or callback. User experience depends on secondary device.
+    cautions: Set short expiry on device codes. Rate-limit polling requests.
+    links:
+      - https://datatracker.ietf.org/doc/html/rfc8628
+tags:
+  - auth
+  - oauth2
+  - security
+  - api
+  - mobile
+  - comparison
+aliases:
+  - oauth
+  - social-login
+  - sso
+  - single-sign-on
+  - third-party-login
+related_cards:
+  - auth/jwt-vs-session
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/passkeys-vs-passwords-plus-2fa
+  - auth/session-revocation-with-edge-caches
+  - auth/google-microsoft-github-oauth-policy-drift
+  - auth/google-sign-in-fedcm-migration-vs-custom-oauth-2026
+  - mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-links-vs-branch-2026
+  - auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025
+status: active
+tier: foundational
+updated: 2026-03-14
+review_by: 2026-08-10
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: protocol
+      id: protocol/oauth2
+      name: OAuth 2.0
+      standard: RFC 6749
+    - type: protocol
+      id: protocol/authorization-code-pkce
+      name: Authorization Code + PKCE
+    - type: capability
+      id: capability/pkce
+      name: PKCE
+    - type: protocol
+      id: protocol/client-credentials
+      name: Client Credentials
+    - type: protocol
+      id: protocol/device-authorization-grant
+      name: Device Authorization Grant
+    - type: protocol
+      id: protocol/implicit-flow
+      name: Implicit Flow
+  edges:
+    - type: locks_via
+      from: protocol/authorization-code-pkce
+      to: capability/pkce
+    - type: breaking_change_in
+      from: protocol/implicit-flow
+      to: protocol/oauth2
+      note: Implicit flow is deprecated.

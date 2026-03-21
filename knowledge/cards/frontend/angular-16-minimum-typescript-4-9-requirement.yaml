@@ -1,0 +1,250 @@
+I now have all the data needed. Here is the complete verified YAML card: null
+id: frontend/angular-16-minimum-typescript-4-9-requirement
+title: Angular 16+ Requires TypeScript 4.9 Minimum — Version Floor
+problem: "As of 2026-03-18, Angular enforces a strict TypeScript version floor
+  and ceiling for each major release: Angular 16 required TypeScript >=4.9.3,
+  Angular 17 required >=5.2.0, Angular 18 required >=5.4.0, Angular 19 (LTS
+  until 2026-05-19) requires >=5.5.0, Angular 20 (LTS until 2026-11-28) requires
+  >=5.8.0, and Angular 21 (Active, LTS until 2027-05-19) requires >=5.9.0.
+  Angular versions 16 through 18 are fully EOL and unsupported. Teams on
+  outdated TypeScript cannot upgrade Angular without satisfying each version's
+  floor, and TypeScript versions above the ceiling will also break the build."
+context:
+  - angular
+  - typescript
+  - frontend
+  - migration
+  - upgrade
+constraints:
+  - enterprise
+  - monorepo
+candidates:
+  - name: "Incremental Upgrade: One Angular Major at a Time with TypeScript Step-Ups"
+    summary: "Upgrade Angular one major version at a time, updating TypeScript to
+      meet each new floor before proceeding: TypeScript 5.2 for Angular 17, 5.4
+      for Angular 18, 5.5 for Angular 19, 5.8 for Angular 20, and 5.9 for
+      Angular 21, as verified on angular.dev/reference/versions. Each step
+      invokes ng update schematics that handle mechanical code transforms for
+      that specific major. As of 2026-03-18, this approach requires passing
+      through EOL versions (17, 18) as intermediate waypoints before landing on
+      a supported release (19, 20, or 21)."
+    when_to_use: Best for enterprise + monorepo teams with large Angular codebases
+      where TypeScript strict-mode compiler errors are expected at every version
+      jump and isolating breaking changes per Angular major is essential for
+      per-step release confidence. The single most decisive factor is whether
+      your team can absorb the elapsed time of multiple staged cycles before
+      Angular 19 LTS ends on 2026-05-19.
+    tradeoffs: "Pros: smallest breaking-change surface per step, TypeScript errors
+      are scoped to one Angular major's API delta, schematics from ng update
+      automate the majority of code transforms, regressions are easy to bisect.
+      Cons: requires passing through EOL Angular 17 and 18 as intermediates; ng
+      update does not support skipping majors; each intermediate step adds CI
+      time and review overhead; Angular 19 LTS ends 2026-05-19 so the team must
+      still reach Angular 20+ quickly."
+    cautions: Each Angular major imposes both a floor AND a ceiling on TypeScript —
+      installing a TypeScript version above the ceiling for an intermediate
+      version (e.g. TypeScript 5.5 while still on Angular 17, which caps at 5.4)
+      will fail the build; pin TypeScript to the exact supported range in
+      package.json before each ng update run. The ng update command does not
+      automatically upgrade TypeScript; TypeScript must be upgraded manually to
+      the required floor as a separate step before running ng update for the
+      Angular major.
+    links:
+      - https://angular.dev/reference/versions
+      - https://angular.dev/update-guide
+      - https://angular.dev/cli/update
+      - https://angular.dev/reference/releases
+  - name: Direct Jump to Angular 21 with TypeScript 5.9
+    summary: Skip all EOL intermediate versions and migrate directly to Angular 21
+      (Active, LTS until 2027-05-19), which requires TypeScript >=5.9.0 <6.0.0
+      and Node.js ^20.19.0 or ^22.12.0 or ^24.0.0 as verified on
+      angular.dev/reference/versions as of 2026-03-18. This avoids repeating the
+      upgrade process and lands the team on the version with the longest current
+      support runway. The decisive differentiator is consolidating all breaking
+      changes from Angular 17 through 21 and TypeScript 4.x through 5.9 into a
+      single, larger migration cycle.
+    when_to_use: Best for small-team + cost-sensitive projects where re-running the
+      upgrade process multiple times is more expensive than absorbing a larger
+      one-time migration, and where automated test coverage is high enough to
+      catch regressions accumulated across multiple Angular majors. The single
+      most decisive factor is whether your test suite provides sufficient
+      confidence to validate a multi-major jump without intermediate green-build
+      checkpoints.
+    tradeoffs: "Pros: single upgrade cycle to the longest-supported Angular version
+      currently available, avoids re-running migrations, TypeScript 5.9 brings
+      improved narrowing and updated decorator inference, eliminates repeated CI
+      overhead. Cons: accumulated breaking changes from Angular 17 through 21
+      appear simultaneously; ng update does not officially support skipping
+      majors so migration schematics must be applied sequentially in a single
+      branch; a larger TypeScript delta from 4.x to 5.9 surfaces all strict-mode
+      compiler errors at once."
+    cautions: Angular's ng update tooling does not support skipping major versions;
+      for a direct jump you must apply each major's migration schematics
+      sequentially in one branch rather than merging intermediate green commits,
+      producing a large PR that is difficult to review. Verify that all
+      third-party Angular libraries in use (Angular Material, NgRx, etc.)
+      publish a release compatible with Angular 21 before beginning, as library
+      compatibility is a common blocker discovered only after the Angular
+      upgrade is already underway.
+    links:
+      - https://angular.dev/reference/versions
+      - https://angular.dev/update-guide
+      - https://angular.dev/cli/update
+      - https://angular.dev/reference/releases
+  - name: Pin TypeScript to Current Angular Ceiling (Defer Angular Upgrade)
+    summary: "For teams not yet ready to upgrade Angular, explicitly pin TypeScript
+      to a version within the currently installed Angular version's supported
+      range to prevent accidental peer-dependency breakage from TypeScript minor
+      or patch updates auto-installed by package managers. As verified on
+      angular.dev/reference/versions, each Angular release enforces a ceiling:
+      e.g. Angular 19.2.x caps at TypeScript <5.9.0, and installing above the
+      ceiling fails the build. This approach stabilizes CI while the upgrade is
+      planned, but does not address the underlying EOL risk."
+    when_to_use: Best for enterprise + compliance teams that cannot immediately
+      upgrade Angular due to frozen release windows, vendor certification
+      requirements, or audit periods, and need a stable unbroken build in the
+      interim. The single most decisive factor is whether a forced TypeScript
+      upgrade would introduce more immediate risk than the team can absorb
+      before the next available upgrade window.
+    tradeoffs: "Pros: prevents accidental TypeScript ceiling violations, keeps CI
+      green with zero code changes, can be implemented in minutes by setting a
+      bounded TypeScript range in package.json resolutions or overrides. Cons:
+      Angular 16, 17, and 18 are fully EOL as of 2026-03-18 with no security
+      patches; Angular 19 LTS also ends 2026-05-19; pinning only defers risk and
+      does not eliminate it; the team continues accruing security exposure on an
+      unsupported Angular version."
+    cautions: npm and yarn may still resolve a newer TypeScript version than the
+      explicit dependency field specifies if the pin is not also set in the
+      resolutions (Yarn) or overrides (npm 8+) field; verify the resolved
+      version with tsc --version after install. Angular 16 through 18 are EOL
+      and will not receive security patches — this option must be paired with a
+      committed and time-boxed Angular upgrade roadmap, not treated as a
+      long-term steady state.
+    links:
+      - https://angular.dev/reference/versions
+      - https://angular.dev/reference/releases
+      - https://angular.dev/update-guide
+tags:
+  - angular
+  - typescript
+  - frontend
+  - migration
+  - upgrade
+  - version-compatibility
+  - typescript-version
+  - angular-upgrade
+  - peer-dependency
+aliases:
+  - angular typescript version requirement
+  - angular typescript minimum version
+  - angular 16 typescript 4.9
+  - angular 17 typescript 5.2
+  - angular 18 typescript 5.4
+  - angular 19 typescript 5.5
+  - angular 20 typescript 5.8
+  - angular 21 typescript 5.9
+  - angular typescript upgrade
+  - angular typescript peer dependency
+  - angular typescript version floor
+  - typescript version for angular
+  - upgrade angular typescript version
+related_cards:
+  - runtime/java-11-lts-eol-september-2026
+  - auth/jwt-vs-session
+  - runtime/next-15-react-19-version-floor
+  - devtools/prettier-3-esm-only-requirement-and-cjs-plugin-breakage
+status: active
+tier: core
+updated: 2026-03-18
+review_by: 2026-09-18
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/angular-16
+      name: Angular 16
+      category: frontend framework
+    - type: framework
+      id: framework/angular-17
+      name: Angular 17
+      category: frontend framework
+    - type: framework
+      id: framework/angular-18
+      name: Angular 18
+      category: frontend framework
+    - type: framework
+      id: framework/angular-19
+      name: Angular 19
+      category: frontend framework
+    - type: framework
+      id: framework/angular-20
+      name: Angular 20
+      category: frontend framework
+    - type: framework
+      id: framework/angular-21
+      name: Angular 21
+      category: frontend framework
+    - type: package
+      id: package/typescript-4-9-3
+      name: TypeScript
+      version: 4.9.3
+    - type: package
+      id: package/typescript-5-2-0
+      name: TypeScript
+      version: 5.2.0
+    - type: package
+      id: package/typescript-5-4-0
+      name: TypeScript
+      version: 5.4.0
+    - type: package
+      id: package/typescript-5-5-0
+      name: TypeScript
+      version: 5.5.0
+    - type: package
+      id: package/typescript-5-8-0
+      name: TypeScript
+      version: 5.8.0
+    - type: package
+      id: package/typescript-5-9-0
+      name: TypeScript
+      version: 5.9.0
+  edges:
+    - type: requires_version
+      from: framework/angular-16
+      to: package/typescript-4-9-3
+      version_range: ">=4.9.3"
+    - type: requires_version
+      from: framework/angular-17
+      to: package/typescript-5-2-0
+      version_range: ">=5.2.0"
+    - type: requires_version
+      from: framework/angular-18
+      to: package/typescript-5-4-0
+      version_range: ">=5.4.0"
+    - type: requires_version
+      from: framework/angular-19
+      to: package/typescript-5-5-0
+      version_range: ">=5.5.0"
+    - type: requires_version
+      from: framework/angular-20
+      to: package/typescript-5-8-0
+      version_range: ">=5.8.0"
+    - type: requires_version
+      from: framework/angular-21
+      to: package/typescript-5-9-0
+      version_range: ">=5.9.0"
+    - type: eol_date
+      from: framework/angular-19
+      to: null
+      date: 2026-05-19
+      label: LTS until
+    - type: eol_date
+      from: framework/angular-20
+      to: null
+      date: 2026-11-28
+      label: LTS until
+    - type: eol_date
+      from: framework/angular-21
+      to: null
+      date: 2027-05-19
+      label: LTS until

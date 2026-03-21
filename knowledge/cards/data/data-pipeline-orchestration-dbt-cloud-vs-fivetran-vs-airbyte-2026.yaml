@@ -1,0 +1,273 @@
+id: data/data-pipeline-orchestration-dbt-cloud-vs-fivetran-vs-airbyte-2026
+title: "Data Pipeline Orchestration: dbt Cloud vs Fivetran vs Airbyte Cost 2026"
+problem: Pipeline costs now include transformed volume (Fivetran per-row MAR),
+  managed orchestration (dbt Cloud per successful model), and self-hosted
+  open-source (Airbyte infra costs). Break-even shifts as data volume grows and
+  team scales, making the right choice highly context-dependent.
+context:
+  - data-pipeline
+  - etl
+  - elt
+  - data-transformation
+  - data-orchestration
+  - analytics-engineering
+  - pricing
+  - modern-data-stack
+constraints:
+  - cost-sensitive
+  - high-scale
+  - low-ops
+  - enterprise
+  - small-team
+  - compliance
+candidates:
+  - name: dbt Cloud
+    summary: Managed SQL transformation orchestration billed by successful model
+      materializations. As of 2026-03-16, the Starter plan is $100/seat/month
+      and includes 15,000 successful models/month with $0.01 per overage model;
+      the Developer plan is free with 3,000 models/month and jobs pause at the
+      limit.
+    when_to_use: Choose this for low-ops + small-team environments where
+      transformation logic is the primary complexity and ingestion is already
+      handled elsewhere. Best when model counts stay comfortably below plan
+      thresholds and you want managed job scheduling, CI runs, the dbt Semantic
+      Layer, and dbt Catalog without self-hosting. Starter is most
+      cost-effective up to 5 developer seats and roughly 15,000 model
+      builds/month; beyond that, negotiate Enterprise. Pairs naturally with any
+      ingestion layer including Fivetran or Airbyte.
+    tradeoffs: The billing metric — successful model materializations — counts
+      tables, incremental models, and dynamic tables built via scheduled jobs,
+      CI, and API runs, but explicitly excludes tests, seeds, ephemeral models,
+      snapshots, and development IDE runs, which limits surprise bills during
+      local iteration. Starter is capped at one project; Enterprise supports 30
+      projects; Enterprise Plus offers unlimited projects with custom pricing.
+      Usage alerts fire at 75%, 90%, and 100% of monthly thresholds. The main
+      risk is that pipelines with high model counts or heavy CI usage can
+      exhaust included models quickly.
+    cautions: dbt Cloud bills per materialization, not per data volume, so
+      transformation cost grows with pipeline complexity rather than row count.
+      Projects with hundreds of daily-running models on Starter can breach
+      15,000 models faster than expected once CI jobs are factored in.
+      Enterprise plan pricing is annual, negotiated with sales, and not publicly
+      disclosed. Verify current plan names and allowances at getdbt.com/pricing
+      before committing — plan naming changed from Team to Starter since the
+      initial consumption-based pricing launch in 2023.
+    links:
+      - https://www.getdbt.com/pricing
+      - https://docs.getdbt.com/docs/cloud/billing
+      - https://www.getdbt.com/blog/consumption-based-pricing-and-the-future-of-dbt-cloud
+  - name: Fivetran
+    summary: Fully managed ELT ingestion service billed by Monthly Active Rows (MAR)
+      per connector. As of 2026-03-16, a $5 base charge applies to any
+      connection generating 1 to 1 million MAR per month; since January 2026,
+      inserts, updates, and deletes all count toward paid MAR. Per-MAR tier
+      rates use volume discounts and are published in Fivetran's Service
+      Consumption Table.
+    when_to_use: Choose this for low-ops + enterprise environments where managed
+      reliability, 700+ pre-built connectors, and minimal pipeline maintenance
+      matter more than per-row cost. Best when data sources are numerous and
+      diverse but row volumes per connector are moderate and predictable. Free
+      plan covers up to 500,000 MAR/month. Pairs naturally with dbt Cloud for a
+      fully managed ingestion-plus-transformation stack when operational
+      simplicity is the priority.
+    tradeoffs: Fivetran handles connector maintenance, auth rotation, schema drift,
+      and sync reliability with no infrastructure to manage. The cost tradeoff
+      is per-MAR billing that compounds as row volumes and connector count grow.
+      Since March 2025, MAR is calculated per-connector rather than
+      account-wide, so multiple connectors no longer benefit from aggregate
+      volume discounts. The January 2026 change making deletes count toward paid
+      MAR is a meaningful cost increase for high-churn sources. History Mode now
+      also incurs charges for repeated updates as of January 2026.
+    cautions: As of January 2026, deletes count as paid MAR — a breaking cost change
+      for CDC-heavy or high-churn source tables. History Mode billing now
+      charges for each tracked repeated update; teams can switch to soft delete
+      mode or live mode to reduce History Mode MAR. Per-connector MAR
+      calculation (since March 2025) removes cross-connector volume pooling,
+      raising costs for multi-connector accounts. Consult the Service
+      Consumption Table at fivetran.com/legal/service-consumption-table for
+      current tier dollar rates, as specific per-MAR amounts are not published
+      on the main pricing or docs pages.
+    links:
+      - https://www.fivetran.com/pricing
+      - https://fivetran.com/docs/usage-based-pricing
+      - https://fivetran.com/docs/usage-based-pricing/pricing-updates/2026-pricing-updates
+  - name: Airbyte Cloud
+    summary: Managed ELT ingestion with a volume-based Standard tier and
+      capacity-based Plus/Pro tiers using Data Workers. As of 2026-03-16,
+      Standard starts at $10/month with volume-based credit pricing; Pro and
+      Plus use Data Workers capacity billing for predictable spend regardless of
+      row count; a 14-day free trial is available.
+    when_to_use: Choose this for cost-sensitive + small-team environments that need
+      a managed ingestion service but want to avoid Fivetran's per-MAR model at
+      moderate volumes. Standard works when data volumes are lower and billing
+      predictability is less critical; upgrade to capacity-based Data Workers
+      (Plus/Pro) once volume-driven billing becomes unpredictable. Best when you
+      want open-source Airbyte connector breadth with managed hosting and no
+      Kubernetes overhead.
+    tradeoffs: Airbyte Cloud avoids self-hosting complexity while preserving access
+      to the open-source connector library. Standard tier credit-based billing
+      still ties cost to data volume, but capacity-based Pro tiers decouple cost
+      from row count — Airbyte's blog documents syncing approximately 10
+      GB/month at roughly $100/month on Cloud as a reference point. Governance
+      features including RBAC, row filtering, column hashing, encryption, and
+      multiple data regions require Pro tier. Annual billing unlocks volume
+      discounts on Plus.
+    cautions: "Standard tier is still volume-based: unexpected data spikes will
+      increase credit consumption without a hard cap. Data Workers capacity
+      billing on Plus/Pro charges for processing power whether fully utilized or
+      not — right-sizing matters to avoid overpaying. Compliance and enterprise
+      features (SSO, RBAC, data masking, multiple regions) are not available on
+      Standard. Verify current credit-to-dollar rates and Data Worker pricing at
+      airbyte.com/pricing, as the capacity model is relatively new."
+    links:
+      - https://airbyte.com/pricing
+      - https://airbyte.com/product/airbyte-cloud
+      - https://airbyte.com/blog/airbyte-cloud-vs-open-source-vs-enterprise
+  - name: Airbyte OSS (Self-Hosted Core)
+    summary: Free MIT-licensed open-source ELT platform with zero per-row software
+      cost. As of 2026-03-16, Airbyte Core is documented as always free with no
+      licensing fees; all infrastructure, maintenance, and operational overhead
+      are owned by the team.
+    when_to_use: Choose this for cost-sensitive + high-scale environments where
+      per-row ingestion fees at Fivetran or Airbyte Cloud would exceed
+      self-managed infrastructure costs at your data volume. Best for teams with
+      existing DevOps capacity who can absorb Kubernetes cluster management and
+      connector upgrade cycles in exchange for eliminating per-row charges
+      entirely. Break-even typically favors self-hosting once managed service
+      fees would exceed the cost of dedicated infrastructure plus engineering
+      maintenance time.
+    tradeoffs: "Zero per-row or per-GB software licensing cost means total cost
+      scales with infrastructure, not data volume, making it favorable at high
+      and growing volumes. Access to Airbyte's full open-source connector
+      library with sub-5-minute sync frequencies supported. The tradeoff is
+      significant ops burden: production deployments require container
+      orchestration, persistent storage, connector version upgrades, schema
+      drift handling, and monitoring — all owned entirely by the team."
+    cautions: Infrastructure costs are real and non-trivial — production Kubernetes
+      deployments require cluster, storage, and network budgeting, plus
+      recurring DevOps time for maintenance. Community support only; no SLA
+      without upgrading to the paid Enterprise edition. Core supports a single
+      workspace only — multitenancy, SSO, RBAC, PII masking, and multiple
+      workspaces require the paid Enterprise edition. Model the engineering
+      maintenance cost explicitly against managed service fees before committing
+      to self-hosting.
+    links:
+      - https://airbyte.com/pricing
+      - https://airbyte.com/blog/airbyte-cloud-vs-open-source-vs-enterprise
+tags:
+  - data
+  - data-pipeline
+  - etl
+  - elt
+  - dbt
+  - dbt-cloud
+  - fivetran
+  - airbyte
+  - orchestration
+  - transformation
+  - pricing
+  - comparison
+  - analytics-engineering
+  - modern-data-stack
+aliases:
+  - dbt cloud vs fivetran
+  - fivetran vs airbyte
+  - dbt cloud pricing
+  - fivetran MAR pricing
+  - airbyte self-hosted cost
+  - data pipeline cost comparison
+  - ELT tool pricing
+  - data ingestion cost
+  - managed ETL cost
+  - airbyte vs fivetran 2026
+  - modern data stack cost
+  - monthly active rows pricing
+related_cards:
+  - data/bigquery-on-demand-vs-editions-capacity-pricing-2026
+  - messaging/queue-vs-stream-for-product-events
+  - backend/message-queue
+  - data/data-warehouse-bigquery-vs-snowflake-vs-redshift-startup-2026
+  - data/prefect-cloud-vs-dagster-cloud-vs-astronomer-orchestration-pricing-2026
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-08-24
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/dbt-cloud
+      name: dbt Cloud
+    - type: capability
+      id: capability/successful-model-materializations
+      name: successful model materializations
+      category: billing_metric
+    - type: package
+      id: package/fivetran
+      name: Fivetran
+    - type: capability
+      id: capability/monthly-active-rows
+      name: Monthly Active Rows (MAR)
+      category: billing_metric
+    - type: package
+      id: package/airbyte-cloud-pro
+      name: Airbyte Cloud Pro
+    - type: capability
+      id: capability/rbac
+      name: RBAC
+      category: governance
+    - type: capability
+      id: capability/row-filtering
+      name: row filtering
+      category: governance
+    - type: capability
+      id: capability/column-hashing
+      name: column hashing
+      category: governance
+    - type: capability
+      id: capability/encryption
+      name: encryption
+      category: governance
+    - type: capability
+      id: capability/multiple-data-regions
+      name: multiple data regions
+      category: governance
+  edges:
+    - type: locks_via
+      from: package/dbt-cloud
+      to: capability/successful-model-materializations
+      mechanism: billed by successful model materializations
+    - type: locks_via
+      from: package/fivetran
+      to: capability/monthly-active-rows
+      mechanism: billed by Monthly Active Rows (MAR) per connector
+    - type: breaking_change_in
+      from: package/fivetran
+      to: null
+      effective: January 2026
+      change: inserts, updates, and deletes all count toward paid MAR
+    - type: breaking_change_in
+      from: package/fivetran
+      to: null
+      effective: March 2025
+      change: MAR is calculated per-connector rather than account-wide
+    - type: requires_version
+      from: capability/rbac
+      to: package/airbyte-cloud-pro
+      requirement: requires Pro tier
+    - type: requires_version
+      from: capability/row-filtering
+      to: package/airbyte-cloud-pro
+      requirement: requires Pro tier
+    - type: requires_version
+      from: capability/column-hashing
+      to: package/airbyte-cloud-pro
+      requirement: requires Pro tier
+    - type: requires_version
+      from: capability/encryption
+      to: package/airbyte-cloud-pro
+      requirement: requires Pro tier
+    - type: requires_version
+      from: capability/multiple-data-regions
+      to: package/airbyte-cloud-pro
+      requirement: requires Pro tier

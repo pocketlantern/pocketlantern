@@ -1,0 +1,208 @@
+id: "analytics/pendo-vs-userpilot-vs-appcues-seat-pricing-2026"
+title: "Pendo vs Userpilot vs Appcues Seat Pricing 2026"
+problem: "Choose product onboarding tooling when seat-based packaging, guide
+  limits, and analytics entitlements changed enough to affect PLG stack cost."
+context:
+  - "analytics"
+  - "product-onboarding"
+  - "plg"
+  - "saas"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Pendo"
+    summary: "Pendo packages its platform by monthly active users and functionality
+      rather than posting public paid-seat prices. As of 2026-03-19, the public
+      plans are Free, Base, Core, and Ultimate, but only Free is self-serve with
+      a published price of $0 for up to 500 MAUs; Base, Core, and Ultimate are
+      custom quote. Free includes product analytics, in-app guides,
+      Pendo-branded roadmaps, and Pendo-branded NPS, and Pendo says pricing
+      scales with MAUs plus chosen functionality. Pendo Free also supports
+      unlimited internal users, but it excludes key entitlements such as
+      Resource Center, session replay, third-party integrations, Data Explorer,
+      and Product Areas."
+    when_to_use: "Use Pendo when you want one vendor spanning analytics plus
+      onboarding and you are comfortable with quote-based expansion. It fits
+      enterprise or multi-app teams better than strict budget-governed PLG teams
+      because the blocker is not seat caps on Free, but the custom packaging
+      once you need unbranded surveys, Resource Center, integrations, or
+      replay."
+    tradeoffs: "Strong breadth and unlimited internal users on Free are attractive,
+      but paid cost planning is opaque because public pricing stops at the free
+      tier and higher plans bundle functionality rather than exposing simple
+      per-seat math."
+    cautions: "As of 2026-03-19, exceeding the 500 MAU Free limit does not shut
+      collection off, but Pendo says you cannot create new guides, NPS surveys,
+      or segments and reporting becomes sampled. Free event data is retained in
+      the UI for 12 months, so teams that expect longer historical analysis need
+      a paid plan."
+    links:
+      - "https://www.pendo.io/pricing/"
+      - "https://support.pendo.io/hc/en-us/articles/6069107464091-Pendo-Free"
+  - name: "Userpilot"
+    summary: "Userpilot publishes both MAU packaging and seat entitlements, which
+      makes it the clearest of the three for budget modeling. As of 2026-03-19,
+      Starter starts at $299 per month paid annually for up to 2,000 MAUs and
+      includes 3 seats, while Growth is custom quote starting from 5,000 MAUs
+      and includes 15 seats; Enterprise is custom with unlimited seats. The
+      public comparison table shows analytics depth is tiered: Starter has
+      trends but not funnels, retention, paths, Resource Center, email, or
+      surveys beyond NPS, while Growth adds advanced product analytics, event
+      autocapture, Resource Center, advanced surveys, and email engagement.
+      Session replay and mobile remain add-ons rather than bundled core
+      entitlements."
+    when_to_use: "Use Userpilot when you need the most transparent public seat math
+      and want onboarding plus mid-tier analytics without buying a larger
+      all-in-one suite first. It is the strongest fit for cost-sensitive PLG
+      teams that need to know whether 3 seats versus 15 seats is enough before
+      procurement."
+    tradeoffs: "Pricing transparency is better than Pendo, and Starter is materially
+      clearer than quote-only competitors, but meaningful analytics and support
+      features are gated above Starter and replay/mobile can still expand spend
+      through add-ons."
+    cautions: "As of 2026-03-19, Starter lacks funnels, retention, paths, Resource
+      Center, email, staging, and multi-application support on the public
+      matrix, so it can look cheaper than it is if your team assumes those are
+      included. Growth and Enterprise pricing still require sales, so only the
+      entry tier is fully budgetable from the public site."
+    links:
+      - "https://userpilot.com/pricing"
+      - "https://userpilot.com/product-analytics/"
+      - "https://userpilot.com/user-engagement/"
+  - name: "Appcues"
+    summary: "Appcues publishes entry pricing and experience limits more clearly
+      than Pendo, but less completely than Userpilot on seats across all tiers.
+      As of 2026-03-19, Start begins at $300 per month paid annually for 1,000
+      MAUs on 1 app and includes 5 user licenses plus 50+ published experiences;
+      Grow begins at $750 per month paid annually for 1 app and includes up to
+      50,000 MAUs and up to 100 published experiences; Enterprise is custom with
+      up to 150 published experiences and custom MAUs. The pricing page also
+      states Grow includes access to all experience types, all integrations,
+      Appcues AI, and implementation services, while Enterprise adds
+      multi-product install, advanced security, compliance, SLAs, and priority
+      support. Appcues is therefore the most explicit here about guide inventory
+      limits, which matters if your team runs many flows, checklists, and
+      campaigns."
+    when_to_use: "Use Appcues when published experience caps are the main cost
+      driver and you want a straightforward onboarding platform with publicly
+      visible entry pricing. It fits teams that can stay inside 1 app and manage
+      against 50, 100, or 150 published-experience ceilings."
+    tradeoffs: "Public starting prices and guide caps are useful for planning, but
+      MAU growth and experience-count ceilings can push upgrades quickly, and
+      multi-app deployment is reserved for Enterprise."
+    cautions: "As of 2026-03-19, Appcues states that if you exceed plan limits,
+      experiences keep running and the team contacts you about upgrading at the
+      next billing cycle, so overages can turn into procurement pressure instead
+      of a hard technical stop. The public pricing page only explicitly lists 5
+      user licenses for Start, so check official sales terms before assuming
+      Grow seat counts."
+    links:
+      - "https://www.appcues.com/pricing"
+      - "https://docs.appcues.com/"
+      - "https://trust.appcues.com/"
+tags:
+  - "analytics"
+  - "product-onboarding"
+  - "pricing"
+  - "plg"
+aliases:
+  - "pendo pricing 2026"
+  - "userpilot pricing 2026"
+  - "appcues pricing 2026"
+  - "product onboarding tool seat pricing"
+related_cards:
+  - "analytics/growthbook-free-vs-pro-seat-pricing-2026"
+  - "analytics/product-analytics-posthog-vs-amplitude-vs-mixpanel-2026"
+  - "analytics/logrocket-ai-and-session-replay-packaging-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/pendo
+      name: Pendo
+    - type: vendor
+      id: vendor/userpilot
+      name: Userpilot
+    - type: vendor
+      id: vendor/appcues
+      name: Appcues
+    - type: package
+      id: package/pendo-free
+      name: Free
+    - type: package
+      id: package/userpilot-starter
+      name: Starter
+    - type: package
+      id: package/userpilot-growth
+      name: Growth
+    - type: package
+      id: package/appcues-start
+      name: Start
+    - type: package
+      id: package/appcues-grow
+      name: Grow
+    - type: package
+      id: package/appcues-enterprise
+      name: Enterprise
+    - type: capability
+      id: capability/resource-center
+      name: Resource Center
+      category: product-onboarding
+    - type: capability
+      id: capability/session-replay
+      name: Session replay
+      category: analytics
+    - type: capability
+      id: capability/funnels
+      name: Funnels
+      category: analytics
+    - type: capability
+      id: capability/retention
+      name: Retention
+      category: analytics
+    - type: capability
+      id: capability/paths
+      name: Paths
+      category: analytics
+    - type: capability
+      id: capability/email-engagement
+      name: Email engagement
+      category: product-onboarding
+    - type: capability
+      id: capability/multi-product-install
+      name: Multi-product install
+      category: deployment
+  edges:
+    - type: locks_via
+      from: capability/resource-center
+      to: package/pendo-free
+    - type: locks_via
+      from: capability/session-replay
+      to: package/pendo-free
+    - type: locks_via
+      from: capability/funnels
+      to: package/userpilot-starter
+    - type: locks_via
+      from: capability/retention
+      to: package/userpilot-starter
+    - type: locks_via
+      from: capability/paths
+      to: package/userpilot-starter
+    - type: locks_via
+      from: capability/resource-center
+      to: package/userpilot-starter
+    - type: locks_via
+      from: capability/email-engagement
+      to: package/userpilot-starter
+    - type: locks_via
+      from: capability/session-replay
+      to: package/userpilot-growth
+    - type: locks_via
+      from: capability/multi-product-install
+      to: package/appcues-enterprise

@@ -1,0 +1,220 @@
+id: serverless/nextjs-platform-lockin
+title: How to Deploy Next.js Without Accidental Platform Lock-In
+problem: Determine whether to stay on Vercel-specific features or constrain the
+  app to portable Next.js primitives given hosting flexibility, middleware
+  behavior, image optimization, caching, and build/runtime divergence across
+  platforms.
+context:
+  - next.js
+  - deployment
+  - serverless
+  - self-hosting
+  - middleware
+  - image optimization
+  - caching
+  - portability
+constraints:
+  - serverless
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - high-scale
+candidates:
+  - name: Vercel-native Next.js
+    summary: Choose Vercel when you want the platform that Next.js is optimized for,
+      with zero-configuration deploys and managed global delivery. As of
+      2026-03-14, Vercel lists Hobby as free and Pro as "$20/mo + additional
+      usage" with "$20 of included usage credit"; Vercel also bills image
+      optimization separately, with Hobby including 5K transformations, 300K
+      cache reads, and 100K cache writes per month.
+    when_to_use: Best for serverless + low-ops + small-team setups where fast
+      shipping matters more than future host mobility, and where you are willing
+      to use Vercel-managed behavior for previews, global delivery, image
+      optimization, and routing middleware. This is the strongest fit when you
+      want the least infrastructure work, can accept Vercel pricing surfaces as
+      traffic grows, and do not need your deployment semantics to match generic
+      Node or non-Vercel serverless platforms exactly.
+    tradeoffs: "You get the smoothest default deployment path for modern Next.js,
+      plus platform-managed previews and globally distributed execution. The
+      tradeoff is tighter coupling to Vercel runtime behavior and billing
+      dimensions such as function usage and image optimization. Vercel Edge
+      runtime runs near the incoming request, but it has runtime restrictions:
+      many Node.js APIs are unavailable, dynamic code execution is disallowed,
+      and code size limits vary by plan."
+    cautions: "Portability can break at the middleware/proxy boundary. Next.js 16
+      deprecated `middleware.ts` in favor of `proxy.ts`, and Next.js says
+      `proxy` is Node.js-only; Vercel's Routing Middleware docs still use
+      `middleware.ts` and default that layer to the Edge runtime. Also note
+      Hobby image optimization is capped: once you exceed the included limit,
+      newly optimized images return HTTP 402 on Hobby instead of charging
+      overage."
+    links:
+      - https://vercel.com/docs/frameworks/full-stack/nextjs
+      - https://vercel.com/pricing
+      - https://vercel.com/docs/pricing
+      - https://vercel.com/docs/functions/runtimes/edge
+      - https://vercel.com/docs/image-optimization/limits-and-pricing
+      - https://vercel.com/docs/routing-middleware/api
+      - https://nextjs.org/docs/app/guides/upgrading/version-16
+  - name: Portable Next.js primitives on Node.js or Docker
+    summary: Choose the portable subset when hosting flexibility matters more than
+      turnkey platform features. Official Next.js docs state self-hosting works
+      on a Node.js server, Docker image, or static export; Node.js deployments
+      support all Next.js features, while static export can run on any web
+      server that serves HTML, CSS, and JavaScript.
+    when_to_use: Best for enterprise + compliance or cost-sensitive +
+      hosting-flexible teams that want to keep their app close to stock Next.js
+      behavior and avoid provider-specific deployment APIs. This fits well when
+      you can run Node or containers, are willing to own reverse proxy, cache
+      persistence, and rollout behavior, and want a clean path between cloud
+      VMs, Kubernetes, Cloud Run, Fly, Render, or other generic container hosts.
+    tradeoffs: "This path avoids most accidental lock-in and keeps you on documented
+      Next.js primitives such as `next start`, Docker standalone output,
+      `next/image` with a custom loader when needed, and cache handlers. The
+      cost is more operational work: self-hosted ISR and data cache live on disk
+      by default, multi-instance deployments need shared cache strategy, and
+      version skew between builds becomes your responsibility."
+    cautions: Static export is the most portable option, but it does not support
+      Proxy, ISR, Server Actions, Draft Mode, redirects, headers, or the default
+      `next/image` loader. For multi-server deployments, Next.js documents that
+      you should keep a consistent Server Functions encryption key across
+      instances and configure a deployment ID to reduce version-skew problems.
+      If you eject to a custom server, Next.js warns that you lose important
+      optimizations, and custom servers cannot be used together with standalone
+      output.
+    links:
+      - https://nextjs.org/docs/app/getting-started/deploying
+      - https://nextjs.org/docs/app/guides/self-hosting
+      - https://nextjs.org/docs/app/guides/static-exports
+      - https://nextjs.org/docs/app/api-reference/config/next-config-js/images
+      - https://nextjs.org/docs/app/api-reference/file-conventions/middleware
+      - https://nextjs.org/docs/app/api-reference/config/next-config-js/incrementalCacheHandlerPath
+      - https://nextjs.org/docs/app/guides/custom-server
+  - name: Adapter-based portability with OpenNext on Cloudflare
+    summary: Choose an adapter when you want serverless hosting away from Vercel
+      without rewriting the app into a static-only subset. As of 2026-03-14, the
+      OpenNext Cloudflare docs say `@opennextjs/cloudflare` supports all minor
+      and patch versions of Next.js 16 and the latest minors of 14 and 15, and
+      it transforms Next.js build output so it can run on Cloudflare Workers.
+    when_to_use: Best for serverless + low-ops teams that need Cloudflare hosting,
+      global request handling, or provider diversification, but still want App
+      Router, SSR, ISR, and image support instead of falling back to pure static
+      export. This is the right compromise when you accept an adapter layer and
+      platform bindings in exchange for keeping more Next.js capabilities than a
+      strictly portable Node-only subset.
+    tradeoffs: "You keep more modern Next.js behavior than static export, and the
+      adapter can integrate with Cloudflare-specific services such as R2-backed
+      cache and Cloudflare Images. The tradeoff is extra build/runtime
+      indirection: OpenNext adds its own transform step, Wrangler configuration,
+      bindings, and platform-specific constraints, so your deployment is not as
+      simple or as universal as plain `next start` on Node."
+    cautions: The Cloudflare adapter documentation says your app should use the
+      Node.js runtime, not the Edge runtime, and the get-started guide
+      explicitly says to remove any `export const runtime = "edge"` because Edge
+      runtime is not supported yet. It also requires `nodejs_compat` plus a
+      compatibility date of `2024-09-23` or later. This means you are avoiding
+      Vercel lock-in, but you are still depending on adapter compatibility and
+      Cloudflare-specific deployment wiring.
+    links:
+      - https://opennext.js.org/cloudflare
+      - https://opennext.js.org/cloudflare/get-started
+      - https://opennext.js.org/cloudflare/caching
+      - https://nextjs.org/support-policy
+tags:
+  - next.js
+  - vercel
+  - opennext
+  - cloudflare
+  - deployment
+  - hosting
+  - portability
+  - lock-in
+aliases:
+  - next.js lock-in
+  - nextjs platform lock-in
+  - deploy next.js without vercel lock-in
+  - self-host next.js vs vercel
+  - next.js portability
+  - next.js middleware portability
+  - next.js proxy vs middleware hosting differences
+  - opennext cloudflare next.js
+related_cards:
+  - serverless/cloudflare-workers-vs-lambda
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - serverless/vercel-edge-vs-node-runtime
+  - frontend/nextjs-vs-remix-for-b2b-saas-2026
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis
+  - frontend/sveltekit-2-vs-nextjs-16-vs-remix-fullstack-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-08-03
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/nextjs
+      name: Next.js
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: package
+      id: package/opennextjs-cloudflare
+      name: "@opennextjs/cloudflare"
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js runtime
+    - type: runtime
+      id: runtime/edge
+      name: Edge runtime
+    - type: capability
+      id: capability/middleware-ts
+      name: middleware.ts
+      category: file_convention
+    - type: capability
+      id: capability/proxy-ts
+      name: proxy.ts
+      category: file_convention
+    - type: capability
+      id: capability/nodejs-compat
+      name: nodejs_compat
+      category: platform_flag
+    - type: capability
+      id: capability/compatibility-date
+      name: compatibility date
+      category: platform_flag
+  edges:
+    - type: locks_via
+      from: framework/nextjs
+      to: vendor/vercel
+      mechanism: Vercel-managed previews, global delivery, image optimization, and
+        routing middleware increase coupling to Vercel runtime behavior and
+        billing dimensions.
+    - type: breaking_change_in
+      from: capability/middleware-ts
+      to: framework/nextjs
+      version: "16"
+      change: Next.js 16 deprecated `middleware.ts` in favor of `proxy.ts`.
+    - type: requires_version
+      from: package/opennextjs-cloudflare
+      to: framework/nextjs
+      requirement: Supports all minor and patch versions of Next.js 16 and the latest
+        minors of 14 and 15.
+    - type: requires_version
+      from: package/opennextjs-cloudflare
+      to: runtime/nodejs
+      requirement: The app should use the Node.js runtime; Edge runtime is not
+        supported yet.
+    - type: requires_version
+      from: package/opennextjs-cloudflare
+      to: capability/nodejs-compat
+      requirement: Requires `nodejs_compat`.
+    - type: requires_version
+      from: package/opennextjs-cloudflare
+      to: capability/compatibility-date
+      requirement: Requires a compatibility date of `2024-09-23` or later.

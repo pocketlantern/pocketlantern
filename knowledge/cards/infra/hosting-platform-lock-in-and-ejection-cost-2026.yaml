@@ -1,0 +1,400 @@
+id: infra/hosting-platform-lock-in-and-ejection-cost-2026
+title: "Hosting Platform Ejection Cost: Vercel vs Netlify vs Cloudflare Pages vs
+  Fly.io 2026"
+problem: When leaving a hosting platform, what vendor-specific code must be
+  rewritten, what data is trapped, and what is the realistic switching cost?
+  This card catalogs proprietary API surfaces, data export paths, and estimated
+  rewrite scope per platform as of 2026-03-16.
+context:
+  - infrastructure
+  - migration
+  - vendor-lock-in
+  - portability
+  - ejection-cost
+constraints:
+  - small-team
+  - enterprise
+candidates:
+  - name: Vercel
+    summary: >
+      Vercel's lock-in surface is split between proprietary SDK packages, Fluid
+      Compute (a Vercel-specific execution model), and managed storage services.
+      As of 2026-03-16, Vercel Postgres and Vercel KV are sunset — existing
+      databases were auto-migrated to Neon (Dec 2024) and Upstash respectively,
+      reducing storage lock-in. Vercel Blob remains Vercel-only. Next.js itself
+      is portable — Vercel claims ~70% of Next.js apps run outside Vercel.
+    when_to_use: >
+      Evaluate ejection cost before adopting any @vercel/* package. If you limit
+      dependencies to Next.js core (ISR, middleware, Server Components) and
+      avoid @vercel/blob, @vercel/og, @vercel/analytics, @vercel/flags, ejection
+      cost is low.
+    tradeoffs: >
+      Vendor-specific packages and their portability: @vercel/og — generates
+      Open Graph images via Satori; no direct equivalent on other platforms, but
+      satori + @resvg/resvg-js is the open-source base and works anywhere.
+      @vercel/analytics — proprietary web analytics SDK; replace with Plausible,
+      Fathom, or Cloudflare Web Analytics. @vercel/blob — Vercel-only object
+      storage; no S3-compatible API exposed; must migrate files out via the
+      @vercel/blob SDK list+download, then re-upload to S3/R2/GCS. @vercel/kv —
+      sunset; was Upstash Redis wrapper; @upstash/redis is the direct
+      replacement and works anywhere. @vercel/postgres — sunset; was Neon
+      wrapper; @neondatabase/serverless is the direct replacement and works
+      anywhere. @vercel/flags — Vercel-specific feature flag integration;
+      replace with LaunchDarkly, Statsig, or GrowthBook SDKs. Fluid Compute —
+      Vercel-specific execution model (concurrency within a single function
+      instance, bytecode caching, auto-failover); concept is not portable.
+      Configured via vercel.json "fluid: true"; no equivalent on other
+      platforms. Code itself remains standard Node.js/Python — no proprietary
+      code changes needed. Next.js on non-Vercel: ISR works with next start
+      (filesystem cache by default; needs custom cacheHandler for
+      multi-instance). Middleware works with next start. Image Optimization
+      works with next start (uses sharp). No Vercel-only Next.js features remain
+      as of Next.js 16. Domain/DNS: Standard DNS records; no proprietary
+      lock-in. Transfer out via normal registrar process.
+    cautions: >
+      Estimated rewrite scope: If using only Next.js core features — near zero
+      rewrite, redeploy with next start or OpenNext. If using @vercel/blob —
+      medium effort: write migration script to list+download all blobs,
+      re-upload to target (R2/S3), update all blob URL references. If using
+      @vercel/og — low effort: replace import with direct satori usage. If using
+      @vercel/analytics — low effort: swap SDK, update script tag. Fluid Compute
+      has no code dependency but you lose the performance optimization
+      (concurrency, bytecode caching) on other platforms.
+    links:
+      - https://vercel.com/blog/vercel-the-anti-vendor-lock-in-cloud
+      - https://vercel.com/docs/fluid-compute
+      - https://nextjs.org/docs/pages/guides/self-hosting
+      - https://github.com/vercel/storage
+  - name: Netlify
+    summary: >
+      Netlify's lock-in surface includes Netlify Functions (with
+      Lambda-compatible mode), Netlify Blobs, Netlify DB (Neon-backed Postgres,
+      beta), build plugins, Identity (GoTrue-based auth), and Forms. Functions
+      have a Lambda-compatible handler signature mode for easier migration.
+      Netlify DB is Neon under the hood, reducing database lock-in.
+    when_to_use: >
+      Evaluate ejection cost before adopting Netlify Identity, Forms, or Blobs.
+      Functions with Lambda compatibility mode have the lowest switching cost.
+      Build plugins are Netlify-only and must be replaced with CI scripts.
+    tradeoffs: >
+      Netlify Functions: Support an AWS Lambda-compatible handler signature
+      (event, context) → response format. Migration to actual AWS Lambda or any
+      Lambda-compatible runtime requires minimal code changes. Legacy Functions
+      format deprecated in 2025; modern format uses standard Web API
+      Request/Response. Netlify Blobs: Proprietary key-value object store;
+      accessible via @netlify/blobs SDK or Netlify API (REST). No S3-compatible
+      API. Export requires iterating via SDK/API, downloading each blob,
+      re-uploading to target storage. Netlify DB (beta): Backed by Neon
+      Postgres. Standard Postgres wire protocol; pg_dump works for export. Low
+      lock-in if accessed via standard Postgres client rather than
+      Netlify-specific SDK. Build Plugins: Entirely Netlify-specific. No
+      portability. Must be replaced with equivalent CI/CD steps (GitHub Actions,
+      etc.). Netlify Identity: Based on GoTrue (open-source). User data
+      exportable via Netlify Admin API (list users endpoint). No built-in bulk
+      export UI — requires scripting against the API. Passwords are hashed;
+      users must re-authenticate on new provider. Netlify Forms: Submissions
+      downloadable as CSV from Netlify dashboard or via API. PII data should be
+      exported and deleted regularly per Netlify's own guidance. Credit-based
+      billing: Unused credits do not roll over month to month. No refund on
+      exit.
+    cautions: >
+      Estimated rewrite scope: Functions (Lambda compat mode) — low; swap
+      deployment target, minimal code changes. Functions (modern format) — low;
+      already uses standard Request/Response Web API. Blobs — medium; write
+      migration script, update all reference URLs. Identity — high; users must
+      re-authenticate, integrate replacement auth provider (Auth0, Clerk,
+      Supabase Auth). Forms — medium; replace with Formspree, Basin, or custom
+      endpoint; export existing submissions via CSV/API first. Build plugins —
+      medium; rewrite as CI pipeline steps.
+    links:
+      - https://docs.netlify.com/build/functions/lambda-compatibility/
+      - https://docs.netlify.com/build/data-and-storage/netlify-blobs/
+      - https://docs.netlify.com/manage/security/secure-access-to-sites/identity/overview/
+      - https://docs.netlify.com/manage/forms/submissions/
+  - name: Cloudflare Pages
+    summary: >
+      Cloudflare's lock-in is primarily runtime-level: Workers run on V8
+      isolates, not Node.js. As of 2025-2026, Cloudflare has implemented
+      node:http, node:fs, node:crypto, node:net, node:tls and hundreds of npm
+      packages work — but the runtime is fundamentally different. Data services
+      (D1, KV, R2, Durable Objects) have varying export capabilities.
+    when_to_use: >
+      Evaluate ejection cost before building on Durable Objects (highest
+      lock-in) or KV (no bulk export API). R2 has the lowest data lock-in due to
+      S3-compatible API. D1 exports as SQL dump via wrangler.
+    tradeoffs: >
+      Workers Runtime (V8 isolates): As of 2025, supports node:http
+      (client+server), node:fs (virtual/ephemeral), node:crypto, node:dns,
+      node:net, node:tls, node:zlib, node:process, node:timers. Express and Koa
+      frameworks work. NOT supported: net.createServer() (TCP servers),
+      persistent filesystem, process-level OS APIs, Fastify framework. Porting
+      effort: Web-standard apps and Express apps — low-medium. Apps relying on
+      TCP servers, child_process, or OS-level APIs — high. D1 (SQLite): Export
+      via "wrangler d1 export <db_name> --remote --output=./dump.sql". Produces
+      standard SQL dump. Supports --table, --no-data, --no-schema flags.
+      Limitation: export blocks other DB requests while running. Virtual tables
+      not supported for export. Import cap is 5 GiB. No explicit export size
+      limit documented. KV: NO native bulk export API. Wrangler and REST API
+      support list keys (paginated, 1000 keys/page) and get individual values.
+      Bulk export requires custom Worker script to iterate keys and fetch values
+      — significant effort for large namespaces. Bulk write API exists (up to
+      10K pairs, 100 MB per request) but is import-only. R2: S3-compatible API
+      confirmed. Endpoint format is
+      https://<ACCOUNT_ID>.r2.cloudflarestorage.com. Supports ListBuckets,
+      GetObject, PutObject, DeleteObject, multipart upload, CopyObject (27
+      operations total). NOT supported: ACLs, bucket policies, versioning,
+      replication, tagging, website hosting, server-side encryption (KMS).
+      aws-cli works with R2 endpoint — confirmed compatible for bulk
+      download/migration via "aws s3 sync". Durable Objects: Highest lock-in in
+      the Cloudflare ecosystem. No built-in data export API. Each DO instance
+      stores data in KV or SQLite backend (SQLite backend cannot be enabled on
+      existing deployed classes as of 2025). Location is pinned to a datacenter
+      and cannot be moved. Export requires writing a custom Worker to read and
+      serialize all DO state. No equivalent abstraction exists on other
+      platforms — stateful edge compute is a Cloudflare-unique concept.
+    cautions: >
+      Estimated rewrite scope: Workers code (web-standard) — medium; refactor to
+      Node.js runtime, replace Workers-specific APIs (env bindings, waitUntil,
+      ctx). Workers code (heavy Node.js compat) — low-medium if using supported
+      node:* modules. D1 data — low; wrangler export produces standard SQL,
+      import into any SQLite or Postgres. KV data — high; no bulk export, must
+      script key-by-key extraction. R2 data — low; use aws-cli s3 sync with R2
+      endpoint. Durable Objects — very high; no export tooling, custom migration
+      code required, no equivalent on other platforms. wrangler.toml is
+      Cloudflare-specific; not convertible to other formats.
+    links:
+      - https://developers.cloudflare.com/r2/api/s3/api/
+      - https://developers.cloudflare.com/d1/build-with-d1/import-export-data/
+      - https://developers.cloudflare.com/kv/api/list-keys/
+      - https://developers.cloudflare.com/durable-objects/best-practices/access-durable-objects-storage/
+      - https://blog.cloudflare.com/nodejs-workers-2025/
+  - name: Fly.io
+    summary: >
+      Fly.io has the lowest lock-in among platforms evaluated. Apps run as
+      standard Docker containers inside Firecracker microVMs. Fly Postgres
+      (unmanaged) is standard PostgreSQL — fully open-source
+      (fly-apps/postgres-flex on GitHub). pg_dump works. Fly also offers Managed
+      Postgres (separate product) with standard Postgres access. The primary
+      proprietary surface is fly.toml configuration and the Fly Machines API.
+    when_to_use: >
+      Fly.io is the easiest platform to eject from if your app is containerized.
+      The main rewrite cost is replacing fly.toml with docker-compose.yml or
+      Kubernetes manifests, and replacing any Fly Machines API calls.
+    tradeoffs: >
+      Docker containers: Fly takes a Docker image, unpacks it as a rootfs for a
+      Firecracker microVM. Any standard Dockerfile works. Zero proprietary code
+      required in the application itself. Portability is near-complete. Fly
+      Postgres (unmanaged): Standard PostgreSQL. The Fly Postgres app is fully
+      open-source (github.com/fly-apps/postgres-flex). pg_dump works for export.
+      Daily block-level volume snapshots (5-day retention by default,
+      configurable 1-60 days). Fly.io explicitly states they do not provide
+      support for unmanaged Postgres — you operate it yourself. Managed
+      Postgres: Fully managed service (backups, HA, failover, monitoring).
+      Standard Postgres wire protocol; pg_dump works. Volumes: NVMe slices
+      attached to specific hosts — not network-attached. Data export requires
+      SSH/SFTP into the machine or writing an app-level export endpoint. Volume
+      snapshots can be restored to new volumes but not directly downloaded.
+      Volumes are tied to a specific host — not portable across regions without
+      manual migration. fly.toml: Fly-specific configuration format. Not
+      directly convertible to docker-compose.yml but covers similar concerns
+      (services, ports, health checks, scaling, mounts). Manual translation
+      required; medium effort for complex configs. Fly Machines API: Proprietary
+      REST API for creating/starting/stopping/destroying machines
+      programmatically. If your app uses Machines API for orchestration (e.g.,
+      scaling workers), that code must be rewritten for the target platform's
+      API. If you only use flyctl for deployment (not Machines API in app code),
+      there is zero proprietary code dependency.
+    cautions: >
+      Estimated rewrite scope: Application code — near zero if no Machines API
+      usage in app code. fly.toml → docker-compose or K8s manifest — low-medium
+      manual translation. Fly Machines API calls in app code — medium-high;
+      replace with target platform's orchestration API. Postgres data — low;
+      standard pg_dump/pg_restore. Volume data — medium; requires app-level
+      export or snapshot restore + transfer. Inter-region private networking —
+      Fly-specific; must be replaced with VPN/WireGuard or platform-native
+      networking.
+    links:
+      - https://fly.io/docs/postgres/
+      - https://fly.io/docs/volumes/overview/
+      - https://fly.io/docs/reference/configuration/
+      - https://github.com/fly-apps/postgres-flex
+  - name: Railway
+    summary: >
+      Railway has low lock-in. Supports Dockerfile and Nixpacks for builds.
+      Railway Postgres is standard PostgreSQL; pg_dump works via DATABASE_URL
+      connection string. No proprietary application SDK required. railway.toml
+      is the only platform-specific config file.
+    when_to_use: >
+      Railway is straightforward to eject from. The main cost is replacing
+      railway.toml with your target platform's config and migrating Postgres
+      data via pg_dump. No proprietary code dependencies in application code.
+    tradeoffs: >
+      Build system: Supports standard Dockerfile or Nixpacks (open-source
+      buildpack alternative). Nixpacks configs are Railway-maintained but the
+      tool is open-source (github.com/railwayapp/nixpacks) and usable elsewhere.
+      Postgres: Standard PostgreSQL. Export via pg_dump using Railway-provided
+      DATABASE_URL or DATABASE_PUBLIC_URL. No built-in UI export button — must
+      use CLI tooling. pg_dump available if postgresql nixPkg is added to
+      railway.toml. railway.toml: Railway-specific config for build/deploy
+      settings. Not convertible to other formats but simple enough to manually
+      translate. Covers build command, start command, nixpacks config, health
+      checks. Proprietary APIs: Railway provides a GraphQL API for
+      project/service management but no proprietary SDK is required in
+      application code. If you use Railway's API for programmatic deployments,
+      that integration must be rewritten. Volumes: Railway supports persistent
+      volumes. Export requires SSH or app-level data export — no direct download
+      API.
+    cautions: >
+      Estimated rewrite scope: Application code — zero proprietary dependencies.
+      railway.toml → target config — low effort manual translation. Postgres —
+      low; standard pg_dump. Volumes — medium; no direct download, must export
+      via application. Railway API integrations (if any) — medium; rewrite
+      deployment automation for target platform.
+    links:
+      - https://docs.railway.com/databases/postgresql
+      - https://docs.railway.com/reference/config-as-code
+      - https://github.com/railwayapp/nixpacks
+  - name: Render
+    summary: >
+      Render has low lock-in. Supports Docker and native runtimes. Render
+      Postgres is standard PostgreSQL with pg_dump access. render.yaml
+      (Blueprint) is the only platform-specific config. No proprietary
+      application SDK.
+    when_to_use: >
+      Render is straightforward to eject from. Managed Postgres is standard;
+      Blueprints (render.yaml) must be translated to target platform IaC. No
+      proprietary code in application.
+    tradeoffs: >
+      Build system: Native runtime detection or Dockerfile. No proprietary build
+      system dependency. Postgres: Standard managed PostgreSQL. pg_dump works
+      via provided connection string. Free tier Postgres expires after 30 days —
+      export data before expiry. Render Disks: Persistent SSD storage attached
+      to services. Similar to Fly volumes — tied to a specific instance. Export
+      requires app-level data transfer or SSH access. render.yaml (Blueprint):
+      Render-specific IaC format defining services, databases, environment
+      groups. Not convertible to other formats but declarative and simple to
+      translate manually. Proprietary APIs: Render provides a REST API for
+      service management. No proprietary SDK required in app code. If using
+      Render API for deployment automation, must rewrite for target platform.
+    cautions: >
+      Estimated rewrite scope: Application code — zero proprietary dependencies.
+      render.yaml → target IaC — low effort. Postgres — low; standard pg_dump.
+      Disks — medium; no direct download. Services with persistent disks cannot
+      use horizontal autoscaling — plan migration accordingly.
+    links:
+      - https://render.com/docs/blueprint-spec
+      - https://render.com/docs/databases
+tags:
+  - infrastructure
+  - migration
+  - vendor-lock-in
+  - portability
+  - ejection-cost
+  - vercel
+  - netlify
+  - cloudflare
+  - flyio
+  - railway
+  - render
+  - comparison
+aliases:
+  - hosting platform lock-in
+  - vercel vendor lock-in
+  - cloudflare workers migration
+  - netlify ejection cost
+  - fly.io portability
+  - platform switching cost 2026
+  - hosting migration guide
+  - vercel blob export
+  - durable objects portability
+  - railway data export
+related_cards:
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+  - serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+  - web/netlify-bandwidth-build-minutes-and-seat-pricing-2026
+  - runtime/deno-deploy-paid-plans-after-ga-pricing-2026
+  - design/penpot-self-hosted-vs-cloud-license-and-support-2026
+  - runtime/railway-trial-vs-hobby-vs-pro-2026
+  - runtime/railway-replica-cap-vs-custom-2026
+  - runtime/heroku-fir-vs-private-shield-2026
+  - data/tinybird-aws-self-service-vs-cloud-choice-2026
+  - runtime/deno-sandbox-beta-pricing-vs-self-built-microvms-2026
+  - game/unity-multiplay-hosting-support-through-march-31-2026
+  - game/edgegap-vcpu-price-change-january-2025-still-worth-it-in-2026
+  - game/accelbyte-gaming-services-seatless-usage-pricing-2026
+  - game/heroic-cloud-managed-nakama-vs-self-hosted-2026
+  - devtools/atlassian-forge-zero-revenue-share-first-1m-2026
+  - web/webflow-cloud-usage-based-hosting-vs-export-and-self-host-2026
+  - cloud/deno-deploy-managed-vs-self-hosted-deployd-after-ga-2026
+  - cloud/digitalocean-droplets-vs-app-platform-vs-functions-pricing-2026
+  - data/temporal-cloud-vs-restate-vs-inngest-workflow-pricing-2026
+  - deployment/coolify-vs-dokploy-vs-northflank-paas-pricing-2026
+  - data/instantdb-vs-powersync-vs-convex-realtime-sync-pricing-2026
+  - deployment/coolify-self-hosted-free-vs-cloud-per-server-pricing-2026
+  - runtime/koyeb-on-demand-vs-reserved-instance-pricing-2026
+  - deployment/dokploy-license-change-apache-2-and-source-available-enterprise-2026
+  - web/firebase-app-hosting-free-allowances-vs-blaze-costs-2026
+status: active
+tier: core
+updated: "2026-03-16"
+review_by: "2026-05-04"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+      category: hosting
+    - type: vendor
+      id: vendor/netlify
+      name: Netlify
+      category: hosting
+    - type: vendor
+      id: vendor/cloudflare-pages
+      name: Cloudflare Pages
+      category: hosting
+    - type: capability
+      id: capability/blob-storage
+      name: Object/Blob Storage
+    - type: capability
+      id: capability/kv-store
+      name: Key-Value Store
+    - type: capability
+      id: capability/edge-compute
+      name: Edge Compute
+    - type: capability
+      id: capability/auth
+      name: Authentication
+  edges:
+    - type: locks_via
+      from: vendor/vercel
+      to: capability/blob-storage
+      surface: "@vercel/blob — no S3-compatible API; export requires SDK
+        list+download; Vercel-only"
+      severity: medium
+    - type: locks_via
+      from: vendor/cloudflare-pages
+      to: capability/edge-compute
+      surface: Durable Objects — no export API, no equivalent on other platforms,
+        location pinned to datacenter, SQLite backend cannot be enabled on
+        existing deployed classes
+      severity: high
+    - type: locks_via
+      from: vendor/cloudflare-pages
+      to: capability/kv-store
+      surface: KV — no bulk export API; must script key-by-key extraction (list
+        paginated 1000 keys/page)
+      severity: high
+    - type: locks_via
+      from: vendor/netlify
+      to: capability/auth
+      surface: Netlify Identity (GoTrue-based) — no bulk user export UI, passwords
+        require re-auth on migration
+      severity: medium
+    - type: locks_via
+      from: vendor/netlify
+      to: capability/blob-storage
+      surface: Netlify Blobs — no S3 API, SDK-only export via @netlify/blobs or
+        Netlify API
+      severity: medium

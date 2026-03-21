@@ -1,0 +1,201 @@
+id: "runtime/netlify-credit-based-functions-pricing-2026"
+title: "Netlify Credit-Based Functions Pricing in 2026"
+problem: "Re-evaluate whether Netlify remains cost-effective after its current
+  credit-based pricing and usage accounting changes for Functions, Edge
+  Functions, and bandwidth-heavy workloads."
+context:
+  - "netlify"
+  - "serverless"
+  - "edge-compute"
+  - "cdn"
+  - "billing"
+constraints:
+  - "cost-sensitive"
+  - "serverless"
+  - "low-ops"
+  - "high-scale"
+candidates:
+  - name: "Stay on a Netlify legacy plan if your account already qualifies"
+    summary: "As of 2026-03-18, all new Netlify accounts created on or after
+      September 4, 2025 use credit-based pricing, but older Free, Starter, and
+      Pro accounts can still remain on legacy pricing. Netlify documents that
+      switching from legacy to credit-based is irreversible. Legacy billing
+      still exposes the same core usage areas you need to compare before
+      changing plans, including bandwidth, web requests, builds, compute for
+      serverless functions, and Edge Functions usage. This is the only verified
+      way to avoid the new credit ledger if you already have a pre-September 4,
+      2025 account."
+    when_to_use: "Use this when you are cost-sensitive and already have a legacy
+      Netlify team with stable usage patterns. The decisive factor is that you
+      should not switch just to simplify billing unless a real usage comparison
+      shows the credit model is cheaper for your actual traffic and function
+      mix."
+    tradeoffs: "Lowest migration effort and avoids an irreversible pricing change,
+      but it does not help new accounts and may leave you on an older pricing
+      model that Netlify is no longer using for new signups."
+    cautions: "As of 2026-03-18, the legacy option is only for accounts created
+      before September 4, 2025. Do not switch casually, because Netlify states
+      you cannot revert from credit-based pricing back to legacy pricing."
+    links:
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-legacy-plans/billing-for-legacy-plans/"
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-credit-based-plans/credit-based-pricing-plans/"
+  - name: "Use Netlify credit-based self-serve plans for modest dynamic workloads"
+    summary: "As of 2026-03-18, Netlify self-serve credit-based pricing is
+      documented as Free with 300 monthly credits, Personal at 9 dollars per
+      month with 1,000 credits, and Pro at 20 dollars per team member per month
+      with 3,000 credits per team. Netlify charges 5 credits per GB-hour of
+      compute, 3 credits per 10,000 web requests, 10 credits per GB of
+      bandwidth, and 15 credits per successful production deploy. Netlify also
+      documents add-on credit packs of 500 credits for 5 dollars and 1,500
+      credits for 10 dollars, with auto recharge disabled by default. This model
+      is straightforward for low-ops teams if bandwidth and production deploy
+      frequency stay controlled."
+    when_to_use: "Use this when you want one managed platform for deploys,
+      Functions, and Edge behavior, and your workload is mostly small responses
+      with moderate request volume. The decisive factor is whether your
+      projected bandwidth and production deploy count fit comfortably inside the
+      monthly credit pool."
+    tradeoffs: "Operationally simple and predictable at low to moderate usage, but
+      every successful production deploy and every GB transferred now draws from
+      the same credit budget as compute and requests."
+    cautions: "Function requests count as web requests, and function responses also
+      count toward bandwidth. Frequent production deploys to the main site
+      consume 15 credits each, so fast-moving teams should model that separately
+      from runtime traffic."
+    links:
+      - "https://www.netlify.com/pricing/"
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-credit-based-plans/credit-based-pricing-plans/"
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-credit-based-plans/how-credits-work/"
+  - name: "Keep Netlify only for frontend and light edge logic, but move
+      bandwidth-heavy delivery off the platform"
+    summary: "As of 2026-03-18, Netlify explicitly counts assets, image delivery,
+      file downloads, and serverless function responses toward bandwidth at 10
+      credits per GB on self-serve credit plans. Netlify also states that Edge
+      Functions are not billed as compute on credit-based plans; they are
+      measured through web requests, and cached Edge responses do not incur an
+      Edge Function invocation. For Enterprise credit-based plans, Netlify
+      documents custom pricing with bandwidth at 20 credits per GB and web
+      requests at 2 credits per 10,000 requests. The blocker-level implication
+      is that bandwidth-heavy downloads and large API payloads are the clearest
+      place where Netlify can stop being cost-effective, even if request counts
+      are modest."
+    when_to_use: "Use this when you still want Netlify's workflow and routing model,
+      but your application serves large files, image-heavy traffic, or large
+      function responses. The decisive factor is whether you can reduce
+      Netlify-metered bandwidth with caching or by moving heavy payload delivery
+      to a different origin."
+    tradeoffs: "Preserves Netlify's low-ops developer experience for deploys and
+      light compute, but adds architectural complexity because delivery paths
+      become split across services."
+    cautions: "Do not assume Edge Functions are your main bill driver before
+      checking bandwidth. Netlify's docs make clear that cached Edge responses
+      avoid invocation usage, while outgoing bytes from assets and function
+      responses still consume bandwidth credits."
+    links:
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-credit-based-plans/how-credits-work/"
+      - "https://docs.netlify.com/build/edge-functions/usage-and-billing/"
+      - "https://docs.netlify.com/manage/accounts-and-billing/billing/billing-f\
+        or-credit-based-plans/how-credits-work-for-enterprise-plans/"
+tags:
+  - "runtime"
+  - "netlify"
+  - "pricing"
+  - "serverless"
+aliases:
+  - "netlify credit pricing functions"
+  - "netlify edge functions billing 2026"
+  - "netlify bandwidth credits"
+  - "netlify credits pricing"
+  - "netlify functions credits"
+  - "netlify edge pricing"
+  - "netlify bandwidth pricing"
+  - "netlify usage credits"
+  - "netlify credit billing"
+  - "netlify function costs"
+  - "netlify edge function costs"
+  - "netlify overage credits"
+  - "ntlify credits pricing"
+related_cards:
+  - "web/netlify-bandwidth-build-minutes-and-seat-pricing-2026"
+  - "infra/vercel-vs-netlify-vs-cloudflare-pages-2026"
+  - "database/object-storage-s3-vs-r2-vs-gcs"
+  - web/netlify-legacy-vs-credit-based-plans-2026
+  - web/netlify-pro-credit-reduction-after-october-1-2025
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/netlify
+      name: Netlify
+    - type: runtime
+      id: runtime/netlify-legacy-plans
+      name: Netlify legacy plans
+      category: billing_plan
+    - type: runtime
+      id: runtime/netlify-credit-based-pricing
+      name: Netlify credit-based pricing
+      category: billing_plan
+    - type: runtime
+      id: runtime/netlify-edge-functions
+      name: Netlify Edge Functions
+      category: edge_runtime
+    - type: runtime
+      id: runtime/netlify-functions
+      name: Netlify Functions
+      category: serverless_runtime
+    - type: capability
+      id: capability/bandwidth
+      name: Bandwidth
+      category: billing_meter
+    - type: capability
+      id: capability/web-requests
+      name: Web requests
+      category: billing_meter
+  edges:
+    - type: locks_via
+      from: runtime/netlify-legacy-plans
+      to: runtime/netlify-credit-based-pricing
+      vendor: vendor/netlify
+      condition: Switching from legacy to credit-based pricing is irreversible.
+    - type: locks_via
+      from: runtime/netlify-credit-based-pricing
+      to: runtime/netlify-legacy-plans
+      vendor: vendor/netlify
+      condition: Netlify states you cannot revert from credit-based pricing back to
+        legacy pricing.
+    - type: breaking_change_in
+      from: runtime/netlify-credit-based-pricing
+      to: vendor/netlify
+      date: 2025-09-04
+      change: All new Netlify accounts created on or after September 4, 2025 use
+        credit-based pricing.
+    - type: breaking_change_in
+      from: capability/bandwidth
+      to: runtime/netlify-credit-based-pricing
+      date: 2026-03-18
+      change: Bandwidth is billed at 10 credits per GB on self-serve credit plans.
+    - type: breaking_change_in
+      from: runtime/netlify-edge-functions
+      to: runtime/netlify-credit-based-pricing
+      date: 2026-03-18
+      change: Edge Functions are not billed as compute on credit-based plans; they are
+        measured through web requests.
+    - type: breaking_change_in
+      from: runtime/netlify-functions
+      to: capability/web-requests
+      date: 2026-03-18
+      change: Function requests count as web requests.
+    - type: breaking_change_in
+      from: runtime/netlify-functions
+      to: capability/bandwidth
+      date: 2026-03-18
+      change: Function responses count toward bandwidth.

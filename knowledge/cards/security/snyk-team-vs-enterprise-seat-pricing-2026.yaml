@@ -1,0 +1,225 @@
+id: "security/snyk-team-vs-enterprise-seat-pricing-2026"
+title: "Snyk Team vs Enterprise Seat Pricing 2026"
+problem: "Decide whether Snyk Team still fits a growing engineering org once
+  current seat pricing and feature gates push larger deployments toward Ignite
+  or Enterprise."
+context:
+  - "security"
+  - "appsec"
+  - "sast"
+  - "sca"
+  - "iac"
+  - "container-security"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Snyk Team"
+    summary: 'As of 2026-03-20, Snyk Team starts at "$25/month per contributing
+      developer," requires a minimum of 5 contributing developers, caps the
+      plan at 10 licenses per organization, and bills products separately under
+      the same plan. The pricing page also states Team is billed monthly, with
+      "1 month free" on annual pricing. Team includes Jira integration and
+      license compliance, but it does not include reports, private package
+      registries, self-hosted source code management, SAML SSO, custom user
+      roles, service accounts, or the rich API. Team also has tenant-scale
+      limits in docs: up to 25,000 Projects per Organization and up to five
+      Organizations per Tenant.'
+    when_to_use: "Use this when you have a small cloud-hosted engineering team, need
+      10 or fewer paid seats, and can live without SSO, custom RBAC, service
+      accounts, self-hosted SCM, or advanced reporting. The decisive factor is
+      whether the org can stay inside the 10-license ceiling and the lighter
+      admin model."
+    tradeoffs: "Lowest published entry price, but true platform cost rises if you
+      need multiple Snyk products because products are purchased separately. You
+      save on seat price but give up most enterprise admin, identity, and
+      hybrid-environment capabilities."
+    cautions: "Do not use the 14-day trial as a Team proxy: Snyk docs say the trial
+      exposes features beyond Team. If your buying criteria include SAML SSO,
+      custom roles, service accounts, private registries, self-hosted Git, or
+      multi-org governance, Team is already the wrong tier."
+    links:
+      - "https://snyk.io/plans/"
+      - "https://docs.snyk.io/snyk-platform-administration/snyk-projects/maximu\
+        m-number-of-projects-in-an-organization"
+      - "https://docs.snyk.io/snyk-platform-administration/user-roles"
+      - "https://docs.snyk.io/implementation-and-setup/enterprise-implementatio\
+        n-guide/trial-limitations"
+  - name: "Snyk Ignite"
+    summary: 'As of 2026-03-20, Snyk positions Ignite as the enterprise-grade bridge
+      for organizations with fewer than 50 developers, priced at "$1,260/year
+      per contributing developer." Unlike Team, Ignite bundles SCA, SAST, IaC,
+      and Container, includes 10 DAST targets, and unlocks key admin and
+      governance features such as reports, private package registries,
+      self-hosted SCM integrations, SAML SSO, custom user roles, service
+      accounts, rich API access, project tags, SBOM generation, and
+      multi-organization management. Snyk’s pricing FAQ explicitly directs
+      customers needing more than 10 Team licenses to contact sales about Ignite
+      and Enterprise.'
+    when_to_use: "Use this when Team’s 10-seat limit or feature gates are the
+      blocker, but your org is still below 50 developers and wants a published
+      enterprise-family seat price. The decisive factor is that Ignite removes
+      most of the admin and integration blockers without forcing a fully custom
+      Enterprise quote at the outset."
+    tradeoffs: "Much higher per-seat cost than Team, but the plan bundles multiple
+      products and enterprise capabilities that Team does not offer. It is the
+      practical midpoint if you need Enterprise-grade controls before you need
+      fully custom scale."
+    cautions: "Ignite pricing is annual on the pricing page, so budget comparisons
+      against Team's monthly price need normalization. Check official docs
+      before assuming Team-era tenant/project limits apply the same way, because
+      Snyk’s project-limit page explicitly lists Team and Enterprise but not
+      Ignite."
+    links:
+      - "https://snyk.io/plans/"
+      - "https://docs.snyk.io/implementation-and-setup/enterprise-implementatio\
+        n-guide/trial-limitations"
+      - "https://docs.snyk.io/snyk-platform-administration/user-roles"
+  - name: "Snyk Enterprise"
+    summary: "As of 2026-03-20, Snyk Enterprise uses contact-sales pricing rather
+      than a published seat rate, with customizable developer counts. The
+      pricing matrix includes the same major governance and integration gates
+      that Team lacks: reports, private package registries, self-hosted SCM,
+      SAML SSO, custom user roles, service accounts, rich API access, SBOM
+      generation, and multi-group or multi-organization management. Snyk docs
+      also state Enterprise customers can manage user roles in the Web UI or
+      API. For scale operations, the project-limit doc says Enterprise has no
+      restriction on the number of Organizations you can create, while still
+      listing 25,000 Projects per Organization."
+    when_to_use: "Use this when you are above Ignite’s developer band, need
+      procurement flexibility, or require enterprise identity, governance, and
+      multi-org controls as first-order requirements. The decisive factor is not
+      seat price transparency but whether your org needs features Team does not
+      sell at any price."
+    tradeoffs: "You lose public price transparency and move into a sales process,
+      but you gain the admin, identity, and org-structure controls that larger
+      AppSec programs usually need. Enterprise is the safer fit for regulated
+      environments, hybrid SCM setups, or centralized platform teams."
+    cautions: "Check official docs and quote details for final commercial terms,
+      because Snyk does not publish Enterprise seat pricing on the public plans
+      page. If you are only moving because of seat count and not governance
+      requirements, compare Ignite first to avoid overbuying."
+    links:
+      - "https://snyk.io/plans/"
+      - "https://docs.snyk.io/snyk-platform-administration/user-roles"
+      - "https://docs.snyk.io/snyk-platform-administration/snyk-projects/maximu\
+        m-number-of-projects-in-an-organization"
+tags:
+  - "security"
+  - "snyk"
+  - "pricing"
+  - "appsec"
+aliases:
+  - "snyk team pricing 2026"
+  - "snyk enterprise pricing 2026"
+  - "snyk ignite vs team"
+  - "snyk 10 seat limit"
+related_cards:
+  - "security/code-scanning-vendor-cost-sonarqube-vs-github-advanced-security-v\
+    s-snyk-2026"
+  - "security/dependency-scanning-sast-sca-boundary"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/snyk
+      name: Snyk
+    - type: package
+      id: package/snyk-team
+      name: Snyk Team
+      category: pricing_plan
+    - type: package
+      id: package/snyk-ignite
+      name: Snyk Ignite
+      category: pricing_plan
+    - type: package
+      id: package/snyk-enterprise
+      name: Snyk Enterprise
+      category: pricing_plan
+    - type: capability
+      id: capability/saml-sso
+      name: SAML SSO
+    - type: capability
+      id: capability/custom-user-roles
+      name: Custom user roles
+    - type: capability
+      id: capability/service-accounts
+      name: Service accounts
+    - type: capability
+      id: capability/rich-api-access
+      name: Rich API access
+    - type: capability
+      id: capability/private-package-registries
+      name: Private package registries
+    - type: capability
+      id: capability/self-hosted-scm
+      name: Self-hosted SCM integrations
+    - type: capability
+      id: capability/reports
+      name: Reports
+    - type: capability
+      id: capability/multi-organization-management
+      name: Multi-organization management
+    - type: capability
+      id: capability/sbom-generation
+      name: SBOM generation
+  edges:
+    - type: requires_version
+      from: capability/saml-sso
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/saml-sso
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/custom-user-roles
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/custom-user-roles
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/service-accounts
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/service-accounts
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/rich-api-access
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/rich-api-access
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/private-package-registries
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/private-package-registries
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/self-hosted-scm
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/self-hosted-scm
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/reports
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/reports
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/multi-organization-management
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/multi-organization-management
+      to: package/snyk-enterprise
+    - type: requires_version
+      from: capability/sbom-generation
+      to: package/snyk-ignite
+    - type: requires_version
+      from: capability/sbom-generation
+      to: package/snyk-enterprise

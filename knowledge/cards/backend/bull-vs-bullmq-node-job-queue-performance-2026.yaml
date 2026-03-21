@@ -1,0 +1,224 @@
+id: "backend/bull-vs-bullmq-node-job-queue-performance-2026"
+title: "Bull vs BullMQ vs Resque for Node.js Job Queue After Bull EOL 2026"
+problem: "Bull library is in legacy maintenance mode (bug fixes only); BullMQ is
+  the actively developed fork with breaking API changes. Teams on Bull must
+  choose to stay on a stale-but-stable library, migrate to BullMQ, or adopt an
+  alternative such as node-resque."
+context:
+  - "Node.js"
+  - "Redis"
+  - "background jobs"
+  - "task queues"
+  - "microservices"
+constraints:
+  - "high-scale"
+  - "microservices"
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "BullMQ"
+    summary: "The actively maintained, TypeScript-native successor to Bull, backed
+      by Taskforce.sh and released as v5.71.0 on March 11, 2026. MIT-licensed
+      with 10M+ monthly npm downloads; a commercial BullMQ Pro add-on
+      ($1,395/year for organizations under 100 employees as of 2026-03-18)
+      unlocks job grouping, batch processing, and priority support. Key
+      architectural difference from Bull: Queue, Worker, and QueueEvents are now
+      separate classes, and an explicit Redis connection object is mandatory.
+      Taskforce.sh achieved SOC 2 Type II certification in January 2026."
+    when_to_use: "Best for high-scale + microservices where you are starting a new
+      project or willing to invest in a migration, and need long-term support,
+      parent-child job flows, or rate limiting. The single most decisive factor
+      is active development: only BullMQ receives new features."
+    tradeoffs: "Active development, TypeScript-first, parent-child job dependencies,
+      deduplication, multi-language producers (Python, Elixir). Breaking API
+      changes from Bull require significant refactoring: Queue/Worker split,
+      QueueEvents class, cron option renamed to pattern, integer job IDs
+      disallowed, concurrency moved to Worker constructor. Existing Bull job
+      data is not guaranteed compatible — plan for parallel queue drain during
+      migration."
+    cautions: "BullMQ v5 made the Redis connection argument mandatory and will throw
+      at startup (not just warn) if omitted — existing Bull code that relies on
+      implicit connection defaults will break immediately. The underlying Redis
+      marker key structure changed in v5; running mixed Bull and BullMQ workers
+      against the same Redis keys is unsupported and may silently drop jobs."
+    links:
+      - "https://bullmq.io/"
+      - "https://docs.bullmq.io/"
+      - "https://docs.bullmq.io/guide/migration-to-newer-versions"
+      - "https://docs.bullmq.io/changelog"
+      - "https://github.com/taskforcesh/bullmq"
+  - name: "Bull (Legacy)"
+    summary: "The original Redis-backed job queue for Node.js, now in maintenance
+      mode: only bug fixes are accepted, no new features. It remains a stable,
+      battle-tested option for teams already using it who cannot absorb
+      migration costs. The API is callback- and promise-based with a single
+      Queue class handling both enqueue and processing."
+    when_to_use: "Best for small-team + low-ops situations where you have a large
+      existing Bull codebase, no immediate need for new queue features, and
+      migration risk outweighs stagnation risk. Do not choose Bull for new
+      projects as of 2026-03-18."
+    tradeoffs: "Zero migration cost for existing users; well-understood operational
+      behavior; wide community knowledge base. Receives no new features;
+      TypeScript support is via DefinitelyTyped rather than native types; no
+      parent-child flows, deduplication, or multi-language support. Security
+      fixes only; future Node.js or Redis compatibility issues may go
+      unaddressed."
+    cautions: "Bull and BullMQ share the same Redis key namespace conventions but
+      are not interoperable — you cannot have Bull producers feeding BullMQ
+      workers or vice versa without a dedicated migration window. Staying on
+      Bull indefinitely means accumulating dependency debt as the ecosystem
+      moves to BullMQ."
+    links:
+      - "https://github.com/OptimalBits/bull"
+      - "https://github.com/OptimalBits/bull/blob/master/MIGRATION.md"
+  - name: "node-resque"
+    summary: "A Node.js implementation of the Resque protocol (originally a Ruby
+      background job framework) backed by Redis, actively maintained by the
+      Actionhero team at v9.5.0 as of early 2026. API-compatible with Ruby
+      Resque and Sidekiq, making it the only Node.js queue option suitable for
+      mixed Ruby/Node polyglot stacks. MIT-licensed, TypeScript-native since v6,
+      with priority queues, delayed jobs, and a scheduler component."
+    when_to_use: "Best for microservices + enterprise teams running polyglot
+      Ruby/Node.js stacks where Resque or Sidekiq compatibility is required, or
+      where ops teams already manage Resque infrastructure. If your stack is
+      Node.js-only, BullMQ's richer feature set and larger ecosystem make it the
+      stronger default."
+    tradeoffs: "Unique Resque/Sidekiq wire-protocol compatibility;
+      TypeScript-native; scheduler included in the package. Far smaller
+      community (1.4k GitHub stars vs BullMQ's 8.6k); fewer advanced features
+      (no parent-child flows, no rate limiting built-in, no multi-language SDK);
+      the polling-based scheduler introduces Redis round-trip overhead compared
+      to BullMQ's event-driven approach."
+    cautions: "node-resque's scheduler is a separate long-running process that must
+      be kept alive — it is not embedded in the worker loop like BullMQ's
+      delayed-job mechanism, which means an additional deployment unit and
+      failure surface. The Resque wire protocol constrains job payload
+      structure; migrating away from node-resque later requires re-enqueuing all
+      jobs."
+    links:
+      - "https://github.com/actionhero/node-resque"
+      - "https://docs.bullmq.io/bullmq-pro/introduction"
+tags:
+  - "backend"
+  - "job-queue"
+  - "bull"
+  - "bullmq"
+  - "node-resque"
+  - "redis"
+  - "nodejs"
+  - "background-jobs"
+  - "task-queue"
+  - "eol"
+  - "migration"
+aliases:
+  - "bull eol"
+  - "bullmq migration"
+  - "node job queue"
+  - "redis queue nodejs"
+  - "background jobs nodejs"
+  - "task queue nodejs"
+  - "resque nodejs"
+  - "bull vs bullmq"
+  - "queue library nodejs"
+related_cards:
+  - "backend/rate-limiting"
+  - "testing/vitest-vs-jest-vs-node-native-test-runner-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: package
+      id: package/bull
+      name: Bull
+      category: job_queue
+    - type: package
+      id: package/bullmq
+      name: BullMQ
+      category: job_queue
+    - type: package
+      id: package/bullmq-pro
+      name: BullMQ Pro
+      category: commercial_addon
+    - type: package
+      id: package/node-resque
+      name: node-resque
+      category: job_queue
+    - type: protocol
+      id: protocol/resque
+      name: Resque
+      standard: wire protocol
+    - type: capability
+      id: capability/job-grouping
+      name: job grouping
+    - type: capability
+      id: capability/batch-processing
+      name: batch processing
+    - type: capability
+      id: capability/priority-support
+      name: priority support
+    - type: engine
+      id: engine/redis
+      name: Redis
+    - type: package
+      id: package/bullmq-v5
+      name: BullMQ v5
+      category: package_version
+  edges:
+    - type: breaking_change_in
+      from: package/bull
+      to: package/bullmq
+      summary: BullMQ has breaking API changes from Bull, including Queue/Worker
+        split, QueueEvents class, renamed cron option, disallowed integer job
+        IDs, and moved concurrency configuration.
+    - type: breaking_change_in
+      from: package/bullmq
+      to: package/bullmq-v5
+      summary: BullMQ v5 made the Redis connection argument mandatory and changed the
+        Redis marker key structure.
+    - type: locks_via
+      from: capability/job-grouping
+      to: package/bullmq-pro
+      summary: BullMQ Pro unlocks job grouping.
+    - type: locks_via
+      from: capability/batch-processing
+      to: package/bullmq-pro
+      summary: BullMQ Pro unlocks batch processing.
+    - type: locks_via
+      from: capability/priority-support
+      to: package/bullmq-pro
+      summary: BullMQ Pro unlocks priority support.
+    - type: requires_version
+      from: package/node-resque
+      to: protocol/resque
+      summary: node-resque is a Node.js implementation of the Resque protocol.
+    - type: requires_version
+      from: package/bull
+      to: runtime/nodejs
+      summary: Bull is described as a Redis-backed job queue for Node.js.
+    - type: requires_version
+      from: package/bullmq
+      to: runtime/nodejs
+      summary: BullMQ is presented as the successor to Bull for Node.js job queues.
+    - type: requires_version
+      from: package/node-resque
+      to: runtime/nodejs
+      summary: node-resque is a Node.js implementation of the Resque protocol.
+    - type: requires_version
+      from: package/bull
+      to: engine/redis
+      summary: Bull is Redis-backed.
+    - type: requires_version
+      from: package/bullmq
+      to: engine/redis
+      summary: BullMQ requires an explicit Redis connection object.
+    - type: requires_version
+      from: package/node-resque
+      to: engine/redis
+      summary: node-resque is backed by Redis.

@@ -1,0 +1,217 @@
+id: cloud/aws-cloudfront-flat-rate-plans-vs-pay-as-you-go-after-november-2025-launch
+title: AWS CloudFront Flat-Rate Plans vs Pay-as-You-Go After November 2025 Launch
+problem: Teams serving public web apps on AWS need a pricing decision card for
+  whether the CloudFront flat-rate plans launched in November 2025 are better
+  than standard per-service billing, especially because the plans bundle WAF,
+  DDoS protection, logs, DNS, and edge compute.
+context:
+  - aws
+  - amazon-cloudfront
+  - aws-waf
+  - aws-shield
+  - amazon-route-53
+  - amazon-cloudwatch-logs
+  - pricing
+  - public-web-apps
+  - cdn
+  - edge-security
+constraints:
+  - cost-sensitive
+  - low-ops
+  - small-team
+  - enterprise
+  - high-scale
+  - serverless
+  - compliance
+candidates:
+  - name: Use a CloudFront flat-rate plan per distribution
+    summary: As of 2026-03-15, AWS offers CloudFront flat-rate plans in Free, Pro,
+      Business, and Premium tiers at "$0/month", "$15/month", "$200/month", and
+      "$1,000/month" per distribution. Official AWS docs say these plans bundle
+      one CloudFront distribution, an attached AWS WAF web ACL, CloudWatch Logs
+      ingestion for CloudFront standard access logs and WAF logs, Route 53
+      hosted zone costs when attached, serverless edge compute, DDoS protection,
+      and monthly S3 credits, with no overage charges.
+    when_to_use: Best for low-ops + small-team or cost-sensitive + serverless public
+      sites where one distribution maps cleanly to one application, you want
+      predictable monthly billing, and your supported feature set fits the plan
+      tier. As of 2026-03-15, this is the strongest default when baseline
+      traffic stays within a plan's intended range and you want bundled WAF,
+      DNS, logging, and DDoS protection without modeling separate AWS bills.
+    tradeoffs: Flat-rate plans simplify procurement and operations because AWS
+      bundles CloudFront, WAF, Route 53 DNS, CloudWatch Logs ingestion, and edge
+      compute into one monthly charge. They also make attack-driven spend more
+      predictable because blocked DDoS traffic and requests blocked by AWS WAF
+      do not count against the plan allowance. The tradeoff is that plans are
+      per distribution, limited to one apex domain per plan, and some advanced
+      CloudFront and WAF features remain unavailable or separately billed.
+    cautions: Do not read "no overages" as "unlimited performance." AWS documents
+      that if usage exceeds the plan allowance, AWS may reduce performance,
+      including serving traffic from fewer or more distant edge locations,
+      reducing throughput, throttling, or requiring a pricing change. Flat-rate
+      plans also cannot be used with unsupported features such as continuous
+      deployment and staging distributions, real-time access logs, Lambda@Edge,
+      targeted bots, CAPTCHA, partner managed rules, Shield Advanced, or
+      Firewall Manager-managed web ACLs. All other CloudWatch costs such as
+      storage and querying are not covered, and some Route 53 features such as
+      DNSSEC KMS costs, health checks, and IP-based routing features remain
+      separate.
+    links:
+      - https://aws.amazon.com/cloudfront/pricing/
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html
+      - https://docs.aws.amazon.com/PricingPlanManager/latest/UserGuide/plans.html
+      - https://docs.aws.amazon.com/PricingPlanManager/latest/UserGuide/frequently-asked-questions.html
+      - https://aws.amazon.com/about-aws/whats-new/2025/11/aws-flat-rate-pricing-plans
+  - name: Stay on CloudFront pay-as-you-go pricing
+    summary: As of 2026-03-15, CloudFront pay-as-you-go still bills based on actual
+      usage, and AWS documents CloudFront charges across data transfer out, HTTP
+      and HTTPS requests, invalidation requests, real-time log requests, and
+      Dedicated IP Custom SSL. The CloudFront FAQ also states that all customers
+      receive 1 TB of data transfer out, 10,000,000 HTTP and HTTPS requests, and
+      2,000,000 CloudFront Functions invocations each month for free under
+      pay-as-you-go, while services such as AWS WAF and Route 53 are billed
+      separately.
+    when_to_use: Best for enterprise + compliance, high-scale + predictable traffic,
+      or microservices-style edge setups where you need complete control over
+      CloudFront, WAF, logging, and DNS features, or where your distribution
+      uses features the flat-rate plans do not support. As of 2026-03-15,
+      pay-as-you-go is the safer choice when you need real-time logs,
+      Lambda@Edge, shared WAF resources, Shield Advanced, Firewall Manager,
+      targeted bot controls, CAPTCHA, partner managed rules, or custom
+      configurations across multiple distributions.
+    tradeoffs: Pay-as-you-go preserves the full feature set and lets you choose
+      exactly which AWS services and options to buy rather than accepting a
+      bundled plan boundary. It also aligns better with specialized
+      architectures because AWS explicitly says pay-as-you-go is better if you
+      need complete control over individual service features, custom
+      configurations, access to features not available in flat-rate plans, or if
+      you expect to handle large, predictable traffic spikes. The tradeoff is
+      higher billing complexity because CloudFront, WAF, Route 53, advanced
+      logging, and optional Shield Advanced protections can all generate
+      separate charges.
+    cautions: Pay-as-you-go is not simply "CloudFront only" pricing. AWS WAF pricing
+      is additional to CloudFront pricing, Route 53 pricing is separate unless
+      you use covered Alias records, and Shield Advanced is a separate annual
+      subscription. Also, while AWS states that CloudFront requests blocked by
+      AWS WAF no longer incur CloudFront request or data transfer charges, AWS
+      WAF still bills for evaluating and blocking those requests under its own
+      pricing model. Use official regional pricing tables before committing
+      because pay-as-you-go totals depend on request mix, geography, logging
+      choices, and optional security add-ons.
+    links:
+      - https://aws.amazon.com/cloudfront/pricing/
+      - https://aws.amazon.com/cloudfront/faqs/
+      - https://aws.amazon.com/waf/pricing/
+      - https://aws.amazon.com/route53/pricing/
+      - https://aws.amazon.com/shield/pricing/
+      - https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-cloudfront-charges-requests-blocked-aws-waf/
+tags:
+  - cloud
+  - aws
+  - amazon-cloudfront
+  - aws-waf
+  - aws-shield
+  - amazon-route-53
+  - amazon-cloudwatch-logs
+  - pricing
+  - cdn
+  - edge-security
+aliases:
+  - cloudfront flat-rate pricing vs pay as you go
+  - aws cloudfront pricing plans november 2025
+  - cloudfront bundled waf dns logs pricing
+  - cloudfront pro business premium pricing
+  - cloudfront no overage plan vs on-demand
+  - cloudfront flat-rate plan unsupported features
+related_cards:
+  - infra/aws-lambda-log-destination-vs-cloudwatch-standard-vs-infrequent-access-vs-s3-firehose-2026
+  - cloud/aws-public-ipv4-charge-avoidance-vpc-and-load-balancer-design-2026
+  - cloud/aws-graviton-adoption-cost-savings-vs-ecosystem-maturity-2026
+  - cloud/reserved-instances-vs-spot-vs-savings-plans-optimization-2026
+  - web/fastly-packaged-cdn-vs-legacy-online-pricing-2026
+  - web/fastly-compute-vs-akamai-edgeworkers-vs-lambda-edge-pricing-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-25
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: package
+      id: package/amazon-cloudfront
+      name: Amazon CloudFront
+    - type: package
+      id: package/aws-cloudfront-flat-rate-plan
+      name: CloudFront flat-rate plan
+      vendor: vendor/aws
+    - type: package
+      id: package/aws-cloudfront-pay-as-you-go
+      name: CloudFront pay-as-you-go pricing
+      vendor: vendor/aws
+    - type: package
+      id: package/aws-waf
+      name: AWS WAF
+      vendor: vendor/aws
+    - type: package
+      id: package/amazon-route-53
+      name: Amazon Route 53
+      vendor: vendor/aws
+    - type: package
+      id: package/amazon-cloudwatch-logs
+      name: Amazon CloudWatch Logs
+      vendor: vendor/aws
+    - type: capability
+      id: capability/one-distribution-per-plan
+      name: One CloudFront distribution per plan
+    - type: capability
+      id: capability/attached-waf-web-acl
+      name: Attached AWS WAF web ACL
+    - type: capability
+      id: capability/real-time-access-logs
+      name: Real-time access logs
+    - type: capability
+      id: capability/lambda-at-edge
+      name: Lambda@Edge
+    - type: capability
+      id: capability/shield-advanced
+      name: Shield Advanced
+  edges:
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: capability/one-distribution-per-plan
+      scope: per_distribution
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: capability/attached-waf-web-acl
+      scope: attached_resource
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: package/amazon-cloudfront
+      scope: bundles_one_distribution
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: package/aws-waf
+      scope: bundles_attached_web_acl
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: package/amazon-route-53
+      scope: bundles_attached_hosted_zone_costs
+    - type: locks_via
+      from: package/aws-cloudfront-flat-rate-plan
+      to: package/amazon-cloudwatch-logs
+      scope: bundles_log_ingestion
+    - type: breaking_change_in
+      from: capability/real-time-access-logs
+      to: package/aws-cloudfront-flat-rate-plan
+      change: unsupported_in_flat_rate_plans
+    - type: breaking_change_in
+      from: capability/lambda-at-edge
+      to: package/aws-cloudfront-flat-rate-plan
+      change: unsupported_in_flat_rate_plans
+    - type: breaking_change_in
+      from: capability/shield-advanced
+      to: package/aws-cloudfront-flat-rate-plan
+      change: unsupported_in_flat_rate_plans

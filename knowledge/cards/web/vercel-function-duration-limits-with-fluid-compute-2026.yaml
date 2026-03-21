@@ -1,0 +1,156 @@
+id: "web/vercel-function-duration-limits-with-fluid-compute-2026"
+title: "Vercel Function Duration Limits After Fluid Compute Became Default"
+problem: "Assess whether moving to Fluid Compute changes timeout ceilings,
+  concurrency behavior, and cost enough to affect long-running API or AI
+  workloads on Vercel in 2026."
+context:
+  - "vercel"
+  - "serverless"
+  - "nodejs"
+  - "python"
+  - "ai-workloads"
+constraints:
+  - "serverless"
+  - "cost-sensitive"
+  - "real-time"
+  - "low-ops"
+candidates:
+  - name: "Use Fluid Compute for Node.js or Python functions"
+    summary: "As of 2026-03-19, Fluid Compute is the default for all new Vercel
+      projects. Its verified blocker-level changes are: Pro and Enterprise
+      functions can be configured up to 800 seconds while Hobby stays at 300
+      seconds; Node.js and Python gain optimized concurrency so multiple
+      invocations can share one function instance; and billing changes from
+      wall-clock duration to separate Active CPU, Provisioned Memory, and
+      invocation charges. Vercel documents that Active CPU billing pauses during
+      I/O waits, while Provisioned Memory billing continues until the last
+      in-flight request completes. Regional pricing varies, with examples
+      including Washington, D.C. at $0.128 per CPU-hour and $0.0106 per GB-hour,
+      and Tokyo at $0.202 per CPU-hour and $0.0167 per GB-hour."
+    when_to_use: "Use this when workloads are I/O-heavy, bursty, or AI-adjacent and
+      you want longer request ceilings on Pro or Enterprise without moving off
+      Vercel. It is the decisive choice when the main pain is 300-second limits,
+      cold starts, or paying for wall-clock time during external API, database,
+      or model waits."
+    tradeoffs: "Higher max duration and better concurrency utilization are real
+      wins, but memory is billed for the full instance lifetime and concurrency
+      now shares one process, which changes isolation assumptions. Region choice
+      now materially affects cost."
+    cautions: "Do not assume every Vercel runtime gets the same ceiling: Edge
+      functions still must begin sending a response within 25 seconds and can
+      stream for up to 300 seconds. Also do not assume per-invocation isolation
+      semantics; Vercel states Fluid Compute allows multiple invocations to
+      share the same physical instance concurrently."
+    links:
+      - "https://vercel.com/docs/fluid-compute"
+      - "https://vercel.com/docs/functions/configuring-functions/duration"
+      - "https://vercel.com/docs/functions/limitations"
+      - "https://vercel.com/docs/functions/usage-and-pricing"
+  - name: "Keep legacy non-Fluid Functions only for migration blockers"
+    summary: "As of 2026-03-19, Vercel still documents a legacy billing model for
+      functions without Fluid Compute, but it is no longer the default for new
+      projects. Legacy billing charges for function invocations and wall-clock
+      duration, and Vercel explicitly distinguishes it from Fluid Compute's
+      Active CPU plus Provisioned Memory model. Vercel also exposes throttling
+      as a legacy metric for instances that did not execute because concurrency
+      limits were reached, which is relevant if you rely on older concurrency
+      behavior. This option is now primarily a compatibility holdout rather than
+      the forward path."
+    when_to_use: "Use this only when a current project has a validated blocker
+      around shared-process concurrency, global state assumptions, or a
+      migration risk you cannot resolve immediately. The decisive factor is
+      operational compatibility, not better pricing or longer ceilings."
+    tradeoffs: "It avoids immediate behavioral change, but it keeps the older
+      wall-clock billing model and leaves you off the platform default. It is a
+      weaker fit for I/O-heavy AI or API workloads where waiting time
+      dominates."
+    cautions: "Vercel states all new projects use Fluid Compute by default, so
+      treating legacy mode as the baseline for new work is the wrong default
+      assumption. Check official docs before depending on any legacy-only
+      duration details or future availability."
+    links:
+      - "https://vercel.com/docs/functions/usage-and-pricing/legacy-pricing"
+      - "https://vercel.com/docs/fluid-compute"
+      - "https://vercel.com/docs/functions/limitations"
+tags:
+  - "web"
+  - "vercel"
+  - "serverless"
+  - "pricing"
+aliases:
+  - "vercel fluid compute timeout limits"
+  - "vercel function duration 800 seconds"
+  - "vercel fluid compute pricing concurrency"
+related_cards:
+  - "serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-\
+    2026"
+  - "runtime/vercel-fluid-vs-legacy-functions-2026"
+  - "serverless/vercel-edge-vs-node-runtime"
+  - deployment/vercel-fluid-compute-active-cpu-pricing-2026
+  - web/vercel-fluid-compute-vs-classic-functions-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: capability
+      id: capability/fluid-compute
+      name: Fluid Compute
+      category: serverless execution mode
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: runtime
+      id: runtime/python
+      name: Python
+    - type: runtime
+      id: runtime/edge-functions
+      name: Edge functions
+    - type: capability
+      id: capability/shared-instance-concurrency
+      name: Multiple invocations can share one function instance concurrently
+      category: concurrency
+    - type: capability
+      id: capability/active-cpu-billing
+      name: Active CPU billing
+      category: pricing
+    - type: capability
+      id: capability/provisioned-memory-billing
+      name: Provisioned Memory billing
+      category: pricing
+    - type: capability
+      id: capability/wall-clock-duration-billing
+      name: Wall-clock duration billing
+      category: pricing
+    - type: capability
+      id: capability/up-to-800-second-duration
+      name: Up to 800-second function duration
+      category: duration
+    - type: capability
+      id: capability/up-to-300-second-duration
+      name: Up to 300-second function duration
+      category: duration
+  edges:
+    - type: breaking_change_in
+      from: capability/up-to-800-second-duration
+      to: capability/fluid-compute
+    - type: breaking_change_in
+      from: capability/shared-instance-concurrency
+      to: capability/fluid-compute
+    - type: breaking_change_in
+      from: capability/active-cpu-billing
+      to: capability/fluid-compute
+    - type: breaking_change_in
+      from: capability/provisioned-memory-billing
+      to: capability/fluid-compute
+    - type: breaking_change_in
+      from: capability/wall-clock-duration-billing
+      to: capability/fluid-compute
+    - type: breaking_change_in
+      from: capability/up-to-300-second-duration
+      to: runtime/edge-functions

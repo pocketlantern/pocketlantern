@@ -1,0 +1,183 @@
+id: deployment/preview-environments-cost-governance
+title: Preview Environments With Cost and Secret Governance
+problem: Decide how to provide per-PR environments without uncontrolled spend or
+  secret sprawl, given current platform features for ephemeral databases, branch
+  deployments, access control, and cleanup automation.
+context:
+  - deployment
+  - preview-environments
+  - pull-requests
+  - ephemeral-databases
+  - secrets-management
+  - cost-governance
+constraints:
+  - serverless
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - monorepo
+  - microservices
+  - compliance
+candidates:
+  - name: Vercel Preview Deployments plus Neon Branching
+    summary: As of 2026-03-14, Vercel creates preview deployments for non-production
+      branches, supports branch-specific preview environment variables, and can
+      protect previews with project-level Deployment Protection. Neon adds
+      branchable Postgres with optional compute endpoints and usage-based branch
+      and compute billing, which makes this a strong lightweight per-PR stack
+      for web apps that mainly need frontend or API isolation plus an isolated
+      database branch.
+    when_to_use: Best for serverless + small-team or cost-sensitive + low-ops where
+      the app tier fits Vercel's branch-preview model and you want database
+      isolation through Postgres branching instead of duplicating every worker,
+      cache, and internal service per PR. Choose this when preview access must
+      be shareable with invited reviewers while secrets stay governed through
+      Vercel project or team access and branch-specific preview variables.
+    tradeoffs: "Compared with Render or Heroku whole-environment duplication, this
+      keeps the preview stack lighter because Vercel handles app previews while
+      Neon isolates the database separately. The tradeoff is split governance
+      across two platforms: access policy, preview sharing, and spend controls
+      live in Vercel, while database branch lifecycle and database spend live in
+      Neon."
+    cautions: Vercel environment variables are configured at the team or project
+      level, and branch-specific overrides only change preview values for that
+      branch; sensitive variables are hidden after creation but still follow
+      project access boundaries. As of 2026-03-14, Vercel lists Advanced
+      Deployment Protection on Pro as a $150 per month add-on if you need
+      Password Protection or Deployment Protection Exceptions. On Neon, a new
+      branch is created without a compute endpoint by default, each branch
+      permits only one read-write endpoint, and as of 2026-03-14 the Launch plan
+      prices additional branches at $0.002 per branch-hour and compute at $0.106
+      per CU-hour, so branch cleanup automation still matters.
+    links:
+      - https://vercel.com/docs/deployment-protection
+      - https://vercel.com/docs/environment-variables
+      - https://vercel.com/docs/environment-variables/manage-across-environments
+      - https://vercel.com/docs/deployments/sharing-deployments
+      - https://vercel.com/docs/spend-management
+      - https://vercel.com/pricing
+      - https://console.neon.tech/api/v2/projects/{project_id}/branches
+      - https://console.neon.tech/api/v2/projects/{project_id}/branches/{branch_id}
+      - https://console.neon.tech/api/v2/projects/{project_id}/branches/{branch_id}/endpoints
+      - https://neon.com/pricing
+  - name: Render Preview Environments with Blueprints
+    summary: As of 2026-03-14, Render Preview Environments require a Professional
+      workspace or higher and create a fresh copy of the services, databases,
+      and environment groups defined in a Blueprint for each pull request. They
+      stay updated on every commit, can expire after inactivity, and are billed
+      like regular Render resources with second-level proration.
+    when_to_use: Best for monorepo + microservices or enterprise + compliance where
+      Blueprint-defined parity across web services, private services, workers,
+      and databases matters more than minimizing per-PR footprint or startup
+      latency. Choose this when you want one platform to own provisioning,
+      teardown, preview-specific overrides, and environment-level controls for a
+      multi-service app.
+    tradeoffs: Compared with Vercel plus a branchable database, this is closer to
+      whole-environment duplication and is therefore better for integration
+      realism across multiple internal services. Compared with Heroku Review
+      Apps, the Render model is more infrastructure-declarative through
+      `render.yaml`, but it can duplicate more billable resources per PR if your
+      production Blueprint is large and you do not downsize preview instance
+      counts.
+    cautions: "Preview resources are billed just like regular Render services and
+      are prorated by the second; previews have no expiry unless you set
+      `previews.expireAfterDays`. Placeholder environment variables with `sync:
+      false` are not copied into preview environments, and if the same Blueprint
+      manages both the preview environments and an environment group, Render
+      creates a new environment group for each preview while still omitting
+      those placeholder secrets. Render also documents that preview environments
+      are managed via Blueprints, not Projects, so project-level protected
+      environments and scoped environment groups do not automatically become the
+      governance boundary for previews."
+    links:
+      - https://render.com/docs/preview-environments
+      - https://render.com/docs/blueprint-spec
+      - https://render.com/docs/configure-environment-variables
+      - https://render.com/docs/projects
+  - name: Heroku Review Apps
+    summary: As of 2026-03-14, Heroku Review Apps run each GitHub pull request in a
+      complete, disposable Heroku app, using `app.json` and pipeline settings to
+      define add-ons, config, and lifecycle scripts. Dynos and add-ons are
+      billed like normal apps, prorated to the second, and review apps can be
+      auto-destroyed after pull request close or after 1, 2, 5, 14, or 30 days
+      of inactivity.
+    when_to_use: Best for small-team + low-ops or enterprise + microservices when
+      you are already standardized on Heroku Pipelines and want whole-app
+      duplication with one platform-owned app boundary, pipeline access
+      controls, and scripted bootstrap and teardown. Prefer this when
+      duplicating the complete app plus add-ons is worth the higher coordination
+      and spend relative to Vercel plus Neon or Render's more Blueprint-oriented
+      workflow.
+    tradeoffs: "This is the clearest whole-app clone option of the three: every pull
+      request becomes a disposable Heroku app with its own config vars and
+      add-ons. The downside is that you pay for dynos and add-ons for the
+      lifetime of the review app, and the model is less targeted than a
+      branch-deployed frontend plus a database branch when only part of the
+      stack needs isolation."
+    cautions: Sensitive review-app secrets belong in the pipeline's `Review app
+      config vars`, not in `app.json`, and review-app access still follows
+      Heroku app access rather than GitHub pull-request visibility alone. For
+      security and billing reasons, Heroku does not automatically create review
+      apps for pull requests from forks on public repositories, only
+      automatically created review apps are automatically destroyed when the
+      pull request closes, and copying full production database contents into
+      review apps is not supported; Heroku recommends seeding non-production
+      data via `postdeploy` instead. If you provision extra resources during
+      setup, use `pr-predestroy` to tear them down.
+    links:
+      - https://devcenter.heroku.com/articles/github-integration-review-apps
+      - https://devcenter.heroku.com/articles/usage-and-billing
+      - https://devcenter.heroku.com/articles/heroku-teams
+tags:
+  - deployment
+  - preview-environments
+  - cost-governance
+  - secrets-management
+  - vercel
+  - neon
+  - render
+  - heroku
+aliases:
+  - preview deployments cost control
+  - review apps governance
+  - per PR environments
+  - ephemeral environments with secrets
+  - branch deployments with database branches
+  - preview environment cleanup automation
+related_cards:
+  - deployment/bluegreen-vs-canary-on-serverless
+  - backend/zero-downtime-deployment
+  - security/secrets-on-edge-and-build-systems
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026
+  - infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+  - web/netlify-bandwidth-build-minutes-and-seat-pricing-2026
+  - testing/browserstack-percy-free-vs-paid-screenshot-limits-2026
+  - game/unity-devops-pricing-reset-march-1-2026
+  - serverless/railway-hobby-included-usage-vs-overage-billing-2026
+  - devtools/launchdarkly-mau-vs-service-connections-billing-2026
+  - devtools/coder-vs-gitpod-vs-github-codespaces-seat-and-compute-pricing-2026
+  - design/storyblok-vs-hygraph-vs-contentstack-headless-cms-pricing-2026
+  - deployment/coolify-vs-dokploy-vs-northflank-paas-pricing-2026
+  - testing/chromatic-free-vs-team-visual-test-quota-2026
+tier: "foundational"
+status: active
+updated: 2026-03-14
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/render-preview-environments
+      name: Render Preview Environments
+      category: preview_environments
+    - type: package
+      id: package/render-professional-workspace
+      name: Render Professional workspace
+      category: workspace_plan
+  edges:
+    - type: requires_version
+      from: capability/render-preview-environments
+      to: package/render-professional-workspace
+      constraint: Professional workspace or higher
+      evidence: Render Preview Environments require a Professional workspace or higher.

@@ -1,0 +1,191 @@
+id: "testing/browserstack-percy-free-vs-paid-screenshot-limits-2026"
+title: "BrowserStack Percy Free vs Paid Screenshot Economics in 2026"
+problem: "Choose whether to keep visual regression on Percy free tier or pay for
+  higher screenshot caps and longer history now that BrowserStack pricing and
+  overage structure directly affect CI cost."
+context:
+  - "testing"
+  - "ci-cd"
+  - "visual-regression"
+  - "browserstack"
+  - "percy"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Stay on Percy Free"
+    summary: 'As of 2026-03-19, BrowserStack Percy Free is priced at "$0 / month"
+      and includes "5,000 free monthly screenshots," unlimited users, and
+      unlimited projects. BrowserStack''s pricing page shows free-tier build
+      history is limited to 30 days, while the feature list states "1 month
+      build history." Percy counts usage by rendered screenshots, where each
+      browser and responsive width permutation consumes screenshots. This is the
+      lowest-cost option if current CI volume stays comfortably below the 5,000
+      screenshot cap.'
+    when_to_use: "Use this when you are cost-sensitive, web-only, and your normal
+      monthly CI volume has enough headroom under 5,000 screenshots. It is the
+      right default if short retention is acceptable and you want to avoid any
+      paid commitment while keeping Percy in the pipeline."
+    tradeoffs: "No subscription cost and full Percy core workflow, but the
+      screenshot cap is relatively low and build history is shorter than paid
+      plans. Teams that add more browsers, widths, or PR coverage can run into
+      the cap quickly because Percy bills by screenshot permutations, not just
+      by page count."
+    cautions: "BrowserStack states that paid plans charge overages once included
+      screenshots are exceeded, but the exact overage price should be checked on
+      the official pricing page. Free plan retention is only 30 days, so longer
+      visual forensics or seasonal comparisons are harder."
+    links:
+      - "https://www.browserstack.com/pricing"
+      - "https://www.browserstack.com/docs/percy/overview/plans-and-billing"
+      - "https://www.browserstack.com/support/faq/plans-pricing/plans/what-is-i\
+        ncluded-in-percys-plans/"
+  - name: "Upgrade to Percy Desktop"
+    summary: 'As of 2026-03-19, BrowserStack lists Percy Desktop at "$199 / month"
+      billed annually, with selectable capacity starting at 10,000 screenshots
+      per month and higher options including 25,000 screenshots per month or
+      custom screenshots via sales. The pricing comparison shows paid Percy
+      build history at 12 months instead of the free plan''s 30 days.
+      BrowserStack docs also state that screenshot usage beyond the plan
+      allocation is treated as overage. This is the primary paid option for
+      teams doing desktop-browser visual regression only.'
+    when_to_use: "Use this when you need more than 5,000 screenshots per month or
+      need 12-month build history, but do not need mobile-browser coverage. It
+      is the cleanest step-up for web teams whose CI cost is driven by Percy
+      screenshot volume rather than device breadth."
+    tradeoffs: "Higher screenshot allowance and much longer history improve
+      stability for active CI programs, but it introduces fixed spend and
+      potential overage exposure if usage spikes. Annual billing also makes the
+      decision less reversible than staying on free."
+    cautions: "BrowserStack allows overages on paid Percy plans, so cost control
+      depends on monitoring usage thresholds or disabling additional screenshots
+      where available. If your visual suite includes mobile-browser coverage,
+      Desktop may still be the wrong tier."
+    links:
+      - "https://www.browserstack.com/pricing"
+      - "https://www.browserstack.com/docs/percy/overview/plans-and-billing"
+      - "https://www.browserstack.com/support/faq/plans-pricing/usage-plans-pri\
+        cing/is-percys-usage-limited/"
+  - name: "Upgrade to Percy Desktop & Mobile"
+    summary: 'As of 2026-03-19, BrowserStack lists Percy Desktop & Mobile at "$599
+      / month" billed annually, with 25,000 screenshots per month as the listed
+      starting capacity and custom screenshot volumes through sales.
+      BrowserStack describes this tier as "AI-powered visual comparison for
+      desktop & mobile browsers" and notes that it adds real mobile devices and
+      mobile browsers beyond the Desktop plan. The pricing comparison also shows
+      12 months of build history on paid plans. This is the paid tier for teams
+      that need mobile-browser visual coverage as part of the same Percy
+      program.'
+    when_to_use: "Use this when mobile-browser rendering is part of your release
+      risk and you expect enough screenshot volume that the free tier is
+      operationally too small. It is the better fit than Desktop when device
+      breadth matters more than minimizing subscription cost."
+    tradeoffs: "You get broader visual coverage and a higher included screenshot
+      cap, but at materially higher fixed cost than Desktop. It can be wasteful
+      for teams that only validate desktop layouts or whose mobile needs are
+      narrow."
+    cautions: 'The larger screenshot pool does not remove overage risk; BrowserStack
+      still treats paid-plan usage above included screenshots as overage.
+      Validate that you truly need mobile-browser visual testing before
+      absorbing the jump from "$199 / month" to "$599 / month" billed
+      annually.'
+    links:
+      - "https://www.browserstack.com/pricing"
+      - "https://www.browserstack.com/docs/percy/overview/plans-and-billing"
+      - "https://www.browserstack.com/support/faq/plans-pricing/usage-plans-pri\
+        cing/is-percys-usage-limited/"
+tags:
+  - "testing"
+  - "browserstack"
+  - "percy"
+  - "visual-regression"
+  - "pricing"
+aliases:
+  - "browserstack percy pricing"
+  - "percy free screenshot limit"
+  - "percy paid screenshot cap"
+  - "browserstack percy overage"
+related_cards:
+  - "testing/e2e-testing-framework-playwright-vs-cypress-vs-selenium-2026"
+  - "deployment/preview-environments-cost-governance"
+  - testing/chromatic-free-vs-team-visual-test-quota-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/browserstack
+      name: BrowserStack
+    - type: package
+      id: package/percy-free
+      name: Percy Free
+      category: visual-regression-plan
+    - type: package
+      id: package/percy-desktop
+      name: Percy Desktop
+      category: visual-regression-plan
+    - type: package
+      id: package/percy-desktop-mobile
+      name: Percy Desktop & Mobile
+      category: visual-regression-plan
+    - type: capability
+      id: capability/5000-monthly-screenshots
+      name: 5,000 free monthly screenshots
+    - type: capability
+      id: capability/10000-monthly-screenshots
+      name: 10,000 screenshots per month
+    - type: capability
+      id: capability/25000-monthly-screenshots
+      name: 25,000 screenshots per month
+    - type: capability
+      id: capability/30-day-build-history
+      name: 30 days build history
+    - type: capability
+      id: capability/12-month-build-history
+      name: 12 months build history
+    - type: capability
+      id: capability/annual-billing
+      name: Billed annually
+    - type: capability
+      id: capability/mobile-browser-coverage
+      name: Real mobile devices and mobile browsers
+    - type: capability
+      id: capability/overage-charges
+      name: Overage charges beyond included screenshots
+  edges:
+    - type: locks_via
+      from: package/percy-free
+      to: capability/5000-monthly-screenshots
+    - type: locks_via
+      from: package/percy-free
+      to: capability/30-day-build-history
+    - type: locks_via
+      from: package/percy-desktop
+      to: capability/10000-monthly-screenshots
+    - type: locks_via
+      from: package/percy-desktop
+      to: capability/12-month-build-history
+    - type: locks_via
+      from: package/percy-desktop
+      to: capability/annual-billing
+    - type: locks_via
+      from: package/percy-desktop
+      to: capability/overage-charges
+    - type: locks_via
+      from: package/percy-desktop-mobile
+      to: capability/25000-monthly-screenshots
+    - type: locks_via
+      from: package/percy-desktop-mobile
+      to: capability/12-month-build-history
+    - type: locks_via
+      from: package/percy-desktop-mobile
+      to: capability/annual-billing
+    - type: locks_via
+      from: package/percy-desktop-mobile
+      to: capability/mobile-browser-coverage
+    - type: locks_via
+      from: package/percy-desktop-mobile
+      to: capability/overage-charges

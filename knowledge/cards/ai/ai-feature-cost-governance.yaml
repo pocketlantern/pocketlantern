@@ -1,0 +1,169 @@
+id: ai/ai-feature-cost-governance
+title: "AI Feature Cost Governance: Managing Token Spend in Production"
+problem: Controlling and forecasting LLM API costs when AI features are
+  integrated into a product, where token consumption is unpredictable and output
+  tokens cost 3-10x more than input tokens
+context:
+  - ai
+  - finops
+  - production
+  - saas
+constraints:
+  - cost-sensitive
+  - high-scale
+candidates:
+  - name: Model tiering with request routing
+    summary: Route requests to different model tiers based on task complexity. Use
+      cheap models (Gemini 2.5 Flash at ~$0.15/1M input, GPT-4.1 mini) for
+      simple tasks and premium models (Claude Opus 4.6, GPT-5.4) only for
+      high-value decisions.
+    when_to_use: When your product has a mix of AI tasks with varying complexity —
+      e.g., summarization vs. code generation vs. classification. Best for
+      high-scale + cost-sensitive constraints where 70-80% of requests can be
+      handled by cheaper models.
+    tradeoffs: Can cut costs 5-10x on routine tasks. Requires building a classifier
+      or heuristic to route requests. Quality may vary across tiers, requiring
+      evaluation pipelines.
+    cautions: Model quality differences can cause inconsistent user experience. Test
+      thoroughly before downgrading any user-facing task. Monitor quality
+      metrics per tier, not just cost.
+    links:
+      - https://www.clarifai.com/blog/ai-cost-controls
+      - https://www.statsig.com/perspectives/tokenusagetrackingcontrollingaicosts
+  - name: Token budgets with per-feature quotas
+    summary: Set hard token budgets per feature, per user tier, or per API key.
+      Track consumption at the feature level and enforce limits to prevent
+      runaway costs.
+    when_to_use: When you need predictable monthly AI costs for margin protection.
+      Essential for B2B SaaS where AI is part of COGS and per-customer
+      profitability must be tracked. Best with enterprise + cost-sensitive
+      constraints.
+    tradeoffs: Provides cost predictability and prevents surprise bills. Requires
+      instrumentation to attribute tokens to features/users. May degrade user
+      experience when quotas are hit.
+    cautions: Hard limits can frustrate users — consider soft limits with degraded
+      mode (shorter responses, simpler models) instead of hard cutoffs. Budget
+      allocation needs regular tuning as usage patterns evolve.
+    links:
+      - https://www.drivetrain.ai/post/unit-economics-of-ai-saas-companies-cfo-guide-for-managing-token-based-costs-and-margins
+  - name: Prompt caching and response memoization
+    summary: Use provider-native prompt caching (OpenAI, Anthropic, Google all offer
+      50% off cached prompts) and application-level response caching for
+      repeated queries.
+    when_to_use: When your product has repetitive system prompts, shared context
+      windows, or frequently asked questions. All major providers now offer
+      prompt caching — Anthropic and OpenAI at 50% off, DeepSeek at 90% off for
+      cache hits.
+    tradeoffs: Immediate cost reduction with minimal code changes. Provider caching
+      is automatic for long prompts. Application-level caching requires cache
+      invalidation logic and storage.
+    cautions: Cache hit rates depend on prompt stability — dynamic prompts with
+      user-specific context cache poorly. DeepSeek's aggressive cache discount
+      ($0.028/M for hits) makes it attractive for high-volume batch workloads
+      but availability may be less reliable.
+    links:
+      - https://platform.openai.com/docs/guides/prompt-caching
+      - https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
+  - name: Batch processing with async APIs
+    summary: Use provider batch APIs (50% discount across OpenAI, Anthropic, Google,
+      xAI) for non-real-time workloads. Accept 24-hour turnaround for half-price
+      processing.
+    when_to_use: When your product has background AI tasks — nightly summaries, bulk
+      classification, content generation queues, analytics. Works for any
+      constraint combination where latency tolerance exists.
+    tradeoffs: Guaranteed 50% cost reduction with no quality trade-off. Limited to
+      non-interactive use cases. Requires queue architecture and result storage.
+    cautions: Batch API availability and turnaround times vary by provider. Do not
+      use for user-facing real-time features. Build fallback to synchronous API
+      if batch processing fails or is delayed.
+    links:
+      - https://platform.openai.com/docs/guides/batch
+      - https://docs.anthropic.com/en/docs/build-with-claude/batch-processing
+tags:
+  - ai
+  - cost-optimization
+  - finops
+  - token-management
+  - llm
+aliases:
+  - ai cost management
+  - token cost
+  - llm cost optimization
+  - ai finops
+  - token budget
+related_cards:
+  - backend/ai-sdk-selection
+  - ai/rag-architecture-choices
+  - ai/model-fallback-strategy
+  - ai/gemini-api-free-vs-paid-tier-quota-and-pricing-2026
+  - ai/anthropic-prompt-caching-vs-openai-cached-input-pricing-2026
+  - ai/openai-batch-api-vs-standard-processing-cost-and-latency-2026
+  - ai/openai-image-api-migration-dalle-2-dalle-3-to-gpt-image-2026
+  - ai/gemini-grounding-with-google-search-billing-start-vs-self-managed-search-rag-2026
+  - ai/fine-tuning-vs-api-cost-openai-vs-anthropic-vs-llama-2026
+  - ai/batch-api-pricing-anthropic-vs-openai-bulk-inference-2026
+  - ai/streaming-inference-vs-batch-processing-token-cost-2026
+  - data/snowflake-credit-pricing-and-serverless-cost-shifts-2026
+  - payment/chargebee-usage-based-billing-and-revenue-recognition-packaging-2026
+  - analytics/logrocket-ai-and-session-replay-packaging-2026
+  - design/miro-ai-credits-and-plan-entitlements-2026
+  - web/netlify-legacy-vs-credit-based-plans-2026
+  - compliance/iso-42001-certification-vs-soc2-only-for-ai-vendors-2026
+  - design/figma-ai-shared-credits-vs-seat-included-credits-march-2026
+  - devtools/jetbrains-ai-free-vs-pro-vs-ultimate-bundling-2026
+  - design/miro-free-vs-starter-vs-business-after-2025-ai-credit-packaging-2026
+  - ai/deepgram-stt-vs-assemblyai-pricing-2026
+  - devtools/redocly-vs-mintlify-vs-stoplight-api-docs-pricing-2026
+  - design/mintlify-ai-assistant-tier-overages-vs-upgrade-2026
+  - ai/together-vs-fireworks-vs-groq-serverless-inference-pricing-2026
+  - devtools/gitbook-free-vs-plus-vs-pro-ai-query-limits-2026
+  - ai/cohere-trial-vs-production-rate-limits-2026
+  - devtools/jetbrains-ai-top-up-vs-tier-upgrade-2026
+  - ai/replicate-serverless-gpu-choice-t4-vs-l40s-vs-a100-2026
+updated: 2026-03-15
+review_by: 2026-10-19
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/prompt-caching
+      name: Prompt caching
+      category: cost-optimization
+    - type: capability
+      id: capability/batch-processing
+      name: Batch processing with async APIs
+      category: cost-optimization
+    - type: vendor
+      id: vendor/openai
+      name: OpenAI
+    - type: vendor
+      id: vendor/anthropic
+      name: Anthropic
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: vendor
+      id: vendor/xai
+      name: xAI
+  edges:
+    - type: locks_via
+      from: capability/prompt-caching
+      to: vendor/openai
+    - type: locks_via
+      from: capability/prompt-caching
+      to: vendor/anthropic
+    - type: locks_via
+      from: capability/prompt-caching
+      to: vendor/google
+    - type: locks_via
+      from: capability/batch-processing
+      to: vendor/openai
+    - type: locks_via
+      from: capability/batch-processing
+      to: vendor/anthropic
+    - type: locks_via
+      from: capability/batch-processing
+      to: vendor/google
+    - type: locks_via
+      from: capability/batch-processing
+      to: vendor/xai

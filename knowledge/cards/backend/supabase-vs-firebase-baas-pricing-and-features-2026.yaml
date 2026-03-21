@@ -1,0 +1,171 @@
+id: backend/supabase-vs-firebase-baas-pricing-and-features-2026
+title: "Supabase vs Firebase for Backend-as-a-Service: Pricing Tiers and Feature
+  Parity 2026"
+problem: Choosing between Supabase (Postgres-based open source) and Firebase
+  (Google proprietary) requires comparing 2026 pricing per operation, realtime
+  limits, storage costs, and auth scalability.
+context:
+  - backend
+  - database
+  - saas
+  - realtime
+  - authentication
+  - storage
+constraints:
+  - serverless
+  - cost-sensitive
+  - small-team
+  - low-ops
+  - real-time
+  - high-scale
+  - enterprise
+candidates:
+  - name: Supabase
+    summary: Open-source BaaS built on Postgres offering structured relational
+      database, auth with Row-Level Security, S3-compatible storage, realtime
+      subscriptions via Postgres logical replication, and Deno edge functions —
+      all under predictable tier-based pricing with no per-operation billing.
+    when_to_use: "Best for serverless + small-team + cost-sensitive stacks where
+      predictable monthly billing matters more than per-operation granularity.
+      Choose Supabase when you need SQL, foreign keys, pgvector for AI
+      embeddings, or RLS that ties auth directly to database queries. Strong fit
+      for teams wanting to self-host eventually or avoid Google lock-in. As of
+      2026-03-16: Free ($0, 2 projects, 500 MB DB, 50K MAU, 200 realtime peak
+      connections); Pro ($25/month, 8 GB DB, 100K MAU, 500 realtime peak
+      connections, includes $10 compute credit); Team ($599/month, SOC2 reports,
+      SSO, 28-day log retention); Enterprise (custom, BYO cloud, SLA). Realtime
+      overages on Pro/Team: $10 per 1,000 peak connections, $2.50 per 1M
+      messages. MAU overages: $3.25 per 1,000 users beyond plan quota."
+    tradeoffs: No per-operation billing makes costs predictable as query volume
+      grows. SQL plus RLS plus pgvector gives a unified stack for CRUD, auth,
+      and AI workloads without extra vendors. Fully open source and
+      self-hostable via Docker. Weaker offline-first story than Firebase — no
+      native SDK-level client cache sync. Free tier pauses projects after 7 days
+      of inactivity, making it unsuitable for always-on free-tier deployments.
+      SAML SSO requires Pro tier or above.
+    cautions: Free plan pauses projects after 7 days of inactivity — never rely on
+      it for production. Pro base ($25/month) includes only a Micro compute
+      instance; production apps typically need a larger compute add-on, pushing
+      real costs to $125/month or more. Team at $599/month is required for SOC2
+      compliance reports. Verify current plan limits and overage rates at
+      supabase.com/pricing before committing.
+    links:
+      - https://supabase.com/pricing
+      - https://supabase.com/docs/guides/platform/billing-on-supabase
+      - https://supabase.com/docs/guides/realtime/pricing
+      - https://supabase.com/alternatives/supabase-vs-firebase
+  - name: Firebase
+    summary: Google's proprietary BaaS with Spark (free) and Blaze (pay-as-you-go)
+      tiers, offering Firestore (NoSQL document DB), Realtime Database,
+      Authentication, Cloud Storage, Cloud Functions, and a mature offline-first
+      mobile SDK. As of February 3, 2026, Cloud Storage access requires the
+      Blaze plan.
+    when_to_use: "Best for real-time + mobile-first apps where Firestore's offline
+      SDK caching and native iOS/Android integration outweigh per-operation
+      billing complexity. Strong fit for gaming, IoT, or apps already using
+      Firebase Cloud Messaging, Remote Config, or A/B Testing within the Google
+      Cloud ecosystem. Blaze pay-as-you-go suits very low-traffic projects that
+      stay within free quotas. As of 2026-03-16: Auth free up to 50K MAU
+      email/social; paid tiers at $0.0055/MAU (50K–100K), $0.0046/MAU (100K–1M),
+      $0.0032/MAU (1M–10M); SAML/OIDC via Identity Platform at $0.015/MAU above
+      50 users. Firestore: $0.18 per 100K reads, $0.18 per 100K writes, $0.02
+      per 100K deletes, $0.26/GB stored; daily free quota: 50K reads, 20K
+      writes. Realtime Database: $5/GB stored, $1/GB downloaded; free quota: 1
+      GB storage, 10 GB/month downloads."
+    tradeoffs: Firestore offline sync and mobile SDK maturity are industry-leading
+      for document-centric apps. Pay-as-you-go suits burst workloads at low
+      average volume. No SQL joins — Firestore requires denormalization for
+      relational data. Per-operation billing can spike unpredictably as realtime
+      listeners fan out reads. No pgvector or vector search capability. No
+      self-hosting — fully Google-operated with full vendor lock-in. Phone
+      authentication requires Blaze plan.
+    cautions: Per-operation Firestore billing surprises teams when realtime
+      listeners trigger reads on every document update at scale. Cloud Storage
+      now requires the Blaze plan as of February 3, 2026 — projects on Spark
+      began receiving 402/403 API errors after this date; upgrading to Blaze
+      preserves the free-tier usage quota for legacy *.appspot.com default
+      buckets. SAML/OIDC at $0.015/MAU becomes expensive quickly for B2B SaaS
+      with enterprise SSO users. No self-hosting path — Google can change
+      pricing or deprecate products unilaterally. Verify current rates at
+      firebase.google.com/pricing.
+    links:
+      - https://firebase.google.com/pricing
+      - https://firebase.google.com/docs/projects/billing/firebase-pricing-plans
+      - https://firebase.google.com/docs/storage/faqs-storage-changes-announced-sept-2024
+tags:
+  - backend
+  - baas
+  - supabase
+  - firebase
+  - pricing
+  - realtime
+  - auth
+  - storage
+  - postgres
+  - firestore
+  - comparison
+  - "2026"
+aliases:
+  - supabase vs firebase
+  - firebase alternative 2026
+  - backend as a service comparison
+  - supabase firebase pricing
+  - baas comparison 2026
+  - firebase blaze vs supabase pro
+  - open source firebase alternative
+related_cards:
+  - database/neon-vs-supabase-vs-planetscale-2026
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - database/multi-tenant-database-isolation
+  - serverless/cloudflare-workers-vs-lambda
+  - infra/retool-vs-budibase-vs-appsmith-internal-tools-cost-2026
+  - backend/pocketbase-vs-supabase-open-source-managed-2026
+  - auth/firebase-auth-base-vs-identity-platform-pricing-2026
+  - storage/firebase-storage-blaze-plan-deadline-after-feb-3-2026
+  - game/lootlocker-free-1000-players-vs-paid-scale-2026
+  - database/supabase-compute-add-on-vs-plan-upgrade-2026
+  - database/turso-free-vs-paid-plan-limits-2026
+  - serverless/firebase-storage-spark-vs-blaze-after-feb-2026
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-09-14
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/supabase
+      name: Supabase
+      category: backend
+    - type: vendor
+      id: vendor/firebase
+      name: Firebase
+      category: backend
+    - type: capability
+      id: capability/row-level-security
+      name: Row-Level Security (RLS)
+    - type: capability
+      id: capability/cloud-storage
+      name: Cloud Storage
+  edges:
+    - type: breaking_change_in
+      from: vendor/firebase
+      to: null
+      change: As of February 3, 2026, Cloud Storage access requires the Blaze plan;
+        Spark projects began receiving 402/403 API errors
+      migration_path: Upgrade to Blaze plan; free-tier usage quota preserved for
+        legacy *.appspot.com default buckets
+    - type: locks_via
+      from: vendor/firebase
+      to: capability/cloud-storage
+      surface: No self-hosting; per-operation billing can spike with realtime listener
+        fan-out; Cloud Storage now Blaze-only; Google can change pricing
+        unilaterally
+      severity: high
+    - type: locks_via
+      from: vendor/supabase
+      to: capability/row-level-security
+      surface: auth.uid() and auth.jwt() helper functions in RLS policies are
+        Supabase-specific; must replicate in plain Postgres. GoTrue self-hosted
+        requires own SMTP, OAuth config, JWT signing keys
+      severity: low

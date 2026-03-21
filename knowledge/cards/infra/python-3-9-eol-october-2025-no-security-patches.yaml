@@ -1,0 +1,219 @@
+id: "infra/python-3-9-eol-october-2025-no-security-patches"
+title: "Python 3.9 End of Life October 2025 — Upgrade Target Selection"
+problem: "Python 3.9 reached end-of-life on October 31, 2025 and as of
+  2026-03-18 receives no security patches — not even for critical CVEs. NumPy
+  2.1+ requires Python 3.10+, pandas 3.0+ requires Python 3.11+. Teams must
+  select a supported upgrade target and update CI matrices and Docker base
+  images accordingly."
+context:
+  - "Python projects running on Python 3.9 in production or CI"
+  - "Docker base images pinned to python:3.9"
+  - "Projects depending on NumPy 2.x or pandas 3.x"
+  - "CI pipelines with Python 3.9 in the test matrix"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Python 3.12"
+    summary: "Python 3.12 entered security-only mode in October 2025 with patches
+      guaranteed until October 2028, giving approximately 2.5 years of coverage
+      from 2026-03-18. It is the most widely adopted current-generation release
+      with broad support across cloud runtimes, CI templates, and Docker
+      official images. Key removals versus Python 3.9 are distutils (migrate to
+      setuptools), asynchat, asyncore, and imp. The pyupgrade tool with
+      --py312-plus automates safe syntax modernisation."
+    when_to_use: "Best for enterprise + compliance environments where broad
+      ecosystem maturity and stable toolchain support outweigh having the
+      longest EOL runway. Choose 3.12 when your dependency tree — including
+      NumPy 2.x and pandas 3.x — is already compatible and you want the
+      lowest-risk, most widely documented migration path from 3.9."
+    tradeoffs: "Pros: Broadest Docker and cloud PaaS runtime support; comprehension
+      inlining gives up to 2x speedup on tight loops; ~2.5 years security
+      support remaining; pyupgrade --py312-plus automates syntax migration.
+      Cons: Security-only since October 2025 — no new binary releases or bug
+      fixes; distutils removal breaks any package that imports it directly;
+      shorter support runway than Python 3.13."
+    cautions: "setuptools is no longer pre-installed in virtual environments as of
+      Python 3.12, so Docker images that run pip install without first
+      installing setuptools will fail on packages that require it. Audit your
+      full dependency tree for direct distutils imports before upgrading — they
+      raise ModuleNotFoundError at runtime, not at install time."
+    links:
+      - "https://docs.python.org/3/whatsnew/3.12.html"
+      - "https://devguide.python.org/versions/"
+      - "https://endoflife.date/python"
+      - "https://pypi.org/project/pyupgrade/"
+  - name: "Python 3.13"
+    summary: "Python 3.13 is the current active bugfix release with binary patches
+      through late 2026, then security-only until October 2029 — the longest EOL
+      runway of any stable Python version as of 2026-03-18. It introduces
+      optional free-threaded CPython (PEP 703, disables the GIL) and an
+      experimental JIT compiler. Going from 3.9 to 3.13 carries the largest
+      stdlib removal surface: 19 dead-battery modules removed per PEP 594 (cgi,
+      aifc, telnetlib, nntplib, and 15 others), plus distutils, asynchat, and
+      asyncore removed in 3.12."
+    when_to_use: "Best for greenfield services or teams that can invest in a full
+      migration audit and want to avoid another forced upgrade for 3+ years.
+      Choose 3.13 when targeting pandas 3.0+ and NumPy 2.1+ — both fully support
+      3.13 — and when you want the option to evaluate free-threaded parallelism
+      for CPU-bound workloads."
+    tradeoffs: "Pros: Longest security runway (EOL October 2029, ~3.5 years from
+      2026-03-18); active binary bugfixes through late 2026; optional GIL-free
+      build for true multi-core parallelism; experimental JIT compiler; improved
+      REPL and colour tracebacks. Cons: Largest migration delta from 3.9 — any
+      import of a PEP 594 module raises ModuleNotFoundError immediately;
+      free-threaded mode is experimental and most C-extension libraries have not
+      yet verified thread-safety."
+    cautions: "The free-threaded build is a separate binary (python3.13t) and is not
+      the default CPython — most C-extension packages have not yet been audited
+      for thread safety and may produce race conditions or crashes. All 19
+      removed PEP 594 modules fail at import time with no graceful fallback, so
+      scan the full transitive dependency tree, not just first-party code,
+      before deploying."
+    links:
+      - "https://docs.python.org/3/whatsnew/3.13.html"
+      - "https://devguide.python.org/versions/"
+      - "https://endoflife.date/python"
+      - "https://numpy.org/devdocs/release/2.1.0-notes.html"
+      - "https://pandas.pydata.org/docs/whatsnew/v3.0.0.html"
+  - name: "Python 3.11"
+    summary: "Python 3.11 is in security-only mode with patches until October 2027,
+      leaving approximately 18 months of coverage from 2026-03-18. It is the
+      minimum version required by pandas 3.0+ (which dropped Python 3.9 and
+      3.10) and delivers a 10–60% performance improvement over Python 3.9 via
+      the adaptive specialising interpreter. No stdlib modules are removed
+      versus Python 3.9, making it the zero-import-breakage upgrade path."
+    when_to_use: "Best for small-team or low-ops projects where eliminating
+      import-level breakage risk takes priority over long support longevity.
+      Choose 3.11 as a stepping-stone when your codebase uses modules removed in
+      3.12 or 3.13 — such as distutils, cgi, or telnetlib — that cannot be
+      immediately replaced, but you need to unblock pandas 3.0+ compatibility
+      now."
+    tradeoffs: "Pros: Zero import-level breakage versus Python 3.9 — all stdlib
+      modules present; satisfies pandas 3.0 minimum requirement; 10–60%
+      performance gain; lowest migration effort. Cons: Security-only since
+      October 2023 with only ~18 months of patches remaining; requires a
+      follow-up upgrade to 3.12+ before October 2027; misses 3.12 comprehension
+      optimisations and 3.13 free-threaded mode."
+    cautions: "Python 3.11 silently introduced an integer-string conversion length
+      cap (4300 digits by default) as a CVE-2020-10735 mitigation — code calling
+      int() on large untrusted strings raises ValueError at runtime and
+      pyupgrade will not flag it. With only ~18 months of security support
+      remaining as of 2026-03-18, plan the follow-up 3.12 upgrade now to avoid a
+      second EOL crisis."
+    links:
+      - "https://docs.python.org/3/whatsnew/3.11.html"
+      - "https://devguide.python.org/versions/"
+      - "https://endoflife.date/python"
+      - "https://scientific-python.org/specs/spec-0000/"
+      - "https://pandas.pydata.org/docs/whatsnew/v3.0.0.html"
+tags:
+  - "infra"
+  - "python"
+  - "eol"
+  - "upgrade"
+  - "migration"
+  - "runtime"
+  - "security"
+aliases:
+  - "python 3.9 eol"
+  - "python 3.9 end of life"
+  - "upgrade from python 3.9"
+  - "python eol migration"
+  - "python security patches expired"
+  - "numpy python 3.10 minimum"
+  - "pandas 3.0 python version"
+  - "python version upgrade"
+related_cards:
+  - "infra/python-3-10-eol-october-2026"
+  - runtime/python-3-10-eol-october-2026-upgrade-path
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-10-01"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/python-3-9
+      name: Python 3.9
+      version: "3.9"
+    - type: runtime
+      id: runtime/python-3-10
+      name: Python 3.10
+      version: "3.10"
+    - type: runtime
+      id: runtime/python-3-11
+      name: Python 3.11
+      version: "3.11"
+    - type: runtime
+      id: runtime/python-3-12
+      name: Python 3.12
+      version: "3.12"
+    - type: runtime
+      id: runtime/python-3-13
+      name: Python 3.13
+      version: "3.13"
+    - type: package
+      id: package/numpy-2-1-plus
+      name: NumPy
+      version_range: 2.1+
+    - type: package
+      id: package/pandas-3-0-plus
+      name: pandas
+      version_range: 3.0+
+    - type: capability
+      id: capability/distutils
+      name: distutils
+      category: stdlib_module
+    - type: capability
+      id: capability/asynchat
+      name: asynchat
+      category: stdlib_module
+    - type: capability
+      id: capability/asyncore
+      name: asyncore
+      category: stdlib_module
+    - type: capability
+      id: capability/cgi
+      name: cgi
+      category: stdlib_module
+    - type: capability
+      id: capability/telnetlib
+      name: telnetlib
+      category: stdlib_module
+  edges:
+    - type: eol_date
+      from: runtime/python-3-9
+      to: null
+      date: 2025-10-31
+    - type: requires_version
+      from: package/numpy-2-1-plus
+      to: runtime/python-3-10
+      requirement: Python 3.10+
+    - type: requires_version
+      from: package/pandas-3-0-plus
+      to: runtime/python-3-11
+      requirement: Python 3.11+
+    - type: breaking_change_in
+      from: capability/distutils
+      to: runtime/python-3-12
+      change: removed
+    - type: breaking_change_in
+      from: capability/asynchat
+      to: runtime/python-3-12
+      change: removed
+    - type: breaking_change_in
+      from: capability/asyncore
+      to: runtime/python-3-12
+      change: removed
+    - type: breaking_change_in
+      from: capability/cgi
+      to: runtime/python-3-13
+      change: removed via PEP 594
+    - type: breaking_change_in
+      from: capability/telnetlib
+      to: runtime/python-3-13
+      change: removed via PEP 594

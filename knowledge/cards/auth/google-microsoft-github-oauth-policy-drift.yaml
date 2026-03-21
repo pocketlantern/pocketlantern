@@ -1,0 +1,245 @@
+id: auth/google-microsoft-github-oauth-policy-drift
+title: Handling OAuth Provider Policy Drift Across Google, Microsoft, and GitHub
+problem: Choose an OAuth integration strategy that survives provider-specific
+  policy changes, app review requirements, redirect URI restrictions, refresh
+  token quirks, and branding/compliance updates.
+context:
+  - oauth
+  - oidc
+  - social-login
+  - app-review
+  - redirect-uris
+  - token-lifecycle
+  - provider-policies
+constraints:
+  - enterprise
+  - compliance
+  - microservices
+  - small-team
+  - low-ops
+candidates:
+  - name: Central OAuth Broker With Provider-Specific Connectors
+    summary: As of 2026-03-14, this pattern centralizes redirect handling, token
+      storage, branding assets, and provider change management behind one
+      internal auth service while still keeping separate app registrations per
+      provider. It is designed to isolate policy surfaces that current official
+      docs keep provider-specific, including Google consent-screen verification,
+      Microsoft multitenant publisher setup, and GitHub OAuth App versus GitHub
+      App callback behavior.
+    when_to_use: Best for enterprise + compliance + microservices + high-scale
+      environments where multiple products need Google, Microsoft, and GitHub
+      sign-in but one platform team can own provider operations. It also fits
+      low-ops downstream teams because provider drift is handled once in the
+      broker instead of separately in every app.
+    tradeoffs: This gives the cleanest operational boundary for shared logging,
+      token hygiene, redirect URI policy, and incident response. The cost is
+      more platform engineering up front, another critical dependency in the
+      login path, and an ongoing need to maintain provider-specific
+      registrations and review workflows anyway.
+    cautions: As of 2026-03-14, a broker does not remove provider review or
+      compliance work. Google still requires production branding and scope
+      verification when applicable, Microsoft multitenant apps still run into
+      publisher verification and redirect URI rules, and GitHub still
+      differentiates OAuth Apps from GitHub Apps. Treat the broker as an
+      isolation layer, not a policy bypass.
+    links:
+      - https://developers.google.com/identity/protocols/oauth2/policies
+      - https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification
+      - https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview
+      - https://learn.microsoft.com/en-us/entra/identity-platform/howto-configure-publisher-domain
+      - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
+      - https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/about-the-user-authorization-callback-url
+  - name: Direct Provider-Native Integrations
+    summary: As of 2026-03-14, this path keeps separate Google, Microsoft, and
+      GitHub registrations and code paths so each provider can use its native
+      model without an extra abstraction layer. It aligns closely with current
+      docs because Google requires exact authorized redirects and owned domains,
+      Microsoft only redirects to registered URIs and imposes multitenant
+      publisher-domain behavior, and GitHub distinguishes sharply between OAuth
+      Apps and GitHub Apps.
+    when_to_use: Best for small-team + serverless + low-ops products that only need
+      one or two providers, want minimal infrastructure, and can tolerate
+      separate release and compliance checklists per provider. It is also the
+      better fit when provider UX or scope requirements differ enough that a
+      shared broker would leak abstractions.
+    tradeoffs: This is the lowest-indirection option and usually the easiest to
+      debug because each flow maps directly to provider docs and SDKs. The
+      downside is duplicated token-handling logic, more app-registration sprawl,
+      and more places where branding, consent, callback, or token-lifecycle
+      changes can break sign-in.
+    cautions: As of 2026-03-14, direct integrations need explicit runbooks per
+      provider. Google can require consent-screen resubmission when branding
+      fields change and can invalidate refresh tokens at any time; Microsoft
+      will not redirect to unregistered URIs and can show unverified warnings
+      for qualifying multitenant apps; GitHub OAuth Apps allow only one callback
+      URL and apply redirect_uri host, port, and path matching rules.
+    links:
+      - https://developers.google.com/identity/protocols/oauth2/web-server
+      - https://developers.google.com/identity/protocols/oauth2/policies
+      - https://learn.microsoft.com/en-us/entra/identity-platform/reply-url
+      - https://learn.microsoft.com/en-us/entra/identity-platform/howto-configure-publisher-domain
+      - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
+      - https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+  - name: "Hybrid: GitHub App For GitHub, OAuth Or OIDC Clients For Google And
+      Microsoft"
+    summary: As of 2026-03-14, this hybrid accepts that GitHub's current guidance
+      and capability set differ from generic OAuth App behavior. GitHub Apps
+      support up to 10 callback URLs and expiring user tokens with refresh
+      tokens, while Google and Microsoft continue to use their own OAuth or OIDC
+      app registration, consent, and verification flows.
+    when_to_use: Best for enterprise + small-team combinations where GitHub is
+      operationally important, you need more than one callback environment for
+      GitHub, or you want GitHub's finer-grained app model without forcing the
+      same abstraction onto Google and Microsoft. It is especially strong for
+      monorepo or developer-tooling products that integrate deeply with GitHub
+      but only need standard sign-in from Google and Microsoft.
+    tradeoffs: "This matches GitHub's native app model better than forcing GitHub
+      OAuth Apps to look like other providers, and it reduces GitHub-specific
+      callback pain. The tradeoff is a split architecture: one provider uses an
+      installation-centric app model and optional webhook surface, while the
+      others remain classic OAuth or OIDC client integrations."
+    cautions: As of 2026-03-14, this approach increases product-surface diversity.
+      GitHub App user tokens expire by default unless you opt out, Google still
+      expects owned domains, HTTPS redirects, and verification for applicable
+      production apps, and Microsoft still requires registered redirect URIs and
+      can require publisher work for multitenant trust signals. Budget for
+      separate provisioning, support, and compliance documentation per provider.
+    links:
+      - https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app
+      - https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/about-the-user-authorization-callback-url
+      - https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/refreshing-user-access-tokens
+      - https://developers.google.com/identity/protocols/oauth2/web-server
+      - https://learn.microsoft.com/en-us/entra/identity-platform/reply-url
+      - https://learn.microsoft.com/en-us/entra/identity-platform/publisher-verification-overview
+tags:
+  - auth
+  - oauth
+  - oauth2
+  - oidc
+  - google
+  - microsoft entra id
+  - github
+  - compliance
+  - comparison
+aliases:
+  - social login provider drift
+  - google microsoft github oauth policy changes
+  - oauth app verification drift
+  - redirect uri policy differences
+  - google microsoft github sign in strategy
+  - oauth provider review requirements
+related_cards:
+  - auth/oauth2-flows
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/sso-for-b2b-saas
+  - auth/google-sign-in-fedcm-migration-vs-custom-oauth-2026
+  - auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025
+  - auth/okta-developer-edition-deactivation-to-integrator-free-plan-2025
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: vendor
+      id: vendor/microsoft
+      name: Microsoft
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: protocol
+      id: protocol/oauth
+      name: OAuth
+      standard: OAuth
+    - type: protocol
+      id: protocol/oidc
+      name: OIDC
+      standard: OIDC
+    - type: framework
+      id: framework/github-oauth-app
+      name: GitHub OAuth App
+      category: provider_app_model
+    - type: framework
+      id: framework/github-app
+      name: GitHub App
+      category: provider_app_model
+    - type: capability
+      id: capability/exact-authorized-redirects
+      name: Exact authorized redirects
+      category: redirect_uri_policy
+    - type: capability
+      id: capability/owned-domains
+      name: Owned domains
+      category: compliance
+    - type: capability
+      id: capability/registered-redirect-uris
+      name: Registered redirect URIs
+      category: redirect_uri_policy
+    - type: capability
+      id: capability/publisher-verification
+      name: Publisher verification
+      category: compliance
+    - type: capability
+      id: capability/single-callback-url
+      name: Single callback URL
+      category: redirect_uri_policy
+    - type: capability
+      id: capability/redirect-uri-host-port-path-matching
+      name: redirect_uri host, port, and path matching
+      category: redirect_uri_policy
+    - type: capability
+      id: capability/ten-callback-urls
+      name: Up to 10 callback URLs
+      category: redirect_uri_policy
+    - type: capability
+      id: capability/expiring-user-tokens-with-refresh-tokens
+      name: Expiring user tokens with refresh tokens
+      category: token_lifecycle
+    - type: capability
+      id: capability/production-branding-and-scope-verification
+      name: Production branding and scope verification
+      category: compliance
+  edges:
+    - type: locks_via
+      from: vendor/google
+      to: capability/exact-authorized-redirects
+    - type: locks_via
+      from: vendor/google
+      to: capability/owned-domains
+    - type: locks_via
+      from: vendor/google
+      to: capability/production-branding-and-scope-verification
+    - type: locks_via
+      from: vendor/microsoft
+      to: capability/registered-redirect-uris
+    - type: locks_via
+      from: vendor/microsoft
+      to: capability/publisher-verification
+    - type: locks_via
+      from: framework/github-oauth-app
+      to: capability/single-callback-url
+    - type: locks_via
+      from: framework/github-oauth-app
+      to: capability/redirect-uri-host-port-path-matching
+    - type: locks_via
+      from: framework/github-app
+      to: capability/ten-callback-urls
+    - type: locks_via
+      from: framework/github-app
+      to: capability/expiring-user-tokens-with-refresh-tokens
+    - type: requires_version
+      from: framework/github-oauth-app
+      to: protocol/oauth
+    - type: requires_version
+      from: framework/github-app
+      to: protocol/oauth
+    - type: requires_version
+      from: vendor/google
+      to: protocol/oidc
+    - type: requires_version
+      from: vendor/microsoft
+      to: protocol/oidc

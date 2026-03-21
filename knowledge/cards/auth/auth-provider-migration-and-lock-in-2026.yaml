@@ -1,0 +1,295 @@
+id: auth/auth-provider-migration-and-lock-in-2026
+title: "Auth Provider Migration Pain and Lock-in: Clerk vs Auth0 vs Cognito vs
+  Supabase Auth vs Firebase Auth 2026"
+problem: "When switching auth providers, what actually blocks you — password
+  hashes, MFA state, org data, SDK rewrites — and how reversible is each path?"
+context:
+  - auth
+  - migration
+  - lock-in
+  - vendor-switching
+  - ejection-cost
+constraints:
+  - enterprise
+  - compliance
+candidates:
+  - name: Clerk
+    summary: >
+      Clerk exports user data including password hashes via CSV dashboard export
+      or GetUserList API. No self-hosting option — SaaS-only with deep
+      framework-specific SDK coupling (Next.js, React, Remix, Astro, Vue, Expo).
+    when_to_use: >
+      When your primary concern is preserving password hashes on exit. Clerk is
+      one of the few providers that includes hashed passwords in standard CSV
+      exports across all plans.
+    tradeoffs: >
+      Password hash export: included in CSV dashboard export (all plans). Hashes
+      stored as bcrypt; Clerk transparently upgrades insecure hashes to bcrypt
+      on first sign-in. User export API: GetUserList Backend API endpoint,
+      rate-limited to 100 req/10s (dev) or 1000 req/10s (production). No
+      dedicated bulk export job — you paginate through the list API.
+      Organization data: no dedicated org bulk export. Backend API has endpoints
+      for getOrganization, list members, list roles — but you must script your
+      own export loop. SDK lock-in: Clerk provides pre-built UI components
+      (<SignIn/>, <UserButton/>, <OrganizationSwitcher/>) tightly coupled to
+      Clerk backend. Migrating away requires rewriting all auth UI and replacing
+      ClerkProvider, useUser(), useAuth() hooks across your codebase. Framework
+      coverage: @clerk/nextjs, @clerk/react, @clerk/remix, @clerk/astro,
+      @clerk/vue, @clerk/expo — each has framework-specific middleware and
+      server-side helpers that become dead code on migration. Self-hosting: not
+      available. Clerk is SaaS-only. SLA: 99.99% uptime on Enterprise plan only.
+      Lower tiers have no SLA. Enterprise gets premium support SLA + dedicated
+      Slack channel. Pro/Business get email support only.
+    cautions: >
+      No self-hosting means you cannot run Clerk in your own infrastructure for
+      data sovereignty requirements. Organization/team data export must be
+      scripted via individual API calls — no bulk org export endpoint verified.
+      Migration assistance is only included with Enterprise plan.
+    links:
+      - https://clerk.com/docs/deployments/exporting-users
+      - https://clerk.com/docs/guides/how-clerk-works/system-limits
+      - https://clerk.com/pricing
+
+  - name: Auth0
+    summary: >
+      Auth0 cannot export password hashes via API or dashboard — hash export
+      requires a support ticket and is unavailable on the Free tier.
+      Actions/Rules are Auth0-proprietary serverless code that must be rewritten
+      on exit.
+    when_to_use: >
+      When you need to understand the true cost of leaving Auth0: password hash
+      export requires support intervention, and all custom auth logic in Actions
+      is non-portable.
+    tradeoffs: >
+      Password hash export: NOT available via Management API or User
+      Import/Export Extension. Must file a support ticket. Not available on Free
+      tier. Auth0 cannot guarantee export timing. User export API: POST
+      /api/v2/jobs/users-exports creates async bulk export job. Supports JSON
+      (NDJSON) or CSV (max 30 fields). Download link valid for 60 seconds. Job
+      data auto-deleted after 24 hours. Actions/Rules portability: Auth0 Actions
+      are proprietary serverless functions using Auth0-specific event objects
+      (event.user, event.request, api.access.deny()). Not portable — must be
+      rewritten as middleware or hooks in your new provider. Rules (legacy) also
+      Auth0-specific. Custom domains: Auth0 supports custom domains for
+      Universal Login. On migration, DNS records need updating but domain
+      ownership stays with you — no Auth0 lock-in on the domain itself.
+      Self-hosting: SaaS-only for public cloud. Private Cloud deployment
+      available on Enterprise plans (hosted by Auth0 on dedicated AWS
+      infrastructure), but not true self-hosting. SLA: 99.99% uptime for
+      Enterprise (Public Cloud and Private Cloud). No SLA for Free, Essential,
+      or Professional plans. Rate limits: Enterprise Public Cloud default 100
+      RPS on Authentication API with optional burst to 400 RPS. Management API
+      rate limits vary by plan but specific per-endpoint limits require checking
+      rate limit configuration docs.
+    cautions: >
+      Password hash export via support ticket has no guaranteed timeline and is
+      unavailable on Free tier — this is the single biggest lock-in factor. If
+      you used Auth0 Rules (deprecated) or Actions extensively, budget
+      significant rewrite effort — each Action is autonomous with no
+      cross-Action function reuse. NDJSON export format requires conversion
+      (e.g., via jq) before import into other systems.
+    links:
+      - https://auth0.com/docs/troubleshoot/customer-support/manage-subscriptions/export-data
+      - https://auth0.com/docs/manage-users/user-migration/bulk-user-exports
+      - https://auth0.com/docs/customize/actions/migrate/migrate-from-rules-to-actions
+
+  - name: AWS Cognito
+    summary: >
+      Cognito cannot export password hashes at all — no API, no support ticket,
+      no workaround. Gradual migration via Lambda trigger is the only path that
+      preserves passwords, but it requires users to sign in at least once.
+    when_to_use: >
+      When you need to understand that Cognito is the hardest provider to leave
+      cleanly. Password hashes are permanently locked inside the user pool.
+    tradeoffs: >
+      Password hash export: IMPOSSIBLE. Cognito does not expose password hashes
+      in any form — no API, no support request, no export tool. This is by
+      design and has not changed. User export: ListUsers API at 30 RPS (not
+      adjustable). No built-in bulk export — AWS offers a Step Functions
+      reference architecture (ExportWorkflow) that exports profiles to DynamoDB,
+      but excludes passwords. Gradual migration via Lambda:
+      UserMigration_ForgotPassword and UserMigration_Authentication triggers let
+      you authenticate users against your old system on first sign-in, then
+      Cognito creates their profile. Requires USER_PASSWORD_AUTH or
+      ADMIN_USER_PASSWORD_AUTH flow (not default USER_SRP_AUTH). Passwords are
+      sent to Lambda in plaintext — must sanitize CloudWatch logs. MFA/TOTP
+      state: TOTP secrets are associated via AssociateSoftwareToken API during
+      setup but cannot be exported after registration. No API to retrieve
+      existing TOTP seeds. Users must re-enroll MFA after migration. CSV import:
+      does not import passwords — all CSV-imported users must reset passwords.
+      Self-hosting: N/A — AWS managed service only. SLA: 99.9% monthly uptime
+      per region. Service credits available if missed.
+    cautions: >
+      Cognito has the strongest password lock-in of any major auth provider.
+      Plan for 100% password reset or a prolonged Lambda-based gradual migration
+      that only covers users who actually sign in. ListUsers API pagination cap
+      at 30 RPS with no adjustable quota — large user pools (up to 40M users)
+      will take significant time to enumerate. TOTP MFA seeds cannot be exported
+      — all MFA users must re-enroll after leaving Cognito. Lambda migration
+      trigger sends plaintext passwords to your function — security risk if
+      CloudWatch logging is not properly configured.
+    links:
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-import-using-lambda.html
+      - https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-import-users.html
+      - https://aws.amazon.com/cognito/sla/
+
+  - name: Supabase Auth
+    summary: >
+      Supabase stores password hashes as bcrypt in the auth.users table in your
+      own Postgres database. You can export hashes directly via pg_dump or SQL.
+      GoTrue server is open-source and self-hostable.
+    when_to_use: >
+      When data portability and self-hosting capability are your top priorities.
+      Supabase has the lowest migration lock-in of any provider in this
+      comparison.
+    tradeoffs: >
+      Password hash export: bcrypt hashes stored in
+      auth.users.encrypted_password column in your Postgres database. Exportable
+      via standard pg_dump or SELECT query. No vendor gatekeeping. Direct
+      database access: auth schema is in your Postgres instance. You own the
+      data at the infrastructure level. On Supabase-hosted plans, you have
+      direct database connection access. GoTrue self-hosting: Supabase Auth
+      server is a fork of Netlify's GoTrue (open-source, written in Go). Can be
+      self-hosted via Docker. Configuration via docker-compose.yml environment
+      variables instead of dashboard. RLS policies: Row-Level Security policies
+      are standard PostgreSQL — fully portable to any Postgres deployment. Not
+      Supabase-specific. Policies using auth.uid() helper function would need
+      minor adaptation to reference your JWT claims differently. SDK coupling:
+      supabase-js client is lighter than Clerk's component library — primarily
+      API calls rather than pre-built UI. Migration means replacing
+      supabase.auth.signIn() calls but no UI component rewrite. SLA: 99.9%
+      uptime for Enterprise plan only. Team plan gets support SLA but not uptime
+      SLA. Free and Pro plans have no SLA.
+    cautions: >
+      auth.uid() and auth.jwt() helper functions used in RLS policies are
+      Supabase-specific Postgres functions — you must replicate these if moving
+      to plain Postgres. If using Supabase-hosted, you have database access but
+      Supabase manages the infrastructure. True data sovereignty requires
+      self-hosting. GoTrue self-hosted requires managing your own SMTP, OAuth
+      provider configs, and JWT signing keys.
+    links:
+      - https://supabase.com/docs/guides/auth/password-security
+      - https://supabase.com/docs/guides/auth/architecture
+      - https://supabase.com/docs/reference/self-hosting-auth/introduction
+      - https://supabase.com/sla
+
+  - name: Firebase Auth
+    summary: >
+      Firebase exports user data including password hashes via CLI (firebase
+      auth:export), but hashes use Firebase's modified scrypt algorithm that
+      requires Firebase-specific parameters to verify — not standard bcrypt.
+    when_to_use: >
+      When you need to know that Firebase password hashes are technically
+      exportable but practically difficult to use outside Firebase without
+      re-implementing their custom scrypt variant.
+    tradeoffs: >
+      Password hash export: firebase auth:export CLI exports users with
+      passwordHash and passwordSalt fields. Format is Firebase's modified scrypt
+      (not standard scrypt or bcrypt). Requires signer key, salt separator,
+      rounds, and memory cost parameters from Firebase Console > Authentication
+      > Password Hash Parameters. Hash portability: exported modified-scrypt
+      hashes can theoretically be verified by re-implementing Firebase's scrypt
+      variant, but most auth systems (Auth0, Cognito, Clerk) do not natively
+      support Firebase scrypt import. Supabase and some systems support it as a
+      special case. Export permission: retrieving passwordHash and passwordSalt
+      requires firebaseauth.configs.getHashConfig permission, which the Admin
+      SDK service account does NOT have by default — must be explicitly granted.
+      MFA state: Admin SDK can list MFA enrollments per user (enrolledFactors).
+      TOTP seeds are not directly exported — MFA management API returns
+      enrollment metadata but not the raw TOTP secret. Export format: CLI
+      supports JSON and CSV output. JSON includes all user fields; CSV is
+      flattened. Self-hosting: not available. Firebase Auth is Google Cloud
+      SaaS. Upgrading to Identity Platform adds enterprise features but remains
+      cloud-hosted. SLA: Firebase Auth with Identity Platform upgrade provides
+      99.95% uptime. Standard Firebase Auth has no published SLA.
+    cautions: >
+      Firebase's modified scrypt is NOT standard scrypt — you cannot import
+      these hashes into systems that support standard scrypt without custom
+      code. firebaseauth.configs.getHashConfig permission must be manually
+      granted or password hashes will be empty in exports — easy to miss. MFA
+      TOTP seeds are not exportable — users must re-enroll MFA after migrating
+      away from Firebase. Identity Platform upgrade required for SLA — standard
+      Firebase Auth has no uptime guarantee.
+    links:
+      - https://firebase.google.com/docs/cli/auth
+      - https://firebase.google.com/docs/auth/admin/import-users
+      - https://firebase.google.com/docs/auth/admin/manage-mfa-users
+      - https://firebase.google.com/terms/service-level-agreement
+
+tags:
+  - auth
+  - migration
+  - lock-in
+  - vendor-switching
+  - password-hash
+  - data-portability
+  - ejection-cost
+  - mfa
+  - self-hosting
+aliases:
+  - auth provider migration
+  - auth vendor lock-in
+  - switch auth provider
+  - auth provider ejection cost
+  - password hash export
+  - auth data portability
+  - leave auth0
+  - leave clerk
+  - leave cognito
+  - leave firebase auth
+  - leave supabase auth
+related_cards:
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/firebase-auth-base-vs-identity-platform-pricing-2026
+  - auth/lucia-v3-post-deprecation-replacement-choice-2026
+  - game/discord-social-sdk-free-vs-building-social-features-in-house-2026
+  - devtools/atlassian-data-center-price-rise-vs-cloud-before-march-30-2026
+  - auth/descope-vs-stytch-vs-workos-b2b-auth-pricing-2026
+  - auth/kinde-vs-logto-vs-supertokens-b2b-auth-pricing-2026
+  - messaging/twilio-verify-vs-vonage-verify-vs-sinch-otp-pricing-2026
+  - messaging/bird-vs-twilio-vs-vonage-whatsapp-pricing-2026
+  - auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026
+  - auth/ory-vs-supertokens-vs-fusionauth-pricing-self-host-vs-hosted-2026
+  - auth/workos-authkit-vs-sso-directory-sync-pricing-2026
+status: active
+tier: core
+updated: "2026-03-16"
+review_by: "2026-06-15"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/clerk
+      name: Clerk
+      category: auth
+    - type: vendor
+      id: vendor/auth0
+      name: Auth0
+      category: auth
+    - type: vendor
+      id: vendor/cognito
+      name: AWS Cognito
+      category: auth
+    - type: capability
+      id: capability/auth
+      name: Authentication
+  edges:
+    - type: locks_via
+      from: vendor/clerk
+      to: capability/auth
+      surface: Pre-built UI components (<SignIn/>, <UserButton/>), ClerkProvider,
+        useUser()/useAuth() hooks, framework-specific packages (@clerk/nextjs,
+        @clerk/react, @clerk/remix, @clerk/astro, @clerk/vue, @clerk/expo)
+      severity: medium
+    - type: locks_via
+      from: vendor/auth0
+      to: capability/auth
+      surface: "Actions (proprietary serverless: event.user, event.request,
+        api.access.deny()), Rules (legacy, also proprietary)"
+      severity: medium
+    - type: locks_via
+      from: vendor/cognito
+      to: capability/auth
+      surface: Password hashes permanently locked, TOTP seeds not exportable, requires
+        USER_PASSWORD_AUTH flow for Lambda migration
+      severity: high

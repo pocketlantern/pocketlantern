@@ -1,0 +1,146 @@
+id: ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026
+title: OpenAI Model Alias vs Dated Model Pinning After Retargeting Events
+problem: Decide whether production systems should follow rolling OpenAI model
+  aliases or pin dated snapshots, given alias retargeting risk, regression
+  exposure, and the need to track official changelog and deprecation notices.
+context:
+  - ai
+  - openai
+  - model-selection
+  - production
+  - release-management
+  - model-lifecycle
+constraints:
+  - low-ops
+  - enterprise
+  - small-team
+  - high-scale
+  - compliance
+  - cost-sensitive
+candidates:
+  - name: Pin dated model snapshots in production
+    summary: As of 2026-03-15, OpenAI's model pages state that snapshots let you
+      lock in a specific model version so that performance and behavior remain
+      consistent. This is the safest default for production systems that cannot
+      absorb silent behavior changes when an alias is retargeted.
+    when_to_use: Best for enterprise + compliance or high-scale systems where prompt
+      behavior, eval baselines, and incident response must stay reproducible
+      across deploys. Also fits microservices or small-team production
+      environments where one unexpected alias retarget could create broad
+      regression exposure.
+    tradeoffs: "You gain deterministic rollouts and cleaner debugging because the
+      model identifier is stable until you intentionally change it. The tradeoff
+      is more operational work: you must watch OpenAI's changelog and
+      deprecations pages, test new snapshots yourself, and schedule explicit
+      upgrade windows."
+    cautions: Pinning reduces surprise but does not eliminate lifecycle risk.
+      OpenAI's deprecations page says legacy models and endpoints can be
+      deprecated, and dated or latest-style model identifiers can still receive
+      shutdown dates, so pinned fleets still need active lifecycle monitoring.
+    links:
+      - https://developers.openai.com/api/docs/models/gpt-4.1
+      - https://developers.openai.com/api/docs/models/gpt-5
+      - https://developers.openai.com/api/docs/deprecations
+  - name: Follow rolling aliases for low-ops paths
+    summary: As of 2026-03-15, OpenAI documents aliases alongside dated snapshots on
+      model pages, and the official changelog records slug retargeting events
+      where an alias is moved to a newer dated snapshot while the prior snapshot
+      remains available. This keeps maintenance low and picks up vendor-improved
+      defaults automatically.
+    when_to_use: Best for low-ops + small-team or cost-sensitive systems where fast
+      adoption of OpenAI's current default model behavior matters more than
+      strict reproducibility. Good fit for internal tools, prototypes, or
+      non-critical features where occasional prompt retuning after retargeting
+      is acceptable.
+    tradeoffs: "You avoid manual version promotion and usually benefit from current
+      model improvements without changing code. The tradeoff is regression risk:
+      alias behavior can change between releases, so prompt outputs, latency, or
+      tool-use behavior may shift even when your application code does not."
+    cautions: Do not treat aliases as stable contracts for critical production
+      paths. OpenAI's changelog explicitly shows aliases such as
+      `gpt-4o-mini-transcribe` and `gpt-4o-mini-tts` being retargeted to newer
+      dated snapshots, so teams using aliases need smoke tests, monitoring, and
+      rollback-ready config.
+    links:
+      - https://developers.openai.com/api/docs/models/gpt-4o-mini-transcribe
+      - https://developers.openai.com/api/docs/models/gpt-4o-mini-tts
+      - https://developers.openai.com/api/docs/changelog
+  - name: "Use a hybrid policy: aliases in evaluation, dated snapshots in production"
+    summary: A practical middle ground is to track OpenAI's current alias in staging
+      or canary environments, then promote a dated snapshot into production only
+      after validation. This aligns with OpenAI's documented snapshot model,
+      while acknowledging that the changelog shows aliases can be retargeted
+      over time.
+    when_to_use: Best for enterprise + low-ops or high-scale + compliance teams that
+      want to benefit from new OpenAI releases without exposing all production
+      traffic to same-day alias changes. Also strong for monorepo or
+      microservices organizations that need one controlled promotion point
+      instead of every service discovering alias changes independently.
+    tradeoffs: "This gives you early visibility into OpenAI retargets while
+      preserving production determinism. The cost is extra release machinery:
+      canary traffic, eval suites, promotion criteria, and periodic review of
+      changelog and deprecation notices."
+    cautions: This only works if alias-tracking environments are actually monitored
+      and promotions are deliberate. If no one reviews alias drift, the team
+      gets the overhead of pinning without the benefit of timely upgrades; if no
+      one reviews deprecations, pinned snapshots can still age into forced
+      migrations.
+    links:
+      - https://developers.openai.com/api/docs/changelog
+      - https://developers.openai.com/api/docs/deprecations
+      - https://developers.openai.com/api/docs/models/gpt-4.1
+tags:
+  - ai
+  - openai
+  - model-versioning
+  - model-alias
+  - snapshot-pinning
+  - deprecation
+  - release-management
+  - gpt-4.1
+  - gpt-5
+aliases:
+  - openai alias vs snapshot
+  - openai model pinning
+  - dated model snapshot
+  - rolling model alias
+  - openai model retargeting
+  - openai model versioning
+related_cards:
+  - ai/openai-responses-api-migration-before-assistants-shutdown-2026
+  - ai/model-fallback-strategy
+  - backend/ai-sdk-selection
+  - ai/openai-image-api-migration-dalle-2-dalle-3-to-gpt-image-2026
+  - ai/openai-scale-tier-vs-priority-vs-standard-processing-pricing-2026
+  - ai/openai-realtime-api-beta-to-ga-migration-before-may-7-2026-shutdown
+  - ai/openai-o1-vs-gpt4o-reasoning-cost-benefit-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-15
+sidecar_hard_facts:
+  extracted: 2026-03-15
+  nodes:
+    - type: vendor
+      id: vendor/openai
+      name: OpenAI
+    - type: package
+      id: package/openai-model-alias
+      name: OpenAI model alias
+      category: model_identifier
+    - type: package
+      id: package/openai-dated-model-snapshot
+      name: OpenAI dated model snapshot
+      category: model_identifier
+    - type: capability
+      id: capability/consistent-behavior
+      name: consistent behavior
+  edges:
+    - type: locks_via
+      from: package/openai-dated-model-snapshot
+      to: capability/consistent-behavior
+      vendor: vendor/openai
+    - type: breaking_change_in
+      from: package/openai-model-alias
+      to: package/openai-dated-model-snapshot
+      vendor: vendor/openai

@@ -1,0 +1,145 @@
+id: auth/sso-for-b2b-saas
+title: "SSO for B2B SaaS: SAML vs OIDC and Vendor Selection"
+problem: Adding enterprise SSO to a B2B SaaS product — choosing between SAML and
+  OIDC protocols, and selecting an SSO provider (WorkOS, Auth0, Clerk, or
+  self-built) that balances cost, enterprise readiness, and integration speed
+context:
+  - b2b-saas
+  - enterprise
+  - authentication
+  - sso
+constraints:
+  - enterprise
+  - compliance
+candidates:
+  - name: WorkOS
+    summary: Purpose-built enterprise readiness platform. SSO (SAML + OIDC), SCIM
+      directory sync, audit logs, and admin portal — all priced per connection
+      at $125/month with automatic volume discounts.
+    when_to_use: When enterprise SSO is a must-have for closing deals and you want
+      the fastest path to enterprise-ready auth. Best for teams that need SCIM
+      directory sync alongside SSO. Transparent per-connection pricing ($125/mo,
+      dropping to $65/mo at 51-100 connections) makes cost predictable.
+    tradeoffs: Fastest enterprise SSO integration (days, not weeks). Supports 18+
+      directory sources (Okta, Entra ID, Google Workspace, Workday, etc.).
+      Per-connection pricing can be expensive at scale — 50 customers with SSO +
+      SCIM costs $8,250-$11,250/month.
+    cautions: WorkOS is enterprise auth only — you still need a separate auth
+      solution (or their AuthKit) for basic user auth. Evaluate whether
+      per-connection pricing makes sense vs. flat-rate alternatives as you grow
+      past 30+ enterprise customers.
+    links:
+      - https://workos.com/pricing
+      - https://workos.com/docs/sso
+  - name: Auth0 (Okta)
+    summary: Full-featured identity platform with enterprise SSO through the
+      Organizations feature. SAML and OIDC connections available, plus user
+      management, MFA, and extensibility via Actions.
+    when_to_use: When you need a complete auth platform (not just SSO) and already
+      use or plan to use Auth0 for consumer auth. B2B Essentials plan at
+      $150/month includes 3 SSO connections. Good for enterprise + compliance
+      constraints where a single vendor for all auth is preferred.
+    tradeoffs: "All-in-one auth platform reduces vendor count. Mature ecosystem with
+      extensive documentation. SSO connections are limited per plan — B2B
+      Essentials: 3, Professional ($800/month): 5. Beyond 5 connections requires
+      enterprise pricing via sales. Pricing is opaque at scale."
+    cautions: Auth0 pricing has been a common pain point since the Okta acquisition
+      — expect significant cost increases at renewal. Migration away from Auth0
+      is complex due to proprietary user storage and Action hooks. SCIM support
+      requires higher tiers.
+    links:
+      - https://auth0.com/pricing
+      - https://auth0.com/docs/manage-users/organizations
+  - name: Clerk
+    summary: Developer-friendly auth with B2B SaaS add-ons. Enterprise SSO (SAML +
+      OIDC) available from the Pro tier. Enhanced B2B features (custom roles,
+      domain restrictions) require $100/month add-on.
+    when_to_use: When your team values developer experience and is already using
+      Clerk for consumer auth. Best for small-team constraints where you want a
+      single auth vendor with growing B2B capabilities. Good choice if
+      enterprise SSO is a nice-to-have, not a hard requirement.
+    tradeoffs: Best developer experience in the auth space — drop-in React
+      components, instant setup. B2B features are improving rapidly. Does not
+      natively support SCIM directory sync — a blocker for larger enterprise
+      deals where IT teams require automated provisioning.
+    cautions: No native SCIM means you cannot automate user
+      provisioning/deprovisioning for enterprise customers. Enterprise SSO at
+      scale requires sales engagement for custom pricing. Evaluate whether the
+      SCIM gap blocks your target enterprise segment.
+    links:
+      - https://clerk.com/pricing
+      - https://clerk.com/docs/authentication/enterprise-connections
+  - name: Self-built SSO (SAML/OIDC libraries)
+    summary: Implement SSO directly using open-source libraries (passport-saml,
+      node-saml, openid-client). Full control over the integration with no
+      per-connection fees.
+    when_to_use: When you have deep auth expertise on the team and need to avoid
+      per-connection costs at scale. Only justified when you have 50+ enterprise
+      customers where vendor pricing exceeds engineering cost, or when you have
+      unique requirements that no vendor supports.
+    tradeoffs: Zero per-connection cost at any scale. Full control over the flow.
+      Massive engineering investment — SAML is notoriously complex (XML
+      signatures, metadata exchange, IdP quirks). Each new IdP integration
+      requires testing and maintenance.
+    cautions: SAML implementation is a security-critical surface — bugs can bypass
+      authentication entirely. IdP-specific quirks (Okta, Azure AD, Google
+      Workspace all behave differently) require per-IdP testing. Unless you have
+      a dedicated identity team, vendor solutions are almost always cheaper in
+      total cost.
+    links:
+      - https://github.com/node-saml/node-saml
+      - https://github.com/panva/node-openid-client
+tags:
+  - auth
+  - sso
+  - saml
+  - oidc
+  - b2b-saas
+  - enterprise
+aliases:
+  - single sign-on
+  - enterprise sso
+  - saml integration
+  - sso provider
+related_cards:
+  - auth/clerk-vs-auth0-vs-cognito-2026
+  - auth/google-microsoft-github-oauth-policy-drift
+  - auth/multi-tenant-auth-boundary
+  - auth/api-key-management-for-public-apis
+  - auth/rbac-vs-abac-vs-rebac
+  - backend/stripe-vs-lemonsqueezy-vs-paddle-for-saas
+  - auth/enterprise-passkeys-synced-vs-device-bound-for-b2b-2026
+  - auth/okta-developer-edition-deactivation-to-integrator-free-plan-2025
+  - auth/descope-vs-stytch-vs-workos-b2b-auth-pricing-2026
+  - auth/kinde-vs-logto-vs-supertokens-b2b-auth-pricing-2026
+  - auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026
+  - auth/workos-authkit-vs-sso-directory-sync-pricing-2026
+updated: 2026-03-15
+review_by: 2026-09-21
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/workos
+      name: WorkOS
+      category: auth
+    - type: vendor
+      id: vendor/auth0
+      name: Auth0 (Okta)
+      category: auth
+    - type: capability
+      id: capability/enterprise-sso
+      name: Enterprise SSO (SAML+OIDC)
+  edges:
+    - type: locks_via
+      from: vendor/workos
+      to: capability/enterprise-sso
+      surface: "Per-connection pricing: $125/mo per SSO connection, $65/mo at 51-100;
+        50 customers = $8,250-$11,250/month"
+      severity: medium
+    - type: locks_via
+      from: vendor/auth0
+      to: capability/enterprise-sso
+      surface: "SSO connections limited per plan: B2B Essentials 3, Professional
+        ($800/mo) 5; beyond 5 requires enterprise pricing via sales"
+      severity: high

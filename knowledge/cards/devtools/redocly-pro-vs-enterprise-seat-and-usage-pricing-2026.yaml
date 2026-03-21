@@ -1,0 +1,221 @@
+id: "devtools/redocly-pro-vs-enterprise-seat-and-usage-pricing-2026"
+title: "Redocly Pro vs Enterprise Seat and Usage Pricing 2026"
+problem: "Decide when Redocly's low per-seat entry cost stops being cheaper than
+  enterprise packaging once project count and hosting scale up."
+context:
+  - "api-docs"
+  - "developer-portal"
+  - "openapi"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on Redocly Pro"
+    summary: 'As of 2026-03-20, Redocly''s pricing page lists Pro at "$10 USD per
+      seat/month, billed monthly". The same page shows Pro includes custom
+      domain hosting, "1 Project", and "100 Pages" for the selected Reunite
+      package. The Pro product page positions it for small businesses and says
+      Enterprise is the upgrade path when teams need to expand. This is the
+      cheapest published self-serve entry point if one project and the published
+      page cap are enough.'
+    when_to_use: "Use Pro for a small docs footprint where one hosted project, one
+      custom domain, and up to 100 pages cover the near-term roadmap. The
+      decisive factor is whether your team can stay inside the published Pro
+      limits without needing SSO, remote content, or enterprise hosting."
+    tradeoffs: "Lowest published seat cost and simple self-serve onboarding, but the
+      included capacity is narrow. Once your docs estate expands past one
+      project or you need enterprise controls, Pro stops being the clean fit."
+    cautions: "Do not assume Pro remains cheapest after growth just because the seat
+      price is low. The pricing page does not publish a clear self-serve rate
+      card for extra projects or page overages on this plan, so check official
+      docs before modeling scale-up costs."
+    links:
+      - "https://redocly.com/pricing"
+      - "https://redocly.com/pro"
+  - name: "Upgrade to Redocly Enterprise"
+    summary: 'As of 2026-03-20, Redocly''s pricing page lists Enterprise at "$24 USD
+      per seat/month, billed monthly". The same page says Enterprise includes
+      everything in Pro plus "500 Pages" and SSO, and the Enterprise product
+      page adds remote content, AI-powered search, content-level RBAC, and
+      higher usage limits. Enterprise therefore changes the economics once scale
+      requires more than the base Pro footprint or security requirements move
+      beyond simple public/protected docs. Compared with Pro, the seat delta is
+      published, but some usage-limit details are not fully itemized on the
+      public page.'
+    when_to_use: "Use Enterprise when you expect multi-team growth, need SSO or
+      RBAC, or are likely to exceed Pro's included project/page footprint. The
+      decisive factor is that the first blocker is usually capability or scale
+      packaging, not seat count alone."
+    tradeoffs: "Higher per-seat price than Pro, but materially broader governance
+      and scale features are bundled into the plan. It is the practical upgrade
+      once docs become a shared enterprise surface instead of a single small
+      project."
+    cautions: "The public pricing page says Enterprise has higher usage limits, but
+      it does not fully enumerate every overage rule or breakpoint. Validate any
+      large-project cost model with official sales or billing docs if you expect
+      heavy page growth or complex multi-repo content ingestion."
+    links:
+      - "https://redocly.com/pricing"
+      - "https://redocly.com/enterprise"
+  - name: "Move to Redocly Enterprise Plus for hosting or procurement requirements"
+    summary: "As of 2026-03-20, Redocly's pricing page shows Enterprise Plus as
+      custom-priced and always billed yearly. The pricing page and Enterprise
+      Plus page associate this tier with single-tenant hosting options, premium
+      support, legal reviews, procurement support, pay-by-invoice, and tiered
+      pricing discounts. This means the decision is no longer a simple
+      seat-price comparison once your hosting, residency, or procurement
+      requirements exceed standard self-serve packaging. Enterprise Plus is the
+      published path for organizations that need packaging changes rather than
+      just more seats."
+    when_to_use: "Use Enterprise Plus when single-tenant hosting, invoice-based
+      purchasing, legal review, or premium support is the actual blocker. The
+      decisive factor is that these requirements push you out of the
+      Pro-versus-Enterprise seat math and into custom commercial packaging."
+    tradeoffs: "Can align better with enterprise procurement and hosting
+      constraints, but it removes transparent public pricing and typically
+      implies an annual contract. Cost comparison becomes negotiation-driven
+      instead of spreadsheet-simple."
+    cautions: "As of 2026-03-20, the public site does not publish Enterprise Plus
+      list pricing. If your team needs single-tenant hosting or special
+      procurement terms, treat sales engagement as mandatory rather than
+      optional."
+    links:
+      - "https://redocly.com/pricing"
+      - "https://redocly.com/enterprise-plus"
+tags:
+  - "devtools"
+  - "redocly"
+  - "pricing"
+  - "api-docs"
+aliases:
+  - "redocly pro vs enterprise pricing"
+  - "redocly seat pricing 2026"
+  - "redocly project and page limits"
+related_cards:
+  - "devtools/redocly-vs-mintlify-vs-stoplight-api-docs-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/redocly
+      name: Redocly
+    - type: package
+      id: package/redocly-pro
+      name: Redocly Pro
+    - type: package
+      id: package/redocly-enterprise
+      name: Redocly Enterprise
+    - type: package
+      id: package/redocly-enterprise-plus
+      name: Redocly Enterprise Plus
+    - type: capability
+      id: capability/custom-domain-hosting
+      name: custom domain hosting
+      category: hosting
+    - type: capability
+      id: capability/one-project
+      name: 1 Project
+      category: limit
+    - type: capability
+      id: capability/100-pages
+      name: 100 Pages
+      category: limit
+    - type: capability
+      id: capability/500-pages
+      name: 500 Pages
+      category: limit
+    - type: capability
+      id: capability/sso
+      name: SSO
+      category: security
+    - type: capability
+      id: capability/remote-content
+      name: remote content
+      category: content
+    - type: capability
+      id: capability/ai-powered-search
+      name: AI-powered search
+      category: search
+    - type: capability
+      id: capability/content-level-rbac
+      name: content-level RBAC
+      category: security
+    - type: capability
+      id: capability/higher-usage-limits
+      name: higher usage limits
+      category: limit
+    - type: capability
+      id: capability/single-tenant-hosting
+      name: single-tenant hosting
+      category: hosting
+    - type: capability
+      id: capability/premium-support
+      name: premium support
+      category: support
+    - type: capability
+      id: capability/legal-reviews
+      name: legal reviews
+      category: procurement
+    - type: capability
+      id: capability/procurement-support
+      name: procurement support
+      category: procurement
+    - type: capability
+      id: capability/pay-by-invoice
+      name: pay-by-invoice
+      category: billing
+    - type: capability
+      id: capability/tiered-pricing-discounts
+      name: tiered pricing discounts
+      category: pricing
+  edges:
+    - type: locks_via
+      from: package/redocly-pro
+      to: capability/custom-domain-hosting
+    - type: locks_via
+      from: package/redocly-pro
+      to: capability/one-project
+    - type: locks_via
+      from: package/redocly-pro
+      to: capability/100-pages
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/500-pages
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/sso
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/remote-content
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/ai-powered-search
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/content-level-rbac
+    - type: locks_via
+      from: package/redocly-enterprise
+      to: capability/higher-usage-limits
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/single-tenant-hosting
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/premium-support
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/legal-reviews
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/procurement-support
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/pay-by-invoice
+    - type: locks_via
+      from: package/redocly-enterprise-plus
+      to: capability/tiered-pricing-discounts

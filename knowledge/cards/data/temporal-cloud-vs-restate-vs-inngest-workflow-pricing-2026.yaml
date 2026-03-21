@@ -1,0 +1,226 @@
+id: "data/temporal-cloud-vs-restate-vs-inngest-workflow-pricing-2026"
+title: "Temporal Cloud vs Restate vs Inngest Workflow Pricing and Execution
+  Limits as of 2026-03"
+problem: "Teams adopting durable execution need to compare current pricing
+  units, free-tier caps, and retry/history limits because those details dominate
+  cost at scale."
+context:
+  - "durable-execution"
+  - "workflows"
+  - "serverless"
+  - "event-driven"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+candidates:
+  - name: "Temporal Cloud"
+    summary: "Temporal Cloud is the managed version of Temporal with pricing tied to
+      actions, storage, support plan, and now capacity mode. As of 2026-03-19,
+      Essentials starts at the greater of $100 per month or 5% of usage spend
+      and includes 1M Actions, 1 GB Active Storage, and 40 GB Retained Storage;
+      overages start at $50 per million Actions with tiered discounts down to
+      $25 per million by volume, plus $0.042 per GBh active storage and $0.00105
+      per GBh retained storage. Default on-demand namespace throughput is 500
+      APS and auto-scales from 7-day usage, while Provisioned Capacity entered
+      public preview on 2026-02-23 with 500 APS per TRU and a 360,000 Actions
+      per hour minimum usage floor for each additional TRU. Temporal also has
+      the clearest hard workflow-history guardrails in this group: default
+      namespace retention is 30 days and configurable from 1 to 90 days, while a
+      workflow execution history is capped at 51,200 events or 50 MB."
+    when_to_use: "Use this when you need the most mature workflow engine, explicit
+      event-history constraints, and predictable governance features for
+      enterprise adoption. It is the strongest fit for enterprise plus
+      high-scale teams where cost modeling must include storage growth, APS
+      throttling, and support-plan floors rather than only execution counts."
+    tradeoffs: "Best-documented limits and enterprise controls, but its billing
+      model is the most multi-dimensional and storage-heavy workloads can
+      surprise teams that only estimate per-run costs."
+    cautions: "As of 2026-03-19, Provisioned Capacity is still in public preview.
+      Cost models that ignore retained history, 500 APS default namespace
+      limits, or the 51,200-event history ceiling will under-budget or hit
+      runtime throttling."
+    links:
+      - "https://temporal.io/pricing"
+      - "https://docs.temporal.io/cloud/pricing"
+      - "https://docs.temporal.io/cloud/limits"
+      - "https://docs.temporal.io/cloud/capacity-modes"
+  - name: "Restate Cloud"
+    summary: "Restate Cloud is a managed durable execution platform that prices
+      around durable actions and bundled plan throughput instead of separate
+      storage metering. As of 2026-03-19, the public cloud plans shown on the
+      official cloud page are Free, Starter at $75 per month, Business at $300
+      per month, Premium at $1000 per month, and Enterprise custom; included
+      actions are 50k, 5M, 20M, and 50M respectively, with additional actions
+      listed at $25 per million through Premium. The same pricing page also
+      exposes throughput and retention by tier: Free allows 10 actions per
+      second burstable to 100 with 1-day retention, Starter 50 APS burstable to
+      500 with 3-day retention, Business 200 APS burstable to 1000 with 7-day
+      retention, and Premium 500 APS burstable to 2000 with 30-day retention.
+      Restate Cloud publicly opened sign-up on 2025-09-30, so the current
+      managed offer is no longer closed or invite-only."
+    when_to_use: "Use this when you want durable execution with simpler bundled
+      pricing, strong serverless-platform compatibility, and shorter built-in
+      retention windows that naturally cap storage exposure. It is the most
+      attractive option for cost-sensitive teams that care more about included
+      throughput and plan-bundled actions than about deep per-workflow history
+      controls."
+    tradeoffs: "Pricing is easier to reason about than Temporal and cheaper to start
+      than enterprise Temporal plans, but official public docs expose fewer
+      detailed hard execution-limit numbers beyond plan throughput and
+      retention."
+    cautions: "Retry-policy and deeper execution-limit details should be checked in
+      the official docs before committing to very large or compliance-heavy
+      workloads. The short included retention windows on lower tiers can be a
+      blocker if you expect long-lived debugging or audit history by default."
+    links:
+      - "https://www.restate.dev/cloud/"
+      - "https://www.restate.dev/blog/announcing-restate-cloud-public"
+      - "https://docs.restate.dev/"
+  - name: "Inngest"
+    summary: "Inngest is a durable execution platform centered on executions,
+      events, and step-level retries, with a simpler SaaS model than Temporal
+      and more explicit self-serve limits than Restate. As of 2026-03-19, Hobby
+      is $0 with 50,000 executions per month, 5 concurrent steps, 50 realtime
+      connections, and 3 users; Pro starts at $75 per month with 1M included
+      executions, 100 included concurrent steps, 1000 realtime connections, and
+      15 users. Official overages on Pro are $50 per 1M executions, $0.5 per 1M
+      events, $25 per additional 25 concurrency, $10 per extra user, and $10 per
+      extra worker. Execution limits are also explicit: by default a function or
+      step gets 4 retries after the initial attempt for 5 total attempts,
+      free-plan sleep is capped at 7 days while paid plans can sleep up to a
+      year, step timeout is up to 2 hours, step output is capped at 4 MB,
+      function state at 32 MB, and a function can contain at most 1000 steps."
+    when_to_use: "Use this when you want the easiest self-serve cost model for
+      event-driven app workflows, especially on serverless stacks where
+      step-level retries and per-plan concurrency matter more than long retained
+      histories. It is the strongest fit for small-team plus cost-sensitive
+      adoption where monthly execution counts and concurrency ceilings are the
+      main planning inputs."
+    tradeoffs: "Operationally simple and transparent for app teams, but concurrency,
+      step-count, payload-size, and state-size limits can become the dominant
+      bottlenecks before raw execution pricing does."
+    cautions: "Inngest pricing mixes executions, events, concurrency, workers, and
+      observability retention, so teams should not budget from executions alone.
+      Branch environments are auto-archived after 3 days of no new deploys, and
+      lower-tier trace retention is short."
+    links:
+      - "https://www.inngest.com/pricing"
+      - "https://www.inngest.com/docs/usage-limits/inngest"
+      - "https://www.inngest.com/docs/features/inngest-functions/error-retries/\
+        retries"
+      - "https://www.inngest.com/docs/learn/how-functions-are-executed"
+tags:
+  - "data"
+  - "durable-execution"
+  - "workflow"
+  - "pricing"
+  - "temporal"
+  - "restate"
+  - "inngest"
+aliases:
+  - "temporal cloud pricing vs inngest vs restate"
+  - "durable execution pricing comparison 2026"
+  - "workflow engine execution limits pricing"
+related_cards:
+  - "backend/background-job-processing"
+  - "messaging/exactly-once-vs-at-least-once-tradeoff"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/temporal-cloud
+      name: Temporal Cloud
+    - type: capability
+      id: capability/temporal-cloud/actions-pricing
+      name: Actions pricing
+      category: pricing_unit
+    - type: capability
+      id: capability/temporal-cloud/storage-metering
+      name: Active and retained storage metering
+      category: pricing_unit
+    - type: capability
+      id: capability/temporal-cloud/capacity-mode
+      name: Capacity mode
+      category: throughput_mode
+    - type: vendor
+      id: vendor/restate-cloud
+      name: Restate Cloud
+    - type: capability
+      id: capability/restate-cloud/durable-actions-pricing
+      name: Durable actions pricing
+      category: pricing_unit
+    - type: capability
+      id: capability/restate-cloud/plan-throughput
+      name: Bundled plan throughput
+      category: throughput_limit
+    - type: capability
+      id: capability/restate-cloud/retention-by-tier
+      name: Retention by tier
+      category: retention_limit
+    - type: vendor
+      id: vendor/inngest
+      name: Inngest
+    - type: capability
+      id: capability/inngest/executions-pricing
+      name: Executions pricing
+      category: pricing_unit
+    - type: capability
+      id: capability/inngest/events-pricing
+      name: Events pricing
+      category: pricing_unit
+    - type: capability
+      id: capability/inngest/concurrency-pricing
+      name: Concurrency pricing
+      category: pricing_unit
+    - type: capability
+      id: capability/inngest/step-retries
+      name: Step-level retries
+      category: execution_limit
+  edges:
+    - type: locks_via
+      from: vendor/temporal-cloud
+      to: capability/temporal-cloud/actions-pricing
+      basis: Pricing is tied to actions.
+    - type: locks_via
+      from: vendor/temporal-cloud
+      to: capability/temporal-cloud/storage-metering
+      basis: Pricing includes active and retained storage metering.
+    - type: locks_via
+      from: vendor/temporal-cloud
+      to: capability/temporal-cloud/capacity-mode
+      basis: Pricing now includes capacity mode.
+    - type: locks_via
+      from: vendor/restate-cloud
+      to: capability/restate-cloud/durable-actions-pricing
+      basis: Restate Cloud prices around durable actions.
+    - type: locks_via
+      from: vendor/restate-cloud
+      to: capability/restate-cloud/plan-throughput
+      basis: Plans expose included throughput by tier.
+    - type: locks_via
+      from: vendor/restate-cloud
+      to: capability/restate-cloud/retention-by-tier
+      basis: Plans expose retention windows by tier.
+    - type: locks_via
+      from: vendor/inngest
+      to: capability/inngest/executions-pricing
+      basis: Inngest pricing includes executions.
+    - type: locks_via
+      from: vendor/inngest
+      to: capability/inngest/events-pricing
+      basis: Official Pro overages include events.
+    - type: locks_via
+      from: vendor/inngest
+      to: capability/inngest/concurrency-pricing
+      basis: Official Pro overages include concurrency.
+    - type: locks_via
+      from: vendor/inngest
+      to: capability/inngest/step-retries
+      basis: Inngest centers on step-level retries, with 4 retries after the initial
+        attempt by default.

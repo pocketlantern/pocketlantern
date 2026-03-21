@@ -1,0 +1,232 @@
+id: "desktop/flutter-desktop-minimum-toolchain-and-breaking-upgrades-2026"
+title: "Flutter Desktop 2026: Toolchain Minimums and Breaking Upgrade Requirements"
+problem: "Teams shipping desktop apps with Flutter need to know whether they can
+  move to current stable inside existing CI images, because desktop setup
+  requirements and desktop-specific breaking changes can block upgrades."
+context:
+  - "flutter"
+  - "desktop"
+  - "windows"
+  - "macos"
+  - "linux"
+  - "ci-cd"
+constraints:
+  - "small-team"
+  - "low-ops"
+  - "monorepo"
+candidates:
+  - name: "Upgrade to current Flutter stable only after rebuilding desktop CI images"
+    summary: "As of 2026-03-19, Flutter docs state that the documentation reflects
+      Flutter 3.41.2. The current desktop setup guides require the latest Xcode
+      for macOS builds, the latest Visual Studio plus the Desktop development
+      with C++ workload for Windows builds, and Linux packages including clang,
+      cmake, ninja-build, pkg-config, libgtk-3-dev, and libstdc++-12-dev.
+      Current supported deployment targets are Windows 10 and 11, macOS 10.15
+      through 26, and Ubuntu 20.04 LTS through 24.04 LTS. If your CI images are
+      pinned to older desktop toolchains, the safe path is to refresh images
+      first and then upgrade Flutter."
+    when_to_use: "Use this when desktop shipping is active and CI image maintenance
+      is acceptable. It is the right choice when you want current stable support
+      and can update macOS, Windows, and Linux builders before changing the
+      Flutter SDK version."
+    tradeoffs: "You stay aligned with current stable and supported desktop platform
+      ranges, but you must spend CI time on image refreshes and toolchain
+      validation across three host platforms."
+    cautions: "Do not treat this as a pure Flutter SDK bump. On Linux, the
+      documented prerequisite list now explicitly includes libstdc++-12-dev, and
+      on macOS and Windows the docs call for the latest native IDE toolchains
+      rather than older frozen images."
+    links:
+      - "https://docs.flutter.dev/reference/supported-platforms"
+      - "https://docs.flutter.dev/platform-integration/macos/setup"
+      - "https://docs.flutter.dev/platform-integration/windows/setup"
+      - "https://docs.flutter.dev/platform-integration/linux/setup"
+  - name: "Pin to an older Flutter stable until CI images and legacy desktop
+      scaffolds are remediated"
+    summary: "This path is appropriate when your current CI images cannot yet
+      satisfy Flutter's current desktop setup requirements. As of 2026-03-19,
+      desktop upgrade risk is not only toolchain freshness: Flutter 3.35 merged
+      UI and platform threads by default on macOS and Windows, and Flutter 3.41
+      did the same for Linux. Older Windows projects can also require explicit
+      scaffold migration if the project still contains
+      windows/runner/run_loop.h, and Windows artifact paths changed earlier to
+      include the target architecture directory. Pinning buys time, but it also
+      postpones current-stable adoption."
+    when_to_use: "Use this when CI images are frozen, regulated, or expensive to
+      rebuild, or when you know you still have legacy desktop runner
+      customizations. It is the safer short-term choice if your upgrade would
+      otherwise fail in CI or break packaging assumptions."
+    tradeoffs: "It reduces immediate upgrade churn and avoids mid-release CI
+      failures, but it leaves you behind current stable and creates a larger
+      later migration batch."
+    cautions: "As of 2026-03-19, the thread-merging changes have already occurred in
+      stable releases, so plugin or FFI code that assumed separate platform and
+      UI threads should be regression-tested before unpinning. On Windows, any
+      scripts that expect build\\windows\\runner\\Release must be updated for
+      architecture-specific output paths."
+    links:
+      - "https://docs.flutter.dev/release/breaking-changes/macos-windows-merged\
+        -threads"
+      - "https://docs.flutter.dev/release/breaking-changes/linux-merged-threads"
+      - "https://docs.flutter.dev/release/breaking-changes/windows-run-loop"
+      - "https://docs.flutter.dev/release/breaking-changes/windows-build-archit\
+        ecture"
+tags:
+  - "desktop"
+  - "flutter"
+  - "windows"
+  - "macos"
+  - "linux"
+  - "toolchain"
+  - "ci-cd"
+aliases:
+  - "flutter desktop toolchain minimums"
+  - "flutter desktop ci upgrade blockers"
+  - "flutter windows macos linux build requirements 2026"
+  - "flutter desktop breaking changes"
+  - "flutter desktop upgrade requirements"
+  - "flutter stable desktop upgrade"
+  - "flutter desktop ci image requirements"
+  - "flutter windows build toolchain"
+  - "flutter macos build minimum xcode"
+  - "flutter linux desktop build deps"
+  - "flutter desktop sdk compatibility"
+  - "flutter desktop upgrade blockers"
+  - "fluter desktop toolchain requirements"
+related_cards:
+  - "devtools/github-actions-macos-13-runner-retirement-october-2025"
+  - "infra/github-actions-macos-intel-vs-arm64-runner-migration-after-image-ret\
+    irements-2026"
+  - "desktop/tauri-2-upgrade-plugin-and-api-breaks-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/flutter
+      name: Flutter
+      category: desktop-framework
+    - type: framework
+      id: framework/flutter-3-35
+      name: Flutter 3.35
+      category: desktop-framework-version
+    - type: framework
+      id: framework/flutter-3-41
+      name: Flutter 3.41
+      category: desktop-framework-version
+    - type: framework
+      id: framework/flutter-3-41-2
+      name: Flutter 3.41.2
+      category: desktop-framework-version
+    - type: package
+      id: package/xcode
+      name: Xcode
+      category: native-ide
+    - type: package
+      id: package/visual-studio
+      name: Visual Studio
+      category: native-ide
+    - type: capability
+      id: capability/desktop-development-with-cpp
+      name: Desktop development with C++
+      category: workload
+    - type: package
+      id: package/clang
+      name: clang
+      category: linux-package
+    - type: package
+      id: package/cmake
+      name: cmake
+      category: linux-package
+    - type: package
+      id: package/ninja-build
+      name: ninja-build
+      category: linux-package
+    - type: package
+      id: package/pkg-config
+      name: pkg-config
+      category: linux-package
+    - type: package
+      id: package/libgtk-3-dev
+      name: libgtk-3-dev
+      category: linux-package
+    - type: package
+      id: package/libstdcxx-12-dev
+      name: libstdc++-12-dev
+      category: linux-package
+    - type: capability
+      id: capability/merged-ui-platform-threads-macos-windows
+      name: Merged UI and platform threads on macOS and Windows
+      category: breaking-change
+    - type: capability
+      id: capability/merged-ui-platform-threads-linux
+      name: Merged UI and platform threads on Linux
+      category: breaking-change
+    - type: capability
+      id: capability/windows-run-loop-scaffold-migration
+      name: Windows run_loop scaffold migration
+      category: breaking-change
+    - type: capability
+      id: capability/windows-architecture-specific-artifact-paths
+      name: Windows architecture-specific artifact paths
+      category: breaking-change
+  edges:
+    - type: requires_version
+      from: framework/flutter
+      to: package/xcode
+      version: latest
+      platform: macos
+    - type: requires_version
+      from: framework/flutter
+      to: package/visual-studio
+      version: latest
+      platform: windows
+    - type: requires_version
+      from: framework/flutter
+      to: capability/desktop-development-with-cpp
+      platform: windows
+    - type: requires_version
+      from: framework/flutter
+      to: package/clang
+      platform: linux
+    - type: requires_version
+      from: framework/flutter
+      to: package/cmake
+      platform: linux
+    - type: requires_version
+      from: framework/flutter
+      to: package/ninja-build
+      platform: linux
+    - type: requires_version
+      from: framework/flutter
+      to: package/pkg-config
+      platform: linux
+    - type: requires_version
+      from: framework/flutter
+      to: package/libgtk-3-dev
+      platform: linux
+    - type: requires_version
+      from: framework/flutter
+      to: package/libstdcxx-12-dev
+      platform: linux
+    - type: breaking_change_in
+      from: capability/merged-ui-platform-threads-macos-windows
+      to: framework/flutter-3-35
+      platforms:
+        - macos
+        - windows
+    - type: breaking_change_in
+      from: capability/merged-ui-platform-threads-linux
+      to: framework/flutter-3-41
+      platform: linux
+    - type: breaking_change_in
+      from: capability/windows-run-loop-scaffold-migration
+      to: framework/flutter
+      platform: windows
+    - type: breaking_change_in
+      from: capability/windows-architecture-specific-artifact-paths
+      to: framework/flutter
+      platform: windows

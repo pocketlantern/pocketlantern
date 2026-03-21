@@ -1,0 +1,199 @@
+id: "frontend/react-19-server-components-adoption-strategy-nextjs-15-remix-3"
+title: "React 19 Server Components: Mandatory Adoption for Next.js 15 and React
+  Router v7 (2026)"
+problem: "React 19 is required by Next.js 15 App Router, and its server-first
+  defaults introduce breaking changes: cookies, headers, params, and
+  searchParams are now async; fetch and GET Route Handlers are uncached by
+  default; useFormState is replaced by useActionState; and ssr: false is
+  disallowed in Server Components. Teams migrating from Next.js 14 or Remix 2
+  must refactor for these server-first defaults. Note: 'Remix 3' has dropped
+  React entirely; the React-ecosystem successor to Remix 2 is React Router v7."
+context:
+  - "react"
+  - "nextjs"
+  - "react-router"
+  - "server-components"
+  - "migration"
+  - "frontend"
+  - "server-actions"
+constraints:
+  - "serverless"
+  - "small-team"
+  - "enterprise"
+  - "monorepo"
+  - "low-ops"
+candidates:
+  - name: "Upgrade Next.js 14 → 15 using official codemods with full React 19
+      adoption"
+    summary: "Next.js 15 (stable since October 2024) requires React 19 for the App
+      Router and ships an automated upgrade CLI (`npx @next/codemod@canary
+      upgrade latest`) that handles the majority of breaking changes, including
+      async Request APIs, cache default changes, and hook replacements."
+    when_to_use: "Best for serverless + small-team or serverless + low-ops
+      environments where the App Router is already the primary router and the
+      codebase has good test coverage. Choose this when you want a single
+      well-bounded upgrade event and can validate the changed caching defaults
+      (fetch, GET routes, client router cache) and async API shapes (params,
+      cookies, headers) before shipping."
+    tradeoffs: "The codemod handles mechanical changes — async
+      params/cookies/headers, renaming useFormState to useActionState, removing
+      experimental-edge runtime — but caching semantic changes require manual
+      review: fetch requests and GET Route Handlers are now uncached by default,
+      and client-side Page segments are no longer cached during navigation.
+      Server Actions now use unguessable IDs and dead-code-eliminate unused
+      exports. The Pages Router retains React 18 compatibility in Next.js 15,
+      but mixing App Router (React 19) and Pages Router (React 18) in the same
+      app is officially not recommended."
+    cautions: "Do not skip validating caching behavior after migration: applications
+      that previously relied on Next.js 14 default caching for fetch or GET
+      routes will see increased server load and potentially stale-data
+      regressions. The react-server condition is now enforced in Middleware,
+      which blocks client-only React imports in that layer. next/dynamic with
+      ssr: false is now disallowed in Server Components — convert affected
+      components to Client Components first."
+    links:
+      - "https://nextjs.org/docs/app/guides/upgrading/version-15"
+      - "https://nextjs.org/blog/next-15"
+      - "https://react.dev/blog/2024/12/05/react-19"
+  - name: "Staged Next.js 15 migration using UnsafeUnwrapped compatibility shims"
+    summary: "Next.js 15 provides temporary synchronous-access shims
+      (UnsafeUnwrappedCookies, UnsafeUnwrappedHeaders, UnsafeUnwrappedDraftMode)
+      that emit dev/prod warnings, allowing teams to separate the framework
+      upgrade PR from the async API refactor PRs."
+    when_to_use: "Best for enterprise + monorepo teams with large App Router
+      codebases where running all codemods and async refactors in a single
+      change is high-risk. Use this when you need the Next.js 15 framework
+      upgrade to land on a fast timeline (e.g., to unlock security patches or
+      Turbopack dev stability) while spreading the async API migration across
+      follow-up work items."
+    tradeoffs: "Shims reduce the blast radius of the initial upgrade by keeping
+      synchronous access patterns temporarily working. They do not require
+      codemod output to be correct before merging. The cost is ongoing warning
+      noise in logs and a known technical debt backlog of async conversions that
+      must be cleared before the next major Next.js version removes the shims."
+    cautions: "The UnsafeUnwrapped types are explicitly named 'Unsafe' in the API
+      surface — treat them as temporary scaffolding only. Leaving shims in
+      production indefinitely will mask future deprecation warnings and increase
+      migration cost at the next major. Establish a concrete deadline for
+      clearing all shim usages as part of the upgrade plan."
+    links:
+      - "https://nextjs.org/docs/app/guides/upgrading/version-15"
+  - name: "Migrate Remix 2 → React Router v7 (stable, loaders/actions without RSC)"
+    summary: "Remix 2 features — loaders, actions, route-based data fetching — have
+      been merged directly into React Router v7, which supports React 19. This
+      is the stable, officially maintained migration path for Remix 2 users.
+      React Server Components on React Router are available only as an unstable
+      preview (using Parcel, not Vite) and are not yet production-recommended."
+    when_to_use: "Best for small-team + low-ops or cost-sensitive teams migrating
+      away from Remix 2 who want React 19 support without taking on RSC
+      complexity. React Router v7's loaders and actions already provide a
+      server-first data model without requiring the bundler-level infrastructure
+      that RSC demands. Choose this when Vite is your bundler and you cannot yet
+      adopt Parcel for RSC support."
+    tradeoffs: "React Router v7 gives you the full Remix 2 feature set under a new
+      package name, with React 19 support and no forced RSC adoption. The
+      trade-off is that RSC-specific capabilities (async server components,
+      streaming RSC format, server-only component trees) are not available on
+      the stable path. The RSC preview exists and allows incremental adoption
+      alongside existing client routes, but requires Parcel and carries no
+      stability guarantee."
+    cautions: "Important: 'Remix 3' is a separate, unrelated project that has
+      dropped React entirely and rebuilt on web standards. Teams in the React
+      ecosystem should migrate to React Router v7, not to Remix 3. The React
+      Router team has explicitly stated as of this writing: 'React Router RSC is
+      still unstable, so we currently recommend using the existing Framework
+      Mode or data/declarative APIs.' Do not use the RSC preview in production."
+    links:
+      - "https://remix.run/blog/react-router-and-react-server-components"
+      - "https://remix.run/blog/rsc-preview"
+      - "https://react.dev/blog/2024/12/05/react-19"
+tags:
+  - "frontend"
+  - "react"
+  - "react-19"
+  - "server-components"
+  - "nextjs"
+  - "nextjs-15"
+  - "react-router"
+  - "remix"
+  - "server-actions"
+  - "migration"
+  - "breaking-changes"
+  - "rsc"
+aliases:
+  - "react 19 server components breaking changes"
+  - "nextjs 15 react 19 upgrade"
+  - "remix 2 to react router v7"
+  - "useFormState to useActionState"
+  - "next.js 15 async params"
+  - "react server components mandatory"
+  - "nextjs 15 caching defaults changed"
+  - "remix 3 react router migration"
+  - "react 19 use server directive"
+  - "rsc adoption strategy 2026"
+related_cards:
+  - "frontend/spa-vs-mpa"
+  - "frontend/vite-7-esm-only-and-node-runtime-upgrade-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-08-24"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: framework
+      id: framework/nextjs-15
+      name: Next.js 15
+      version: "15"
+    - type: package
+      id: package/react-19
+      name: React 19
+      version: "19"
+    - type: framework
+      id: framework/react-router-v7
+      name: React Router v7 (formerly Remix)
+      version: "7"
+  edges:
+    - type: requires_version
+      from: framework/nextjs-15
+      to: package/react-19
+      min_version: "19"
+      reason: Next.js 15 App Router requires React 19; Pages Router retains React 18
+        compatibility but mixing is not recommended
+    - type: breaking_change_in
+      from: framework/nextjs-15
+      to: null
+      change: cookies(), headers(), params, searchParams, draftMode() are now async —
+        must be awaited
+      migration_path: run npx @next/codemod@canary upgrade latest; UnsafeUnwrapped
+        shims available as temporary bridge
+    - type: breaking_change_in
+      from: framework/nextjs-15
+      to: null
+      change: fetch requests and GET Route Handlers are uncached by default —
+        previously cached by default in Next.js 14
+      migration_path: review all fetch calls and GET handlers; explicitly opt into
+        caching where needed
+    - type: breaking_change_in
+      from: package/react-19
+      to: null
+      change: useFormState replaced by useActionState
+      migration_path: rename useFormState to useActionState throughout codebase
+    - type: breaking_change_in
+      from: framework/nextjs-15
+      to: null
+      change: "next/dynamic with ssr: false is disallowed in Server Components"
+      migration_path: convert affected components to Client Components first
+    - type: breaking_change_in
+      from: framework/nextjs-15
+      to: null
+      change: react-server condition enforced in Middleware — blocks client-only React
+        imports
+      migration_path: audit Middleware for client-only React imports
+    - type: breaking_change_in
+      from: framework/react-router-v7
+      to: null
+      change: RSC support is preview-only (requires Parcel, not Vite) — not
+        production-recommended as of 2026-03-16
+      migration_path: use React Router v7 framework mode loaders/actions without RSC
+        for production

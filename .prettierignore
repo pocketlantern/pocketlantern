@@ -1,0 +1,6 @@
+dist/
+coverage/
+node_modules/
+pnpm-lock.yaml
+knowledge/
+public-bundle-manifest.json

@@ -1,0 +1,180 @@
+id: frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis
+title: "Next.js 16 Upgrade: Turbopack Default and Async Request APIs"
+problem: Decide when to upgrade to Next.js 16, given Turbopack becoming the
+  default, async request API breaking changes, and official migration guidance.
+context:
+  - frontend
+  - nextjs
+  - react
+  - migration
+  - turbopack
+  - app-router
+constraints:
+  - small-team
+  - enterprise
+  - monorepo
+  - low-ops
+candidates:
+  - name: Upgrade directly to Next.js 16 now
+    summary: As of 2026-03-15, Next.js 16 is the Active LTS release in the official
+      support policy. The official v16 upgrade guide says Turbopack is stable
+      and used by default for `next dev` and `next build`, and synchronous
+      access to request-bound APIs such as `cookies`, `headers`, `draftMode`,
+      `params`, and `searchParams` is fully removed.
+    when_to_use: Best for small-team + low-ops teams, or enterprise + monorepo teams
+      already on 15.x, that want the current supported major with the fewest
+      intermediate steps. Choose this when you have little or no custom webpack
+      behavior, can update App Router code to `await` dynamic APIs, and want to
+      align quickly with the official default toolchain as of 2026-03-15.
+    tradeoffs: This follows the official forward path and lets you use the built-in
+      v16 codemod flow. The migration still touches package scripts, async
+      request access, `next.config` Turbopack settings, `next lint` removal, and
+      possibly `middleware` to `proxy` renames.
+    cautions: The v16 guide says `next build` will fail if a custom `webpack` config
+      is present, to prevent misconfiguration; you must either migrate that
+      setup, build with `--webpack`, or explicitly choose Turbopack and ignore
+      the webpack config. The same guide also raises platform floors to Node.js
+      20.9.0+, TypeScript 5.1.0+, and modern browsers. For `proxy`, the official
+      v16 guide says Edge runtime is not supported there; if you need Edge
+      runtime, keep using `middleware` for now.
+    links:
+      - https://nextjs.org/docs/app/guides/upgrading/version-16
+      - https://nextjs.org/docs/app/api-reference/turbopack
+      - https://nextjs.org/docs/app/guides/upgrading/codemods
+      - https://nextjs.org/support-policy
+  - name: Stage on Next.js 15.5 first, then cut over to 16
+    summary: The official Next.js 15.5 release added `next typegen`, stable typed
+      routes with Turbopack compatibility, and a deprecation warning for `next
+      lint` ahead of its removal in 16. The 15 and 16 upgrade docs together make
+      this a practical prep step for teams that want to separate async API
+      cleanup from the major-version switch.
+    when_to_use: Best for enterprise + monorepo teams, or small-team + monorepo
+      teams with a larger codebase, where you want one release to generate route
+      types and clear async Dynamic API warnings, then a later release to adopt
+      v16 defaults. Choose this when staged validation is more important than
+      getting to v16 in one jump.
+    tradeoffs: This reduces migration risk by splitting the work into preparation
+      and cutover phases. The cost is extra release overhead, temporary
+      dual-version migration planning, and more time before you reach the Active
+      LTS line.
+    cautions: "This is a staging path, not a destination: the support policy lists
+      15.x as Maintenance LTS as of 2026-03-15. Use the official
+      `next-async-request-api` codemod, then manually resolve any
+      `@next-codemod-error` comments that remain, because the docs say the
+      codemod cannot cover all cases."
+    links:
+      - https://nextjs.org/blog/next-15-5
+      - https://nextjs.org/docs/app/guides/upgrading/version-15
+      - https://nextjs.org/docs/messages/sync-dynamic-apis
+      - https://nextjs.org/docs/app/guides/upgrading/codemods
+      - https://nextjs.org/support-policy
+  - name: Defer Next.js 16 temporarily and stay on 15.x while removing Turbopack
+      blockers
+    summary: The official support policy lists 15.x as Maintenance LTS and 16.x as
+      Active LTS as of 2026-03-15. This is a containment option for apps still
+      blocked by Turbopack gaps or webpack-specific behavior that the official
+      Turbopack docs call out, such as unsupported webpack plugins, unsupported
+      `sassOptions.functions`, or Yarn PnP not being planned.
+    when_to_use: Best for enterprise + monorepo teams that depend on custom webpack
+      behavior, unsupported Turbopack features, or edge-case build integrations
+      and cannot absorb build-risk right now. Choose this only when the blocker
+      is concrete and verified, and when a bounded migration backlog exists to
+      remove it.
+    tradeoffs: This minimizes immediate disruption and lets you keep a known build
+      path while you inventory blockers. The downside is remaining on
+      Maintenance LTS, delaying the official default bundler path, and
+      accumulating migration debt that still has to be paid later.
+    cautions: The support policy says Maintenance LTS receives only critical bug
+      fixes and essential security updates. If you move partly to 16 before all
+      blockers are gone, the v16 guide documents `next build --webpack` as the
+      temporary opt-out. Also, the v16 upgrade guide says teams already using
+      experimental PPR on Next.js 15 canaries should stay on their current 15
+      canary until Next.js publishes a migration guide to Cache Components.
+    links:
+      - https://nextjs.org/support-policy
+      - https://nextjs.org/docs/app/guides/upgrading/version-16
+      - https://nextjs.org/docs/app/api-reference/turbopack
+tags:
+  - frontend
+  - nextjs
+  - react
+  - turbopack
+  - migration
+  - app-router
+  - breaking-changes
+  - upgrade
+aliases:
+  - next.js 16 upgrade
+  - next 16 turbopack default
+  - next.js async request api migration
+  - next 15 to 16 upgrade
+  - next.js 16 webpack opt out
+  - next.js proxy middleware rename
+related_cards:
+  - serverless/nextjs-platform-lockin
+  - deployment/node-upgrade-lts-breakage
+  - frontend/sveltekit-2-vs-nextjs-16-vs-remix-fullstack-2026
+  - frontend/static-site-generation-astro-5-vs-nextjs-16-vs-remix-3-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-07-13
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: framework
+      id: framework/nextjs-16
+      name: Next.js 16
+      version: 16.x
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+      current_lts: false
+      eol_date: 2026-04-30
+    - type: package
+      id: package/typescript-5
+      name: TypeScript
+      version: 5.1+
+    - type: package
+      id: package/react-19
+      name: React 19
+      version: 19.x
+  edges:
+    - type: requires_version
+      from: framework/nextjs-16
+      to: runtime/nodejs-20
+      min_version: 20.9.0+
+      reason: ESM and async API support
+    - type: requires_version
+      from: framework/nextjs-16
+      to: package/typescript-5
+      min_version: 5.1.0+
+      reason: type-level features for App Router
+    - type: requires_version
+      from: framework/nextjs-16
+      to: package/react-19
+      min_version: 19.0+
+      reason: RSC and async Server Components
+    - type: breaking_change_in
+      from: framework/nextjs-16
+      to: null
+      change: cookies/headers/params/searchParams/draftMode must be awaited — sync
+        access removed
+      migration_path: next-async-request-api codemod
+    - type: breaking_change_in
+      from: framework/nextjs-16
+      to: null
+      change: next build fails with custom webpack config — must use --webpack flag or
+        remove config
+      migration_path: next build --webpack or migrate to Turbopack
+    - type: breaking_change_in
+      from: framework/nextjs-16
+      to: null
+      change: next lint command removed
+      migration_path: use Biome or ESLint CLI directly
+    - type: breaking_change_in
+      from: framework/nextjs-16
+      to: null
+      change: middleware.ts deprecated — renamed to proxy.ts (Edge runtime not
+        supported in proxy)
+      migration_path: rename file, keep middleware for Edge runtime use cases

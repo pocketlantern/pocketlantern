@@ -1,0 +1,129 @@
+id: database/neon-vs-supabase-vs-planetscale-2026
+title: "Neon vs Supabase vs PlanetScale: Serverless Database Platforms (2026)"
+problem: Choosing a serverless-friendly managed database platform for a B2B SaaS
+  product, considering pricing changes, free tier availability, and platform
+  scope.
+context:
+  - database
+  - serverless
+  - postgres
+  - mysql
+  - saas
+constraints:
+  - serverless
+  - cost-sensitive
+  - small-team
+  - low-ops
+candidates:
+  - name: Neon
+    summary: Serverless Postgres with branching, autoscaling, and built-in
+      connection pooling. Acquired by Databricks early 2026, with 15-25% compute
+      cost reduction following acquisition.
+    when_to_use: When you need pure Postgres with serverless scaling, instant
+      database branching for preview environments, and a generous free tier.
+      Best for serverless + cost-sensitive stacks using Vercel/Cloudflare with
+      edge-compatible drivers.
+    tradeoffs: Pure database — no auth, storage, or realtime built in. Databricks
+      acquisition brings cost reductions but long-term platform direction may
+      shift toward data/analytics.
+    cautions: "Free tier: 100 compute-hours, 0.5 GB storage per project, unlimited
+      branches. Paid starts at $19/month. Verify post-acquisition pricing
+      changes on neon.tech/pricing."
+    links:
+      - https://neon.tech/pricing
+      - https://neon.tech/docs/introduction/serverless
+  - name: Supabase
+    summary: "Full BaaS platform built on Postgres: database + auth + storage +
+      realtime + edge functions. Free tier pauses after one week of inactivity."
+    when_to_use: When you want an all-in-one backend platform (database + auth +
+      storage + realtime) with minimal setup. Best for small-team + low-ops
+      where reducing vendor count matters more than database specialization.
+    tradeoffs: Comprehensive platform reduces integration work, but you're coupled
+      to Supabase's auth, storage, and realtime implementations. Real-world
+      costs for 50K-user SaaS typically land $100-200/month on Pro.
+    cautions: "Free tier: 500 MB database, 1 GB storage, 5 GB bandwidth — pauses
+      after 1 week inactivity. Pro $25/month, Team $599/month. Free tier pause
+      makes it unsuitable for production."
+    links:
+      - https://supabase.com/pricing
+      - https://supabase.com/docs
+  - name: PlanetScale
+    summary: Managed MySQL with Vitess-powered horizontal sharding and non-blocking
+      schema changes. Free tier removed March 2024.
+    when_to_use: When you need MySQL specifically with horizontal scaling and
+      zero-downtime schema migrations. Best for high-scale MySQL workloads where
+      Vitess sharding is genuinely needed.
+    tradeoffs: Strongest schema change workflow (non-blocking, reversible deploy
+      requests), but MySQL-only and no free tier makes it expensive for small
+      projects. Starting price $39/month (Scaler plan).
+    cautions: Free tier removed March 2024 — all projects require paid plan. No
+      Postgres support. Evaluate whether you actually need Vitess-level sharding
+      before committing to MySQL.
+    links:
+      - https://planetscale.com/pricing
+      - https://planetscale.com/docs
+tags:
+  - database
+  - postgres
+  - mysql
+  - neon
+  - supabase
+  - planetscale
+  - comparison
+  - pricing
+aliases:
+  - neon vs supabase
+  - supabase vs planetscale
+  - serverless database
+  - managed postgres
+  - database platform 2026
+related_cards:
+  - database/pgbouncer-vs-rds-proxy-vs-neon-pooling
+  - database/prisma-vs-drizzle-for-edge-and-serverless
+  - backend/supabase-vs-firebase-baas-pricing-and-features-2026
+  - data/metabase-vs-superset-bi-platform-cost-2026
+  - backend/pocketbase-vs-supabase-open-source-managed-2026
+  - backend/realtime-sync-framework-convex-vs-electric-sql-2026
+  - database/turso-free-vs-developer-plan-after-march-31-2025
+  - database/planetscale-private-connections-flat-rate-feb-2026
+  - database/planetscale-single-node-vs-ha-clusters-2026
+  - database/supabase-compute-add-on-vs-plan-upgrade-2026
+  - database/turso-free-vs-paid-plan-limits-2026
+tier: "core"
+status: active
+updated: 2026-03-15
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/neon
+      name: Neon
+    - type: vendor
+      id: vendor/supabase
+      name: Supabase
+    - type: vendor
+      id: vendor/planetscale
+      name: PlanetScale
+    - type: capability
+      id: capability/auth
+      name: auth
+      category: backend_service
+    - type: capability
+      id: capability/storage
+      name: storage
+      category: backend_service
+    - type: capability
+      id: capability/realtime
+      name: realtime
+      category: backend_service
+  edges:
+    - type: locks_via
+      from: vendor/supabase
+      to: capability/auth
+    - type: locks_via
+      from: vendor/supabase
+      to: capability/storage
+    - type: locks_via
+      from: vendor/supabase
+      to: capability/realtime

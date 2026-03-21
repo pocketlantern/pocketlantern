@@ -1,0 +1,170 @@
+id: "payment/chargebee-usage-based-billing-and-revenue-recognition-packaging-2026"
+title: "Chargebee Usage-Based Billing and Revenue Recognition Packaging in 2026"
+problem: "Subscription teams need a current decision card on Chargebee's
+  packaging for usage-based billing, metering, and revenue recognition because
+  edition boundaries and quote-only add-ons materially change total platform
+  cost."
+context:
+  - "saas"
+  - "billing"
+  - "usage-based-pricing"
+  - "finance"
+  - "revenue-recognition"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Chargebee Billing Starter"
+    summary: "As of 2026-03-18, Chargebee Billing Starter is priced at USD 0 per
+      month for the first USD 250K of cumulative billing, then 0.75% on billing
+      after that threshold. The public pricing page explicitly includes flexible
+      billing for usage-based, subscription, and hybrid models, plus custom
+      usage metering and aggregation. Chargebee's current usage docs say a live
+      site supports 50 metered features, up to 100M usage events per month, 1 KB
+      event size, and up to 1,000 usage events per second burst throughput, with
+      higher limits available through sales. This is the lowest-friction
+      published entry point if you mainly need billing and metering rather than
+      finance automation."
+    when_to_use: "Use this when you are cost-sensitive, still early in monetization,
+      and want Chargebee's current usage-based billing stack without committing
+      to a quoted annual base fee. It is the best fit when billing needs are the
+      blocker and revenue recognition can stay outside Chargebee or be evaluated
+      separately."
+    tradeoffs: "Lowest published entry cost and includes usage-based billing
+      primitives, but total cost rises after the cumulative billing threshold
+      and finance automation is not bundled."
+    cautions: "Revenue recognition is a separate Chargebee product with
+      request-pricing only, so Starter is not enough to estimate a full
+      billing-plus-RevRec TCO from the public site alone. Also avoid confusing
+      the newer usage-based billing system with Chargebee's older Metered
+      Billing feature."
+    links:
+      - "https://www.chargebee.com/pricing/"
+      - "https://www.chargebee.com/docs/billing/2.0/usage-based-billing/underst\
+        anding-usages"
+      - "https://www.chargebee.com/docs/billing/2.0/usage-based-billing/setting\
+        -up-usage-based-billing"
+  - name: "Chargebee Billing Performance plus RevRec Performance"
+    summary: "As of 2026-03-18, Chargebee Billing Performance is publicly listed at
+      USD 7,188 per year with annual commitment and billed monthly, for up to
+      USD 100K billing per month. The tier is positioned for subscription,
+      usage-based, and hybrid sales models and adds advanced and consolidated
+      invoices, smart dunning, migration support, and engineering consultation
+      on top of Starter. Chargebee RevRec Performance is sold separately with
+      request pricing and is available only to Chargebee Billing customers; the
+      public site lists automated revenue recognition, point-in-time and
+      over-time recognition, multi-currency support, GAAP revenue reports, and
+      journal entry mapping. This package is the practical mid-tier choice when
+      usage billing is production-grade and finance wants Chargebee-managed
+      RevRec, but the final bundle cost is not fully transparent on the public
+      pricing page."
+    when_to_use: "Use this when you need a published Billing price, expect
+      higher-touch implementation needs, and want Chargebee's standard revenue
+      recognition automation without jumping immediately to enterprise-only
+      finance features. It is the best fit for teams that can tolerate
+      quote-based RevRec pricing but want to avoid a fully custom enterprise
+      billing negotiation."
+    tradeoffs: "More predictable Billing packaging than Enterprise and stronger
+      operational support than Starter, but RevRec remains quote-only and the
+      combined monthly platform cost is not publicly calculable."
+    cautions: "Do not assume RevRec is included in the USD 7,188 per year Billing
+      price; Chargebee lists RevRec separately. If your finance team needs
+      explicit usage-based revenue recognition rules, the public pricing page
+      only names that feature under RevRec Enterprise."
+    links:
+      - "https://www.chargebee.com/pricing/"
+      - "https://www.chargebee.com/docs/billing/2.0/usage-based-billing/underst\
+        anding-usages"
+      - "https://www.chargebee.com/blog/better-billing/"
+  - name: "Chargebee Billing Enterprise plus RevRec Enterprise"
+    summary: "As of 2026-03-18, Chargebee Billing Enterprise is quote-based and
+      positioned for advanced scalability, with multi-entity support, account
+      hierarchy, on-demand discounting, and contract terms. RevRec Enterprise is
+      also quote-based and adds multi-source integration, direct journal-entry
+      posting to GL systems, advanced revenue rules and SSP configurations,
+      expense amortization, and explicit support for usage-based revenue
+      recognition, contract-based revenue recognition, variable consideration,
+      revenue sharing arrangements, and material right. This is the public
+      packaging path Chargebee shows for the most complex finance scenarios tied
+      to variable and usage-driven monetization. It is the only public tier
+      description that explicitly calls out usage-based revenue recognition."
+    when_to_use: "Use this when you are enterprise, compliance-heavy, or operating
+      multiple entities and need finance treatment for complex usage and
+      contract constructs inside the same vendor relationship. It is the
+      decisive option when revenue recognition policy complexity, not just
+      billing mechanics, drives the platform decision."
+    tradeoffs: "Broadest capability set and the clearest fit for complex ASC 606 or
+      IFRS 15 style scenarios, but pricing is entirely sales-led and can
+      materially increase platform cost versus Starter or Billing-only
+      deployments."
+    cautions: "Budgeting requires a sales process because neither Billing Enterprise
+      nor RevRec Enterprise exposes public pricing. If you are evaluating
+      Chargebee in 2026 as a new customer, do not assume the 2025 launch
+      promotion for free high-volume usage events still applies to your
+      contract."
+    links:
+      - "https://www.chargebee.com/pricing/"
+      - "https://www.chargebee.com/docs/billing/2.0/usage-based-billing/underst\
+        anding-usages"
+      - "https://www.chargebee.com/blog/better-billing/"
+tags:
+  - "payment"
+  - "chargebee"
+  - "billing"
+  - "usage-based-pricing"
+  - "revenue-recognition"
+aliases:
+  - "chargebee pricing 2026"
+  - "chargebee usage based billing pricing"
+  - "chargebee revrec pricing"
+  - "chargebee metering limits"
+related_cards:
+  - "backend/saas-billing-platform-stripe-billing-vs-zuora-vs-orb-2026"
+  - "payment/stripe-billing-vs-usage-based-pricing-2026"
+  - "ai/ai-feature-cost-governance"
+  - payment/recurly-usage-based-billing-plan-thresholds-2026
+  - payment/stripe-billing-vs-metronome-after-acquisition-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/chargebee
+      name: Chargebee
+    - type: package
+      id: package/chargebee-billing
+      name: Chargebee Billing
+    - type: package
+      id: package/chargebee-billing-starter
+      name: Chargebee Billing Starter
+    - type: package
+      id: package/chargebee-revrec-performance
+      name: Chargebee RevRec Performance
+    - type: package
+      id: package/chargebee-revrec-enterprise
+      name: Chargebee RevRec Enterprise
+    - type: capability
+      id: capability/usage-based-billing
+      name: Usage-based billing
+    - type: capability
+      id: capability/usage-based-revenue-recognition
+      name: Usage-based revenue recognition
+  edges:
+    - type: locks_via
+      from: package/chargebee-revrec-performance
+      to: package/chargebee-billing
+      condition: available only to Chargebee Billing customers
+    - type: locks_via
+      from: package/chargebee-billing-starter
+      to: capability/usage-based-billing
+      condition: public pricing explicitly includes flexible billing for usage-based,
+        subscription, and hybrid models
+    - type: locks_via
+      from: package/chargebee-revrec-enterprise
+      to: capability/usage-based-revenue-recognition
+      condition: only public tier description that explicitly calls out usage-based
+        revenue recognition

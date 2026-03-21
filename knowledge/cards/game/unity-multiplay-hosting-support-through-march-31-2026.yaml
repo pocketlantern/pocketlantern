@@ -1,0 +1,150 @@
+id: "game/unity-multiplay-hosting-support-through-march-31-2026"
+title: "Unity Multiplay Hosting Continuity Planning Before Support Ends on March
+  31, 2026"
+problem: "Teams on Unity Multiplay Hosting need to choose whether to stay within
+  Unity’s transition path or move providers before support ends on March 31,
+  2026."
+context:
+  - "unity"
+  - "unity-gaming-services"
+  - "multiplay-hosting"
+  - "matchmaker"
+  - "game-server-hosting"
+constraints:
+  - "real-time"
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Stay on Multiplay Hosting through Unity’s transition to Rocket Science
+      Group"
+    summary: "As of 2026-03-19, Unity states that direct support for Multiplay
+      Hosting ends on March 31, 2026, and that it is licensing the Multiplay
+      Game Server Hosting software to Rocket Science Group for continuity.
+      Unity’s currently published Multiplay pricing is still usage-metered and
+      region-specific: the Linux license line item is listed at 0.000000 USD per
+      hour, the Windows license line item is 0.046000 USD per hour, and example
+      core rates include 0.031611 USD per hour in us-central1 and us-east1. New
+      organizations receive an 800 USD startup credit valid for six months. This
+      is the lowest-change path because it preserves the current hosting model
+      while the commercial handoff completes."
+    when_to_use: "Use this when you need the least operational change before March
+      31, 2026, and your main goal is live-service continuity rather than a
+      broader platform exit. The decisive factor is whether you can accept that
+      the post-Unity commercial terms and operating model should be confirmed
+      directly with the transition provider."
+    tradeoffs: "Lowest immediate migration effort and preserves existing Multiplay
+      workflows, but it keeps you on a service Unity is explicitly winding down
+      and leaves post-deadline commercial details outside the currently verified
+      Unity pricing pages."
+    cautions: "Minimum available servers can incur charges even with no traffic, so
+      Unity recommends setting fleet minimum scaling to 0 when cost control
+      matters. Check official docs for post-March-31 pricing, SLA, and contract
+      terms under Rocket Science Group, because Unity’s docs only verify the
+      licensing transition."
+    links:
+      - "https://docs.unity.com/en-us/multiplay-hosting/concepts/pricing-list"
+      - "https://docs.unity.com/en-us/multiplay-hosting/concepts/pricing-billing"
+      - "https://docs.unity.com/en-us/multiplay-hosting/concepts/pricing-free-c\
+        redit"
+      - "https://www.rocketscience.gg/"
+  - name: "Move hosting off Multiplay now, but keep Unity Matchmaker with Cloud Code
+      integration"
+    summary: "As of 2026-03-19, Unity Matchmaker still supports Multiplay Hosting
+      only until the deprecation date of March 31, 2026, but Unity also states
+      that Matchmaker will continue to work with Relay and Distributed Authority
+      after Multiplay Hosting is deprecated. Unity documents a provider-agnostic
+      Cloud Code path for server allocation and publishes migration examples for
+      PlayFab, GameLift, Agones, and Multiplay. Matchmaker pool configuration
+      supports a Cloud Code hosting type, while the old Multiplay hosting type
+      is explicitly described as backward compatibility mode. This is the
+      best-fit path if you want to exit Unity-hosted game servers without
+      replacing the rest of your Unity multiplayer control plane immediately."
+    when_to_use: "Use this when you want to de-risk the March 31, 2026 hosting
+      deadline but keep Unity Matchmaker and related services in place. The
+      decisive factor is whether your team can implement and validate the Cloud
+      Code allocation and polling flow before the cutoff."
+    tradeoffs: "Reduces dependence on a deprecated hosting backend and gives you
+      broader provider choice, but it adds migration work in Cloud Code,
+      deployment, and operational testing. Provider pricing is not verified in
+      Unity’s docs, so compare target-host costs in the provider’s official
+      pricing pages separately."
+    cautions: "If you do not want to update the game client immediately, Unity
+      documents a backward-compatible mode where Matchmaker uses a Cloud Code
+      module for allocation but still returns Multiplay-style assignments. The
+      Cloud Code route requires mandatory queue configuration fields for module
+      name, allocate function name, and poll function name. If you are on Unreal
+      Engine, Unity documents that the old Multiplay Hosting SDK for Unreal is
+      now incompatible because it is included in the UGS SDK, and the old
+      package should be removed."
+    links:
+      - "https://docs.unity.com/en-us/matchmaker/multiplay-hosting-migration"
+      - "https://docs.unity.com/ugs/en-us/manual/matchmaker/manual/support"
+      - "https://docs.unity.com/en-us/multiplay-hosting-unreal"
+tags:
+  - "game"
+  - "unity"
+  - "multiplay-hosting"
+  - "matchmaker"
+  - "migration"
+  - "pricing"
+aliases:
+  - "unity multiplay hosting end of support"
+  - "unity multiplay march 31 2026"
+  - "unity matchmaker multiplay migration"
+related_cards:
+  - "game/unity-devops-pricing-reset-march-1-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - "_archived/migration-strategy"
+  - game/playfab-dasv4-recommended-sku-migration-2026
+  - game/edgegap-vcpu-price-change-january-2025-still-worth-it-in-2026
+  - game/edgegap-private-fleets-vs-legacy-smart-fleets-before-march-1-2026
+  - game/unity-pro-vs-enterprise-after-runtime-fee-cancellation-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/unity
+      name: Unity
+    - type: vendor
+      id: vendor/rocket-science-group
+      name: Rocket Science Group
+    - type: framework
+      id: framework/unity-multiplay-hosting
+      name: Unity Multiplay Hosting
+    - type: framework
+      id: framework/unity-matchmaker
+      name: Unity Matchmaker
+    - type: framework
+      id: framework/unity-cloud-code
+      name: Cloud Code
+    - type: engine
+      id: engine/unreal-engine
+      name: Unreal Engine
+    - type: package
+      id: package/multiplay-hosting-sdk-for-unreal
+      name: Multiplay Hosting SDK for Unreal
+    - type: package
+      id: package/ugs-sdk
+      name: UGS SDK
+  edges:
+    - type: eol_date
+      from: framework/unity-multiplay-hosting
+      to: null
+      date: 2026-03-31
+      label: direct support ends
+    - type: breaking_change_in
+      from: package/multiplay-hosting-sdk-for-unreal
+      to: engine/unreal-engine
+      label: old SDK is now incompatible
+    - type: locks_via
+      from: framework/unity-matchmaker
+      to: framework/unity-cloud-code
+      label: provider-agnostic server allocation path
+    - type: breaking_change_in
+      from: package/multiplay-hosting-sdk-for-unreal
+      to: package/ugs-sdk
+      label: old package should be removed because it is included in the UGS SDK

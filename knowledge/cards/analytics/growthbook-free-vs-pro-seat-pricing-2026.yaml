@@ -1,0 +1,196 @@
+id: "analytics/growthbook-free-vs-pro-seat-pricing-2026"
+title: "GrowthBook Free vs Pro Seat Pricing in 2026"
+problem: "Decide whether GrowthBook's free warehouse-native tier is enough or
+  whether the $40 per user per month Pro tier is justified for experimentation
+  features."
+context:
+  - "analytics"
+  - "experimentation"
+  - "feature-flags"
+  - "warehouse-native"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on GrowthBook Starter (Free)"
+    summary: "As of 2026-03-19, GrowthBook Cloud Starter is free with no credit card
+      required. The official pricing page lists up to 3 GrowthBook users,
+      unlimited feature flags, unlimited experiments, warehouse-native support,
+      and unlimited traffic (MAU/MTU). The plan comparison also shows 1M CDN
+      requests per month, 5GB CDN bandwidth per month, and a managed warehouse
+      option with up to 1M events included. Starter is the lowest-cost way to
+      run warehouse-native experimentation if your team can live without
+      Pro-only analysis and workflow features."
+    when_to_use: "Use this when you are a small, cost-sensitive team and the main
+      requirement is warehouse-native flags and experiments rather than advanced
+      experiment methodology. It is the right default if 3 seats is enough and
+      you do not need features like CUPED, sequential testing, sticky bucketing,
+      multi-arm bandits, the visual editor, or advanced permissioning."
+    tradeoffs: "Zero seat cost and unlimited experiments are strong advantages. The
+      tradeoff is that the free plan omits the main statistical, rollout,
+      editing, and governance features that GrowthBook uses to justify Pro."
+    cautions: "Do not assume free means unlimited hosted delivery without limits:
+      the pricing page lists CDN and bandwidth allowances plus a fair use
+      policy. If you need more than 3 users or want managed-warehouse scale
+      beyond the included event allowance, check official docs for current
+      limits and overages."
+    links:
+      - "https://www.growthbook.io/pricing"
+      - "https://docs.growthbook.io/"
+      - "https://www.growthbook.io/"
+  - name: "Upgrade to GrowthBook Pro"
+    summary: "As of 2026-03-19, GrowthBook Cloud Pro is listed at $40 per user per
+      month. The pricing page positions Pro for small and mid-sized teams and
+      adds advanced statistics, the visual A/B test editor, CUPED, sequential
+      testing, sticky bucketing, multi-arm bandits, safe rollouts, advanced
+      permissioning, a power calculator, and premium support. The plan
+      comparison also lists 2M CDN requests per month included, 20GB CDN
+      bandwidth per month included, and 2M managed-warehouse events per month
+      included before overages. Pro is therefore a seat-priced upgrade for
+      better experiment rigor, easier test setup, and stronger collaboration
+      controls rather than for more tested traffic, since traffic remains
+      unlimited."
+    when_to_use: "Use this when your blocker is experiment quality or team workflow
+      rather than raw traffic capacity. Pro is justified if multiple
+      stakeholders need access and you specifically need advanced statistical
+      methods, the visual editor, safer rollout controls, or permissioning that
+      Starter does not include."
+    tradeoffs: "You get materially better experimentation tooling and support, but
+      the pricing scales with seats instead of experiment volume. For broader
+      org adoption, seat cost can compound faster than the free plan, and hosted
+      overages can still apply on top of seat spend."
+    cautions: "Treat the $40 per user per month price as only the base software
+      cost. The pricing page also lists usage charges after included amounts for
+      CDN requests, CDN bandwidth, and managed-warehouse events, so check the
+      official pricing page if your delivery or event volume is high."
+    links:
+      - "https://www.growthbook.io/pricing"
+      - "https://docs.growthbook.io/"
+      - "https://www.growthbook.io/"
+tags:
+  - "analytics"
+  - "growthbook"
+  - "experimentation"
+  - "pricing"
+aliases:
+  - "growthbook pricing"
+  - "growthbook free vs pro"
+  - "growthbook seat pricing"
+related_cards:
+  - "infra/feature-flag-platform-launchDarkly-vs-statsig-vs-growthbook-2026"
+  - "deployment/feature-flags-vendor-choice"
+  - analytics/statsig-vs-split-vs-configcat-feature-experiment-pricing-2026
+  - analytics/pendo-vs-userpilot-vs-appcues-seat-pricing-2026
+  - analytics/simple-analytics-free-vs-simple-vs-team-retention-2026
+  - analytics/statsig-cloud-vs-warehouse-native-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/growthbook
+      name: GrowthBook
+    - type: package
+      id: package/growthbook-cloud-starter
+      name: GrowthBook Cloud Starter
+      category: plan
+    - type: package
+      id: package/growthbook-cloud-pro
+      name: GrowthBook Cloud Pro
+      category: plan
+    - type: capability
+      id: capability/warehouse-native-support
+      name: warehouse-native support
+      category: experimentation
+    - type: capability
+      id: capability/unlimited-feature-flags
+      name: unlimited feature flags
+      category: feature-flags
+    - type: capability
+      id: capability/unlimited-experiments
+      name: unlimited experiments
+      category: experimentation
+    - type: capability
+      id: capability/advanced-statistics
+      name: advanced statistics
+      category: experimentation
+    - type: capability
+      id: capability/visual-ab-test-editor
+      name: visual A/B test editor
+      category: experimentation
+    - type: capability
+      id: capability/cuped
+      name: CUPED
+      category: experimentation
+    - type: capability
+      id: capability/sequential-testing
+      name: sequential testing
+      category: experimentation
+    - type: capability
+      id: capability/sticky-bucketing
+      name: sticky bucketing
+      category: feature-flags
+    - type: capability
+      id: capability/multi-arm-bandits
+      name: multi-arm bandits
+      category: experimentation
+    - type: capability
+      id: capability/safe-rollouts
+      name: safe rollouts
+      category: feature-flags
+    - type: capability
+      id: capability/advanced-permissioning
+      name: advanced permissioning
+      category: governance
+    - type: capability
+      id: capability/power-calculator
+      name: power calculator
+      category: experimentation
+    - type: capability
+      id: capability/premium-support
+      name: premium support
+      category: support
+  edges:
+    - type: requires_version
+      from: capability/warehouse-native-support
+      to: package/growthbook-cloud-starter
+    - type: requires_version
+      from: capability/unlimited-feature-flags
+      to: package/growthbook-cloud-starter
+    - type: requires_version
+      from: capability/unlimited-experiments
+      to: package/growthbook-cloud-starter
+    - type: requires_version
+      from: capability/advanced-statistics
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/visual-ab-test-editor
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/cuped
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/sequential-testing
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/sticky-bucketing
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/multi-arm-bandits
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/safe-rollouts
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/advanced-permissioning
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/power-calculator
+      to: package/growthbook-cloud-pro
+    - type: requires_version
+      from: capability/premium-support
+      to: package/growthbook-cloud-pro

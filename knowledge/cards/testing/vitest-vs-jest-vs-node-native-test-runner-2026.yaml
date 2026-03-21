@@ -1,0 +1,212 @@
+id: "testing/vitest-vs-jest-vs-node-native-test-runner-2026"
+title: "Vitest vs Jest vs Node.js --test Native Runner After Stabilization 2026"
+problem: "Node.js 20+ native test runner reached Stability: 2 (Stable) as of
+  v20.0.0. As of 2026-03-18, teams starting new JavaScript/TypeScript projects
+  must choose between node:test (zero dependencies, built-in), Jest 30 (mature
+  ecosystem, required for React Native), or Vitest 4 (Vite-integrated, stable
+  Browser Mode). The decision turns on Vite adoption, React Native requirement,
+  and tolerance for external dependencies."
+context:
+  - "javascript"
+  - "typescript"
+  - "testing"
+  - "nodejs"
+  - "vite"
+constraints:
+  - "small-team"
+  - "monorepo"
+  - "enterprise"
+  - "cost-sensitive"
+  - "low-ops"
+candidates:
+  - name: "Vitest 4"
+    summary: "Vitest 4 (current: v4.1.0) is a Vite-powered test runner requiring
+      Vite >=6.0 and Node >=20. It ships with first-class TypeScript and ESM
+      support, a Jest-compatible API, and stable Browser Mode with visual
+      regression testing (toMatchScreenshot) as of v4.0 (October 2025). The
+      single most important differentiator is that it shares Vite's module
+      pipeline: zero duplicate config, instant HMR-driven watch mode, and native
+      ESM without shims."
+    when_to_use: "Best for small-team + monorepo projects already using Vite
+      (SvelteKit, Nuxt, Astro, React with Vite) where eliminating a second build
+      pipeline is the decisive factor. Choose Vitest when native ESM support,
+      fast watch mode, or in-browser component testing are hard requirements —
+      it is the recommended default for new Vite-based projects as of
+      2026-03-18."
+    tradeoffs: "Pros: native ESM and top-level await just work, watch mode re-runs
+      in milliseconds via module graph, Jest API compatibility eases migration,
+      stable Browser Mode for component testing in real browsers,
+      toMatchScreenshot for visual regression. Cons: hard dependency on Vite
+      (non-Vite projects add a build tool purely for tests), v4.0 Browser Mode
+      requires separate provider packages (@vitest/browser-playwright etc.),
+      requires Node >=20 and Vite >=6."
+    cautions: "Browser Mode in Vitest 4 requires installing a separate provider
+      package (@vitest/browser-playwright, @vitest/browser-webdriverio, or
+      @vitest/browser-preview) — the monolithic @vitest/browser package no
+      longer works, silently breaking upgrades from v3. Vitest cannot run React
+      Native tests; teams with a React Native target must keep Jest alongside."
+    links:
+      - "https://vitest.dev/guide/"
+      - "https://vitest.dev/guide/comparisons.html"
+      - "https://vitest.dev/blog/vitest-4"
+  - name: "Jest 30"
+    summary: "Jest 30 (released June 2025) is the mature, widely-adopted JavaScript
+      test runner requiring Node >=18 and TypeScript >=5.4. It is the only
+      officially supported test runner for React Native and ships with built-in
+      jsdom (upgraded to v26), snapshot testing, and extensive mock APIs.
+      Real-world benchmarks on one large TypeScript app showed 37% faster runs
+      and 77% lower memory usage compared to Jest 29, via the new
+      unrs-resolver."
+    when_to_use: "Best for enterprise + React Native projects where Jest is mandated
+      or the only viable option — no other runner is officially supported by
+      React Native. Also prefer Jest for large existing Jest codebases where
+      migration cost to Vitest exceeds benefit, particularly when ESM support is
+      not a blocker."
+    tradeoffs: "Pros: broadest ecosystem (jest-dom, testing-library, react-native
+      presets), only officially supported runner for React Native, stable and
+      battle-tested for CJS-heavy projects, codemods available for v29→v30
+      migration. Cons: CJS-first architecture with ESM as a second-class
+      citizen, heavier cold-start vs Vitest, watch mode relies on git diff
+      heuristics rather than a module graph, removed matcher aliases require a
+      codemod on upgrade."
+    cautions: "Jest 30 drops support for Node 14, 16, 19, and 21 — projects on Node
+      16 must upgrade Node before adopting Jest 30. The jsdom v21→v26 upgrade
+      can surface subtle DOM behavior regressions in snapshot or
+      DOM-manipulation tests; audit snapshots after upgrading. Jest packages are
+      now single-file bundles, breaking any internal tooling that imported Jest
+      internals via deep require paths."
+    links:
+      - "https://jestjs.io/docs/getting-started"
+      - "https://jestjs.io/blog/2025/06/04/jest-30"
+      - "https://jestjs.io/docs/upgrading-to-jest30"
+      - "https://jestjs.io/docs/tutorial-react-native"
+  - name: "Node.js native test runner (node:test)"
+    summary: "The node:test module is built into Node.js with Stability: 2 (Stable)
+      since v20.0.0, requiring zero additional npm dependencies. It supports
+      subtests, describe/it syntax, hooks, function and module mocking,
+      MockTimers, snapshot testing (v22.3.0+), watch mode, test sharding, and
+      parallel execution. Code coverage via --experimental-test-coverage remains
+      Stability: 1 (Experimental) as of Node.js v25.8.1."
+    when_to_use: "Best for low-ops + cost-sensitive projects where minimizing
+      dependency footprint is a hard requirement — servers, CLIs, or published
+      libraries that have no Vite pipeline and no existing third-party test
+      framework investment. The single most decisive factor is whether the team
+      can accept experimental-grade code coverage and a thinner ecosystem of
+      matchers and reporters."
+    tradeoffs: "Pros: zero npm dependencies (ships with Node.js), no Vite or Babel
+      required, stable API under Node.js LTS guarantees, first-class ESM
+      support. Cons: code coverage is still Stability: 1 Experimental
+      (--experimental-test-coverage), no built-in TypeScript transformation
+      (requires --import tsx or ts-node/esm loader flag), no browser-mode or
+      visual regression support, smaller ecosystem of matchers and framework
+      integrations than Jest or Vitest."
+    cautions: "There is no built-in TypeScript transformation — you must pass
+      --import tsx or a similar loader via NODE_OPTIONS or the CLI, which is
+      easy to omit in CI scripts and causes test files to be skipped silently
+      rather than failing loudly. The --experimental-test-coverage flag is
+      Stability: 1, meaning its output format and programmatic API may change in
+      future Node versions without a semver-major signal."
+    links:
+      - "https://nodejs.org/api/test.html"
+      - "https://nodejs.org/en/learn/test-runner/introduction"
+tags:
+  - "testing"
+  - "javascript"
+  - "typescript"
+  - "vitest"
+  - "jest"
+  - "nodejs"
+  - "test-runner"
+  - "esm"
+  - "comparison"
+  - "devtools"
+aliases:
+  - "vitest vs jest"
+  - "node test runner vs jest"
+  - "node:test vs vitest"
+  - "jest vs vitest 2026"
+  - "node --test production ready"
+  - "native test runner nodejs"
+  - "should I use vitest or jest"
+  - "vitest 4 browser mode"
+  - "jest 30 migration"
+  - "node:test stable"
+  - "javascript unit testing framework 2026"
+related_cards:
+  - "devtools/prettier-3-esm-only-requirement-and-cjs-plugin-breakage"
+  - "devtools/eslint-9-flat-config-required-eslintrc-removed"
+  - "auth/jwt-vs-session"
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2027-03-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: framework
+      id: framework/vite
+      name: Vite
+    - type: package
+      id: package/vitest-4
+      name: Vitest 4
+    - type: package
+      id: package/jest-30
+      name: Jest 30
+    - type: package
+      id: package/typescript
+      name: TypeScript
+    - type: engine
+      id: engine/node-test
+      name: node:test
+    - type: capability
+      id: capability/vitest-browser-mode
+      name: Browser Mode
+    - type: package
+      id: package/vitest-browser
+      name: "@vitest/browser"
+    - type: package
+      id: package/vitest-browser-playwright
+      name: "@vitest/browser-playwright"
+    - type: package
+      id: package/vitest-browser-webdriverio
+      name: "@vitest/browser-webdriverio"
+    - type: package
+      id: package/vitest-browser-preview
+      name: "@vitest/browser-preview"
+  edges:
+    - type: requires_version
+      from: package/vitest-4
+      to: framework/vite
+      version: ">=6.0"
+    - type: requires_version
+      from: package/vitest-4
+      to: runtime/nodejs
+      version: ">=20"
+    - type: requires_version
+      from: package/jest-30
+      to: runtime/nodejs
+      version: ">=18"
+    - type: requires_version
+      from: package/jest-30
+      to: package/typescript
+      version: ">=5.4"
+    - type: breaking_change_in
+      from: package/vitest-browser
+      to: package/vitest-4
+      details: The monolithic @vitest/browser package no longer works in Vitest 4,
+        breaking upgrades from v3.
+    - type: locks_via
+      from: capability/vitest-browser-mode
+      to: package/vitest-browser-playwright
+      details: Vitest 4 Browser Mode requires a separate provider package.
+    - type: locks_via
+      from: capability/vitest-browser-mode
+      to: package/vitest-browser-webdriverio
+      details: Vitest 4 Browser Mode requires a separate provider package.
+    - type: locks_via
+      from: capability/vitest-browser-mode
+      to: package/vitest-browser-preview
+      details: Vitest 4 Browser Mode requires a separate provider package.

@@ -1,0 +1,106 @@
+id: backend/ai-sdk-selection
+title: "AI SDK Selection: Anthropic vs OpenAI vs Cloud-native"
+problem: Choosing which AI provider SDK to integrate for LLM-powered features
+context:
+  - backend
+  - ai
+  - integration
+constraints:
+  - enterprise
+  - cost-sensitive
+  - high-scale
+candidates:
+  - name: Anthropic SDK
+    summary: Official TypeScript/Python SDK for Claude models. First-class support
+      for tool use, streaming, and extended thinking.
+    when_to_use: Projects prioritizing safety, long-context tasks, or complex
+      reasoning. Best for enterprise + compliance where Constitutional AI
+      alignment and detailed content policy controls matter.
+    tradeoffs: Smaller ecosystem than OpenAI. Fewer third-party integrations. Model
+      lineup focused on quality over breadth.
+    cautions: Rate limits vary by tier. Extended thinking uses significantly more
+      tokens. SDK versions move fast — pin versions and test upgrades.
+    links:
+      - https://docs.anthropic.com/en/api/getting-started
+      - https://github.com/anthropics/anthropic-sdk-typescript
+  - name: OpenAI SDK
+    summary: Official SDK for GPT models. Largest ecosystem with broad third-party
+      tool and framework support.
+    when_to_use: Prototyping, broad model selection (GPT-4o, o1, DALL-E, Whisper),
+      or when ecosystem breadth matters. Ideal for small-team + low-ops
+      leveraging the extensive community tooling.
+    tradeoffs: Pricing can escalate quickly at scale. API behavior changes between
+      model versions can break prompts.
+    cautions: Model deprecation cycles require active migration planning.
+      Fine-tuning data is retained by default — review data policies.
+    links:
+      - https://platform.openai.com/docs/api-reference
+      - https://github.com/openai/openai-node
+  - name: Cloud-native AI (AWS Bedrock / GCP Vertex AI)
+    summary: Managed AI service through your existing cloud provider. Access
+      multiple models via unified API with IAM-based auth.
+    when_to_use: Enterprises already deep in AWS/GCP needing unified billing,
+      VPC-private endpoints, and compliance certifications. Best for enterprise
+      + compliance where data residency and network isolation are requirements.
+    tradeoffs: Higher per-token cost vs direct API. Model availability lags behind
+      direct providers. Vendor lock-in to cloud platform.
+    cautions: Feature parity with direct SDKs is not guaranteed — new model
+      capabilities often land in direct APIs first. Throughput limits may differ
+      from direct access.
+    links:
+      - https://docs.aws.amazon.com/bedrock/
+      - https://cloud.google.com/vertex-ai/docs
+tags:
+  - ai
+  - sdk
+  - anthropic
+  - openai
+  - bedrock
+  - vertex-ai
+  - llm
+  - backend
+  - comparison
+aliases:
+  - llm-sdk
+  - ai-api
+  - claude-sdk
+  - gpt-sdk
+  - ai-provider
+related_cards:
+  - ai/ai-feature-cost-governance
+  - ai/model-fallback-strategy
+  - ai/openai-responses-api-migration-before-assistants-shutdown-2026
+  - ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026
+  - ai/google-gen-ai-sdk-migration-before-vertex-ai-sdk-generative-module-shutdown-2026
+  - ai/openai-realtime-api-beta-to-ga-migration-before-may-7-2026-shutdown
+  - ai/openai-o1-vs-gpt4o-reasoning-cost-benefit-2026
+  - ai/langchain-v1-migration-from-v0-apis-2026
+  - ai/llamaindex-v0-x-to-v1-breaking-package-migration-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-08-10
+sidecar_hard_facts:
+  extracted: 2026-03-14
+  nodes:
+    - type: framework
+      id: framework/aws-bedrock
+      name: AWS Bedrock
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: framework
+      id: framework/gcp-vertex-ai
+      name: GCP Vertex AI
+    - type: vendor
+      id: vendor/gcp
+      name: GCP
+  edges:
+    - type: locks_via
+      from: framework/aws-bedrock
+      to: vendor/aws
+      mechanism: cloud platform
+    - type: locks_via
+      from: framework/gcp-vertex-ai
+      to: vendor/gcp
+      mechanism: cloud platform

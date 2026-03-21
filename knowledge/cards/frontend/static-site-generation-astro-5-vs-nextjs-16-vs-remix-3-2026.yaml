@@ -1,0 +1,200 @@
+id: frontend/static-site-generation-astro-5-vs-nextjs-16-vs-remix-3-2026
+title: "Static Site Generation: Astro 5 vs Next.js 16 vs React Router 7 — Build
+  Performance and SSG Strategy 2026"
+problem: Choosing the right framework for static site generation and hybrid
+  rendering in 2026. Astro 5 (now at v5.18, Cloudflare-acquired) dominates
+  content-first SSG with zero-JS defaults; Next.js 16 makes Turbopack the
+  default bundler (2-5x faster builds); Remix 3 is NOT stable as of 2026-03-16
+  and breaks from React entirely with no migration path from Remix 2 — React
+  Router v7 in framework mode is the correct stable successor for existing Remix
+  projects.
+context:
+  - frontend
+  - static-site-generation
+  - build-performance
+  - astro
+  - next.js
+  - react-router
+  - remix
+  - deployment
+constraints:
+  - serverless
+  - cost-sensitive
+  - small-team
+  - low-ops
+  - high-scale
+candidates:
+  - name: Astro 5
+    summary: "HTML-first, zero-JS-by-default static framework. Current stable: v5.18
+      (February 2026); Astro 6 is in beta. Cloudflare acquired Astro Technology
+      Company in January 2026. Content Layer API provides unified type-safe
+      content loading from any source; Server Islands mix static HTML with
+      dynamic personalized components on the same page."
+    when_to_use: "Best for content-heavy sites (blogs, docs, marketing, portfolios)
+      where minimal JavaScript and maximum static performance are
+      non-negotiable. Ideal for cost-sensitive + small-team + low-ops
+      constraints — no adapter needed for Vercel/Netlify pure-static deployments
+      (no per-seat risk, no SSR cold starts). Choose Astro when content build
+      speed matters: up to 5x faster Markdown builds and 2x faster MDX builds vs
+      prior tooling, with 25-50% memory reduction."
+    tradeoffs: "Zero-JS default with Islands architecture — ships JavaScript only
+      for components that opt in. Framework-agnostic: use React, Vue, Svelte,
+      Solid, or plain HTML in the same project. Content Layer delivers type-safe
+      content APIs from local files, CMSs, or REST APIs. Vite 6 integration for
+      fast dev. Not suited for highly interactive full-stack apps requiring
+      complex server-side business logic or real-time data — Next.js App Router
+      is better there."
+    cautions: Astro is purpose-built for content sites, not complex web apps. Astro
+      6 beta (v6.0-beta-17 as of Feb 2026) is available but not production-ready
+      — check v6.docs.astro.build before adopting. Cloudflare's January 2026
+      acquisition may shift the project roadmap; monitor astro.build/blog for
+      announcements. Server Islands require an adapter (Vercel, Netlify,
+      Cloudflare Workers) — pure-static deploys need none.
+    links:
+      - https://astro.build/blog/astro-5/
+      - https://docs.astro.build/en/concepts/why-astro/
+      - https://astro.build/blog/whats-new-february-2026/
+  - name: Next.js 16
+    summary: Full-stack React framework. Released October 21, 2025. Turbopack is now
+      the stable default bundler for both next dev and next build — 2-5x faster
+      production builds and up to 10x faster Fast Refresh vs Webpack. Cache
+      Components (replacing experimental PPR) provides opt-in explicit caching
+      with 'use cache' directive.
+    when_to_use: Best for full-stack + serverless + small-team constraints where
+      React App Router ecosystem, Server Components, and Server Actions are
+      required alongside SSG/ISR. Choose when tight Vercel-ecosystem integration
+      and the largest React hiring pool justify the framework. Use ISR
+      (Incremental Static Regeneration) for SSG pages with periodic
+      revalidation.
+    tradeoffs: Turbopack now zero-config default — 2-5x faster builds, 10x faster
+      Fast Refresh; custom webpack setups require explicit --webpack flag or
+      builds fail. Cache Components give explicit caching with 'use cache'
+      directive replacing implicit caching. Layout deduplication and incremental
+      prefetching reduce navigation transfer sizes. React Compiler support
+      stable (opt-in, adds Babel overhead). React 19.2 (View Transitions,
+      Activity, useEffectEvent) included.
+    cautions: "Next.js 16 has critical breaking changes from v15: Node.js 20.9+
+      required (Node.js 18 dropped); synchronous access to
+      params/searchParams/cookies/headers/draftMode fully removed (must await);
+      middleware.ts deprecated (rename to proxy.ts, Edge runtime unsupported in
+      proxy.ts); experimental.ppr removed (replaced by cacheComponents config);
+      serverRuntimeConfig and publicRuntimeConfig removed; AMP support removed;
+      revalidateTag() requires cacheLife profile as second argument. Run npx
+      @next/codemod@canary upgrade latest for automated migration. See
+      frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis for
+      the full upgrade decision tree."
+    links:
+      - https://nextjs.org/blog/next-16
+      - https://nextjs.org/docs/app/guides/upgrading/version-16
+  - name: React Router v7 (Remix successor)
+    summary: React Router v7 in framework mode is the stable successor for all Remix
+      v1 and v2 projects. Provides Vite-based compilation, file-based routing,
+      SSR, static pre-rendering, bundle splitting, HMR, and first-class
+      TypeScript safety. Shopify-backed and deployment-agnostic.
+    when_to_use: Best for teams migrating from Remix v1/v2 — all Remix v2 users
+      should migrate here, not to Remix 3. Ideal for monorepo + cost-sensitive
+      constraints where React Router is already used as a client library and
+      framework mode layers on without a rewrite. Choose over Next.js when
+      Vercel platform coupling is a hard constraint and a deployment-agnostic
+      Node.js-first approach is preferred.
+    tradeoffs: True platform agnosticism — deploys to Vercel, Netlify, Cloudflare
+      Workers, Fly, Railway, or bare Node.js without vendor-specific
+      optimizations. Loaders/actions are simpler than Next.js Server Components
+      mental model. Progressive enhancement — forms work without JavaScript. No
+      equivalent to Next.js Cache Components or Astro Server Islands for
+      fine-grained SSG+dynamic mixing. RSC support is preview-only as of early
+      2026, not production-ready.
+    cautions: Remix 3 is a completely separate, breaking framework as of 2026-03-16
+      — it abandons React in favor of a Preact fork, has no migration path from
+      Remix 2, and is NOT stable or production-ready. Do not confuse React
+      Router v7 with Remix 3. If RSC is critical, Next.js is the only
+      production-ready option. Older Remix v2 tutorials may reference patterns
+      that do not apply to React Router v7 framework mode.
+    links:
+      - https://remix.run/blog/react-router-v7
+      - https://remix.run/blog/wake-up-remix
+tags:
+  - frontend
+  - static-site-generation
+  - ssg
+  - astro
+  - next.js
+  - remix
+  - react-router
+  - turbopack
+  - build-performance
+  - comparison
+  - "2026"
+aliases:
+  - astro vs nextjs 2026
+  - astro vs next.js
+  - remix 3 stable
+  - remix 3 react break
+  - react router 7 ssg
+  - next.js 16 turbopack builds
+  - static site generator comparison 2026
+  - jamstack framework 2026
+  - astro 5 build performance
+  - next.js 16 breaking changes ssg
+related_cards:
+  - frontend/nextjs-vs-remix-for-b2b-saas-2026
+  - frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis
+  - frontend/sveltekit-2-vs-nextjs-16-vs-remix-fullstack-2026
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - backend/strapi-vs-contentful-vs-sanity-headless-cms-2026
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-08-17
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/vercel-nextjs
+      name: Next.js (Vercel)
+      category: frontend
+    - type: vendor
+      id: vendor/shopify-react-router
+      name: React Router v7 (Shopify)
+      category: frontend
+    - type: package
+      id: package/nextjs-16
+      name: Next.js 16
+      version: "16"
+    - type: engine
+      id: engine/turbopack
+      name: Turbopack
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+      current_lts: false
+      eol_date: 2026-04-30
+  edges:
+    - type: requires_version
+      from: package/nextjs-16
+      to: runtime/nodejs-20
+      min_version: Node.js 20.9+
+      reason: Next.js 16 dropped Node.js 18 support; requires 20.9+
+    - type: breaking_change_in
+      from: package/nextjs-16
+      to: null
+      change: Synchronous params/searchParams/cookies/headers/draftMode access fully
+        removed (must await); middleware.ts deprecated (rename to proxy.ts);
+        experimental.ppr removed (replaced by cacheComponents);
+        serverRuntimeConfig/publicRuntimeConfig removed; AMP support removed;
+        revalidateTag() requires cacheLife profile
+      migration_path: Run npx @next/codemod@canary upgrade latest for automated migration
+    - type: breaking_change_in
+      from: vendor/shopify-react-router
+      to: null
+      change: Remix 3 is a completely separate framework — abandons React for Preact
+        fork, has NO migration path from Remix 2, and is NOT stable as of
+        2026-03-16
+      migration_path: All Remix v1/v2 users should migrate to React Router v7 in
+        framework mode, NOT Remix 3
+    - type: locks_via
+      from: vendor/vercel-nextjs
+      to: engine/turbopack
+      surface: Turbopack default in v16; custom webpack requires --webpack flag;
+        Vercel ecosystem integration is tightest deployment path
+      severity: medium

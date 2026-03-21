@@ -1,0 +1,217 @@
+id: "data/metabase-vs-superset-bi-platform-cost-2026"
+title: "Metabase vs Apache Superset—Open Source BI Deployment Cost 2026"
+problem: "Internal analytics teams must compare Metabase (simpler UI,
+  proprietary core in premium) vs Apache Superset (fully open, steeper learning
+  curve). Setup complexity, upgrade risk, and scaling cost differ."
+context:
+  - "business-intelligence"
+  - "analytics"
+  - "self-hosted"
+  - "open-source"
+  - "dashboards"
+  - "data-visualization"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+  - "enterprise"
+  - "high-scale"
+  - "compliance"
+candidates:
+  - name: "Metabase Open Source"
+    summary: "Free, AGPL-licensed, self-hosted BI tool with an accessible no-code
+      interface and unlimited users. As of 2026-03-16, the OSS edition omits
+      SSO, row/column-level permissions, white-labeling, and advanced caching;
+      embedded dashboards require a mandatory 'Powered by Metabase' badge."
+    when_to_use: "Best for cost-sensitive + small-team environments where the team
+      needs quick no-code dashboards on existing infrastructure at zero license
+      cost. The single most decisive factor is whether you can accept the AGPL
+      license terms and the missing enterprise features—SSO, row/column
+      permissions, white-label—as hard non-starters."
+    tradeoffs: "Unlimited users and queries at zero license cost; Docker and JAR
+      deployments are straightforward and upgrade risk is low—pull a new image,
+      run migrations. The hard ceiling is that SSO, row/column permissions,
+      multi-tenant embedding, and white-label are not available without a paid
+      Pro or Enterprise license."
+    cautions: "AGPL licensing applies to modifications you distribute; teams
+      embedding Metabase in products must review AGPL obligations before
+      shipping. Commercial license upgrades require live outbound access to
+      token-check.metabase.com on startup; air-gapped instances that cannot
+      reach that endpoint fall back silently to open source mode and lose all
+      paid features."
+    links:
+      - "https://www.metabase.com/pricing/"
+      - "https://www.metabase.com/license/"
+      - "https://www.metabase.com/docs/latest/cloud/cloud-vs-self-hosting"
+      - "https://www.metabase.com/docs/latest/installation-and-operation/activa\
+        ting-the-enterprise-edition"
+  - name: "Metabase Pro (Cloud or Self-Hosted with License)"
+    summary: "As of 2026-03-16, Metabase Pro costs $575/month + $12/user/month
+      (first 10 users included) billed monthly, or $6,210/year + $130/user/year
+      on annual billing. Pro adds SSO (SAML, LDAP, JWT), row/column-level
+      permissions, white-labeling, environment management, and multi-tenant
+      embedding. Cloud is fully managed with automatic upgrades; self-hosted Pro
+      requires the Enterprise Edition Docker image and a license activated via
+      the Admin panel or the MB_PREMIUM_EMBEDDING_TOKEN environment variable."
+    when_to_use: "Best for low-ops + small-team or enterprise teams where SSO,
+      data-row permissions, or embedded analytics are required and the ops
+      overhead of managing Superset's Redis and Celery stack is unacceptable.
+      Choose Cloud for zero-maintenance upgrades; choose self-hosted Pro only
+      when HIPAA compliance, air-gapped environments, or custom database drivers
+      are mandatory."
+    tradeoffs: "Lowest operational overhead of any full-featured option here;
+      Metabase Cloud handles SSL, high availability, backups, and upgrades
+      automatically with SoC2 Type 2 coverage. The Pro plan unlocks compliance
+      and multi-tenant features that OSS cannot provide. Cost scales with users:
+      10 analysts plus 5 extra costs $635/month on the monthly plan."
+    cautions: "Self-hosted Pro license validation requires outbound internet
+      connectivity to token-check.metabase.com on every startup; loss of that
+      connection degrades the instance to open source mode mid-operation.
+      Metabase Cloud does not support community or custom database drivers—only
+      officially supported connectors are available, which matters for niche or
+      on-premise data sources."
+    links:
+      - "https://www.metabase.com/pricing/"
+      - "https://www.metabase.com/docs/latest/cloud/cloud-vs-self-hosting"
+      - "https://www.metabase.com/docs/latest/installation-and-operation/activa\
+        ting-the-enterprise-edition"
+      - "https://www.metabase.com/license/"
+  - name: "Apache Superset (Self-Hosted)"
+    summary: "Apache License 2.0 BI platform with no paid tiers or proprietary
+      feature gates. As of 2026-03-16, the latest stable version is 6.0.0
+      (released December 18, 2025); 6.1.0rc1 entered pre-release on March 11,
+      2026. Production deployment requires Python >=3.10, a PostgreSQL or MySQL
+      metadata database, Redis for caching and async queries, and Celery workers
+      for background tasks and alerting; the official docs state Kubernetes with
+      the Helm chart is the best-practice production method."
+    when_to_use: "Best for enterprise + cost-sensitive or high-scale + compliance
+      environments where the team has Kubernetes and Redis/Celery ops capability
+      and needs 60+ database connectors, full Apache 2.0 freedom, or a feature
+      set unrestricted by licensing tiers at any user count. The decisive factor
+      is whether your team can own a multi-component production stack and accept
+      higher upgrade complexity in exchange for zero ongoing license spend."
+    tradeoffs: "Zero license cost at any user count; Apache 2.0 imposes no AGPL or
+      proprietary module concerns. Superset supports 60+ databases, 40+
+      visualization types, a dual no-code and SQL IDE interface, and horizontal
+      scaling via Kubernetes pod replicas and Celery worker pools. Upgrade
+      complexity is significantly higher than Metabase: every upgrade requires a
+      metadata DB backup, running superset db upgrade and superset init, and
+      major version releases carry breaking config renames and Python and
+      frontend version requirement bumps documented in UPDATING.md."
+    cautions: "Never deploy the -dev Docker images to production—Superset's official
+      docs warn they run as root and are not intended for production use. Async
+      features including scheduled email alerts, dashboard screenshots, and
+      long-running SQL Lab queries require Celery and Redis; omitting those
+      components silently disables those features without obvious errors at
+      startup. Before every major version upgrade, review UPDATING.md in the
+      repository—each major release documents breaking config changes and
+      migration steps that are not surfaced in the standard upgrade command
+      output."
+    links:
+      - "https://superset.apache.org/"
+      - "https://superset.apache.org/admin-docs/installation/installation-metho\
+        ds/"
+      - "https://superset.apache.org/admin-docs/installation/kubernetes/"
+      - "https://superset.apache.org/user-docs/6.0.0/installation/upgrading-sup\
+        erset/"
+      - "https://pypi.org/project/apache-superset/"
+tags:
+  - "data"
+  - "business-intelligence"
+  - "analytics"
+  - "metabase"
+  - "apache-superset"
+  - "open-source"
+  - "self-hosted"
+  - "dashboards"
+  - "pricing"
+  - "comparison"
+aliases:
+  - "metabase vs superset"
+  - "metabase vs apache superset"
+  - "open source BI tool comparison"
+  - "self-hosted analytics platform"
+  - "BI tool cost comparison"
+  - "metabase pricing 2026"
+  - "superset deployment cost"
+  - "superset vs metabase"
+related_cards:
+  - "infra/monitoring-observability"
+  - "database/neon-vs-supabase-vs-planetscale-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-08-31"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: framework
+      id: framework/metabase-open-source
+      name: Metabase Open Source
+    - type: framework
+      id: framework/metabase-pro
+      name: Metabase Pro
+    - type: framework
+      id: framework/apache-superset
+      name: Apache Superset
+    - type: runtime
+      id: runtime/python-3-10
+      name: Python
+      version: ">=3.10"
+    - type: engine
+      id: engine/postgresql
+      name: PostgreSQL
+    - type: engine
+      id: engine/mysql
+      name: MySQL
+    - type: engine
+      id: engine/redis
+      name: Redis
+    - type: engine
+      id: engine/celery
+      name: Celery
+    - type: capability
+      id: capability/async-queries
+      name: Async queries
+    - type: capability
+      id: capability/background-tasks
+      name: Background tasks
+    - type: capability
+      id: capability/alerting
+      name: Alerting
+  edges:
+    - type: requires_version
+      from: framework/apache-superset
+      to: runtime/python-3-10
+      version: ">=3.10"
+    - type: requires_version
+      from: framework/apache-superset
+      to: engine/postgresql
+      role: metadata_database_option
+    - type: requires_version
+      from: framework/apache-superset
+      to: engine/mysql
+      role: metadata_database_option
+    - type: requires_version
+      from: framework/apache-superset
+      to: engine/redis
+      role: caching_and_async_queries
+    - type: requires_version
+      from: framework/apache-superset
+      to: engine/celery
+      role: background_tasks_and_alerting
+    - type: requires_version
+      from: capability/async-queries
+      to: engine/redis
+    - type: requires_version
+      from: capability/async-queries
+      to: engine/celery
+    - type: requires_version
+      from: capability/background-tasks
+      to: engine/celery
+    - type: requires_version
+      from: capability/alerting
+      to: engine/celery
+    - type: requires_version
+      from: capability/alerting
+      to: engine/redis

@@ -1,0 +1,147 @@
+id: "testing/jest-30-node18-typescript54-upgrade-breakage-2026"
+title: "Jest 30 Upgrade: Node 18 and TypeScript 5.4 Floors"
+problem: "Plan a test-stack upgrade after Jest 30 raised its Node and TypeScript
+  baselines, which can force CI runner, local dev, and TypeScript config changes
+  before the test framework can move."
+context:
+  - "jest"
+  - "nodejs"
+  - "typescript"
+  - "ci"
+  - "jsdom"
+constraints:
+  - "small-team"
+  - "monorepo"
+candidates:
+  - name: "Upgrade to Jest 30 and raise the toolchain floor first"
+    summary: "As of 2026-03-20, Jest's official v29-to-v30 upgrade guide says Jest
+      30 requires Node 18.x or newer and TypeScript 5.4 or newer. The official
+      Jest versions page lists the stable docs line as Jest 30.0. Jest 30 also
+      upgrades `jest-environment-jsdom` to JSDOM v26, removes deprecated alias
+      matcher names, adds default `.mts` and `.cts` support, renames
+      `--testPathPattern` to `--testPathPatterns`, and removes `jest --init`.
+      This is the direct path if your repo can align CI, developer machines, and
+      TypeScript tooling on the newer floor."
+    when_to_use: "Use this when Node 18+ and TypeScript 5.4+ are already acceptable
+      across CI and local development, or when you are already planning a
+      baseline runtime upgrade. It is the better choice when staying on current
+      Jest matters more than preserving older runners or older TypeScript
+      compatibility."
+    tradeoffs: "You get the current Jest major with newer ESM and TypeScript file
+      support, but you must absorb multiple breaking changes at once across
+      runtime, typings, CLI scripts, snapshots, and possibly DOM behavior."
+    cautions: "Expect migration work beyond the version bump: removed matcher
+      aliases, stricter TypeScript inference for `CalledWith` matchers, JSDOM
+      behavior changes from v26, possible glob pattern differences from
+      `glob@10`, and breakage if internal Jest package paths were imported
+      unofficially."
+    links:
+      - "https://jestjs.io/docs/upgrading-to-jest30"
+      - "https://jestjs.io/blog/2025/06/04/jest-30"
+      - "https://jestjs.io/versions"
+  - name: "Pin Jest 29.7 until runtime and TypeScript baselines are upgraded"
+    summary: "As of 2026-03-20, Jest's versions page lists 29.7 as the previous
+      documentation line, and the official v28-to-v29 guide says Jest 29
+      supports Node 14.15, 16.10, 18.0 and above. That older guide also notes
+      that if `jest-environment-jsdom` is used, the minimum TypeScript version
+      is 4.5. This option avoids the Jest 30 floor change immediately and buys
+      time to coordinate CI image updates, local Node upgrades, and TypeScript
+      baseline changes. It is the lower-risk choice when the surrounding
+      platform upgrade is not ready."
+    when_to_use: "Use this when your current CI or developer environment still
+      depends on Node 14 or 16, or when your TypeScript baseline is below 5.4
+      and cannot move yet. It is the better choice when reducing upgrade scope
+      matters more than adopting the newest Jest major now."
+    tradeoffs: "You avoid Jest 30 migration churn for now, but you also defer
+      current-line improvements and keep the eventual major upgrade work on the
+      backlog."
+    cautions: "This is a temporary hold, not a long-term simplification. When you do
+      move later, you will still need to handle the Jest 30 breaking changes
+      around matcher aliases, CLI flags, JSDOM, and stricter TypeScript
+      typings."
+    links:
+      - "https://jestjs.io/docs/upgrading-to-jest29"
+      - "https://jestjs.io/versions"
+      - "https://jestjs.io/docs/upgrading-to-jest30"
+tags:
+  - "testing"
+  - "jest"
+  - "nodejs"
+  - "typescript"
+  - "ci"
+aliases:
+  - "jest 30 node 18 minimum"
+  - "jest 30 typescript 5.4 minimum"
+  - "jest 29 vs 30 upgrade"
+related_cards:
+  - "testing/jest-30-upgrade-after-node-18-drop-2026"
+  - "deployment/node-upgrade-lts-breakage"
+  - "runtime/node-20-eol-april-2026-upgrade-path"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/jest/30
+      name: Jest
+      version: "30"
+    - type: package
+      id: package/jest/29.7
+      name: Jest
+      version: "29.7"
+    - type: runtime
+      id: runtime/nodejs/18
+      name: Node.js
+      version: 18.x
+    - type: runtime
+      id: runtime/nodejs/14.15
+      name: Node.js
+      version: "14.15"
+    - type: runtime
+      id: runtime/nodejs/16.10
+      name: Node.js
+      version: "16.10"
+    - type: package
+      id: package/typescript/5.4
+      name: TypeScript
+      version: "5.4"
+    - type: package
+      id: package/typescript/4.5
+      name: TypeScript
+      version: "4.5"
+    - type: package
+      id: package/jest-environment-jsdom
+      name: jest-environment-jsdom
+    - type: engine
+      id: engine/jsdom/26
+      name: JSDOM
+      version: "26"
+  edges:
+    - type: requires_version
+      from: package/jest/30
+      to: runtime/nodejs/18
+    - type: requires_version
+      from: package/jest/30
+      to: package/typescript/5.4
+    - type: requires_version
+      from: package/jest/29.7
+      to: runtime/nodejs/14.15
+    - type: requires_version
+      from: package/jest/29.7
+      to: runtime/nodejs/16.10
+    - type: requires_version
+      from: package/jest/29.7
+      to: runtime/nodejs/18
+    - type: requires_version
+      from: package/jest-environment-jsdom
+      to: package/typescript/4.5
+    - type: breaking_change_in
+      from: package/jest-environment-jsdom
+      to: package/jest/30
+      change: upgrades to JSDOM v26
+    - type: requires_version
+      from: package/jest-environment-jsdom
+      to: engine/jsdom/26

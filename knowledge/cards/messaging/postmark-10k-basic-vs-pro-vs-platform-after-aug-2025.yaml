@@ -1,0 +1,171 @@
+id: "messaging/postmark-10k-basic-vs-pro-vs-platform-after-aug-2025"
+title: "Postmark 10K Basic vs Pro vs Platform After the August 2025 Pricing Redesign"
+problem: "Re-evaluate Postmark plan choice now that Pro and Platform features
+  became available at 10K volume with materially different monthly prices and
+  collaboration limits."
+context:
+  - "email"
+  - "transactional-email"
+  - "saas"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Postmark 10K Basic"
+    summary: 'As of 2026-03-19, Postmark Basic costs "$15.00/mo" for 10,000 emails
+      per month and the August 6, 2025 redesign left this tier''s base price
+      unchanged. It includes up to 4 users, up to 5 servers, up to 15 streams,
+      and up to 5 custom sending domains. It does not include inbound email
+      processing. Overage pricing is "$1.80 / 1,000" extra emails.'
+    when_to_use: 'Use this when you are cost-sensitive, have a small team, and only
+      need outbound transactional email with modest collaboration limits. It is
+      the right choice when saving the extra "$1.50-$3.00/mo" matters more
+      than inbound processing, higher caps, or future expansion room.'
+    tradeoffs: "Lowest monthly cost and simplest paid entry point, but it has the
+      highest overage rate of the three 10K plans and the tightest collaboration
+      and resource caps."
+    cautions: "As of 2026-03-19, Basic does not include inbound email. As of
+      2026-03-19, Postmark's optional dedicated IPs and custom activity
+      retention are only available on Pro plans or higher, so Basic can block
+      later requirements even if volume stays at 10K."
+    links:
+      - "https://postmarkapp.com/pricing"
+      - "https://postmarkapp.com/blog/new-we-made-pro-and-platform-tier-feature\
+        s-accessible-to-lower-volume-email-plans"
+  - name: "Postmark 10K Pro"
+    summary: 'As of 2026-03-19, Postmark Pro costs "$16.50/mo" for 10,000 emails
+      per month after the August 6, 2025 redesign. Before that change, Postmark
+      said inbound-processing buyers effectively had to jump to a 50K plan at
+      "$60.50/month"; the redesign moved Pro features down to the 10K level.
+      Pro includes up to 6 users, up to 10 servers, up to 30 streams, up to 10
+      custom sending domains, and inbound email processing. Overage pricing is
+      "$1.30 / 1,000" extra emails.'
+    when_to_use: 'Use this when you need inbound email or a moderate bump in users,
+      servers, streams, and domains, but do not need unlimited collaboration. It
+      is the default choice for a startup or small business that wants most of
+      the practical feature unlocks for only "$1.50/mo" more than Basic.'
+    tradeoffs: "Very strong price-to-feature step up over Basic, plus access to
+      Pro-only add-ons, but still has fixed limits on users, servers, streams,
+      and domains."
+    cautions: "If your team structure or account topology grows past 6 users, 10
+      servers, or 30 streams, Pro can become an operational ceiling quickly. As
+      of 2026-03-19, legacy plans do not get new features, so teams staying on
+      old pricing should verify they are actually moving onto the current Pro
+      subscription rather than assuming feature parity."
+    links:
+      - "https://postmarkapp.com/pricing"
+      - "https://postmarkapp.com/blog/new-we-made-pro-and-platform-tier-feature\
+        s-accessible-to-lower-volume-email-plans"
+      - "https://postmarkapp.com/support/article/1291-legacy-pricing"
+  - name: "Postmark 10K Platform"
+    summary: 'As of 2026-03-19, Postmark Platform costs "$18.00/mo" for 10,000
+      emails per month after the August 6, 2025 redesign. Postmark states
+      Platform features at 10K were previously effectively "$138/month" under
+      the old structure, so the redesign materially changed the economics for
+      low-volume teams that need unlimited collaboration. Platform includes
+      unlimited users, unlimited servers, unlimited streams, unlimited custom
+      sending domains, and inbound email processing. Overage pricing is "$1.20
+      / 1,000" extra emails.'
+    when_to_use: "Use this when unlimited users and account structure matter more
+      than shaving a small amount off monthly cost. It is the decisive choice
+      for agencies, multi-client setups, or larger teams where collaboration and
+      account sprawl would otherwise force awkward workarounds on Pro."
+    tradeoffs: "Best operational headroom and lowest 10K overage rate, but it costs
+      slightly more than Pro and may be unnecessary for a tightly scoped small
+      team."
+    cautions: 'If you do not need unlimited users, servers, streams, or domains, the
+      extra "$1.50/mo" over Pro buys mostly headroom rather than immediate
+      functional capability. As of 2026-03-19, Postmark bills monthly only and
+      does not offer annual or pay-in-advance billing, which may matter for
+      procurement.'
+    links:
+      - "https://postmarkapp.com/pricing"
+      - "https://postmarkapp.com/blog/new-we-made-pro-and-platform-tier-feature\
+        s-accessible-to-lower-volume-email-plans"
+      - "https://postmarkapp.com/support/article/billing-annual-plans"
+tags:
+  - "messaging"
+  - "postmark"
+  - "email"
+  - "pricing"
+aliases:
+  - "postmark basic vs pro vs platform"
+  - "postmark 10k pricing august 2025"
+  - "postmark inbound email pricing"
+related_cards:
+  - "messaging/email-vendor-choice"
+  - "web/resend-pricing-after-december-2025-plan-change-2026"
+  - messaging/postmark-current-plan-vs-legacy-plan-feature-tradeoff-2026
+  - messaging/mailersend-free-vs-hobby-vs-starter-after-december-2025-2026
+  - messaging/sendgrid-free-plan-removal-to-60-day-trial-2026
+  - messaging/mailgun-foundation-vs-scale-after-free-tier-shrink-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: vendor
+      id: vendor/postmark
+      name: Postmark
+    - type: package
+      id: package/postmark-10k-basic
+      name: Postmark 10K Basic
+      category: pricing_plan
+    - type: package
+      id: package/postmark-10k-pro
+      name: Postmark 10K Pro
+      category: pricing_plan
+    - type: package
+      id: package/postmark-10k-platform
+      name: Postmark 10K Platform
+      category: pricing_plan
+    - type: capability
+      id: capability/inbound-email-processing
+      name: inbound email processing
+      category: email
+    - type: capability
+      id: capability/dedicated-ips
+      name: dedicated IPs
+      category: email_addon
+    - type: capability
+      id: capability/custom-activity-retention
+      name: custom activity retention
+      category: email_addon
+    - type: capability
+      id: capability/unlimited-collaboration
+      name: unlimited collaboration
+      category: account_management
+  edges:
+    - type: locks_via
+      from: package/postmark-10k-basic
+      to: capability/inbound-email-processing
+      status: excluded
+      evidence: Basic does not include inbound email processing.
+    - type: locks_via
+      from: package/postmark-10k-basic
+      to: capability/dedicated-ips
+      status: unavailable
+      evidence: Optional dedicated IPs are only available on Pro plans or higher.
+    - type: locks_via
+      from: package/postmark-10k-basic
+      to: capability/custom-activity-retention
+      status: unavailable
+      evidence: Custom activity retention is only available on Pro plans or higher.
+    - type: locks_via
+      from: package/postmark-10k-pro
+      to: capability/inbound-email-processing
+      status: included
+      evidence: Pro includes inbound email processing.
+    - type: locks_via
+      from: package/postmark-10k-platform
+      to: capability/inbound-email-processing
+      status: included
+      evidence: Platform includes inbound email processing.
+    - type: locks_via
+      from: package/postmark-10k-platform
+      to: capability/unlimited-collaboration
+      status: included
+      evidence: Platform includes unlimited users, unlimited servers, unlimited
+        streams, and unlimited custom sending domains.

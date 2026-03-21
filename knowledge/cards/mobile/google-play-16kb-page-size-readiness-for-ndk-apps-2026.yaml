@@ -1,0 +1,182 @@
+id: mobile/google-play-16kb-page-size-readiness-for-ndk-apps-2026
+title: Google Play 16 KB Page Size Readiness for NDK Apps
+problem: Choose whether native-code Android apps need urgent rebuilds,
+  dependency replacements, or release gating as Google Play enforces 16 KB
+  page-size compatibility requirements.
+context:
+  - mobile
+  - android
+  - google-play
+  - ndk
+  - native-code
+  - android-gradle-plugin
+  - app-bundle
+  - release-planning
+  - ci-cd
+constraints:
+  - small-team
+  - enterprise
+  - monorepo
+  - compliance
+  - low-ops
+candidates:
+  - name: Immediate rebuild on the current Android toolchain
+    summary: Default path for NDK apps that can move now. As of 2026-03-15, Google
+      says that since November 1, 2025, all new apps and updates submitted to
+      Google Play and targeting Android 15+ devices must support 16 KB page
+      sizes on 64-bit devices, and that apps using AGP 8.5.1 or higher plus NDK
+      r28 or higher with 16 KB-compatible prebuilts are 16 KB compatible by
+      default.
+    when_to_use: Best for small-team + monorepo or enterprise + compliance teams
+      where native code is actively maintained and build infrastructure can be
+      upgraded now. Choose this when you want the lowest ongoing release risk,
+      want Google's documented default path, and do not want to depend on
+      Android 16 compatibility mode or manual linker workarounds.
+    tradeoffs: This is the cleanest long-term submission path and removes most
+      custom packaging work, but it can force AGP, Gradle, CI, and dependency
+      upgrades into the same train.
+    cautions: You still need to test in a 16 KB environment, verify the bundle
+      requests `PAGE_ALIGNMENT_16K`, and fix code that assumes `PAGE_SIZE` is
+      4096 or passes page-sized values into APIs such as `mmap()`. If your app
+      includes prebuilt shared libraries, Google says they must also be
+      recompiled in the same way and reimported as 16 KB-aligned libraries.
+    links:
+      - https://developer.android.com/guide/practices/page-sizes
+      - https://developer.android.com/tools/bundletool
+      - https://developer.android.com/studio/publish/upload-bundle
+  - name: Short-term legacy-toolchain bridge
+    summary: Fallback path when a full AGP or NDK migration cannot land before the
+      next release. As of 2026-03-15, Google documents compressed shared
+      libraries as the workaround if you cannot move to AGP 8.5.1 or higher,
+      says AGP 8.3 through 8.5 bundles can appear to work but fail when APKs are
+      built from the Play bundle, and says NDK r27 needs explicit
+      flexible-page-size configuration while r26 and lower are last-resort only
+      with no support guaranteed.
+    when_to_use: Best for monorepo + enterprise or small-team + compliance teams
+      where a release is blocked by build-system timing, but you still control
+      the native code and can contain the bridge to a short-lived release lane.
+      Use this only when the choice is between a temporary workaround and
+      missing a near-term business-critical train.
+    tradeoffs: This can preserve release momentum without immediately uplifting
+      every Android build dependency, but it creates a more fragile setup with
+      manual packaging or linker changes and more verification work.
+    cautions: "Google warns that compressed shared libraries increase installed size
+      and can make installation fail more often because they consume more disk
+      space. Do not trust only a local APK result: Google documents that
+      `bundletool` and Google Play generate the served APKs, and specifically
+      says AGP 8.3 to 8.5 bundles may not install when built from a bundle in
+      Play."
+    links:
+      - https://developer.android.com/guide/practices/page-sizes
+      - https://developer.android.com/tools/bundletool
+      - https://developer.android.com/studio/publish/upload-bundle
+  - name: Release gate until native SDKs and prebuilts are verified or replaced
+    summary: Best risk-control path when third-party native SDKs are the blocker. As
+      of 2026-03-15, Google says some SDK prebuilts or SDK versions are not 16
+      KB compatible and that you should check each SDK provider website for the
+      right version, while Android 16 compatibility mode only allows some 4
+      KB-aligned apps to run and still shows a user-visible dialog unless you
+      opt into the manifest property.
+    when_to_use: Best for enterprise + compliance or small-team + low-ops teams
+      where the app depends on ad, analytics, media, security, game, or other
+      native SDKs that you do not build yourself. Choose this when replacing one
+      incompatible dependency or pausing submissions is cheaper than shipping a
+      risky build that may fail Play-generated artifact checks or run in
+      user-visible compatibility mode.
+    tradeoffs: You slow feature or release cadence, but you avoid publishing a
+      bundle whose server-side generated APKs or runtime behavior differ from
+      your local test APK. This is often the safest choice when ownership of
+      native libraries is split across multiple vendors.
+    cautions: Treat Android 16 compatibility mode as a temporary safety net, not a
+      long-term release strategy. Google says apps should still be 16 KB aligned
+      for best performance, reliability, and stability, and the page-size guide
+      does not provide a universal approved-SDK list, so you must verify each
+      provider version directly.
+    links:
+      - https://developer.android.com/guide/practices/page-sizes
+      - https://developer.android.com/about/versions/16/behavior-changes-all
+      - https://developer.android.com/studio/publish/upload-bundle
+tags:
+  - mobile
+  - android
+  - google-play
+  - ndk
+  - android-gradle-plugin
+  - agp
+  - bundletool
+  - app-bundle
+  - native-code
+  - android-15
+  - android-16
+  - 16kb-page-size
+  - policy
+aliases:
+  - android 16kb page size
+  - google play 16 kb requirement
+  - android 16 kb page alignment
+  - ndk 16kb pages
+  - agp 8.5.1 16kb
+  - android pageSizeCompat
+  - google play native app 16kb
+related_cards:
+  - infra/monorepo-tools
+  - mobile/apple-sdk-minimum-xcode-upgrade-deadline-planning-2026
+  - mobile/google-play-billing-library-7-to-8-migration-before-2026-deadline
+  - mobile/android-16-edge-to-edge-enforcement-for-apps-targeting-api-36-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-08
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/google-play
+      name: Google Play
+      category: mobile
+    - type: package
+      id: package/agp-8.5
+      name: Android Gradle Plugin 8.5.1+
+      version: 8.5.1
+    - type: package
+      id: package/ndk-r28
+      name: NDK r28
+      version: r28
+    - type: package
+      id: package/android-api-36
+      name: Android API 36 (Android 16)
+      version: "36"
+  edges:
+    - type: breaking_change_in
+      from: vendor/google-play
+      to: null
+      change: Since November 1, 2025, all new apps and updates targeting Android 15+
+        must support 16 KB page sizes on 64-bit devices
+      migration_path: Rebuild with AGP 8.5.1+ and NDK r28+ with 16 KB-compatible
+        prebuilts; verify bundle requests PAGE_ALIGNMENT_16K
+    - type: requires_version
+      from: vendor/google-play
+      to: package/agp-8.5
+      min_version: AGP 8.5.1
+      reason: Apps using AGP 8.5.1+ plus NDK r28+ with 16 KB-compatible prebuilts are
+        16 KB compatible by default
+    - type: requires_version
+      from: vendor/google-play
+      to: package/ndk-r28
+      min_version: NDK r28
+      reason: NDK r28+ produces 16 KB-aligned binaries by default; r27 needs explicit
+        flexible-page-size config; r26 and lower have no support guaranteed
+    - type: breaking_change_in
+      from: package/agp-8.5
+      to: null
+      change: AGP 8.3 through 8.5 bundles can appear to work locally but fail when
+        APKs are built from the Play bundle
+      migration_path: Use AGP 8.5.1+ specifically; do not trust local APK results —
+        verify with bundletool and Play-generated artifacts
+    - type: breaking_change_in
+      from: package/android-api-36
+      to: null
+      change: Android 16 compatibility mode allows some 4 KB-aligned apps to run but
+        shows a user-visible dialog; not a long-term strategy
+      migration_path: Rebuild native code as 16 KB aligned; fix code that assumes
+        PAGE_SIZE is 4096 or passes page-sized values to mmap()

@@ -1,0 +1,163 @@
+id: "auth/rbac-vs-abac-vs-rebac"
+title: "RBAC vs ABAC vs ReBAC: Authorization Model Implementation with Managed
+  Services"
+problem: "Implementing fine-grained authorization where the choice between RBAC,
+  ABAC, and ReBAC intersects with managed service selection (OpenFGA, Permit.io,
+  Oso, Cedar/AVP) — where vendor pricing, policy language, and latency
+  characteristics vary significantly"
+context:
+  - "authorization"
+  - "security"
+  - "multi-tenant"
+  - "fine-grained"
+constraints:
+  - enterprise
+  - compliance
+  - small-team
+  - high-scale
+candidates:
+  - name: "OpenFGA (ReBAC, open-source)"
+    summary: "Open-source fine-grained authorization from Auth0/Okta, inspired by
+      Google Zanzibar. Relationship-based model with a DSL for defining
+      authorization models. Self-hosted is free. Okta FGA (managed): pricing not
+      public, contact sales."
+    when_to_use: "When you need Google Zanzibar-style relationship-based
+      authorization for collaborative features (document sharing, team
+      hierarchies, org-level permissions). Best for enterprise + high-scale +
+      compliance constraints where object-level permissions and relationship
+      traversal matter. Open-source enables self-hosting."
+    tradeoffs: "True ReBAC — models permissions as relationships between users and
+      objects. Open-source (Apache 2.0), CNCF Incubating project (since October
+      2025). Stores relationship tuples in a dedicated store — fast check
+      queries. Authorization model DSL is simple but requires learning a new
+      paradigm. Write latency for tuple updates must be considered for real-time
+      permission changes."
+    cautions: "OpenFGA's model DSL is not code — it's a separate configuration
+      language that must be versioned and tested independently. Relationship
+      tuple storage grows with your data (users × objects × relationships).
+      Self-hosted requires PostgreSQL or MySQL. Evaluate whether your
+      authorization patterns are actually relationship-based — if permissions
+      are role-only, OpenFGA is over-engineering."
+    links:
+      - "https://openfga.dev/docs"
+      - "https://openfga.dev/docs/modeling"
+      - "https://github.com/openfga/openfga"
+  - name: "Permit.io (managed authorization layer)"
+    summary: "Managed authorization service supporting RBAC, ABAC, and ReBAC in a
+      single platform. Uses OPA and Cedar under the hood. Free tier: 1,000 MAU.
+      Startup: $150/month for 10,000 MAU. Includes policy editor UI, audit logs,
+      and user management."
+    when_to_use: "When you need a managed authorization service that supports all
+      three models (RBAC + ABAC + ReBAC) without choosing upfront. Best for
+      small-team + enterprise + compliance where a UI for policy management and
+      built-in audit logs reduce implementation time. Good for teams that want
+      to start with RBAC and evolve to ReBAC without re-architecting."
+    tradeoffs: "Supports all authorization models in one platform — migrate from
+      RBAC to ReBAC without switching vendors. Policy editor UI for
+      non-engineers. Built-in audit log for compliance. Per-MAU pricing at
+      $150/month for 10,000 MAU — more expensive than self-hosted alternatives.
+      Decision latency depends on the sidecar/PDP deployment model."
+    cautions: "Per-MAU pricing can scale unexpectedly if your user count grows.
+      Evaluate the PDP (Policy Decision Point) deployment model — sidecar mode
+      minimizes latency but requires container infrastructure. Cloud-only PDP
+      adds network latency to every authorization check. At 50K MAU, costs may
+      justify self-hosted OpenFGA or OPA."
+    links:
+      - "https://www.permit.io/pricing"
+      - "https://docs.permit.io/"
+  - name: "AWS Verified Permissions (Cedar policy language)"
+    summary: "AWS managed authorization service using Cedar policy language
+      (developed by AWS). Evaluate policies against Cedar schemas. Pricing:
+      $5/million authorization requests (reduced up to 97% in June 2025).
+      Integrates with Cognito and IAM Identity Center."
+    when_to_use: "When you're on AWS and need ABAC-style policy evaluation with a
+      formal policy language. Best for enterprise + compliance + serverless
+      constraints where Cedar's provably correct policy evaluation and AWS
+      service integration matter. Cedar policies are more readable than OPA/Rego
+      for non-engineers."
+    tradeoffs: "Cedar is a purpose-built authorization language with formal
+      verification — policies are provably analyzable. AWS-managed, zero ops.
+      $5/million requests is extremely cost-effective (1M checks/month = $5,
+      reduced from ~$150/million pre-June 2025). Integrates with Cognito user
+      pools. AWS-only — full vendor lock-in. Cedar is newer and has a smaller
+      ecosystem than OPA/Rego."
+    cautions: "Cedar is not ReBAC — it evaluates policies, not relationship graphs.
+      If your authorization model is primarily about relationships (who shared
+      what with whom), OpenFGA is a better fit. Cedar excels at attribute-based
+      decisions (user.department == resource.department AND user.clearance >=
+      resource.classification). Evaluate whether your access patterns are
+      attribute-driven or relationship-driven."
+    links:
+      - "https://docs.aws.amazon.com/verifiedpermissions/latest/userguide/what-\
+        is-avp.html"
+      - "https://www.cedarpolicy.com/"
+      - "https://aws.amazon.com/verified-permissions/pricing/"
+  - name: "OPA/Rego + Custom Middleware (self-hosted ABAC)"
+    summary: "Open Policy Agent with Rego policy language for general-purpose policy
+      evaluation. Self-hosted, zero vendor cost. Widely adopted in Kubernetes
+      admission control and API authorization. Decision latency: sub-millisecond
+      when co-located."
+    when_to_use: "When you need maximum flexibility in policy language and want zero
+      vendor dependency. Best for enterprise + compliance + microservices where
+      OPA is already used for Kubernetes policies and extending it to
+      application authorization leverages existing expertise. The de facto
+      standard for policy-as-code."
+    tradeoffs: "Most flexible policy engine — Rego can express any authorization
+      logic. Zero vendor cost. Large ecosystem (CNCF graduated project). Rego
+      learning curve is steep — functional/datalog-style syntax is unfamiliar to
+      most developers. OPA evaluates policies, not relationships — bolting on
+      ReBAC requires custom data loading and check patterns."
+    cautions: "Rego is powerful but hard to debug and test — invest in policy
+      testing infrastructure (opa test) from day one. OPA requires policy data
+      to be loaded into the agent — stale data means stale decisions. For
+      relationship-based authorization, OPA is not the right tool — use OpenFGA.
+      OPA decisions should be co-located (sidecar) for sub-millisecond latency."
+    links:
+      - "https://www.openpolicyagent.org/docs/latest/"
+      - "https://www.openpolicyagent.org/docs/latest/policy-language/"
+tags:
+  - "auth"
+  - "authorization"
+  - "rbac"
+  - "abac"
+  - "rebac"
+  - "fine-grained-authorization"
+  - "openfga"
+  - "cedar"
+  - "opa"
+aliases:
+  - "rbac vs abac"
+  - "rbac vs rebac"
+  - "fine grained authorization"
+  - "authorization service"
+  - "openfga vs permit"
+  - "zanzibar authorization"
+related_cards:
+  - "auth/multi-tenant-auth-boundary"
+  - "auth/sso-for-b2b-saas"
+  - "auth/clerk-vs-auth0-vs-cognito-2026"
+  - "database/multi-tenant-database-isolation"
+  - security/permit-community-vs-startup-vs-pro-quotas-2026
+  - security/cerbos-cloud-vs-on-prem-hub-after-january-2026-launch
+  - security/permitio-vs-oso-cloud-policy-hosting-2026
+updated: "2026-03-15"
+review_by: 2026-08-10
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/aws-verified-permissions
+      name: AWS Verified Permissions
+      category: authorization
+    - type: protocol
+      id: protocol/cedar
+      name: Cedar Policy Language
+      standard: false
+  edges:
+    - type: locks_via
+      from: vendor/aws-verified-permissions
+      to: protocol/cedar
+      surface: Cedar is AWS-developed policy language; AWS Verified Permissions is
+        AWS-only with no equivalent for self-managed infrastructure; full vendor
+        lock-in
+      severity: high

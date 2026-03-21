@@ -1,0 +1,250 @@
+id: serverless/file-upload-strategy-on-serverless
+title: "File Upload Strategy on Serverless: Size Limits, Presigned URLs, and
+  Streaming"
+problem: Handling file uploads on serverless platforms where request body size
+  limits (Vercel 4.5MB, Lambda 6MB sync, Workers 100MB) force different
+  architectural patterns depending on file size and platform
+context:
+  - file-upload
+  - serverless
+  - storage
+  - presigned-url
+constraints:
+  - serverless
+  - cost-sensitive
+  - small-team
+candidates:
+  - name: Presigned URL Direct Upload (S3/R2/GCS)
+    summary: Server generates a presigned upload URL; client uploads directly to
+      object storage, bypassing the serverless function entirely. Works with any
+      file size. S3 presigned URLs support up to 5GB single upload, 5TB
+      multipart.
+    when_to_use: When files exceed your platform's request body limit (Vercel 4.5MB,
+      Lambda 6MB). Best for serverless + cost-sensitive constraints — the upload
+      never touches your function, so no compute cost for transfer. The standard
+      pattern for production file uploads on serverless.
+    tradeoffs: No function compute cost for upload transfer. Works with any file
+      size. Client uploads directly — reduces latency by eliminating the server
+      relay. Requires CORS configuration on the storage bucket. Server-side
+      validation must happen post-upload (via S3 event trigger or polling).
+      Cannot validate file content before it's stored.
+    cautions: Presigned URLs have expiration times (default 15 min, max 7 days for
+      S3). Set Content-Type and Content-Length-Range conditions on the presigned
+      URL to prevent abuse. Always validate uploaded files after storage — check
+      file type, size, and scan for malware. Use S3 lifecycle rules to
+      auto-delete uploads that fail validation.
+    links:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html
+      - https://developers.cloudflare.com/r2/api/s3/presigned-urls/
+      - https://cloud.google.com/storage/docs/xml-api/post-object-v4
+  - name: Server-Side Relay (small files only)
+    summary: "Upload through the serverless function body. Limited by platform:
+      Vercel 4.5MB (all plans), Lambda 6MB sync payload, Cloudflare Workers
+      100MB (Free/Pro), 200MB (Business), 500MB (Enterprise)."
+    when_to_use: When files are small enough to fit within platform limits and you
+      need server-side validation before storage. Best for small-team +
+      serverless where avatar uploads, CSV imports, or document uploads under
+      5MB need immediate validation (file type, content, virus scan) before
+      acceptance.
+    tradeoffs: Simplest implementation — standard multipart form handling. Server
+      validates before storing. Function execution time and memory consumed
+      during upload. Platform size limits are hard ceilings that cannot be
+      increased. At Vercel's 4.5MB limit, even moderate image uploads may fail.
+    cautions: Vercel's 4.5MB limit applies to the entire request body including
+      headers and form fields — actual file capacity is slightly less. Lambda's
+      6MB limit is for synchronous invocation; async invocation payload is 1MB
+      (increased from 256KB in October 2025). API Gateway has a separate 10MB
+      request body limit. Lambda response streaming supports up to 200MB
+      (increased from 20MB in July 2025). Always implement presigned URL
+      fallback for files near the size limit.
+    links:
+      - https://vercel.com/docs/functions/limitations
+      - https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+      - https://developers.cloudflare.com/workers/platform/limits/
+  - name: Multipart Upload with Chunking (large files)
+    summary: Split large files into chunks on the client, upload each chunk via
+      presigned URLs, then complete the multipart upload. S3 supports 10,000
+      parts of 5MB-5GB each (up to 5TB total). R2 and GCS have similar multipart
+      APIs.
+    when_to_use: When uploading files larger than 100MB or when upload reliability
+      matters (resume on failure). Best for cost-sensitive + serverless where
+      video, backup, or large dataset uploads need resilient transfer without
+      server-side infrastructure.
+    tradeoffs: Resumable — failed chunks can be retried without restarting the
+      entire upload. Parallel chunk upload for faster throughput. More complex
+      client implementation (track upload parts, handle completion). Incomplete
+      multipart uploads incur storage costs until aborted — configure lifecycle
+      rules.
+    cautions: S3 charges for incomplete multipart uploads until explicitly aborted.
+      Set AbortIncompleteMultipartUpload lifecycle rules (e.g., 7 days).
+      Libraries like @aws-sdk/lib-storage (Node.js), Uppy, or tus-js-client
+      handle chunking client-side. For R2, the multipart API is S3-compatible
+      but verify part size minimums (R2 requires 5MB minimum except last part).
+    links:
+      - https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html
+      - https://developers.cloudflare.com/r2/objects/multipart-objects/
+  - name: Upload Service (UploadThing, Transloadit, Cloudinary)
+    summary: "Managed upload infrastructure handling storage, processing, and CDN
+      delivery. UploadThing: free 2GB, $10/month for 100GB. Cloudinary: free 25
+      credits/month (credits are fungible across bandwidth, storage, and
+      transformations). Transloadit: $69/month Startup plan (40GB included)."
+    when_to_use: When you need image/video processing (resize, transcode, optimize)
+      in addition to upload, and building it yourself exceeds small-team
+      capacity. Best for small-team + cost-sensitive where the total cost of
+      presigned URLs + processing Lambda + CDN exceeds a managed service.
+    tradeoffs: Handles upload, processing, and delivery — one vendor for the entire
+      media pipeline. UploadThing integrates directly with Next.js. Cloudinary's
+      free tier (25 credits) covers small apps but credits are shared across
+      bandwidth, storage, and transformations — not dedicated bandwidth. Vendor
+      lock-in for media URLs. Processing costs can spike with video transcoding.
+      Migration requires re-pointing all stored media URLs.
+    cautions: UploadThing is Next.js-focused — evaluate framework compatibility for
+      other stacks. Cloudinary uses a credit-based pricing model where 1 credit
+      = 1GB bandwidth OR 1GB storage OR 1,000 transformations — realistic usage
+      splits reduce effective bandwidth well below the headline number.
+      Transloadit charges per encoding minute ($69/month Startup includes 40GB,
+      $1.80/GB additional). Always have an exit strategy — store original files
+      in your own S3/R2 bucket even when using a processing service.
+    links:
+      - https://uploadthing.com/pricing
+      - https://cloudinary.com/pricing
+      - https://transloadit.com/pricing/
+tags:
+  - file-upload
+  - storage
+  - presigned-url
+  - s3
+  - r2
+aliases:
+  - file upload serverless
+  - upload on vercel
+  - presigned url upload
+  - serverless file size limit
+  - large file upload
+related_cards:
+  - database/object-storage-s3-vs-r2-vs-gcs
+  - serverless/cloudflare-workers-vs-lambda
+  - serverless/vercel-edge-vs-node-runtime
+  - serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026
+  - web/imgix-vs-imagekit-vs-uploadcare-image-cdn-pricing-2026
+  - web/transloadit-vs-cloudconvert-vs-filestack-file-processing-pricing-2026
+updated: 2026-03-15
+review_by: 2026-08-10
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: runtime
+      id: runtime/aws-lambda
+      name: AWS Lambda
+    - type: runtime
+      id: runtime/cloudflare-workers
+      name: Cloudflare Workers
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+    - type: vendor
+      id: vendor/google-cloud
+      name: Google Cloud
+    - type: package
+      id: package/amazon-s3
+      name: Amazon S3
+    - type: package
+      id: package/cloudflare-r2
+      name: Cloudflare R2
+    - type: package
+      id: package/google-cloud-storage
+      name: Google Cloud Storage
+    - type: capability
+      id: capability/presigned-url-direct-upload
+      name: Presigned URL Direct Upload
+      category: file_upload
+    - type: capability
+      id: capability/server-side-relay
+      name: Server-Side Relay
+      category: file_upload
+    - type: capability
+      id: capability/multipart-upload-with-chunking
+      name: Multipart Upload with Chunking
+      category: file_upload
+    - type: vendor
+      id: vendor/uploadthing
+      name: UploadThing
+    - type: vendor
+      id: vendor/cloudinary
+      name: Cloudinary
+    - type: vendor
+      id: vendor/transloadit
+      name: Transloadit
+    - type: framework
+      id: framework/next-js
+      name: Next.js
+    - type: runtime
+      id: runtime/node-js
+      name: Node.js
+  edges:
+    - type: requires_version
+      from: capability/presigned-url-direct-upload
+      to: package/amazon-s3
+      max_single_upload: 5GB
+      max_multipart_upload: 5TB
+    - type: requires_version
+      from: capability/presigned-url-direct-upload
+      to: package/cloudflare-r2
+      notes: S3-compatible presigned URLs
+    - type: requires_version
+      from: capability/presigned-url-direct-upload
+      to: package/google-cloud-storage
+      notes: XML API POST Object V4
+    - type: requires_version
+      from: capability/multipart-upload-with-chunking
+      to: package/amazon-s3
+      max_parts: "10000"
+      part_size: 5MB-5GB
+      max_total: 5TB
+    - type: requires_version
+      from: capability/multipart-upload-with-chunking
+      to: package/cloudflare-r2
+      notes: S3-compatible multipart API; 5MB minimum except last part
+    - type: requires_version
+      from: vendor/uploadthing
+      to: framework/next-js
+      notes: UploadThing integrates directly with Next.js; Next.js-focused
+    - type: requires_version
+      from: capability/multipart-upload-with-chunking
+      to: runtime/node-js
+      notes: "@aws-sdk/lib-storage is a Node.js library for client-side chunking"
+    - type: breaking_change_in
+      from: runtime/aws-lambda
+      to: null
+      date: 2025-10
+      subject: async invocation payload
+      old_value: 256KB
+      new_value: 1MB
+    - type: breaking_change_in
+      from: runtime/aws-lambda
+      to: null
+      date: 2025-07
+      subject: response streaming limit
+      old_value: 20MB
+      new_value: 200MB
+    - type: locks_via
+      from: vendor/cloudinary
+      to: capability/presigned-url-direct-upload
+      mechanism: media URLs
+      notes: Vendor lock-in for media URLs
+    - type: locks_via
+      from: vendor/transloadit
+      to: capability/presigned-url-direct-upload
+      mechanism: media URLs
+      notes: Migration requires re-pointing stored media URLs
+    - type: locks_via
+      from: vendor/uploadthing
+      to: capability/presigned-url-direct-upload
+      mechanism: media URLs
+      notes: Migration requires re-pointing stored media URLs

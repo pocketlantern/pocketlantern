@@ -1,0 +1,182 @@
+id: "deployment/railway-free-vs-hobby-vs-pro-usage-minimums-2026"
+title: "Railway Free vs Hobby vs Pro Minimums and Caps 2026"
+problem: "Decide which Railway plan fits a production app now that Free, Hobby,
+  and Pro have distinct monthly minimums, trial behavior, storage caps, and
+  replica limits as of 2026-03-19."
+context:
+  - "railway"
+  - "paas"
+  - "containers"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Stay on Free"
+    summary: "As of 2026-03-19, new Railway accounts start with a 30-day trial and a
+      one-time $5 credit, then fall back to Free at $0 subscription cost with $1
+      of monthly credit. Free is capped at 1 vCPU and 0.5 GB RAM per service,
+      with 0.5 GB volume storage and materially lower limits than Trial."
+    when_to_use: "Use this only for demos, personal experiments, or a production app
+      with effectively no HA requirement and very small persistent storage
+      needs. The decisive factor is whether the app can tolerate trial expiry,
+      tiny resource caps, and very limited project scale."
+    tradeoffs: "Lowest baseline cost and no paid Hobby/Pro subscription, but only $1
+      of monthly credit after trial and the smallest CPU, RAM, project, service,
+      and storage allowances."
+    cautions: "As of 2026-03-19, Railway's official pages are not fully consistent
+      about replica counts for Free and Trial, so do not assume reliable
+      multi-replica production capacity on this plan without checking the
+      current docs. Free also has materially lower post-trial limits than the
+      initial 30-day trial."
+    links:
+      - "https://railway.com/pricing"
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/volumes/reference"
+  - name: "Upgrade to Hobby"
+    summary: "As of 2026-03-19, Hobby has a $5 monthly minimum that includes $5 of
+      usage. Its main decision signals are up to 48 vCPU and 48 GB RAM per
+      service, up to 6 replicas, 5 GB default volume storage, 7-day logs, and a
+      single-developer workspace."
+    when_to_use: "Use this for a single-developer production app or side business
+      that needs paid-plan features, predictable low minimum spend, and modest
+      horizontal scaling. The decisive factor is whether 6 replicas, 5 GB
+      default volume size, and single-developer workspace scope are enough."
+    tradeoffs: "Very strong price-to-capacity for small production systems, but
+      lower collaboration, storage, and HA headroom than Pro."
+    cautions: "Hobby is still usage-based after the included $5 credit is consumed,
+      so steady-state production spend can rise beyond the subscription minimum.
+      If your app needs larger persistent disks, longer logs, or bigger teams,
+      you will likely outgrow Hobby quickly."
+    links:
+      - "https://railway.com/pricing"
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/volumes/reference"
+      - "https://docs.railway.com/observability/logs"
+  - name: "Move to Pro"
+    summary: "As of 2026-03-19, Pro has a $20 monthly minimum that includes $20 of
+      usage and is aimed at production teams. The key decision signals versus
+      Hobby are unlimited workspace seats, 30-day logs, much higher compute
+      ceilings, and substantially higher replica and storage headroom, even
+      though Railway's docs are not perfectly consistent on the exact replica
+      and volume maxima."
+    when_to_use: "Use this when you need combinations that Hobby cannot cover, such
+      as multiple team seats, more than 7-day logs, more than 6 replicas for a
+      service, or persistent storage needs that exceed Hobby's 5 GB default
+      volume size. It also fits production workloads that need materially more
+      than Hobby's 48 vCPU or 48 GB RAM per service, or that need enough scale
+      headroom that the jump to a $20 monthly minimum is cheaper than
+      redesigning around Hobby's ceilings."
+    tradeoffs: "Much better headroom for scale, teams, and support, but a higher
+      baseline spend and some documentation ambiguity around exact replica and
+      volume maxima."
+    cautions: "Do not size a stateful production workload from a single Pro limit
+      number without checking the latest Railway docs, because the official
+      pricing and docs pages differ on replica and volume details as of
+      2026-03-19. Budgeting should also assume usage-based overages above the
+      included $20 credit."
+    links:
+      - "https://railway.com/pricing"
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/volumes/reference"
+      - "https://docs.railway.com/pricing/understanding-your-bill"
+tags:
+  - "deployment"
+  - "railway"
+  - "pricing"
+  - "paas"
+aliases:
+  - "railway free vs hobby vs pro"
+  - "railway pricing minimum usage 2026"
+  - "railway trial hobby pro limits"
+related_cards:
+  - "runtime/railway-trial-vs-hobby-vs-team-2026"
+  - "runtime/railway-replica-cap-vs-custom-2026"
+  - "infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026"
+  - deployment/render-free-services-vs-paid-after-suspension-and-billing-changes-2026
+  - serverless/railway-hobby-included-usage-vs-overage-billing-2026
+  - storage/railway-volume-limits-by-plan-2026
+  - deployment/heroku-eco-vs-basic-vs-standard-dyno-cost-reset-2026
+  - cloud/northflank-network-pricing-cut-december-2025-impact-2026
+  - cloud/railway-hobby-vs-pro-usage-commit-2026
+  - web/render-vs-fly-vs-railway-small-app-costs-2026
+  - cloud/railway-trial-vs-hobby-resource-limits-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/railway
+      name: Railway
+    - type: package
+      id: package/railway-free
+      name: Railway Free
+      category: pricing_plan
+    - type: package
+      id: package/railway-hobby
+      name: Railway Hobby
+      category: pricing_plan
+    - type: package
+      id: package/railway-pro
+      name: Railway Pro
+      category: pricing_plan
+    - type: capability
+      id: capability/monthly-minimums
+      name: monthly minimums
+      category: billing
+    - type: capability
+      id: capability/trial-behavior
+      name: trial behavior
+      category: billing
+    - type: capability
+      id: capability/storage-caps
+      name: storage caps
+      category: storage
+    - type: capability
+      id: capability/replica-limits
+      name: replica limits
+      category: scaling
+  edges:
+    - type: locks_via
+      from: package/railway-free
+      to: capability/trial-behavior
+      detail: New accounts start with a 30-day trial and a one-time $5 credit, then
+        fall back to Free.
+    - type: locks_via
+      from: package/railway-free
+      to: capability/monthly-minimums
+      detail: Free has $0 subscription cost with $1 of monthly credit after trial.
+    - type: locks_via
+      from: package/railway-free
+      to: capability/storage-caps
+      detail: Free is capped at 0.5 GB volume storage.
+    - type: locks_via
+      from: package/railway-hobby
+      to: capability/monthly-minimums
+      detail: Hobby has a $5 monthly minimum that includes $5 of usage.
+    - type: locks_via
+      from: package/railway-hobby
+      to: capability/replica-limits
+      detail: Hobby allows up to 6 replicas.
+    - type: locks_via
+      from: package/railway-hobby
+      to: capability/storage-caps
+      detail: Hobby has 5 GB default volume storage.
+    - type: locks_via
+      from: package/railway-pro
+      to: capability/monthly-minimums
+      detail: Pro has a $20 monthly minimum that includes $20 of usage.
+    - type: locks_via
+      from: package/railway-pro
+      to: capability/replica-limits
+      detail: Pro is positioned for needs beyond Hobby's 6 replicas, though docs are
+        not fully consistent on exact maxima.
+    - type: locks_via
+      from: package/railway-pro
+      to: capability/storage-caps
+      detail: Pro is positioned for persistent storage needs that exceed Hobby's 5 GB
+        default volume size, though docs are not fully consistent on exact
+        maxima.

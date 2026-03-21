@@ -1,0 +1,339 @@
+id: runtime/java-11-lts-eol-september-2026
+title: Java 11 LTS End of Public Updates September 2026
+problem: "As of 2026-03-18, Oracle JDK 11 Premier Support ended September 2023
+  and Eclipse Temurin 11 full support ended October 2024, leaving teams still on
+  Java 11 without actively maintained free builds from the two most common
+  distributions. Spring Boot 2.x reached EOL in November 2023 and Spring Boot
+  3.x requires Java 17 as a minimum. The migration target decision is urgent:
+  Oracle JDK 17 Premier Support and Oracle JDK 21 NFTC free licensing both
+  expire September 2026, while Java 25 LTS (released September 2025) is now
+  available free under Oracle NFTC until September 2028. Teams on Java 11 must
+  choose between migrating to Java 17 LTS (incremental but short Oracle runway),
+  Java 21 LTS (stable, widely adopted, virtual threads), or Java 25 LTS (newest
+  LTS, longest Oracle free window)."
+context:
+  - java
+  - jvm
+  - runtime
+  - spring-boot
+  - backend
+  - migration
+constraints:
+  - enterprise
+  - high-scale
+  - microservices
+  - cost-sensitive
+candidates:
+  - name: Migrate to Java 21 LTS
+    summary: Java 21 LTS (released September 2023) is the most widely adopted
+      post-11 LTS, with virtual threads (JEP 444, GA), record patterns,
+      sequenced collections, and generational ZGC finalized. As of 2026-03-18,
+      Oracle JDK 21 free use under the NFTC ends September 2026; teams should
+      use Eclipse Temurin 21 (EOL December 2029) or Amazon Corretto 21 (EOL
+      October 2030) for long-term cost-free builds. Spring Boot 3.x is fully
+      compatible with Java 21. The decisive differentiator is virtual threads
+      enabling high-concurrency thread-per-request workloads without reactive
+      rewrites, now production-stable across major Java frameworks.
+    when_to_use: Best for enterprise + high-scale teams running Spring Boot 3.x
+      workloads where virtual threads are a concrete throughput goal and the
+      team wants the largest post-11 LTS ecosystem of tooling, community
+      resources, and library compatibility matrices. The single most decisive
+      factor is whether proven, broad ecosystem adoption outweighs the need for
+      the longest possible Oracle free-license runway.
+    tradeoffs: "Pros: largest post-11 LTS adoption base, virtual threads GA and
+      production-proven, full Spring Boot 3.x compatibility, strong tooling
+      support in IntelliJ and VS Code, Corretto 21 free until October 2030 and
+      Temurin 21 free until December 2029. Cons: Oracle JDK 21 NFTC free use
+      ends September 2026 forcing distribution switch to Temurin or Corretto
+      imminently; strong encapsulation of JDK internals (JEP 403, enforced since
+      Java 17) breaks sun.* reflection access and requires a dependency audit
+      with jdeps before migration; Security Manager removed."
+    cautions: As of 2026-03-18, Oracle JDK 21 NFTC free use ends September 2026;
+      teams on Oracle's own distribution must switch to Temurin or Corretto
+      before that date to avoid OTN licensing obligations. The javax.* to
+      jakarta.* namespace migration is a Spring Boot 3 concern that commonly
+      lands in the same upgrade window as the JDK upgrade and can simultaneously
+      affect Hibernate, Jakarta Mail, and servlet-tier code — plan both tracks
+      together to avoid double-touching the same code.
+    links:
+      - https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+      - https://docs.oracle.com/en/java/javase/21/migrate/getting-started.html
+      - https://endoflife.date/amazon-corretto
+      - https://adoptium.net/support
+  - name: Migrate to Java 25 LTS
+    summary: Java 25 LTS (released September 16, 2025) is the current Oracle LTS,
+      delivering 18 JEPs including module import declarations, flexible
+      constructor bodies, primitive types in patterns, and compact source files.
+      As of 2026-03-18, Oracle JDK 25 is free for all uses under the NFTC until
+      September 2028; Amazon Corretto 25 is free until October 2032 and Eclipse
+      Temurin 25 is free until September 2031. The decisive differentiator is
+      the longest Oracle NFTC free-use runway of any current LTS combined with
+      the most future-proof upgrade positioning, at the cost of a 6-month-old
+      ecosystem.
+    when_to_use: Best for enterprise + low-ops teams starting a greenfield Java
+      service or undertaking a full platform modernization where the team can
+      invest in verifying Spring Boot and framework compatibility with Java 25
+      before committing. The single most decisive factor is whether avoiding a
+      second JDK upgrade cycle within 2–3 years justifies the additional
+      ecosystem-readiness verification work today.
+    tradeoffs: "Pros: longest Oracle NFTC free-use window currently available (until
+      September 2028), Corretto 25 free until October 2032, sidesteps both the
+      Java 17 and Java 21 Oracle licensing cliffs expiring September 2026,
+      consolidates all features from Java 12–25 in a single jump, best long-term
+      positioning. Cons: ecosystem is 6 months old as of 2026-03-18 with fewer
+      community Q&A resources and battle-tested production reports than Java 21;
+      framework compatibility requires explicit verification; build toolchain
+      plugins (Maven compiler plugin, Gradle toolchains) may require version
+      bumps to recognize Java 25."
+    cautions: As of 2026-03-18, Java 25 LTS is 6 months old; Spring Boot, Quarkus,
+      and Micronaut compatibility should be verified in each framework's
+      official release notes before adopting in production. Oracle JDK 25 NFTC
+      free access transitions to OTN License in September 2028 — if avoiding
+      Oracle licensing fees beyond that date is a requirement, plan a
+      distribution switch to Temurin 25 or Corretto 25 before that window
+      closes.
+    links:
+      - https://openjdk.org/projects/jdk/25/
+      - https://www.oracle.com/news/announcement/oracle-releases-java-25-2025-09-16/
+      - https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+      - https://endoflife.date/amazon-corretto
+      - https://adoptium.net/support
+  - name: Migrate to Java 17 LTS (Incremental Path)
+    summary: Java 17 LTS (released September 2021) is the minimum Java version
+      required by Spring Boot 3.x and presents the smallest breaking-change
+      surface from Java 11, with strong encapsulation of JDK internals (JEP 403)
+      and Security Manager deprecation as the main migration hurdles. As of
+      2026-03-18, Oracle JDK 17 Premier Support ends September 2026 (6 months
+      away); teams must use Eclipse Temurin 17 (EOL October 2027) or Amazon
+      Corretto 17 (EOL October 2029) for ongoing free updates. The decisive
+      differentiator is the most predictable migration scope for large legacy
+      codebases under delivery pressure, at the cost of a likely follow-on
+      upgrade to Java 21 or 25 within 18–24 months.
+    when_to_use: Best for enterprise + monorepo teams with large Java 11 codebases
+      that need to unblock Spring Boot 3.x adoption immediately and cannot
+      absorb the testing risk of a two-version skip within the current delivery
+      window. The single most decisive factor is whether reducing migration
+      scope and near-term risk justifies the additional long-term cost of a
+      two-step upgrade strategy.
+    tradeoffs: "Pros: smallest breaking-change delta from Java 11 of the three
+      candidates, sealed classes, records, text blocks, and pattern matching
+      instanceof all GA, Spring Boot 3.x compatible immediately, Corretto 17
+      free until October 2029 and Temurin 17 free until October 2027. Cons:
+      Oracle JDK 17 Premier Support ends September 2026 requiring immediate
+      switch to Temurin or Corretto to avoid OTN licensing; choosing Java 17
+      today almost certainly means a follow-on upgrade to Java 21 or 25 within
+      18–24 months, making the total migration cost higher than migrating
+      directly to Java 21 or 25 now."
+    cautions: As of 2026-03-18, Oracle JDK 17 Premier Support expires in September
+      2026; teams must plan to run on Temurin 17 or Corretto 17 rather than
+      Oracle JDK 17 immediately. Teams migrating to Spring Boot 3.x alongside
+      the Java 17 upgrade must simultaneously address the javax.* to jakarta.*
+      namespace change, which affects Hibernate, Jakarta Mail, and all
+      servlet-tier code regardless of which target JDK version is chosen.
+    links:
+      - https://www.oracle.com/java/technologies/java-se-support-roadmap.html
+      - https://docs.oracle.com/en/java/javase/17/migrate/significant-changes-jdk-release.html
+      - https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Release-Notes
+      - https://adoptium.net/support
+      - https://endoflife.date/amazon-corretto
+tags:
+  - java
+  - jvm
+  - runtime
+  - migration
+  - lts
+  - java-11
+  - java-17
+  - java-21
+  - java-25
+  - eol
+  - spring-boot
+  - openjdk
+  - temurin
+  - corretto
+aliases:
+  - java 11 end of life
+  - java 11 eol upgrade
+  - java 11 migration
+  - upgrade java 11
+  - java lts migration
+  - java 11 to 17 migration
+  - java 11 to 21 migration
+  - java 11 to 25 migration
+  - java 17 vs 21 vs 25
+  - java lts upgrade path
+  - openjdk 11 end of updates
+  - which java lts to upgrade to
+related_cards:
+  - auth/jwt-vs-session
+  - backend/rate-limiting
+  - devtools/github-actions-macos-13-runner-retirement-october-2025
+  - cloud/gcp-cloud-functions-gen1-deprecation-2025
+  - frontend/angular-16-minimum-typescript-4-9-requirement
+  - runtime/next-15-react-19-version-floor
+  - mobile/expo-sdk-52-react-native-0-76-new-architecture-default-2026
+  - cloud/gcp-cloud-run-jobs-execution-timeout-increase-to-24h-and-billing-change-2026
+  - serverless/cloudflare-workers-free-tier-100k-requests-per-day-limit-2026
+status: active
+tier: core
+updated: 2026-03-18
+review_by: 2026-09-30
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/java-11
+      name: Java 11
+      category: runtime
+    - type: runtime
+      id: runtime/java-17
+      name: Java 17
+      category: runtime
+    - type: runtime
+      id: runtime/java-21
+      name: Java 21
+      category: runtime
+    - type: runtime
+      id: runtime/java-25
+      name: Java 25
+      category: runtime
+    - type: runtime
+      id: runtime/oracle-jdk-11
+      name: Oracle JDK 11
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/oracle-jdk-17
+      name: Oracle JDK 17
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/oracle-jdk-21
+      name: Oracle JDK 21
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/oracle-jdk-25
+      name: Oracle JDK 25
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/eclipse-temurin-11
+      name: Eclipse Temurin 11
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/eclipse-temurin-17
+      name: Eclipse Temurin 17
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/eclipse-temurin-21
+      name: Eclipse Temurin 21
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/eclipse-temurin-25
+      name: Eclipse Temurin 25
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/amazon-corretto-17
+      name: Amazon Corretto 17
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/amazon-corretto-21
+      name: Amazon Corretto 21
+      category: jdk-distribution
+    - type: runtime
+      id: runtime/amazon-corretto-25
+      name: Amazon Corretto 25
+      category: jdk-distribution
+    - type: framework
+      id: framework/spring-boot-2.x
+      name: Spring Boot 2.x
+      category: framework
+    - type: framework
+      id: framework/spring-boot-3.x
+      name: Spring Boot 3.x
+      category: framework
+    - type: capability
+      id: capability/virtual-threads
+      name: Virtual threads
+      category: concurrency-feature
+    - type: capability
+      id: capability/strong-encapsulation-jdk-internals
+      name: Strong encapsulation of JDK internals
+      category: breaking-change
+    - type: capability
+      id: capability/jakarta-namespace-migration
+      name: javax.* to jakarta.* namespace migration
+      category: migration-change
+  edges:
+    - type: eol_date
+      from: runtime/oracle-jdk-11
+      to: null
+      date: 2023-09
+      label: Premier Support ended
+    - type: eol_date
+      from: runtime/eclipse-temurin-11
+      to: null
+      date: 2024-10
+      label: full support ended
+    - type: eol_date
+      from: framework/spring-boot-2.x
+      to: null
+      date: 2023-11
+      label: reached EOL
+    - type: requires_version
+      from: framework/spring-boot-3.x
+      to: runtime/java-17
+      requirement: minimum
+    - type: eol_date
+      from: runtime/oracle-jdk-17
+      to: null
+      date: 2026-09
+      label: Premier Support ends
+    - type: eol_date
+      from: runtime/oracle-jdk-21
+      to: null
+      date: 2026-09
+      label: NFTC free use ends
+    - type: eol_date
+      from: runtime/oracle-jdk-25
+      to: null
+      date: 2028-09
+      label: NFTC free use ends
+    - type: eol_date
+      from: runtime/eclipse-temurin-17
+      to: null
+      date: 2027-10
+      label: EOL
+    - type: eol_date
+      from: runtime/amazon-corretto-17
+      to: null
+      date: 2029-10
+      label: EOL
+    - type: eol_date
+      from: runtime/eclipse-temurin-21
+      to: null
+      date: 2029-12
+      label: EOL
+    - type: eol_date
+      from: runtime/amazon-corretto-21
+      to: null
+      date: 2030-10
+      label: EOL
+    - type: eol_date
+      from: runtime/eclipse-temurin-25
+      to: null
+      date: 2031-09
+      label: EOL
+    - type: eol_date
+      from: runtime/amazon-corretto-25
+      to: null
+      date: 2032-10
+      label: EOL
+    - type: breaking_change_in
+      from: capability/strong-encapsulation-jdk-internals
+      to: runtime/java-17
+      standard: JEP 403
+    - type: breaking_change_in
+      from: capability/jakarta-namespace-migration
+      to: framework/spring-boot-3.x
+    - type: breaking_change_in
+      from: capability/virtual-threads
+      to: runtime/java-21
+      standard: JEP 444

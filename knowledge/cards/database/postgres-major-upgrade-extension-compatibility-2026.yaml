@@ -1,0 +1,236 @@
+id: "database/postgres-major-upgrade-extension-compatibility-2026"
+title: "PostgreSQL Major Upgrade—Extension Compatibility Cost 2026"
+problem: "Database operators upgrading PostgreSQL (15→16→17) face extension
+  incompatibilities with PostGIS, TimescaleDB, pgvector, and others. Self-hosted
+  vs managed upgrade paths and downtime risk differ."
+context:
+  - "database"
+  - "postgresql"
+  - "self-hosted"
+  - "major-version-upgrade"
+  - "extensions"
+  - "postgis"
+  - "timescaledb"
+  - "pgvector"
+  - "production"
+constraints:
+  - "high-scale"
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+  - "real-time"
+candidates:
+  - name: "pg_upgrade with per-extension compatibility pre-flight"
+    summary: "The primary upgrade path for self-hosted PostgreSQL 15→16→17 when
+      every installed extension has a binary available for the target major
+      version. As of 2026-03-16, PostGIS 3.6.1 (released 2025-11-13) supports
+      PostgreSQL 13–18 and is pg_upgrade-compatible after updating the old
+      cluster first; pgvector 0.8.2 supports PostgreSQL 13+ and survives
+      pg_upgrade with a binary reinstall followed by ALTER EXTENSION vector
+      UPDATE; TimescaleDB 2.15.1 resolved the regprocedure blocker that
+      previously prevented pg_upgrade, and TimescaleDB 2.17.0+ adds PostgreSQL
+      17 support."
+    when_to_use: "Best for low-ops + small-team or enterprise + compliance stacks
+      where every extension passes a pre-flight version check and a maintenance
+      window of minutes is acceptable. The decisive factor is whether a
+      compatible binary package exists for each extension on the target
+      PostgreSQL major version before pg_upgrade runs—if it does not, choose
+      logical replication or dump/restore instead."
+    tradeoffs: "Fastest upgrade method, completing in minutes especially with
+      pg_upgrade --link mode that hard-links data files instead of copying them.
+      pg_upgrade does not run CREATE EXTENSION (schema definitions carry over
+      from the old cluster), so only extension shared-object files must be
+      pre-installed on the new cluster before the upgrade runs; pg_upgrade
+      creates a post-upgrade script for any ALTER EXTENSION calls needed.
+      Rollback after pg_upgrade has taken writes is unsafe and must rely on
+      backups or snapshots taken immediately before the upgrade."
+    cautions: "Do not run pg_upgrade before upgrading PostGIS on the old cluster.
+      The PostGIS installation docs require updating to a pg_upgrade-compatible
+      PostGIS version on the source first, then running SELECT
+      postgis_extensions_upgrade() on the upgraded cluster after. pgvector has a
+      documented linking bug on PostgreSQL 17.0–17.2 (unresolved external symbol
+      float_to_shortest_decimal_bufn); use PostgreSQL 17.3 or later as your
+      target. TimescaleDB should also not be run on minor versions 17.1, 16.5,
+      or 15.9, which introduced a breaking binary interface change that was
+      reverted in later patch releases."
+    links:
+      - "https://www.postgresql.org/docs/current/pgupgrade.html"
+      - "https://postgis.net/docs/postgis_installation.html"
+      - "https://postgis.net/2024/09/PostGIS-3.5.0/"
+      - "https://github.com/pgvector/pgvector"
+      - "https://github.com/timescale/timescaledb/issues/6935"
+  - name: "Logical replication side-by-side cutover"
+    summary: "Build a new cluster at the target PostgreSQL major version, replicate
+      data continuously from the source, validate under live workload, then
+      switch traffic—cutting over in seconds. As of 2026-03-16, CloudNativePG
+      1.26 documents this as its supported online major upgrade path and notes
+      that the entire cluster is unavailable during a pg_upgrade path but not
+      during a logical replication cutover."
+    when_to_use: "Best for high-scale + real-time or enterprise + compliance teams
+      where extension complexity, TimescaleDB hypertable structures, or
+      near-zero-downtime requirements make pg_upgrade risky. The decisive factor
+      is whether the extra capacity cost and orchestration overhead of running
+      two clusters in parallel is worth a long validation window and a live
+      rollback option."
+    tradeoffs: "Cutover window can be as short as seconds with a connection proxy
+      such as PgBouncer PAUSE/RESUME, making it the closest to zero-downtime of
+      any self-hosted upgrade path. The old cluster stays live as a rollback
+      target until cutover. The cost is temporarily double capacity, strict
+      schema-change discipline during the replication window (logical
+      replication does not replicate DDL, sequence state, or large objects), and
+      substantial orchestration overhead."
+    cautions: "TimescaleDB hypertable storage has documented limitations with
+      standard PostgreSQL logical replication—verify whether your TimescaleDB
+      version and specific feature usage are supported before relying on this as
+      a TimescaleDB upgrade strategy. PostgreSQL also documents that upgrade of
+      a cluster that itself uses logical replication for streaming to
+      subscribers is only fully supported when all source members are on version
+      17.0 or later, so check this constraint if your source cluster has active
+      logical replication subscribers."
+    links:
+      - "https://www.postgresql.org/docs/current/upgrading.html"
+      - "https://cloudnative-pg.io/docs/1.26/postgres_upgrades/"
+      - "https://github.com/timescale/timescaledb/issues/6949"
+      - "https://postgis.net/documentation/getting_started/install_windows/rele\
+        ased_versions/"
+  - name: "Dump/restore into fresh cluster"
+    summary: "Export data from the old cluster with pg_dump or pg_dumpall and
+      restore into a freshly initialized PostgreSQL cluster at the target major
+      version, with all extensions explicitly installed before restore. The most
+      conservative and portable upgrade path, but requires the longest outage
+      proportional to database size."
+    when_to_use: "Best for cost-sensitive + small-team or compliance + enterprise
+      teams where the dataset is small enough to tolerate a longer outage,
+      extension complexity makes pg_upgrade pre-flight risky, or a deterministic
+      clean-slate rebuild is the safest audit story. Choose this when pg_upgrade
+      is blocked by an unresolved extension issue and logical replication adds
+      too much orchestration cost."
+    tradeoffs: "Easiest path to reason about—the new cluster starts fresh and every
+      extension is explicitly installed and tested before data loads, fully
+      sidestepping pg_upgrade extension binary compatibility questions. Most
+      portable and auditable. The tradeoff is the longest downtime, highest I/O
+      cost, and impracticality for large databases. pg_dump can load into newer
+      major PostgreSQL versions but cannot dump from a server newer than its own
+      major version."
+    cautions: "Run ANALYZE on all tables after restore even when statistics are
+      included in the dump, because PostgreSQL recommends this for best
+      optimizer behavior on a freshly restored cluster. PostGIS requires running
+      SELECT postgis_extensions_upgrade() after installation on the fresh
+      cluster because the restored schema references objects from the old
+      PostGIS catalog version. Sequence state and logical replication
+      subscription metadata are not fully preserved by dump/restore and must be
+      verified and reset explicitly after cutover."
+    links:
+      - "https://www.postgresql.org/docs/current/upgrading.html"
+      - "https://postgis.net/docs/postgis_installation.html"
+      - "https://postgis.net/workshops/postgis-intro/upgrades.html"
+      - "https://github.com/pgvector/pgvector"
+tags:
+  - "database"
+  - "postgres"
+  - "postgresql"
+  - "self-hosted"
+  - "upgrade"
+  - "major-version-upgrade"
+  - "extensions"
+  - "postgis"
+  - "timescaledb"
+  - "pgvector"
+  - "pg_upgrade"
+  - "production"
+aliases:
+  - "postgres extension upgrade"
+  - "postgresql extension compatibility upgrade"
+  - "pg_upgrade extension blocker"
+  - "postgis postgresql upgrade"
+  - "timescaledb postgresql upgrade"
+  - "pgvector postgresql upgrade"
+  - "postgres 15 16 17 extension compatibility"
+  - "self-hosted postgres major upgrade"
+related_cards:
+  - "database/postgres-major-version-upgrade"
+  - "database/managed-postgres-major-upgrade-with-extension-compatibility-2026"
+  - "database/postgresql-13-eol-upgrade-path-after-november-2025"
+  - "backend/zero-downtime-deployment"
+  - "database/aurora-postgresql-17-5-lts-vs-16-after-256-tib-storage-limit-2025"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-10-05"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/postgresql-17
+      name: PostgreSQL 17
+      category: database
+    - type: runtime
+      id: runtime/postgresql-17.3+
+      name: PostgreSQL 17.3 or later
+      category: database
+    - type: runtime
+      id: runtime/postgresql-17.1
+      name: PostgreSQL 17.1
+      category: database
+    - type: runtime
+      id: runtime/postgresql-16.5
+      name: PostgreSQL 16.5
+      category: database
+    - type: runtime
+      id: runtime/postgresql-15.9
+      name: PostgreSQL 15.9
+      category: database
+    - type: runtime
+      id: runtime/postgresql-13+
+      name: PostgreSQL 13+
+      category: database
+    - type: runtime
+      id: runtime/postgresql-13-18
+      name: PostgreSQL 13-18
+      category: database
+    - type: package
+      id: package/postgis-3.6.1
+      name: PostGIS 3.6.1
+    - type: package
+      id: package/pgvector-0.8.2
+      name: pgvector 0.8.2
+    - type: package
+      id: package/timescaledb-2.15.1
+      name: TimescaleDB 2.15.1
+    - type: package
+      id: package/timescaledb-2.17.0+
+      name: TimescaleDB 2.17.0+
+  edges:
+    - type: requires_version
+      from: package/postgis-3.6.1
+      to: runtime/postgresql-13-18
+      requirement: supports PostgreSQL 13-18
+    - type: requires_version
+      from: package/pgvector-0.8.2
+      to: runtime/postgresql-13+
+      requirement: supports PostgreSQL 13+
+    - type: requires_version
+      from: package/pgvector-0.8.2
+      to: runtime/postgresql-17.3+
+      requirement: use PostgreSQL 17.3 or later as target because PostgreSQL 17.0-17.2
+        has a documented linking bug
+    - type: requires_version
+      from: package/timescaledb-2.17.0+
+      to: runtime/postgresql-17
+      requirement: adds PostgreSQL 17 support
+    - type: breaking_change_in
+      from: package/timescaledb-2.15.1
+      to: runtime/postgresql-17.1
+      change: do not run on 17.1 because it introduced a breaking binary interface
+        change later reverted
+    - type: breaking_change_in
+      from: package/timescaledb-2.15.1
+      to: runtime/postgresql-16.5
+      change: do not run on 16.5 because it introduced a breaking binary interface
+        change later reverted
+    - type: breaking_change_in
+      from: package/timescaledb-2.15.1
+      to: runtime/postgresql-15.9
+      change: do not run on 15.9 because it introduced a breaking binary interface
+        change later reverted

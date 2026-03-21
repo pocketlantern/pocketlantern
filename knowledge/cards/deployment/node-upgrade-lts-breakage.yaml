@@ -1,0 +1,189 @@
+id: deployment/node-upgrade-lts-breakage
+title: Node.js LTS Upgrade Decision for Production Apps
+problem: Choose when and how to move from one Node LTS line to another given
+  framework compatibility, OpenSSL changes, native module breakage, runtime
+  deprecations, and hosting provider rollout timing.
+context:
+  - deployment
+  - production
+  - nodejs
+  - runtime
+  - framework-compatibility
+  - hosting
+constraints:
+  - serverless
+  - enterprise
+  - small-team
+  - monorepo
+  - microservices
+  - compliance
+candidates:
+  - name: Adopt Node.js 24 Active LTS as the default target
+    summary: As of 2026-03-14, Node.js 24 is the Active LTS line and has the longest
+      supported runway among production-ready Node releases. This is the default
+      choice when your framework, native dependencies, and hosting provider
+      already validate against 24.x.
+    when_to_use: Choose this for serverless + small-team or enterprise + high-scale
+      production apps when you want the longest support window, your app already
+      passes CI on 24.x, and your host has official 24.x support. This is the
+      best default for Next.js apps that already meet the official minimum
+      Node.js 20.9 baseline and do not have unresolved native addon or crypto
+      regressions.
+    tradeoffs: Longest LTS runway and broad host availability reduce repeat
+      migrations. Vercel documents 24.x as the default Node.js version for new
+      projects, AWS Lambda lists a supported nodejs24.x runtime, and Cloud Run
+      functions lists Node.js 24. You still need a full regression pass because
+      newer LTS lines can surface deprecations and crypto/runtime behavior
+      changes.
+    cautions: "Review crypto and TLS dependencies carefully: official Node.js 24
+      releases moved to OpenSSL 3.5, and official deprecations now include
+      internal module imports such as node:_tls_* and node:_stream_*. For native
+      modules, Node-API is ABI-stable across major versions, but addons using
+      Node's C++ APIs or external libraries do not get that guarantee."
+    links:
+      - https://github.com/nodejs/Release
+      - https://nextjs.org/support-policy
+      - https://nextjs.org/docs/pages/getting-started/installation
+      - https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+      - https://docs.aws.amazon.com/lambda/latest/dg/lambda-nodejs.html
+      - https://docs.cloud.google.com/functions/docs/runtime-support
+      - https://nodejs.org/en/blog/release/v24.5.0
+      - https://nodejs.org/api/deprecations.html
+      - https://nodejs.org/api/n-api.html
+  - name: Standardize on Node.js 22 Maintenance LTS as a bridge release
+    summary: As of 2026-03-14, Node.js 22 is in Maintenance LTS through 2027-04-30
+      and remains a practical bridge target when 24.x is available but not yet
+      fully certified across your stack. This is the conservative option when
+      you need to leave Node 20 soon without taking the newest LTS line
+      immediately.
+    when_to_use: Choose this for enterprise + compliance or monorepo + microservices
+      environments where framework support is broad, hosts already expose 22.x,
+      but you still need more time to validate 24.x against native addons,
+      internal platform libraries, or organization-wide certification. It also
+      fits serverless fleets that want one supported line across Vercel, AWS
+      Lambda, and Cloud Run while running a slower application qualification
+      process.
+    tradeoffs: Lower migration risk than jumping straight to 24.x if your
+      dependencies are only partly validated on the newest line. Official
+      Node.js 22 builds were updated to OpenSSL 3.5.2, which avoids being
+      stranded on the older bundled OpenSSL line. The downside is a shorter
+      support window and the near-certainty of another LTS migration sooner than
+      if you move directly to 24.x.
+    cautions: Do not treat 22.x as a long-term destination if you are already
+      planning a larger platform refresh. Maintenance LTS means mostly critical
+      bug and security work, not the full stream of platform evolution. Audit
+      native modules and internal imports anyway, because Node-API stability
+      does not cover addons built on Node C++ APIs, and the official
+      deprecations list keeps expanding across 22.x and 24.x.
+    links:
+      - https://github.com/nodejs/Release
+      - https://nodejs.org/en/blog/release/v22.20.0
+      - https://nodejs.org/api/n-api.html
+      - https://nodejs.org/api/deprecations.html
+      - https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+      - https://docs.aws.amazon.com/lambda/latest/dg/lambda-nodejs.html
+      - https://docs.cloud.google.com/functions/docs/runtime-support
+  - name: Hold on Node.js 20 only for a time-boxed blocker, with an immediate exit
+      plan
+    summary: As of 2026-03-14, Node.js 20 is already in Maintenance LTS and reaches
+      end of life on 2026-04-30. Use this only as a short-lived containment
+      choice when a verified blocker prevents 22.x or 24.x today.
+    when_to_use: Choose this only for cost-sensitive + small-team or enterprise +
+      compliance situations where a specific framework, native addon, or
+      production dependency is still broken on newer LTS lines and you need a
+      narrow remediation window. This is a stopgap, not a steady-state decision,
+      and it only makes sense if you already have a dated migration ticket and
+      staged validation plan.
+    tradeoffs: "Lowest immediate change surface because you avoid a major runtime
+      jump while fixing blockers. The tradeoff is deadline pressure: Node.js 20
+      support ends soon, Google Cloud Run functions publishes a 2026-04-30
+      deprecation date for Node.js 20, AWS Lambda publishes the same deprecation
+      date and later block dates, and you risk doing emergency runtime work on
+      your provider's schedule instead of yours."
+    cautions: Do not start new production builds on 20.x unless you have no viable
+      alternative. On AWS Lambda, Node.js 20 also differs operationally from
+      older runtimes because Lambda no longer loads Amazon-specific CA
+      certificates by default starting with Node.js 20. If you deploy on
+      Cloudflare Workers, remember that Node version selection is not the main
+      compatibility control there; official docs require the nodejs_compat flag
+      and a sufficiently new compatibility date instead.
+    links:
+      - https://github.com/nodejs/Release
+      - https://vercel.com/docs/functions/runtimes/node-js/node-js-versions
+      - https://docs.aws.amazon.com/lambda/latest/dg/lambda-nodejs.html
+      - https://docs.cloud.google.com/functions/docs/runtime-support
+      - https://developers.cloudflare.com/workers/runtime-apis/nodejs/
+      - https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+tags:
+  - deployment
+  - nodejs
+  - lts
+  - production
+  - runtime
+  - nextjs
+  - vercel
+  - aws-lambda
+  - google-cloud-run
+  - cloudflare-workers
+aliases:
+  - node lts upgrade
+  - node 20 to 22
+  - node 22 to 24
+  - node production upgrade
+  - node openssl breakage
+  - native module node upgrade
+  - hosting provider node runtime support
+related_cards:
+  - infra/js-runtime
+  - backend/zero-downtime-deployment
+  - serverless/cloudflare-workers-compatibility-date-and-nodejs-compat-upgrade-strategy
+  - frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis
+  - frontend/vite-7-esm-only-and-node-runtime-upgrade-2026
+  - serverless/aws-lambda-nodejs-24-runtime-migration-after-callback-handler-removal-2025
+  - backend/express-5-default-on-npm-after-v5-1-release-2025
+  - testing/jest-30-upgrade-after-node-18-drop-2026
+  - runtime/node-18-nes-vs-jump-to-22-2026
+  - frontend/tailwindcss-v4-upgrade-node20-browser-floor-2026
+  - runtime/node-20-eol-april-2026-upgrade-path
+  - testing/jest-30-node18-typescript54-upgrade-breakage-2026
+  - web/hubspot-projects-2025-1-deprecation-before-august-1-2026
+  - desktop/electron-37-breaking-changes-and-support-window-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-09-14
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20 LTS
+    - type: runtime
+      id: runtime/nodejs-22
+      name: Node.js 22 LTS
+    - type: runtime
+      id: runtime/nodejs-24
+      name: Node.js 24 Active LTS
+    - type: protocol
+      id: protocol/openssl-3.5
+      name: OpenSSL 3.5
+  edges:
+    - type: eol_date
+      from: runtime/nodejs-20
+      to: null
+      date: 2026-04-30
+      successor: runtime/nodejs-22
+    - type: eol_date
+      from: runtime/nodejs-22
+      to: null
+      date: 2027-04-30
+      successor: runtime/nodejs-24
+    - type: requires_version
+      from: runtime/nodejs-24
+      to: protocol/openssl-3.5
+      min_version: "3.5"
+    - type: breaking_change_in
+      from: runtime/nodejs-24
+      to: null
+      change: OpenSSL 3.5 security level 2 — blocks RSA/DSA/DH < 2048 bits, ECC < 224
+        bits; internal module imports (node:_tls_*, node:_stream_*) deprecated

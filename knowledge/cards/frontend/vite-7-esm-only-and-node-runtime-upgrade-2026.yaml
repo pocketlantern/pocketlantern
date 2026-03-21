@@ -1,0 +1,197 @@
+id: frontend/vite-7-esm-only-and-node-runtime-upgrade-2026
+title: Vite 7 ESM-Only Upgrade and Node 20/22 Baseline Decision
+problem: Choose whether to adopt Vite 7 now or defer based on its ESM-only
+  distribution, dropped Node 18 support, and downstream plugin/framework
+  compatibility, especially for teams with mixed CJS tooling and older CI
+  images.
+context:
+  - frontend
+  - vite
+  - nodejs
+  - tooling
+  - migration
+  - ci
+  - esm
+constraints:
+  - small-team
+  - enterprise
+  - monorepo
+  - low-ops
+  - cost-sensitive
+candidates:
+  - name: Adopt Vite 7 now on a fully upgraded Node baseline
+    summary: Vite 7 is officially ESM-only and requires Node.js 20.19+ or 22.12+.
+      The Vite 7 announcement says those minimums were chosen so Node supports
+      `require(esm)` without a flag, which lets the Vite JavaScript API still be
+      required from CJS modules on supported runtimes.
+    when_to_use: Best for small-team + low-ops teams, or enterprise + monorepo
+      teams, that have already standardized local dev and CI on Node.js 20.19+
+      or 22.12+, use mostly mainstream framework starters and Vite plugins, and
+      want to absorb the Node runtime upgrade and bundler upgrade in one change.
+      Choose this when mixed CJS tooling is limited to consuming Vite's JS API
+      rather than relying on older Node 18 images or deprecated Vite internals.
+    tradeoffs: This moves you onto the Vite 7 behavior model immediately and avoids
+      staying on a runtime floor that Vite no longer supports. The cost is that
+      you must validate the migration-guide changes that can affect downstream
+      tooling, including the removal of Sass legacy API support, changed
+      CommonJS interop behavior, removal of module-resolution format sniffing,
+      preserved `require` calls for externalized modules, and the fact that
+      `esbuild` is no longer a direct Vite dependency.
+    cautions: "Do not treat a generic Node 20 label as sufficient: Vite 7 explicitly
+      requires Node.js 20.19+ or 22.12+. As of 2026-03-16, the current Vite
+      releases page shows Vite 7 is on the previous-major support line, with
+      important fixes and security patches backported to the latest supported
+      Vite 7 minor while regular patches go to the current major. Audit plugins
+      that call `transformWithEsbuild` or assume old CJS interop and
+      package-resolution heuristics before cutting over."
+    links:
+      - https://vite.dev/blog/announcing-vite7
+      - https://vite.dev/guide/migration.html
+      - https://vite.dev/releases
+      - https://nodejs.org/en/blog/release/v20.19.0
+  - name: Upgrade Node and CI first, then move to Vite 7 in a second step
+    summary: The official Node.js 20.19.0 release enabled `require(esm)` by default
+      on the Node 20 line, and Vite 7's official announcement ties its new
+      minimum Node range directly to that change. This makes a staged
+      runtime-first migration the cleanest option when your blocker is CI
+      images, internal CLIs, or mixed CJS glue code rather than Vite app code
+      itself.
+    when_to_use: Best for enterprise + monorepo teams, or cost-sensitive + monorepo
+      teams, where older CI images, pinned container bases, or internal build
+      scripts still assume Node 18 or older Node 20 minors. Choose this when you
+      want to separate the operational work of updating runners, Docker images,
+      and package-manager environments from the application-facing Vite 7
+      migration.
+    tradeoffs: This reduces blast radius by turning one risky upgrade into two
+      smaller ones. The downside is extra coordination and a temporary period
+      where you are paying the migration cost without yet getting the Vite 7
+      package and config behavior changes.
+    cautions: A staged plan only works if the first phase is real and bounded. Use
+      exact Node minimums from Vite 7, not broad major-version wording, and
+      verify all CI images, build caches, and local version managers converge on
+      the same floor. Once the runtime is upgraded, re-check the Vite migration
+      guide for plugin and package-resolution assumptions that can still break
+      even after Node is fixed.
+    links:
+      - https://nodejs.org/en/blog/release/v20.19.0
+      - https://vite.dev/blog/announcing-vite7
+      - https://vite.dev/guide/migration.html
+  - name: Defer on the latest supported Vite 6 line while clearing ecosystem blockers
+    summary: Vite 6 officially supports Node.js 18, 20, and 22+, and as of
+      2026-03-16, the current Vite releases page shows the latest Vite 6 minor
+      still receives security backports. This is the containment path for teams
+      whose framework/plugin stack or CI estate is not ready for Vite 7's Node
+      floor and migration changes.
+    when_to_use: Best for enterprise + monorepo teams with verified blockers such as
+      Node 18-based CI images, plugins that still assume direct `esbuild`
+      availability, packages that depend on Vite's removed format-sniffing
+      behavior, or code affected by the new CommonJS interop rules. Choose this
+      only when the blocker is concrete and documented, and when you have an
+      explicit upgrade backlog to remove it.
+    tradeoffs: This minimizes immediate delivery risk and lets older environments
+      keep working while you audit framework starters, tests, and plugins. The
+      downside is that you remain on an older major where support is narrower,
+      Node 18 is already EOL at the platform level, and you still owe both the
+      runtime upgrade and the Vite 7 migration later.
+    cautions: This should be treated as a temporary hold, not a long-term steady
+      state. Node's official EOL page lists Node 18 as End-of-Life, and Vite's
+      releases policy says older majors only receive limited backports. Stay on
+      the latest supported Vite 6 minor, and use the deferral period to
+      inventory exactly which dependencies fail under the Vite 7 migration guide
+      rather than postponing without a blocker list.
+    links:
+      - https://vite.dev/blog/announcing-vite6
+      - https://vite.dev/releases
+      - https://nodejs.org/en/about/eol
+      - https://vite.dev/guide/migration.html
+tags:
+  - frontend
+  - vite
+  - nodejs
+  - esm
+  - cjs
+  - bundler
+  - migration
+  - ci
+  - build-tooling
+aliases:
+  - vite 7 esm only
+  - vite 7 node 20.19
+  - vite 7 node 18 dropped
+  - vite 7 cjs require esm
+  - vite 7 upgrade decision
+  - vite 6 vs vite 7 node support
+related_cards:
+  - deployment/node-upgrade-lts-breakage
+  - infra/js-runtime
+  - frontend/react-19-server-components-adoption-strategy-nextjs-15-remix-3
+  - frontend/nuxt-4-migration-after-nuxt-3-maintenance-ended-jan-2026
+  - frontend/tailwindcss-v4-upgrade-node20-browser-floor-2026
+  - runtime/vite-6-module-runner-migration-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-11
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/vite-7
+      name: Vite 7
+      version: 7.x
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+      current_lts: false
+      eol_date: 2026-04-30
+    - type: runtime
+      id: runtime/nodejs-22
+      name: Node.js 22
+      current_lts: false
+      eol_date: 2027-04-30
+    - type: runtime
+      id: runtime/nodejs-18
+      name: Node.js 18
+      current_lts: false
+      eol_date: 2025-04-30
+  edges:
+    - type: requires_version
+      from: package/vite-7
+      to: runtime/nodejs-20
+      min_version: 20.19+
+      reason: require(esm) without flag needed for CJS interop
+    - type: requires_version
+      from: package/vite-7
+      to: runtime/nodejs-22
+      min_version: 22.12+
+      reason: require(esm) without flag needed for CJS interop
+    - type: breaking_change_in
+      from: package/vite-7
+      to: null
+      change: ESM-only distribution — CJS bundle removed
+      migration_path: use require(esm) on supported Node versions or convert to ESM imports
+    - type: breaking_change_in
+      from: package/vite-7
+      to: null
+      change: esbuild no longer a direct dependency
+      migration_path: install esbuild separately if using transformWithEsbuild
+    - type: breaking_change_in
+      from: package/vite-7
+      to: null
+      change: Sass legacy API support removed
+      migration_path: migrate to modern Sass API
+    - type: breaking_change_in
+      from: package/vite-7
+      to: null
+      change: module-resolution format sniffing removed
+      migration_path: use explicit package.json exports field
+    - type: eol_date
+      from: runtime/nodejs-18
+      to: null
+      date: 2025-04-30
+      successor: runtime/nodejs-20
+    - type: eol_date
+      from: runtime/nodejs-20
+      to: null
+      date: 2026-04-30
+      successor: runtime/nodejs-22

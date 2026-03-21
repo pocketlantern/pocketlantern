@@ -1,0 +1,167 @@
+id: backend/zero-downtime-deployment
+title: Zero-Downtime Deployment Playbook
+problem: Deploying application updates without interrupting live traffic
+context:
+  - backend
+  - deployment
+  - production
+constraints:
+  - high-scale
+  - enterprise
+  - real-time
+candidates:
+  - name: Rolling Deployment
+    summary: Replace instances one by one. New version gradually takes over while
+      old instances still serve traffic.
+    when_to_use: Standard web applications, Kubernetes default strategy. Best fit
+      for low-ops + small-team or microservices + enterprise where simplicity
+      and native orchestrator support are priorities.
+    tradeoffs: Simple and well-supported. During rollout, both old and new versions
+      coexist — API/schema must be backward compatible.
+    cautions: Database migrations must be backward compatible. Use readiness probes
+      to avoid routing to unready instances.
+    links:
+      - https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment
+  - name: Blue-Green Deployment
+    summary: Run two identical environments (blue=current, green=new). Switch
+      traffic all at once after green is verified.
+    when_to_use: When you need instant rollback and can afford double infrastructure
+      during deploy. Best fit for enterprise + compliance or real-time +
+      high-scale where guaranteed rollback and zero-gap cutover are required.
+    tradeoffs: Clean cutover, instant rollback by switching back. Requires 2x
+      infrastructure during deployment. Database must handle both versions.
+    cautions: Long-running requests on blue may be dropped at switchover. Use
+      connection draining.
+    links:
+      - https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/bluegreen-deployments.html
+  - name: Canary Deployment
+    summary: Route a small percentage of traffic to the new version first. Gradually
+      increase if metrics are healthy.
+    when_to_use: High-traffic services where you want to detect issues before full
+      rollout. Best fit for high-scale + microservices or enterprise + real-time
+      where progressive rollout reduces blast radius.
+    tradeoffs: Minimizes blast radius of bad deploys. Requires traffic splitting
+      infrastructure and good observability to detect issues.
+    cautions: Define clear rollback criteria (error rate, latency). Ensure canary
+      gets representative traffic, not just internal.
+    links:
+      - https://martinfowler.com/bliki/CanaryRelease.html
+tags:
+  - deployment
+  - devops
+  - infrastructure
+  - backend
+  - playbook
+aliases:
+  - zero downtime
+  - rolling update
+  - blue green
+  - canary release
+  - deploy strategy
+related_cards:
+  - infra/container-orchestration
+  - infra/monitoring-observability
+  - infra/production-readiness
+  - deployment/bluegreen-vs-canary-on-serverless
+  - deployment/node-upgrade-lts-breakage
+  - deployment/preview-environments-cost-governance
+  - database/postgres-major-version-upgrade
+  - deployment/rollback-strategy-for-schema-plus-app
+  - database/postgres-major-upgrade-extension-compatibility-2026
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/rolling-deployment
+      name: Rolling Deployment
+      category: deployment_strategy
+    - type: framework
+      id: framework/kubernetes
+      name: Kubernetes
+      category: orchestrator
+    - type: capability
+      id: capability/backward-compatible-api-schema
+      name: Backward-compatible API/schema
+      category: compatibility
+    - type: capability
+      id: capability/backward-compatible-db-migrations
+      name: Backward-compatible database migrations
+      category: database_compatibility
+    - type: capability
+      id: capability/readiness-probes
+      name: Readiness probes
+      category: traffic_safety
+    - type: capability
+      id: capability/blue-green-deployment
+      name: Blue-Green Deployment
+      category: deployment_strategy
+    - type: capability
+      id: capability/double-infrastructure
+      name: Double infrastructure during deployment
+      category: infrastructure
+    - type: capability
+      id: capability/database-handles-both-versions
+      name: Database handles both versions
+      category: database_compatibility
+    - type: capability
+      id: capability/connection-draining
+      name: Connection draining
+      category: traffic_safety
+    - type: capability
+      id: capability/canary-deployment
+      name: Canary Deployment
+      category: deployment_strategy
+    - type: capability
+      id: capability/traffic-splitting-infrastructure
+      name: Traffic splitting infrastructure
+      category: traffic_management
+    - type: capability
+      id: capability/observability
+      name: Good observability
+      category: observability
+    - type: capability
+      id: capability/rollback-criteria
+      name: Clear rollback criteria (error rate, latency)
+      category: rollback
+    - type: capability
+      id: capability/representative-traffic
+      name: Representative traffic
+      category: traffic_quality
+  edges:
+    - type: locks_via
+      from: capability/rolling-deployment
+      to: framework/kubernetes
+    - type: requires_version
+      from: capability/rolling-deployment
+      to: capability/backward-compatible-api-schema
+    - type: requires_version
+      from: capability/rolling-deployment
+      to: capability/backward-compatible-db-migrations
+    - type: locks_via
+      from: capability/rolling-deployment
+      to: capability/readiness-probes
+    - type: requires_version
+      from: capability/blue-green-deployment
+      to: capability/double-infrastructure
+    - type: requires_version
+      from: capability/blue-green-deployment
+      to: capability/database-handles-both-versions
+    - type: locks_via
+      from: capability/blue-green-deployment
+      to: capability/connection-draining
+    - type: requires_version
+      from: capability/canary-deployment
+      to: capability/traffic-splitting-infrastructure
+    - type: requires_version
+      from: capability/canary-deployment
+      to: capability/observability
+    - type: locks_via
+      from: capability/canary-deployment
+      to: capability/rollback-criteria
+    - type: locks_via
+      from: capability/canary-deployment
+      to: capability/representative-traffic

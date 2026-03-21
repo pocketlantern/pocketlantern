@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/pocketlantern/pocketlantern/blob/main/docs/v1-public.md
+    about: What we promise, what we don't, install guide, Free vs Pro

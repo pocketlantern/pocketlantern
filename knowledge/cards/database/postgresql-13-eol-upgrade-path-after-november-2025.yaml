@@ -1,0 +1,219 @@
+id: database/postgresql-13-eol-upgrade-path-after-november-2025
+title: PostgreSQL 13 End of Life Upgrade Path After November 2025
+problem: Operators still on PostgreSQL 13 need a change-awareness card showing
+  that 13 went end-of-life in November 2025 and what version jump is safest now,
+  especially for managed services, extensions, and security patch expectations.
+context:
+  - database
+  - postgresql
+  - postgres-13
+  - eol
+  - major-version-upgrade
+  - managed-services
+  - extensions
+  - security-patching
+  - production
+constraints:
+  - low-ops
+  - enterprise
+  - compliance
+  - high-scale
+  - small-team
+candidates:
+  - name: Upgrade to PostgreSQL 17 now
+    summary: Based on the official support tables and managed-service rollout notes,
+      PostgreSQL 17 is the safest default landing version for most PostgreSQL 13
+      estates as of 2026-03-15. PostgreSQL 13 reached community end-of-life on
+      2025-11-13 and no longer receives community security or bug fixes, while
+      PostgreSQL 17 remains supported through 2029-11-08 and is broadly
+      documented across AWS, Google Cloud, Azure, and self-managed upgrade
+      paths.
+    when_to_use: Best for low-ops + enterprise, compliance + small-team, or
+      extension-heavy managed-service fleets where you need a supported target
+      with a long runway but want fewer first-wave PostgreSQL 18 rollout risks.
+      Choose this when you use extensions such as PostGIS, pgvector, pglogical,
+      or rdkit and want a conservative landing version before deciding later
+      whether PostgreSQL 18 is worth the extra jump.
+    tradeoffs: This is the best balance between support runway and upgrade maturity.
+      You get much more runway than PostgreSQL 14, 15, or 16, and fewer current
+      provider caveats than PostgreSQL 18, but you still give up about one year
+      of community support life versus PostgreSQL 18 and may plan one more major
+      upgrade later.
+    cautions: Check provider-specific blockers before assuming a direct 13-to-17
+      path. On Amazon RDS, direct upgrade to 17 is blocked when `rdkit` 4.6.0 or
+      lower is present on PostgreSQL 16 or lower, and AWS tells PostgreSQL 13
+      users in that case to land first on 14.14+, 15.9+, or 16.5+. On Cloud SQL,
+      PostgreSQL 17 upgrades require extension prep such as `rdkit` 4.6.1 and
+      `pg_squeeze` 1.7, and `pg_ivm` blocks major upgrades. On Azure Flexible
+      Server, in-place upgrades block on `timescaledb`, `orafce`, and
+      `postgres_fdw`, and also do not support read replicas or logical
+      replication slots during the upgrade.
+    links:
+      - https://www.postgresql.org/support/versioning/
+      - https://www.postgresql.org/about/news/postgresql-181-177-1611-1515-1420-and-1323-released-3171/
+      - https://www.postgresql.org/docs/release/17.0/
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html
+      - https://docs.cloud.google.com/sql/docs/postgres/upgrade-major-db-version-inplace
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-major-version-upgrade
+  - name: Upgrade directly to PostgreSQL 18 only when provider and extension
+      readiness are already verified
+    summary: PostgreSQL 18 is the longest-runway community target now, with support
+      through 2030-11-14. This is the right choice only when your provider
+      exposes PostgreSQL 18 for your region and your extension set is confirmed
+      on the target minor.
+    when_to_use: Best for low-ops + small-team or enterprise + high-scale teams that
+      want to avoid another near-term major upgrade and can validate
+      target-minor readiness first. Choose this when you are self-managed, on
+      Cloud SQL, or on a managed platform where PostgreSQL 18 is already
+      available for your region and your extension footprint is light or fully
+      rehearsed.
+    tradeoffs: You get the longest support runway and PostgreSQL 18 engine
+      improvements, including the new release-line features and newer
+      `pg_upgrade` behavior. The tradeoff is more current compatibility checking
+      and more provider-specific rollout variance than PostgreSQL 17.
+    cautions: "Read the PostgreSQL 18 migration notes before upgrading because the
+      release notes explicitly list incompatibilities. Cloud SQL requires
+      extension prep for PostgreSQL 18, including PostGIS 3.6.0 and `pg_squeeze`
+      1.8. Azure says in-place upgrades to PostgreSQL 18 are being enabled in
+      phases by region. On Amazon RDS, official AWS sources currently conflict
+      on `plrust`: the major-upgrade guide says `plrust` is removed starting in
+      RDS PostgreSQL 18 and must be removed before upgrade, while the current
+      RDS extension matrix lists `plrust` 1.2.7 for PostgreSQL 18.1-18.3. Treat
+      `plrust` readiness as requiring case-by-case verification until AWS
+      reconciles that documentation. Separately, AWS documents
+      `postgis_topology` as unavailable on RDS PostgreSQL 18.1 and 18.2 due to
+      known issues."
+    links:
+      - https://www.postgresql.org/support/versioning/
+      - https://www.postgresql.org/docs/release/18.0/
+      - https://docs.cloud.google.com/sql/docs/postgres/db-versions
+      - https://docs.cloud.google.com/sql/docs/postgres/upgrade-major-db-version-inplace
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-major-version-upgrade
+      - https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-extensions.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.PostgreSQL.MajorVersion.Process.html
+  - name: Use managed-service extended support only as a temporary bridge, then move
+      to PostgreSQL 17 or 18
+    summary: If you cannot upgrade immediately, some managed services continue paid
+      support after PostgreSQL 13 community end-of-life, but this is a provider
+      bridge rather than community support. As of 2026-03-15, Cloud SQL places
+      PostgreSQL 13 into extended support on 2026-02-01, Amazon RDS starts
+      PostgreSQL 13 Extended Support year-1 pricing on 2026-03-01, and Azure
+      documents PostgreSQL 13 paid Extended Support beginning 2026-08-01 after
+      its grace period.
+    when_to_use: Best for enterprise + compliance or high-scale + low-ops teams with
+      blocked upgrades, regulated change windows, or extension and replication
+      dependencies that need more rehearsal time. Use this only on a managed
+      service that explicitly documents continued security coverage, and only
+      while you schedule a real move to PostgreSQL 17 or 18.
+    tradeoffs: This buys time and preserves provider support coverage while you
+      rehearse the upgrade. The cost is added provider fees, continued
+      operational drag from an old major version, and a weaker feature and
+      performance position than moving to a regular-support version now.
+    cautions: Do not treat this as equivalent to staying on a community-supported
+      PostgreSQL line. Self-managed PostgreSQL 13 gets no more community
+      security or bug fixes after 2025-11-13. Cloud SQL says extended support
+      gives critical and high CVE fixes plus Cloud SQL-maintained bug fixes, but
+      no new features. Azure says Extended Support provides critical security
+      updates and technical assistance, but not minor-version support or
+      performance enhancements. Amazon RDS charges begin the day after the RDS
+      end-of-standard-support date, and you should check current official
+      pricing pages before budgeting.
+    links:
+      - https://www.postgresql.org/about/news/postgresql-181-177-1611-1515-1420-and-1323-released-3171/
+      - https://docs.cloud.google.com/sql/docs/postgres/db-versions
+      - https://docs.cloud.google.com/sql/docs/postgres/extended-support
+      - https://docs.aws.amazon.com/AmazonRDS/latest/PostgreSQLReleaseNotes/postgresql-release-calendar.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support.html
+      - https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/extended-support-charges.html
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/concepts-version-policy
+      - https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/extended-support
+tags:
+  - database
+  - postgres
+  - postgresql
+  - postgresql-13
+  - eol
+  - end-of-life
+  - major-version-upgrade
+  - managed-postgres
+  - extensions
+  - security
+  - aws-rds
+  - cloud-sql
+  - azure-postgresql
+aliases:
+  - postgres 13 eol
+  - postgresql 13 end of life
+  - postgres 13 upgrade path
+  - postgresql 13 to 17
+  - postgresql 13 to 18
+  - postgres 13 managed service extended support
+  - rds postgres 13 extended support
+  - cloud sql postgres 13 extended support
+  - azure postgres 13 extended support
+related_cards:
+  - database/managed-postgres-major-upgrade-with-extension-compatibility-2026
+  - database/postgres-major-version-upgrade
+  - database/postgres-major-upgrade-extension-compatibility-2026
+  - database/render-flexible-postgres-vs-legacy-instance-types-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-25
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/postgresql-13
+      name: PostgreSQL 13
+      version: "13"
+    - type: package
+      id: package/postgresql-18
+      name: PostgreSQL 18
+      version: "18"
+    - type: vendor
+      id: vendor/cloud-sql
+      name: Google Cloud SQL
+      category: cloud
+    - type: vendor
+      id: vendor/azure-postgresql
+      name: Azure PostgreSQL
+      category: cloud
+    - type: package
+      id: package/postgis
+      name: PostGIS
+      version: 3.6.x
+  edges:
+    - type: eol_date
+      from: package/postgresql-13
+      to: null
+      date: 2025-11-13
+      successor: package/postgresql-17
+    - type: breaking_change_in
+      from: package/postgresql-18
+      to: null
+      change: postgis_topology unavailable on RDS PostgreSQL 18.1 and 18.2
+      migration_path: wait for RDS 18.3+ or remove postgis_topology dependency
+    - type: breaking_change_in
+      from: package/postgresql-18
+      to: null
+      change: plrust removed starting in RDS PostgreSQL 18 — conflicting AWS docs on
+        availability
+      migration_path: verify plrust readiness case-by-case; remove before upgrade if uncertain
+    - type: requires_version
+      from: package/postgresql-18
+      to: package/postgis
+      min_version: 3.6.0+
+      reason: Cloud SQL PG18 requires PostGIS 3.6.0+
+    - type: locks_via
+      from: vendor/azure-postgresql
+      to: package/postgresql-13
+      surface: in-place upgrades block on timescaledb, orafce, postgres_fdw; no read
+        replicas or logical replication during upgrade
+      severity: high
+    - type: locks_via
+      from: vendor/cloud-sql
+      to: package/postgresql-13
+      surface: pg_ivm blocks major upgrades; rdkit 4.6.1 and pg_squeeze 1.7 required
+        for upgrade prep
+      severity: medium

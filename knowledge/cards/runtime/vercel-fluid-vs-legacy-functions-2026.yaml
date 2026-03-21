@@ -1,0 +1,136 @@
+id: "runtime/vercel-fluid-vs-legacy-functions-2026"
+title: "Vercel Fluid Compute vs Legacy Functions Pricing After January 2026
+  Defaulting"
+problem: "Choose whether to keep existing Vercel workloads on legacy Functions
+  billing or move them to Fluid Compute, now the default model for new projects
+  as of 2026-03-19."
+context:
+  - "vercel"
+  - "serverless"
+  - "nextjs"
+constraints:
+  - "serverless"
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+candidates:
+  - name: "Stay on legacy Functions billing for existing projects"
+    summary: 'Legacy Vercel Functions remain available for projects that do not use
+      Fluid Compute. As of 2026-03-19, official docs still describe legacy
+      pricing separately: Pro usage is billed at "$0.18 per 1 GB-Hour" for
+      duration and "$0.60 per 1,000,000 Invocations," while Hobby includes
+      "100 GB-Hours" and "100,000" invocations before projects may be paused
+      instead of billed overage. Legacy billing is wall-clock oriented for
+      Node.js functions, measured in GB-hours from allocated memory multiplied
+      by runtime, and execution is split into 50 ms billing units when CPU
+      exceeds 50 ms. New projects do not start here by default anymore.'
+    when_to_use: "Use this only when you already have an existing project on legacy
+      billing and changing runtime behavior or cost shape is riskier than paying
+      for wall-clock duration. The decisive factor is whether your functions are
+      short, CPU-dense, and already tuned enough that Fluid's concurrency,
+      memory, and pricing model would not materially improve cost or behavior."
+    tradeoffs: "The main benefit is avoiding migration work and preserving the
+      current billing model. The downside is that you keep paying on duration
+      rather than active CPU, which is usually worse for I/O-heavy functions,
+      long waits on external APIs, or high-concurrency workloads."
+    cautions: "As of 2026-03-19, this is no longer the default path for new
+      projects. Hobby legacy overages do not auto-bill; the account can be
+      paused. Legacy docs explicitly recommend upgrading to Fluid Compute for
+      more cost-effective billing."
+    links:
+      - "https://vercel.com/docs/functions/usage-and-pricing/legacy-pricing"
+      - "https://vercel.com/docs/functions/usage-and-pricing"
+  - name: "Move workloads to Fluid Compute"
+    summary: 'Fluid Compute is the default for all new Vercel projects as of
+      2026-03-19. Official pricing bills separately for "Active CPU" and
+      "Provisioned Memory" plus invocations; for example, Portland and
+      Washington D.C. are listed at "$0.128" per CPU-hour and "$0.0106" per
+      GB-hour of memory, with the first 1 million invocations included and Hobby
+      also including 4 CPU-hours and 360 GB-hours monthly. Billing pauses CPU
+      charges during I/O waits but continues memory billing until the last
+      in-flight request completes. Vercel also raised default Function limits
+      for Fluid in June 2025: default duration is 300 seconds on all plans, Pro
+      and Enterprise can go to 800 seconds, Standard is now 1 vCPU and 2 GB,
+      Performance is 2 vCPU and 4 GB, and the Basic CPU instance was removed.'
+    when_to_use: "Use this for cost-sensitive or high-concurrency serverless
+      workloads, especially when requests spend meaningful time waiting on
+      databases, APIs, or model calls. The decisive factor is whether you
+      benefit from active-CPU billing and instance reuse enough to offset
+      migration validation."
+    tradeoffs: "The main benefit is a pricing model that charges CPU only when code
+      is actively executing, with better defaults and concurrency behavior. The
+      tradeoff is that memory is still billed for the full in-flight lifetime of
+      the instance, regional pricing varies, and migration changes the
+      operational and cost profile enough that you should redeploy and validate
+      real traffic."
+    cautions: "Vercel stated that Active CPU pricing became enabled by default in
+      2025 for Hobby, Pro, and new Enterprise teams, and that the change takes
+      effect after a redeploy. Existing projects may need the Fluid Compute
+      toggle enabled manually in project settings. If you relied on older
+      instance classes or duration defaults, re-check limits and cost
+      assumptions before switching."
+    links:
+      - "https://vercel.com/docs/functions/usage-and-pricing"
+      - "https://vercel.com/changelog/fluid-compute-is-now-the-default-for-new-\
+        projects"
+      - "https://vercel.com/changelog/lower-pricing-with-active-cpu-pricing-for\
+        -fluid-compute"
+      - "https://vercel.com/changelog/higher-defaults-and-limits-for-vercel-fun\
+        ctions-running-fluid-compute"
+tags:
+  - "runtime"
+  - "vercel"
+  - "serverless"
+  - "pricing"
+aliases:
+  - "vercel fluid compute pricing"
+  - "vercel legacy functions pricing"
+  - "vercel active cpu billing"
+  - "vercel fluid pricing"
+  - "vercel fluid compute cost"
+  - "vercel functions pricing 2026"
+  - "vercel legacy billing"
+  - "vercel fluid billing"
+  - "active cpu pricing vercel"
+  - "vercel fluid vs functions"
+  - "vercel fluid default 2026"
+  - "vercel serverless pricing legacy"
+  - "fluid compute vercel cost"
+related_cards:
+  - "serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-\
+    2026"
+  - "serverless/vercel-edge-vs-node-runtime"
+  - "infra/vercel-vs-netlify-vs-cloudflare-pages-2026"
+  - runtime/vercel-fluid-regional-cost-bands-2026
+  - web/vercel-function-duration-limits-with-fluid-compute-2026
+  - deployment/vercel-fluid-compute-active-cpu-pricing-2026
+  - web/vercel-fluid-compute-vs-classic-functions-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: runtime
+      id: runtime/vercel-fluid-compute
+      name: Fluid Compute
+      category: serverless runtime
+    - type: runtime
+      id: runtime/vercel-legacy-functions-billing
+      name: Legacy Functions billing
+      category: serverless runtime
+  edges:
+    - type: breaking_change_in
+      from: runtime/vercel-fluid-compute
+      to: vendor/vercel
+      date: 2026-03-19
+      change: default_for_new_projects
+    - type: breaking_change_in
+      from: runtime/vercel-legacy-functions-billing
+      to: vendor/vercel
+      date: 2026-03-19
+      change: no_longer_default_for_new_projects

@@ -1,0 +1,164 @@
+id: ai/openai-responses-api-migration-before-assistants-shutdown-2026
+title: OpenAI Responses API vs Assistants API Migration Before 2026 Shutdown
+problem: Choose whether to migrate agent workflows now or defer, given OpenAI
+  deprecation timelines, feature parity, tool pricing, and operational
+  constraints around the Assistants API sunset.
+context:
+  - ai
+  - openai
+  - agent-workflows
+  - api-migration
+  - responses-api
+  - assistants-api
+  - conversations-api
+constraints:
+  - low-ops
+  - enterprise
+  - small-team
+  - cost-sensitive
+  - compliance
+candidates:
+  - name: Migrate now to Responses API with Conversations API
+    summary: As of 2026-03-15, OpenAI documents that the Assistants API is
+      deprecated and will be removed on 2026-08-26, with Responses API and
+      Conversations API as the recommended replacement. OpenAI also states that
+      the Responses path has achieved Assistants feature parity, is the future
+      direction for building agents, and adds newer capabilities such as remote
+      MCP, web search, and computer-use tooling.
+    when_to_use: Choose this when you are building or actively evolving agent
+      workflows, especially for low-ops + small-team teams that want to avoid a
+      forced migration later, or enterprise + compliance teams that need time
+      for validation, security review, and rollout before the 2026-08-26
+      shutdown. Best when you also want built-in access to newer Responses-era
+      features as of 2026-03-15.
+    tradeoffs: "This aligns with OpenAI's documented replacement path and avoids
+      investing more in a deprecated API. The tradeoff is migration work now:
+      assistant objects should be converted to prompts, thread state should move
+      to conversations, and response/tool loops may need code changes."
+    cautions: OpenAI explicitly says there is no automated migration tool for
+      Threads to Conversations; it recommends moving new user chats first and
+      backfilling old threads as needed. If you rely on long-running reasoning
+      jobs, background mode is available, but OpenAI documents that it stores
+      response data for roughly 10 minutes for polling and is not Zero Data
+      Retention compatible.
+    links:
+      - https://developers.openai.com/api/docs/deprecations
+      - https://developers.openai.com/api/docs/assistants/migration
+      - https://developers.openai.com/api/docs/guides/migrate-to-responses
+      - https://developers.openai.com/api/docs/guides/conversation-state
+      - https://developers.openai.com/api/docs/guides/background
+      - https://developers.openai.com/api/docs/guides/tools
+      - https://developers.openai.com/api/docs/guides/tools-connectors-mcp
+  - name: Incremental migration now, with temporary legacy Assistants support
+    summary: As of 2026-03-15, OpenAI recommends incremental adoption of the
+      Responses API and explicitly says you can move selected user flows first.
+      For Assistants-specific migrations, OpenAI recommends moving new chats
+      onto Conversations and Responses first, then backfilling older thread
+      history only where needed.
+    when_to_use: Choose this when you have production Assistants traffic that cannot
+      be cut over in one release, such as monorepo + small-team or enterprise +
+      compliance environments with staged rollout requirements. Best when you
+      need to preserve existing Assistants paths briefly while new workflows,
+      prompts, and conversation state move onto the Responses stack before the
+      2026-08-26 deadline.
+    tradeoffs: This reduces migration risk and lets you test Responses on high-value
+      paths first. The tradeoff is temporary dual-stack complexity, duplicated
+      observability and test coverage, and the need to keep a firm internal end
+      date so the deprecated Assistants surface does not linger.
+    cautions: "Do not treat this as a reason to wait indefinitely: OpenAI's
+      deprecations page gives a fixed removal date of 2026-08-26 for the
+      Assistants API. Also review current built-in tool pricing directly before
+      migration planning; as of 2026-03-15, the pricing page lists file search
+      storage at $0.10 per GB per day with 1 GB free, file search tool calls at
+      $2.50 per 1,000 calls on the Responses API, and a container billing change
+      scheduled for March 31."
+    links:
+      - https://developers.openai.com/api/docs/guides/migrate-to-responses
+      - https://developers.openai.com/api/docs/assistants/migration
+      - https://developers.openai.com/api/docs/deprecations
+      - https://developers.openai.com/api/docs/pricing
+      - https://developers.openai.com/api/docs/guides/conversation-state
+  - name: Defer migration and keep Assistants API only for frozen legacy workflows
+    summary: As of 2026-03-15, this is a short-lived containment option, not
+      OpenAI's recommended direction. The official docs mark Assistants as
+      deprecated, recommend Responses API plus Conversations API instead, and
+      set a hard shutdown date of 2026-08-26.
+    when_to_use: Choose this only for tightly bounded legacy workloads where the
+      feature is effectively frozen, traffic is low, and the business accepts a
+      near-term mandatory migration program. Best only for cost-sensitive +
+      small-team situations where you need a brief holding pattern while other
+      work finishes, and only if you schedule migration well before 2026-08-26.
+    tradeoffs: "This minimizes immediate engineering disruption. The tradeoff is
+      rising platform risk: every additional change made on Assistants deepens
+      migration debt, and you forego newer Responses-era capabilities that
+      OpenAI documents on the current stack."
+    cautions: Do not start new integrations on Assistants. OpenAI's deprecated
+      Assistants docs explicitly direct developers to the migration guide, and
+      the deprecations page lists Responses API and Conversations API as the
+      replacement. If your roadmap needs remote MCP, current built-in tooling
+      patterns, or newer long-running reasoning workflows, deferring increases
+      the odds of a compressed, higher-risk migration later.
+    links:
+      - https://developers.openai.com/api/docs/deprecations
+      - https://developers.openai.com/api/docs/assistants/deep-dive
+      - https://developers.openai.com/api/docs/assistants/migration
+      - https://developers.openai.com/api/docs/guides/tools
+tags:
+  - ai
+  - openai
+  - responses-api
+  - assistants-api
+  - conversations-api
+  - agents
+  - api-migration
+  - deprecation
+  - sunset
+  - pricing
+aliases:
+  - openai assistants migration
+  - responses api vs assistants api
+  - assistants api shutdown
+  - assistants api deprecation
+  - migrate assistants to responses
+  - openai conversations api migration
+related_cards:
+  - backend/ai-sdk-selection
+  - ai/model-fallback-strategy
+  - ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026
+  - ai/openai-batch-api-vs-standard-processing-cost-and-latency-2026
+  - ai/openai-image-api-migration-dalle-2-dalle-3-to-gpt-image-2026
+  - ai/openai-realtime-api-beta-to-ga-migration-before-may-7-2026-shutdown
+  - ai/openai-o1-vs-gpt4o-reasoning-cost-benefit-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-29
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/openai-assistants-api
+      name: OpenAI Assistants API
+      version: v2
+    - type: package
+      id: package/openai-responses-api
+      name: OpenAI Responses API
+      version: GA
+  edges:
+    - type: eol_date
+      from: package/openai-assistants-api
+      to: null
+      date: 2026-08-26
+      successor: package/openai-responses-api
+    - type: breaking_change_in
+      from: package/openai-responses-api
+      to: null
+      change: no automated migration tool for Threads to Conversations — manual
+        backfill required
+      migration_path: move new user chats first, backfill old threads as needed
+    - type: breaking_change_in
+      from: package/openai-responses-api
+      to: null
+      change: background mode stores response data ~10 min for polling, not Zero Data
+        Retention compatible
+      migration_path: use synchronous mode for ZDR-required workloads

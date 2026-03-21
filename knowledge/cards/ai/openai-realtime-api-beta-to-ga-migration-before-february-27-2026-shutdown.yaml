@@ -1,0 +1,198 @@
+id: "ai/openai-realtime-api-beta-to-ga-migration-before-may-7-2026-shutdown"
+title: "Migrate OpenAI Realtime API Beta to GA Before May 7, 2026"
+problem: "Teams already using OpenAI Realtime need to know what breaks when the
+  beta interface is removed on May 7, 2026, and whether to migrate now to the GA
+  Realtime API or re-architect around another realtime stack before production
+  traffic is affected."
+context:
+  - "ai"
+  - "openai"
+  - "voice-agents"
+  - "api-migration"
+  - "realtime-api"
+  - "audio"
+  - "webrtc"
+  - "websocket"
+  - "sip"
+constraints:
+  - "real-time"
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+  - "cost-sensitive"
+  - "high-scale"
+candidates:
+  - name: "Migrate now to the GA Realtime API on current GA models"
+    summary: "As of 2026-03-15, OpenAI's official deprecations page says the
+      Realtime API beta interface using the `OpenAI-Beta: realtime=v1` header
+      will be removed on 2026-05-07, not 2026-02-27. The GA Realtime path is
+      already documented and adds production features such as remote MCP
+      servers, image input, SIP calling, reusable prompts, and current GA models
+      including `gpt-realtime` and `gpt-realtime-1.5`."
+    when_to_use: "Best for real-time + low-ops teams already committed to OpenAI
+      voice agents, and for enterprise + compliance teams that need an
+      officially supported path with current features and enough runway to
+      validate before 2026-05-07. Choose this when you still need native WebRTC,
+      WebSocket, or SIP realtime sessions instead of a request-response audio
+      flow."
+    tradeoffs: "This is the most direct path and avoids rebuilding product behavior
+      around a different interaction model. The tradeoff is real migration work:
+      remove the beta header, move ephemeral key generation to `POST
+      /v1/realtime/client_secrets`, switch WebRTC SDP setup to
+      `/v1/realtime/calls`, add `session.type`, and update event names and item
+      shapes to the GA schema."
+    cautions: "GA is not wire-compatible with the beta interface. OpenAI's GA
+      migration guide explicitly documents renamed events such as
+      `response.text.delta` to `response.output_text.delta`, replacement of
+      `conversation.item.created` with `conversation.item.added` and
+      `conversation.item.done`, and new assistant content types such as
+      `output_text` and `output_audio`. Pricing also changed versus preview: as
+      of 2026-03-15, `gpt-realtime` and `gpt-realtime-1.5` list audio pricing at
+      $32 per 1M input tokens and $64 per 1M output tokens."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations"
+      - "https://developers.openai.com/api/docs/guides/realtime"
+      - "https://developers.openai.com/api/docs/models/gpt-realtime"
+      - "https://developers.openai.com/api/docs/models/gpt-realtime-1.5"
+      - "https://openai.com/index/introducing-gpt-realtime/"
+  - name: "Run a short dual-stack migration from beta to GA Realtime before cutoff"
+    summary: "A staged migration is viable because OpenAI still documents how to
+      keep beta behavior temporarily by continuing to send `OpenAI-Beta:
+      realtime=v1`, while separately documenting the GA interface and migration
+      differences. As of 2026-03-15, this should be treated as a brief
+      transition plan only, because the beta interface and preview realtime
+      models have a fixed removal date of 2026-05-07."
+    when_to_use: "Best for enterprise + microservices-like rollouts, or small-team +
+      production systems where you cannot cut over all clients, gateways, and
+      observability at once. Choose this when you need to translate event
+      payloads, session setup, and model identifiers incrementally while keeping
+      production traffic stable."
+    tradeoffs: "This reduces release risk and gives you time to canary the GA event
+      model, auth flow, and model changes. The tradeoff is temporary dual-stack
+      complexity: more adapters, more test cases, and more chances to miss a
+      beta-only assumption in one service."
+    cautions: "Do not treat this as a defer-and-ignore option. OpenAI's deprecations
+      page also says `gpt-4o-realtime-preview`,
+      `gpt-4o-realtime-preview-2025-06-03`,
+      `gpt-4o-realtime-preview-2024-12-17`, and `gpt-4o-mini-realtime-preview`
+      are removed on 2026-05-07, with `gpt-realtime-1.5` or `gpt-realtime-mini`
+      listed as replacements. Any migration plan that keeps beta protocol
+      assumptions or preview model IDs past that date is exposed to a hard
+      outage."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations"
+      - "https://developers.openai.com/api/docs/guides/realtime"
+      - "https://developers.openai.com/api/docs/models/gpt-4o-realtime-preview"
+      - "https://developers.openai.com/api/docs/models/gpt-realtime-1.5"
+  - name: "Re-architect away from persistent Realtime sessions to GA audio
+      request-response APIs"
+    summary: "If full-duplex low-latency session behavior is not actually required,
+      OpenAI's current GA audio models provide an alternate architecture:
+      `gpt-audio-1.5` and `gpt-audio-mini` are available on standard API flows
+      such as Chat Completions and Responses, and can also be used on
+      `/v1/realtime`; this option is specifically about choosing
+      request-response audio flows instead of building around persistent
+      realtime sessions. As of 2026-03-15, this can be a cleaner long-term
+      choice for teams that mainly need audio I/O, larger context windows, and
+      simpler server control rather than browser WebRTC or SIP session
+      management."
+    when_to_use: "Best for serverless + low-ops or cost-sensitive + small-team
+      deployments where conversational latency can be request-response instead
+      of continuously interactive, and for compliance-conscious systems that
+      prefer simpler endpoint behavior over long-lived realtime connections.
+      Choose this when your product can tolerate losing native barge-in style
+      realtime session semantics."
+    tradeoffs: "This can simplify infrastructure and reduce feature-surface
+      migration work because you are leaving the beta-vs-GA Realtime protocol
+      problem entirely. The tradeoff is architectural: you are no longer using
+      Realtime's native session model for browser voice agents, WebRTC,
+      WebSocket, or SIP calling, so user experience and latency characteristics
+      will differ."
+    cautions: "As of 2026-03-15, this is not a drop-in replacement for apps built
+      around always-on realtime audio turns. Also review current data controls
+      directly: OpenAI's data controls page says `/v1/realtime` is Zero Data
+      Retention eligible with no application-state retention, while regional
+      data residency for `/v1/realtime` lists `gpt-realtime`,
+      `gpt-realtime-1.5`, and `gpt-realtime-mini` for US and EU, and notes that
+      tracing is not currently EU data residency compliant for `/v1/realtime`."
+    links:
+      - "https://developers.openai.com/api/docs/models/gpt-audio-1.5"
+      - "https://developers.openai.com/api/docs/models/gpt-audio-mini"
+      - "https://developers.openai.com/api/docs/guides/your-data"
+      - "https://developers.openai.com/api/docs/models/gpt-realtime"
+tags:
+  - "ai"
+  - "openai"
+  - "realtime-api"
+  - "gpt-realtime"
+  - "gpt-realtime-1.5"
+  - "gpt-audio-1.5"
+  - "voice-agents"
+  - "api-migration"
+  - "deprecation"
+  - "beta"
+  - "ga"
+  - "pricing"
+aliases:
+  - "openai realtime beta to ga migration"
+  - "openai realtime api beta shutdown"
+  - "openai-beta realtime=v1"
+  - "gpt-4o-realtime-preview shutdown"
+  - "openai realtime api deprecation"
+  - "migrate realtime beta to ga"
+related_cards:
+  - "ai/openai-responses-api-migration-before-assistants-shutdown-2026"
+  - "ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026"
+  - "backend/ai-sdk-selection"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-05-01"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/openai-realtime-beta
+      name: OpenAI Realtime API (Beta)
+      version: beta-v1
+    - type: package
+      id: package/openai-realtime-ga
+      name: OpenAI Realtime API (GA)
+      version: GA
+    - type: package
+      id: package/gpt-4o-realtime-preview
+      name: gpt-4o-realtime-preview
+      version: preview
+  edges:
+    - type: eol_date
+      from: package/openai-realtime-beta
+      to: null
+      date: 2026-05-07
+      successor: package/openai-realtime-ga
+    - type: eol_date
+      from: package/gpt-4o-realtime-preview
+      to: null
+      date: 2026-05-07
+      successor: package/gpt-realtime-1.5
+    - type: breaking_change_in
+      from: package/openai-realtime-ga
+      to: null
+      change: "event renamed: response.text.delta → response.output_text.delta"
+      migration_path: update all event listeners to GA event names
+    - type: breaking_change_in
+      from: package/openai-realtime-ga
+      to: null
+      change: "event renamed: conversation.item.created → conversation.item.added +
+        conversation.item.done"
+      migration_path: split handler into added and done events
+    - type: breaking_change_in
+      from: package/openai-realtime-ga
+      to: null
+      change: ephemeral key generation moved to POST /v1/realtime/client_secrets
+      migration_path: update auth flow to new endpoint
+    - type: breaking_change_in
+      from: package/openai-realtime-ga
+      to: null
+      change: "new content types: output_text and output_audio replace legacy types"
+      migration_path: update content type handling in response processing

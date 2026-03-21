@@ -1,0 +1,250 @@
+id: infra/aws-lambda-log-destination-vs-cloudwatch-standard-vs-infrequent-access-vs-s3-firehose-2026
+title: AWS Lambda Log Destination and Log Class Choice After 2025 Pricing Changes
+problem: Choose whether Lambda logs should stay in CloudWatch Standard, move to
+  Infrequent Access, or be delivered to S3 or Firehose after AWS introduced
+  tiered pricing and new delivery destinations that alter observability cost
+  architecture.
+context:
+  - aws
+  - lambda
+  - cloudwatch-logs
+  - amazon-s3
+  - amazon-data-firehose
+  - logging
+  - observability
+  - pricing
+constraints:
+  - serverless
+  - cost-sensitive
+  - low-ops
+  - high-scale
+  - small-team
+  - enterprise
+  - real-time
+  - compliance
+candidates:
+  - name: Keep Lambda logs in CloudWatch Logs Standard
+    summary: As of 2026-03-15, Lambda logs delivered to CloudWatch Logs are priced
+      as vended logs with volume tiering; AWS states that in US East (N.
+      Virginia) Standard starts at "$0.50" per GB and can tier down to "$0.05"
+      per GB. Standard is still the full-featured choice for real-time
+      operations because CloudWatch documents support for subscription filters,
+      metric filters, Live Tail, anomaly detection, field indexing, embedded
+      metrics format, and Lambda Insights log ingestion.
+    when_to_use: Best for serverless + real-time or low-ops + small-team workloads
+      where operators need native CloudWatch search, alerts, dashboards, metric
+      extraction, or downstream subscriptions, and where the higher hot-path
+      ingestion price is justified by faster incident response and less pipeline
+      setup.
+    tradeoffs: This is the lowest-friction path because CloudWatch Logs is Lambda's
+      default destination and works immediately with native monitoring
+      workflows. The tradeoff is higher ingestion cost than Infrequent Access or
+      S3 or Firehose delivery in the first tiers, plus separate storage and Logs
+      Insights query charges.
+    cautions: Do not assume Standard is only a pricing choice. Moving away from it
+      can remove features you may already depend on. If you later want to cut
+      cost by changing a log group's class, CloudWatch documents that the log
+      class cannot be changed after the log group is created.
+    links:
+      - https://docs.aws.amazon.com/lambda/latest/dg/monitoring-logs.html
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html
+      - https://aws.amazon.com/cloudwatch/pricing/
+      - https://aws.amazon.com/about-aws/whats-new/2025/05/amazon-cloudwatch-tiered-pricing-additional-destinations-aws-lambda-logs/
+      - https://aws.amazon.com/blogs/compute/aws-lambda-introduces-tiered-pricing-for-amazon-cloudwatch-logs-and-additional-logging-destinations/
+  - name: Use CloudWatch Logs Infrequent Access for Lambda log groups that stay in
+      CloudWatch
+    summary: As of 2026-03-15, Lambda logs in CloudWatch Logs Infrequent Access use
+      the same tiered vended-log model, and AWS states that in US East (N.
+      Virginia) pricing starts at "$0.25" per GB for the first 10 TB, then tiers
+      down further. CloudWatch documents that Standard and Infrequent Access
+      differ only in ingestion cost; storage charges and Logs Insights charges
+      are the same.
+    when_to_use: Best for serverless + cost-sensitive or compliance + enterprise
+      setups where logs still need to remain in CloudWatch, but access is mostly
+      ad hoc or forensic and you can live without the full real-time feature
+      set. This fits workloads that want CloudWatch retention and cross-account
+      analytics but do not need Live Tail, metric filters, or subscriptions on
+      those specific groups.
+    tradeoffs: You keep CloudWatch-managed ingestion, storage, encryption, and Logs
+      Insights querying while lowering ingestion cost versus Standard. The
+      tradeoff is that Infrequent Access removes several operational features,
+      so it is not a drop-in replacement for production hot-path log groups.
+    cautions: CloudWatch documents that Infrequent Access does not support
+      subscription filters, metric filters, Live Tail, anomaly detection, field
+      indexing, embedded metrics format, GetLogEvents, FilterLogEvents, or
+      Lambda Insights log ingestion. The log class is immutable after creation,
+      so choose per log group deliberately.
+    links:
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html
+      - https://aws.amazon.com/blogs/compute/aws-lambda-introduces-tiered-pricing-for-amazon-cloudwatch-logs-and-additional-logging-destinations/
+      - https://aws.amazon.com/cloudwatch/pricing/
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_billing.html
+  - name: Deliver Lambda logs to Amazon S3 through the CloudWatch Logs Delivery class
+    summary: As of 2026-03-15, AWS supports Amazon S3 as a Lambda log destination,
+      routed through the CloudWatch Logs `Delivery` log class. AWS states that
+      in US East (N. Virginia) Lambda-to-S3 delivery starts at "$0.25" per GB
+      and can tier down to "$0.05" per GB, while CloudWatch pricing notes that
+      S3 storage costs and optional Parquet conversion charges are separate.
+    when_to_use: Best for serverless + cost-sensitive or compliance + high-scale
+      environments where logs are mainly a retention, audit, or batch-analysis
+      asset, and where Athena or downstream S3-based tooling is acceptable
+      instead of CloudWatch-native real-time operations. This is the strongest
+      default for long retention when you want the lowest-ops cold path as of
+      2026-03-15.
+    tradeoffs: AWS positions S3 as an economical long-term storage option, and the
+      Lambda docs call out Athena-based analysis as the natural companion. The
+      tradeoff is slower and less interactive day-to-day debugging than
+      CloudWatch Standard, plus extra setup for bucket permissions and
+      subscription delivery.
+    cautions: CloudWatch documents that the `Delivery` log class keeps events for
+      only one day in CloudWatch Logs and does not provide rich features such as
+      Logs Insights queries. The S3 destination setup requires a CloudWatch Logs
+      subscription filter and an IAM role, the bucket must be in the same Region
+      as the log group, and Lambda does not automatically add put permissions
+      for S3 destinations.
+    links:
+      - https://docs.aws.amazon.com/lambda/latest/dg/logging-with-s3.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/monitoring-logs.html
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html
+      - https://aws.amazon.com/cloudwatch/pricing/
+      - https://aws.amazon.com/blogs/compute/aws-lambda-introduces-tiered-pricing-for-amazon-cloudwatch-logs-and-additional-logging-destinations/
+  - name: Deliver Lambda logs to Amazon Data Firehose for near-real-time downstream
+      routing
+    summary: As of 2026-03-15, AWS supports Amazon Data Firehose as a Lambda log
+      destination through the CloudWatch Logs `Delivery` log class. AWS states
+      that in US East (N. Virginia) Lambda-to-Firehose delivery starts at
+      "$0.25" per GB and can tier down to "$0.05" per GB, and CloudWatch pricing
+      notes that Firehose ingestion charges are additional.
+    when_to_use: Best for serverless + real-time or enterprise + microservices
+      environments where Lambda logs must leave CloudWatch quickly for another
+      managed sink, supported third-party observability platform, or custom HTTP
+      endpoint, and where building and operating a separate forwarding layer
+      would add unnecessary complexity.
+    tradeoffs: Firehose gives a managed streaming path to downstream systems and AWS
+      documents that it can simplify delivery to supported third-party platforms
+      and custom HTTP endpoints. The tradeoff is a more complex billing model
+      than S3 because you pay both Lambda log delivery charges and Firehose
+      processing, and you still lose CloudWatch Standard hot-path features on
+      the delivery log group.
+    cautions: The `Delivery` log class keeps events in CloudWatch for only one day
+      and does not provide Logs Insights queries. Firehose destination setup
+      requires a CloudWatch Logs subscription filter and IAM permissions, and
+      Lambda does not automatically add put permissions for Firehose
+      destinations. AWS also documents that CloudWatch Logs events sent to
+      Firehose are gzip-compressed, and that Firehose does not support delivery
+      of CloudWatch Logs to an OpenSearch Service destination because multiple
+      log events are combined into one Firehose record.
+    links:
+      - https://docs.aws.amazon.com/lambda/latest/dg/logging-with-firehose.html
+      - https://docs.aws.amazon.com/lambda/latest/dg/monitoring-logs.html
+      - https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html
+      - https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs.html
+      - https://aws.amazon.com/cloudwatch/pricing/
+      - https://aws.amazon.com/blogs/compute/aws-lambda-introduces-tiered-pricing-for-amazon-cloudwatch-logs-and-additional-logging-destinations/
+tags:
+  - infra
+  - aws
+  - lambda
+  - cloudwatch-logs
+  - amazon-s3
+  - amazon-data-firehose
+  - logging
+  - observability
+  - pricing
+aliases:
+  - lambda logs standard vs infrequent access
+  - lambda logs to s3 vs cloudwatch
+  - lambda logs to firehose vs cloudwatch
+  - aws lambda logging destination pricing
+  - cloudwatch delivery class lambda
+  - lambda vended logs pricing
+related_cards:
+  - observability/log-retention-vs-trace-sampling
+  - serverless/cloudflare-workers-vs-lambda
+  - serverless/aws-lambda-nodejs-24-runtime-migration-after-callback-handler-removal-2025
+  - cloud/aws-cloudfront-flat-rate-plans-vs-pay-as-you-go-after-november-2025-launch
+  - cloud/aws-graviton-adoption-cost-savings-vs-ecosystem-maturity-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-01
+sidecar_hard_facts:
+  extracted: 2026-03-15
+  nodes:
+    - type: framework
+      id: framework/cloudwatch-logs-standard
+      name: CloudWatch Logs Standard
+      category: log_class
+    - type: framework
+      id: framework/cloudwatch-logs-infrequent-access
+      name: CloudWatch Logs Infrequent Access
+      category: log_class
+    - type: framework
+      id: framework/cloudwatch-logs-delivery
+      name: CloudWatch Logs Delivery
+      category: log_class
+    - type: framework
+      id: framework/lambda-logs-to-s3
+      name: Lambda logs to Amazon S3
+      category: log_destination
+    - type: framework
+      id: framework/lambda-logs-to-firehose
+      name: Lambda logs to Amazon Data Firehose
+      category: log_destination
+    - type: capability
+      id: capability/cloudwatch-subscription-filter
+      name: CloudWatch Logs subscription filter
+    - type: capability
+      id: capability/iam-role
+      name: IAM role
+    - type: capability
+      id: capability/log-class-immutable-after-creation
+      name: Log class cannot be changed after the log group is created
+    - type: data_format
+      id: format/gzip
+      name: gzip
+      standard: gzip
+  edges:
+    - type: requires_version
+      from: framework/lambda-logs-to-s3
+      to: framework/cloudwatch-logs-delivery
+      note: Amazon S3 as a Lambda log destination is routed through the CloudWatch
+        Logs Delivery log class.
+    - type: requires_version
+      from: framework/lambda-logs-to-s3
+      to: capability/cloudwatch-subscription-filter
+      note: S3 destination setup requires a CloudWatch Logs subscription filter.
+    - type: requires_version
+      from: framework/lambda-logs-to-s3
+      to: capability/iam-role
+      note: S3 destination setup requires an IAM role.
+    - type: requires_version
+      from: framework/lambda-logs-to-firehose
+      to: framework/cloudwatch-logs-delivery
+      note: Amazon Data Firehose as a Lambda log destination is routed through the
+        CloudWatch Logs Delivery log class.
+    - type: requires_version
+      from: framework/lambda-logs-to-firehose
+      to: capability/cloudwatch-subscription-filter
+      note: Firehose destination setup requires a CloudWatch Logs subscription filter.
+    - type: requires_version
+      from: framework/lambda-logs-to-firehose
+      to: capability/iam-role
+      note: Firehose destination setup requires IAM permissions.
+    - type: locks_via
+      from: framework/cloudwatch-logs-standard
+      to: capability/log-class-immutable-after-creation
+      note: CloudWatch documents that the log class cannot be changed after the log
+        group is created.
+    - type: locks_via
+      from: framework/cloudwatch-logs-infrequent-access
+      to: capability/log-class-immutable-after-creation
+      note: The log class is immutable after creation.
+    - type: locks_via
+      from: framework/cloudwatch-logs-delivery
+      to: capability/log-class-immutable-after-creation
+      note: The log class is immutable after creation.
+    - type: requires_version
+      from: framework/lambda-logs-to-firehose
+      to: format/gzip
+      note: CloudWatch Logs events sent to Firehose are gzip-compressed.
