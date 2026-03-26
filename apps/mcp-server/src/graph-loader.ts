@@ -4,7 +4,8 @@
  */
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
+import { createRequire } from "node:module";
 
 export interface GraphNode {
   type: string;
@@ -64,11 +65,16 @@ export interface GraphIndex {
  * Load the graph index. Returns null if file doesn't exist (graceful degradation).
  */
 export async function loadGraphIndex(graphDir?: string): Promise<GraphIndex | null> {
-  const dir =
-    graphDir ??
-    (process.env.POCKETLANTERN_GRAPH_DIR
-      ? resolve(process.env.POCKETLANTERN_GRAPH_DIR)
-      : resolve(import.meta.dirname, "..", "..", "..", "knowledge", "graph"));
+  let dir: string;
+  if (graphDir) {
+    dir = graphDir;
+  } else if (process.env.POCKETLANTERN_GRAPH_DIR) {
+    dir = resolve(process.env.POCKETLANTERN_GRAPH_DIR);
+  } else {
+    const require = createRequire(import.meta.url);
+    const knowledgePkg = require.resolve("@pocketlantern/knowledge/package.json");
+    dir = resolve(dirname(knowledgePkg), "graph");
+  }
 
   const indexPath = resolve(dir, "_index.json");
   if (!existsSync(indexPath)) return null;

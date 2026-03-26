@@ -74,11 +74,9 @@ pocketlantern/
       init.ts                <- Register MCP server in Claude Code config
       doctor.ts              <- Installation diagnostics
 
-  knowledge/cards/           <- Decision cards across 25 categories (local mode)
-    auth/                    <- clerk-vs-auth0-vs-cognito-2026
-    database/                <- neon-vs-supabase-vs-planetscale-2026, prisma-vs-drizzle
-    infra/                   <- terraform-vs-pulumi-vs-opentofu
-    serverless/              <- vercel-edge-vs-node-runtime
+  packages/knowledge/        <- Decision cards data package
+    cards/                   <- 25 categories (auth, database, infra, serverless, ...)
+    graph/                   <- Sidecar blocker edge index (_index.json)
 
   docs/
     agent-guide.md           <- How AI agents use PocketLantern tools
@@ -86,7 +84,7 @@ pocketlantern/
     roadmap.md               <- Shipped / Next / Future
 ```
 
-**Monorepo**: pnpm workspace. Build order: `schema -> mcp-server -> cli`.
+**Monorepo**: pnpm workspace. Build order: `schema -> knowledge (no build) -> mcp-server -> cli`.
 
 ## Architecture
 
@@ -106,11 +104,13 @@ Stage 1 (explore) -> Stage 2 (search + filter) -> Stage 3 (deep dive + expand).
 
 ```
 schema (standalone) <- mcp-server <- cli
+knowledge (standalone, pure data) <- mcp-server
 ```
 
 - `@pocketlantern/schema`: zod schemas, TypeScript types
+- `@pocketlantern/knowledge`: YAML decision cards + graph index (pure data, no build)
 - `@pocketlantern/mcp-server`: MCP server, card loader, search engine
-  - Subpath exports: `./loader`, `./search` (used by CLI)
+  - Subpath exports: `./loader`, `./search`, `./server` (used by CLI)
 - `pocketlantern` (cli): CLI commands, imports from mcp-server
 
 ### Search Scoring (keyword-based)
@@ -176,13 +176,13 @@ These decisions were made deliberately. Don't change without discussion.
 - **One clear responsibility per file**. Split if a file exceeds ~100 lines.
 - **No premature abstraction**. Only introduce interfaces when 2+ implementations exist.
 - **TypeScript strict mode** in all packages.
-- **`import.meta.dirname`** for path resolution (not `dirname(fileURLToPath(...))`).
+- **`createRequire` + `require.resolve`** for cross-package path resolution (works in both monorepo dev and npm install -g).
 - `resolveCardsDir(override?)` lives in `apps/mcp-server/src/index.ts` — CLI imports it via `@pocketlantern/mcp-server`. Don't duplicate.
 - `findYamlFiles` is exported from `@pocketlantern/mcp-server/loader` — reuse it.
 
 ## Adding/Editing Knowledge Cards
 
-1. Create/edit YAML in `knowledge/cards/{category}/{name}.yaml`
+1. Create/edit YAML in `packages/knowledge/cards/{category}/{name}.yaml`
 2. Follow the card schema above. All content in **English**.
 3. Run `pnpm build && npx pocketlantern validate`
 4. **Verify technical claims** against official documentation (fetch the linked URLs)

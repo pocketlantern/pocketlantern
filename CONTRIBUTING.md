@@ -35,11 +35,22 @@ pnpm test
 2. Make your changes
 3. Run `pnpm build && pnpm test` — all tests must pass
 4. If you changed card-related logic, run `npx pocketlantern validate`
-5. Submit a pull request
+5. Add a changeset (see below)
+6. Submit a pull request
+
+## Changesets
+
+If your PR changes the tool, schema, or cards:
+
+1. Run `npx changeset` and follow the prompts
+2. Select the affected package(s) and bump type (patch/minor/major)
+3. Commit the generated `.changeset/*.md` file with your PR
+
+If your PR is docs/test/chore only, add the `no-changeset` label.
 
 ## Project structure notes
 
-- The root `package.json` has a `bin` field pointing to the CLI — this is for **monorepo development convenience only** (so `pnpm pocketlantern` works from the repo root). The published CLI package is `@pocketlantern/cli`.
+- The root `package.json` has a `bin` field pointing to the CLI — this is for **monorepo development convenience only** (so `pnpm pocketlantern` works from the repo root). The published CLI package is `pocketlantern`.
 - Knowledge cards use `.yaml` extension only (not `.yml`). This is intentional for consistency.
 
 ## Code standards

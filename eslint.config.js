@@ -26,6 +26,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ["**/dist/", "**/coverage/", "**/node_modules/", "landing/"],
+    ignores: ["**/dist/", "**/coverage/", "**/node_modules/", "landing/", ".changeset/"],
   },
 );

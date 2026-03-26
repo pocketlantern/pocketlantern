@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
 import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { LocalCardStore, MergedCardStore, type CardStore } from "./card-store.js";
@@ -16,14 +16,16 @@ import { logGetCard } from "./query-log.js";
 
 /**
  * Resolve the knowledge cards directory.
- * Priority: explicit override > POCKETLANTERN_CARDS_DIR env var > default (knowledge/cards).
+ * Priority: explicit override > POCKETLANTERN_CARDS_DIR env var > @pocketlantern/knowledge package.
  */
 export function resolveCardsDir(override?: string): string {
   if (override) return resolve(override);
   if (process.env.POCKETLANTERN_CARDS_DIR) {
     return resolve(process.env.POCKETLANTERN_CARDS_DIR);
   }
-  return resolve(import.meta.dirname, "..", "..", "..", "knowledge", "cards");
+  const require = createRequire(import.meta.url);
+  const knowledgePkg = require.resolve("@pocketlantern/knowledge/package.json");
+  return resolve(dirname(knowledgePkg), "cards");
 }
 
 export interface ServerConfig {

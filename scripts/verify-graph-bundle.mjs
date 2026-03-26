@@ -8,7 +8,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const indexPath = path.join(root, "knowledge", "graph", "_index.json");
+const indexPath = path.join(root, "packages", "knowledge", "graph", "_index.json");
 
 if (!fs.existsSync(indexPath)) {
   console.error(`verify-graph-bundle: missing ${path.relative(root, indexPath)}`);

@@ -3,7 +3,15 @@
   "version": "0.1.0",
   "type": "module",
   "description": "MCP server for PocketLantern — factual decision cards for AI agents",
+  "author": "PocketLantern",
   "license": "MIT",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "ai-agents",
+    "decision-cache",
+    "factual-accuracy"
+  ],
   "homepage": "https://pocketlantern.dev",
   "repository": {
     "type": "git",
@@ -26,7 +34,8 @@
     "./search": {
       "types": "./dist/search.d.ts",
       "default": "./dist/search.js"
-    }
+    },
+    "./server": "./dist/server.js"
   },
   "bin": {
     "pocketlantern-mcp": "dist/server.js"
@@ -45,6 +54,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.0",
+    "@pocketlantern/knowledge": "workspace:*",
     "@pocketlantern/schema": "workspace:*",
     "yaml": "^2.8.3",
     "zod": "^4.3.6"

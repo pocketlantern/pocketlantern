@@ -1,9 +1,18 @@
 {
-  "name": "@pocketlantern/cli",
+  "name": "pocketlantern",
   "version": "0.1.0",
   "type": "module",
-  "description": "CLI for PocketLantern — validate, search, and manage decision cards",
+  "description": "Factual decision cache for AI agents — blocker-aware technology cards",
+  "author": "PocketLantern",
   "license": "MIT",
+  "keywords": [
+    "cli",
+    "mcp",
+    "ai-agents",
+    "decision-cache",
+    "llm",
+    "factual-accuracy"
+  ],
   "homepage": "https://pocketlantern.dev",
   "repository": {
     "type": "git",
