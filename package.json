@@ -30,13 +30,16 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "changeset": "changeset"
   },
   "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
     "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^10.0.3",

@@ -8,3 +8,4 @@
 - [ ] `pnpm lint && pnpm format:check` passes
 - [ ] Card changes validated: `npx pocketlantern validate`
 - [ ] No unrelated changes included
+- [ ] Changeset added (or `no-changeset` label applied)

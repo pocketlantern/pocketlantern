@@ -9,7 +9,7 @@ Short contract for what the **open toolkit** is, what it does **not** promise, h
 PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapshot**: **pipeline-checked**, **source-linked** decision cards (YAML) with official reference links. Agents call `search_cards` / `get_card` to surface **blockers in this cardset snapshot** (dates, EOLs, licensing shifts, compatibility) instead of guessing from stale training data. **That snapshot may still be older than the live web**—use it to ground the agent, then confirm against official sources when it matters.
 
 - **G1 — Card links**: `related_cards` connect topics; `get_related_cards` follows those links.
-- **G2 — Sidecar blocker edges**: When `knowledge/graph/_index.json` is bundled, `search_cards` can attach **sidecar blocker edges** derived from that index. If the index is missing, search still works; blocker augmentation is off.
+- **G2 — Sidecar blocker edges**: When `packages/knowledge/graph/_index.json` is bundled, `search_cards` can attach **sidecar blocker edges** derived from that index. If the index is missing, search still works; blocker augmentation is off.
 
 ---
 
@@ -93,6 +93,6 @@ So: **“Refreshed” in ops** means **the refresh pipeline’s checks**, not a 
 The toolkit may include provenance files from the card pipeline:
 
 - `public-bundle-manifest.json` — pipeline revision, time, card count.
-- `knowledge/graph/_index.json` — graph index rebuilt for this snapshot.
+- `packages/knowledge/graph/_index.json` — graph index rebuilt for this snapshot.
 
 Sync and pipeline instructions are maintained internally by the core team.

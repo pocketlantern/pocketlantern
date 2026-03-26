@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Card schema definitions for PocketLantern (zod + TypeScript)",
+  "author": "PocketLantern",
   "license": "MIT",
+  "keywords": [
+    "schema",
+    "zod",
+    "pocketlantern",
+    "decision-cards"
+  ],
   "homepage": "https://pocketlantern.dev",
   "repository": {
     "type": "git",

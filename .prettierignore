@@ -2,5 +2,5 @@ dist/
 coverage/
 node_modules/
 pnpm-lock.yaml
-knowledge/
+packages/knowledge/
 public-bundle-manifest.json

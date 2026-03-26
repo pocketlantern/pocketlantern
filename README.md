@@ -168,16 +168,16 @@ npx pocketlantern search "auth pricing" # search cards from CLI
 
 100+ curated blocker-aware cards across 25 categories — plus sidecar blocker edges from the bundled graph index:
 
-| Card                                                                                                                               | Blocker it catches                                                     |
-| ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [Clerk vs Auth0 vs Cognito](knowledge/cards/auth/clerk-vs-auth0-vs-cognito-2026.yaml)                                              | Cognito password hash permanent lock-in, Auth0 export restriction      |
-| [Next.js 16 Upgrade](knowledge/cards/frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis.yaml)                     | 4 breaking changes, webpack build failure, middleware deprecation      |
-| [OpenAI Realtime API Migration](knowledge/cards/ai/openai-realtime-api-beta-to-ga-migration-before-february-27-2026-shutdown.yaml) | Beta removed, GA event schema incompatible                             |
-| [Vercel Fluid Compute](knowledge/cards/serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026.yaml)        | Billing model change, shared-process concurrency, classic opt-out      |
-| [Prisma vs Drizzle](knowledge/cards/database/prisma-vs-drizzle-for-edge-and-serverless.yaml)                                       | Prisma v7 ESM breaking, Edge preview-only, Drizzle timestamp change    |
-| [Supabase vs Firebase](knowledge/cards/backend/supabase-vs-firebase-baas-pricing-and-features-2026.yaml)                           | Edge Functions lock-in, auth.uid() not portable, pg_dump safe          |
-| [GitHub Actions Node24](knowledge/cards/devtools/github-actions-node24-migration-after-node20-deprecation-2026.yaml)               | Node20 EOL Apr 2026, macOS 13.4 incompatibility                        |
-| + more                                                                                                                             | Auth provider migration, Supabase vs Firebase, SSO vendor lock-in, ... |
+| Card                                                                                                                                        | Blocker it catches                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [Clerk vs Auth0 vs Cognito](packages/knowledge/cards/auth/clerk-vs-auth0-vs-cognito-2026.yaml)                                              | Cognito password hash permanent lock-in, Auth0 export restriction      |
+| [Next.js 16 Upgrade](packages/knowledge/cards/frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis.yaml)                     | 4 breaking changes, webpack build failure, middleware deprecation      |
+| [OpenAI Realtime API Migration](packages/knowledge/cards/ai/openai-realtime-api-beta-to-ga-migration-before-february-27-2026-shutdown.yaml) | Beta removed, GA event schema incompatible                             |
+| [Vercel Fluid Compute](packages/knowledge/cards/serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026.yaml)        | Billing model change, shared-process concurrency, classic opt-out      |
+| [Prisma vs Drizzle](packages/knowledge/cards/database/prisma-vs-drizzle-for-edge-and-serverless.yaml)                                       | Prisma v7 ESM breaking, Edge preview-only, Drizzle timestamp change    |
+| [Supabase vs Firebase](packages/knowledge/cards/backend/supabase-vs-firebase-baas-pricing-and-features-2026.yaml)                           | Edge Functions lock-in, auth.uid() not portable, pg_dump safe          |
+| [GitHub Actions Node24](packages/knowledge/cards/devtools/github-actions-node24-migration-after-node20-deprecation-2026.yaml)               | Node20 EOL Apr 2026, macOS 13.4 incompatibility                        |
+| + more                                                                                                                                      | Auth provider migration, Supabase vs Firebase, SSO vendor lock-in, ... |
 
 ### What a card looks like
 
@@ -215,11 +215,11 @@ pocketlantern/
   packages/schema/       <- Card schema (zod + TypeScript types)
   apps/mcp-server/       <- MCP server (search, retrieval, tool handlers)
   apps/cli/              <- CLI (validate, search, init, doctor)
-  knowledge/cards/       <- Decision cards (25 categories)
+  packages/knowledge/    <- Decision cards + graph index (data package)
   docs/                  <- User guides & roadmap
 ```
 
-**Monorepo**: pnpm workspace. Build order: `schema -> mcp-server -> cli`.
+**Monorepo**: pnpm workspace. Build order: `schema -> knowledge (no build) -> mcp-server -> cli`.
 
 ## Development
 

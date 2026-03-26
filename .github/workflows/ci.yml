@@ -43,3 +43,25 @@ jobs:
 
       - name: Format check
         run: pnpm format:check
+
+  changeset-check:
+    name: Changeset check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check for changeset
+        if: "!contains(github.event.pull_request.labels.*.name, 'no-changeset')"
+        run: pnpm changeset status --since=origin/main

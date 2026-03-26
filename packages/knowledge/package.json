@@ -1,0 +1,33 @@
+{
+  "name": "@pocketlantern/knowledge",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Curated blocker-aware decision cards for PocketLantern",
+  "author": "PocketLantern",
+  "license": "MIT",
+  "keywords": [
+    "pocketlantern",
+    "decision-cards",
+    "mcp",
+    "ai-agents",
+    "blockers"
+  ],
+  "homepage": "https://pocketlantern.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pocketlantern/pocketlantern.git",
+    "directory": "packages/knowledge"
+  },
+  "exports": {
+    "./cards": "./cards/",
+    "./graph": "./graph/",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "cards",
+    "graph",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ]
+}
