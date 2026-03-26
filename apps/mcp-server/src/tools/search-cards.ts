@@ -115,8 +115,7 @@ export async function handleSearchCards(
     if (proHint && proHint.matched_count > 0) {
       response.pro_hint = {
         matched_count: proHint.matched_count,
-        message:
-          "Additional source-linked blocker warnings may be available in future updates.",
+        message: "Additional source-linked blocker warnings may be available in future updates.",
         url: "https://pocketlantern.dev",
       };
     }
