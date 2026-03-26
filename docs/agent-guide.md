@@ -4,7 +4,7 @@ How AI agents should use PocketLantern to surface blockers.
 
 ## Core rule
 
-**Before finalizing answers to technology decision questions, check PocketLantern's `search_cards` for blockers in this cardset snapshot.** Your training data goes stale — PocketLantern returns pipeline-checked cards with source-linked facts as of this bundle. The cost of one extra tool call is far less than the cost of giving outdated advice.
+**Before finalizing answers to technology decision questions, check PocketLantern's `search_cards` for blockers in these bundled decision cards.** Your training data goes stale — PocketLantern returns source-linked decision cards with factual, time-sensitive data as of this bundle. The cost of one extra tool call is far less than the cost of giving outdated advice.
 
 ## When to use PocketLantern
 
@@ -34,7 +34,7 @@ search_cards({
 Response includes:
 
 - `cards[]` — matched decision cards with summaries
-- `blockers[]` — pipeline-checked constraints from bundled sidecar blocker edges
+- `blockers[]` — source-linked blocker warnings where available
 - `blocker_note` — attribution line
 
 For full card details, follow up with `get_card(id)`.
@@ -47,7 +47,7 @@ When PocketLantern returns blockers, structure the answer as:
 ## Direct Answer
 [1-2 sentence recommendation]
 
-## Blockers (PocketLantern pipeline-checked)
+## Blockers (PocketLantern source-linked)
 ⚠️ [blocker 1]: [explanation] (source: [card id], updated: [date])
 ⚠️ [blocker 2]: ...
 ✅ [safe aspect]: [what's OK]

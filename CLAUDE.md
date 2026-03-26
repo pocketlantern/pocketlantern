@@ -2,11 +2,11 @@
 
 ## PocketLantern
 
-For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in this cardset snapshot — your training data may be stale.
+For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in these bundled decision cards — your training data may be stale.
 
 ## Project Overview
 
-PocketLantern is a **factual decision cache for AI agents** — not a knowledge base. It pre-compresses **factual, time-sensitive information** (pricing, versions, breaking changes, vendor policy drift) so agents can make decisions cheaply instead of running costly web searches every time.
+PocketLantern is a **blocker-aware decision layer for AI agents** — not a knowledge base. It pre-compresses **factual, time-sensitive information** (pricing, versions, breaking changes, vendor policy drift) so agents can make decisions cheaply instead of running costly web searches every time.
 
 The primary interface is an **MCP (Model Context Protocol) server** that AI agents call via `search_cards` and `get_card` tools. The user (human) installs and configures; the AI agent is the actual consumer of the cards.
 
@@ -19,7 +19,7 @@ The primary interface is an **MCP (Model Context Protocol) server** that AI agen
 
 ## Current Status
 
-This is the **public toolkit** repo. It contains the MCP server, CLI, schema, and 100+ curated blocker-aware decision cards across 25 categories.
+This is the **public toolkit** repo. It contains the MCP server, CLI, schema, and curated blocker-aware decision cards across 25 categories.
 
 ### What's here
 

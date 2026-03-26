@@ -6,10 +6,10 @@ Short contract for what the **open toolkit** is, what it does **not** promise, h
 
 ## 1. What this product does
 
-PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapshot**: **pipeline-checked**, **source-linked** decision cards (YAML) with official reference links. Agents call `search_cards` / `get_card` to surface **blockers in this cardset snapshot** (dates, EOLs, licensing shifts, compatibility) instead of guessing from stale training data. **That snapshot may still be older than the live web**—use it to ground the agent, then confirm against official sources when it matters.
+PocketLantern is an **MCP server** (and CLI) that ships **bundled, source-linked decision cards** (YAML) with official reference links. Agents call `search_cards` / `get_card` to surface **blockers** (dates, EOLs, licensing shifts, compatibility) instead of guessing from stale training data. **The bundled cardset may still be older than the live web**—use it to ground the agent, then confirm against official sources when it matters.
 
 - **G1 — Card links**: `related_cards` connect topics; `get_related_cards` follows those links.
-- **G2 — Sidecar blocker edges**: When `packages/knowledge/graph/_index.json` is bundled, `search_cards` can attach **sidecar blocker edges** derived from that index. If the index is missing, search still works; blocker augmentation is off.
+- **G2 — Blocker warnings**: When `packages/knowledge/graph/_index.json` is bundled, `search_cards` can attach **source-linked blocker warnings** derived from that index. If the index is missing, search still works; blocker augmentation is off.
 
 ---
 
@@ -24,32 +24,24 @@ PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapsh
 
 ## 3. Install, `init`, golden query
 
-1. **Install** (from [README](../README.md)):
+1. **Install**:
 
    ```bash
-   git clone https://github.com/pocketlantern/pocketlantern.git
-   cd pocketlantern && pnpm install && pnpm build
+   npm install -g pocketlantern
    ```
 
-2. **Register MCP** (example — adjust path):
-
-   ```json
-   {
-     "mcpServers": {
-       "pocketlantern": {
-         "command": "node",
-         "args": ["<path-to-pocketlantern>/apps/mcp-server/dist/server.js"]
-       }
-     }
-   }
-   ```
-
-3. **Project rule** (optional): run `npx pocketlantern init` to add a one-line hint under `## PocketLantern` in `CLAUDE.md`.
-
-4. **Golden query** (CLI sanity check):
+2. **Register MCP + project rule**:
 
    ```bash
-   npx pocketlantern search "Node.js 20 upgrade GitHub Actions"
+   pocketlantern init
+   ```
+
+   Registers the MCP server and adds a one-line hint under `## PocketLantern` in `CLAUDE.md`.
+
+3. **Golden query** (CLI sanity check):
+
+   ```bash
+   pocketlantern search "Node.js 20 upgrade GitHub Actions"
    ```
 
    Expect ranked cards; with a bundled graph index, structured blocker lines may appear in MCP JSON responses.
@@ -63,13 +55,13 @@ PocketLantern is an **MCP server** (and CLI) that ships a **fixed cardset snapsh
 
 ---
 
-## 5. Free snapshot vs Pro (planned)
+## 5. Current scope
 
-|             | **Free (this repo)**                                                         | **Pro (planned)**                                                                                                                                                                                                       |
-| ----------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Cardset** | Curated public **snapshot** (see `public-bundle-manifest.json` when present) | Larger cardset via **planned hosted retrieval** (coming soon)                                                                                                                                                           |
-| **Mode**    | Local files only                                                             | `POCKETLANTERN_API_KEY` + remote fetch with local fallback: **internal preview / engineering path unless we announce otherwise**—**no billing, no SLA**, not a generally available paid product in this repo by default |
-| **Hint**    | No Pro hints — local-only mode                                               | `pro_hint` surfaces additional coverage when API key + catalog exist                                                                                                                                                    |
+|             | **This release**                                                             |
+| ----------- | ---------------------------------------------------------------------------- |
+| **Cardset** | Curated public **snapshot** (see `public-bundle-manifest.json` when present) |
+| **Mode**    | Local files only — ships with the npm package                                |
+| **Updates** | `npm update -g pocketlantern` to get new cards                               |
 
 ---
 

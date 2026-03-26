@@ -2,7 +2,7 @@
   "name": "pocketlantern-toolkit",
   "private": true,
   "type": "module",
-  "description": "Factual decision cache for AI agents — MCP server, CLI, and schema",
+  "description": "Blocker-aware decision layer for AI agents — MCP server, CLI, and schema",
   "repository": {
     "type": "git",
     "url": "https://github.com/pocketlantern/pocketlantern.git"

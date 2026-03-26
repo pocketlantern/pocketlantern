@@ -210,7 +210,7 @@ describe("handleSearchCards — blocker augmentation", () => {
     expect(parsed.blockers.length).toBeGreaterThan(0);
     expect(parsed.blockers[0].type).toBe("eol_date");
     expect(parsed.blockers[0].summary).toContain("EOL");
-    expect(parsed.blocker_note).toContain("sidecar blocker edges");
+    expect(parsed.blocker_note).toContain("Source-linked blocker warnings");
   });
 
   it("omits blockers when include_blockers is false", async () => {
@@ -327,6 +327,6 @@ describe("handleSearchCards — pro hint", () => {
 
     expect(parsed.cards.length).toBeGreaterThan(0);
     expect(parsed.pro_hint).toBeDefined();
-    expect(parsed.pro_hint.message).toContain("coming soon");
+    expect(parsed.pro_hint.message).toContain("source-linked blocker warnings");
   });
 });

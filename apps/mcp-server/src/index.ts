@@ -49,7 +49,7 @@ export async function initializeStore(config: ServerConfig): Promise<{
   if (config.apiKey) {
     const remote = new RemoteClient({
       apiKey: config.apiKey,
-      baseUrl: config.apiBaseUrl ?? "https://api.pocketlantern.com",
+      baseUrl: config.apiBaseUrl ?? "https://api.pocketlantern.dev",
     });
     const remoteCards = await remote.fetchAllCards();
     if (remoteCards.length > 0) {
@@ -73,7 +73,7 @@ export function createServer(store: CardStore, graphIndex: GraphIndex | null): M
     "search_cards",
     {
       description:
-        "Before finalizing answers about technology choices, upgrades, migrations, licensing, or vendor selection — check this tool for blockers in this cardset snapshot. Your training data may be stale. Returns pipeline-checked cards with source-linked facts as of this bundle — surfacing EOL dates, breaking changes, version floors, lock-in risks (password export, vendor dependency), pricing model changes, and migration blockers. Includes blocker warnings from sidecar blocker edges where indexed. Use get_card for full details.",
+        "Before finalizing answers about technology choices, upgrades, migrations, licensing, or vendor selection — check this tool for blockers in these bundled decision cards. Your training data may be stale. Returns source-linked decision cards as of this bundle — surfacing EOL dates, breaking changes, version floors, lock-in risks (password export, vendor dependency), pricing model changes, and migration blockers. Includes source-linked blocker warnings where available. Use get_card for full details.",
       inputSchema: SearchCardsArgsSchema.shape,
     },
     async (args) => {

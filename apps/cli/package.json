@@ -2,7 +2,7 @@
   "name": "pocketlantern",
   "version": "0.1.0",
   "type": "module",
-  "description": "Factual decision cache for AI agents — blocker-aware technology cards",
+  "description": "Blocker-aware decision layer for AI agents — source-linked technology cards",
   "author": "PocketLantern",
   "license": "MIT",
   "keywords": [

@@ -43,7 +43,7 @@ export const SearchCardsArgsSchema = z.object({
     .boolean()
     .optional()
     .describe(
-      "Include sidecar blocker edges (EOL dates, breaking changes, lock-in, incompatibilities) linked to each result card when a graph index is bundled. Default: true.",
+      "Include source-linked blocker warnings (EOL dates, breaking changes, lock-in, incompatibilities) linked to each result card when available. Default: true.",
     ),
 });
 
@@ -116,7 +116,7 @@ export async function handleSearchCards(
       response.pro_hint = {
         matched_count: proHint.matched_count,
         message:
-          "Additional pipeline-checked blockers may be available via planned Pro hosted retrieval (coming soon).",
+          "Additional source-linked blocker warnings may be available in future updates.",
         url: "https://pocketlantern.dev",
       };
     }
@@ -125,7 +125,7 @@ export async function handleSearchCards(
   if (blockers.length > 0) {
     response.blockers = blockers;
     response.blocker_note =
-      "⚠️ Pipeline-checked constraints from bundled sidecar blocker edges. Address these before committing to a choice.";
+      "⚠️ Source-linked blocker warnings. Address these before committing to a choice.";
   }
 
   logSearch(

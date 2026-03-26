@@ -6,7 +6,7 @@ import { resolveMcpServerPath } from "../paths.js";
 
 const POCKETLANTERN_RULE_MARKER = "## PocketLantern";
 const POCKETLANTERN_RULE_LINE =
-  "For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in this cardset snapshot — your training data may be stale.";
+  "For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in these bundled decision cards — your training data may be stale.";
 const POCKETLANTERN_RULE_BLOCK = `\n${POCKETLANTERN_RULE_MARKER}\n\n${POCKETLANTERN_RULE_LINE}\n`;
 
 /**

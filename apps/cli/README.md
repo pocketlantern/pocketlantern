@@ -1,6 +1,6 @@
 # pocketlantern
 
-Factual decision cache for AI agents — blocker-aware technology cards.
+Blocker-aware decision layer for AI agents — source-linked technology cards.
 
 Your AI agent sounds confident. It missed the blockers. PocketLantern surfaces EOL dates, breaking changes, lock-in risks, and pricing shifts that LLMs miss from training data.
 

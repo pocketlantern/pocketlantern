@@ -8,7 +8,7 @@
 
 **Your AI agent sounds confident. It missed the blockers.**
 
-Prices shift, versions break, licenses change. PocketLantern surfaces the pipeline-checked constraints your AI agent doesn't know about — before they become production incidents.
+Prices shift, versions break, licenses change. PocketLantern surfaces the constraints your AI agent doesn't know about — grounded in source-linked, time-sensitive facts, not stale training data.
 
 ![PocketLantern demo — Node.js 20→24 upgrade blockers surfaced in seconds](demo.gif)
 
@@ -70,16 +70,16 @@ Three questions. Three blocker types. Same AI, different facts.
 
 ## How it works
 
-PocketLantern is an MCP server. Your AI agent calls `search_cards` — and gets pipeline-checked decision cards **plus blocker warnings** from bundled sidecar blocker edges (where indexed).
+PocketLantern is an MCP server. Your AI agent calls `search_cards` — and gets source-linked decision cards **plus source-linked blocker warnings** where available.
 
 ```
 Agent asks question
   -> search_cards("clerk vs auth0 authentication")
   -> 3 cards + 5 blocker warnings (lock-in, EOL, export restrictions)
-  -> Agent answers with pipeline-checked constraints
+  -> Agent answers with source-linked constraints
 ```
 
-Local cardset. Instant lookup. No vector database. No embeddings. Keyword search, card links, and sidecar blocker edges where bundled. The value is in **source-linked, pipeline-checked cards**, not clever retrieval alone.
+Local cardset. Instant lookup. No vector database. No embeddings. Keyword search, card links, and source-linked blocker warnings where available. The value is in **source-linked decision cards**, not clever retrieval alone.
 
 ```
 search_cards("auth", constraints:["serverless"]) -> cards + blockers
@@ -120,7 +120,7 @@ Add to your MCP config (Cursor: `~/.cursor/mcp.json`):
 Then add this line to your project rules (`.cursorrules`, Kiro steering file, etc.):
 
 ```
-For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in this cardset snapshot — your training data may be stale.
+For technology decisions, upgrades, migrations, or licensing questions: before finalizing your answer, check the PocketLantern MCP server's search_cards tool for blockers in these bundled decision cards — your training data may be stale.
 ```
 
 Reload MCP servers: Cursor — `Cmd+Shift+P` -> "MCP: Restart Servers". Windsurf — restart the editor.
@@ -153,26 +153,20 @@ pocketlantern doctor               # check installation status
 pocketlantern search "auth pricing" # search cards from CLI
 ```
 
-## Local mode & connected mode
-
-**Local mode** (available now) — 100+ curated blocker-aware cards across 25 categories ship with the npm package. Works immediately, no network, no account.
-
-**Connected mode** (coming soon) — planned hosted retrieval will extend local mode with additional curated decision cards. Local cards always ship with this repo; connected mode adds more coverage when available.
-
 ## What's included
 
-100+ curated blocker-aware cards across 25 categories — plus sidecar blocker edges from the bundled graph index:
+Blocker-aware decision cards across 25 categories — plus source-linked blocker warnings from the bundled graph index. Ships with the npm package, works immediately, no network, no account:
 
-| Card                                                                                                                                        | Blocker it catches                                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [Clerk vs Auth0 vs Cognito](packages/knowledge/cards/auth/clerk-vs-auth0-vs-cognito-2026.yaml)                                              | Cognito password hash permanent lock-in, Auth0 export restriction      |
-| [Next.js 16 Upgrade](packages/knowledge/cards/frontend/nextjs-16-upgrade-turbopack-default-and-async-request-apis.yaml)                     | 4 breaking changes, webpack build failure, middleware deprecation      |
-| [OpenAI Realtime API Migration](packages/knowledge/cards/ai/openai-realtime-api-beta-to-ga-migration-before-february-27-2026-shutdown.yaml) | Beta removed, GA event schema incompatible                             |
-| [Vercel Fluid Compute](packages/knowledge/cards/serverless/vercel-fluid-compute-vs-classic-functions-cost-and-concurrency-2026.yaml)        | Billing model change, shared-process concurrency, classic opt-out      |
-| [Prisma vs Drizzle](packages/knowledge/cards/database/prisma-vs-drizzle-for-edge-and-serverless.yaml)                                       | Prisma v7 ESM breaking, Edge preview-only, Drizzle timestamp change    |
-| [Supabase vs Firebase](packages/knowledge/cards/backend/supabase-vs-firebase-baas-pricing-and-features-2026.yaml)                           | Edge Functions lock-in, auth.uid() not portable, pg_dump safe          |
-| [GitHub Actions Node24](packages/knowledge/cards/devtools/github-actions-node24-migration-after-node20-deprecation-2026.yaml)               | Node20 EOL Apr 2026, macOS 13.4 incompatibility                        |
-| + more                                                                                                                                      | Auth provider migration, Supabase vs Firebase, SSO vendor lock-in, ... |
+| Category | What it covers |
+| -------- | -------------- |
+| auth | Vendor lock-in, migration pain, SSO, RBAC, passkeys |
+| frontend | Next.js, React, Svelte, Vite, Angular upgrade blockers |
+| database | Prisma, Drizzle, Postgres, Aurora, Neon, Supabase |
+| ai | OpenAI API migrations, model pricing, batch vs streaming |
+| serverless | Vercel, Cloudflare Workers, Lambda cost and runtime |
+| infra | Hosting platforms, Terraform, Node.js LTS, Python EOL |
+| backend | Supabase vs Firebase, Express, job queues, realtime sync |
+| + 18 more | deployment, devtools, testing, security, compliance, ... |
 
 ### What a card looks like
 

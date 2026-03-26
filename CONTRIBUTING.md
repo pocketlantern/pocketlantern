@@ -15,7 +15,7 @@ Contributions to the **tool** are welcome:
 
 ## What we don't accept
 
-**Card contributions are not accepted at this time.** The sample cards included in this repo are maintained internally through a pipeline-checked production pipeline. Card quality depends on reviews on a refresh schedule with source links, and we cannot guarantee that standard through external contributions.
+**Card contributions are not accepted at this time.** The sample cards included in this repo are maintained internally through a verified production process. Card quality depends on reviews on a refresh schedule with source links, and we cannot guarantee that standard through external contributions.
 
 This policy may change as the project matures.
 

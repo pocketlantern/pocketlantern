@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 const { version } = require("../package.json") as { version: string };
 
 const HELP = `
-pocketlantern - Blocker-aware decision cache for AI agents
+pocketlantern - Blocker-aware decision layer for AI agents
 
 Usage:
   pocketlantern serve [--cards-dir <path>]    Start the MCP server
