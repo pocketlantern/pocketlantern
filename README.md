@@ -157,16 +157,16 @@ pocketlantern search "auth pricing" # search cards from CLI
 
 Blocker-aware decision cards across 25 categories — plus source-linked blocker warnings from the bundled graph index. Ships with the npm package, works immediately, no network, no account:
 
-| Category | What it covers |
-| -------- | -------------- |
-| auth | Vendor lock-in, migration pain, SSO, RBAC, passkeys |
-| frontend | Next.js, React, Svelte, Vite, Angular upgrade blockers |
-| database | Prisma, Drizzle, Postgres, Aurora, Neon, Supabase |
-| ai | OpenAI API migrations, model pricing, batch vs streaming |
-| serverless | Vercel, Cloudflare Workers, Lambda cost and runtime |
-| infra | Hosting platforms, Terraform, Node.js LTS, Python EOL |
-| backend | Supabase vs Firebase, Express, job queues, realtime sync |
-| + 18 more | deployment, devtools, testing, security, compliance, ... |
+| Category   | What it covers                                           |
+| ---------- | -------------------------------------------------------- |
+| auth       | Vendor lock-in, migration pain, SSO, RBAC, passkeys      |
+| frontend   | Next.js, React, Svelte, Vite, Angular upgrade blockers   |
+| database   | Prisma, Drizzle, Postgres, Aurora, Neon, Supabase        |
+| ai         | OpenAI API migrations, model pricing, batch vs streaming |
+| serverless | Vercel, Cloudflare Workers, Lambda cost and runtime      |
+| infra      | Hosting platforms, Terraform, Node.js LTS, Python EOL    |
+| backend    | Supabase vs Firebase, Express, job queues, realtime sync |
+| + 18 more  | deployment, devtools, testing, security, compliance, ... |
 
 ### What a card looks like
 
