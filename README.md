@@ -1,9 +1,10 @@
 # PocketLantern
 
+[![npm version](https://img.shields.io/npm/v/pocketlantern)](https://www.npmjs.com/package/pocketlantern)
+[![npm downloads](https://img.shields.io/npm/dm/pocketlantern)](https://www.npmjs.com/package/pocketlantern)
 [![CI](https://github.com/pocketlantern/pocketlantern/actions/workflows/ci.yml/badge.svg)](https://github.com/pocketlantern/pocketlantern/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org)
-[![Homepage](https://img.shields.io/badge/homepage-pocketlantern.dev-blue)](https://pocketlantern.dev)
 
 **Your AI agent sounds confident. It missed the blockers.**
 
@@ -88,21 +89,16 @@ get_related_cards(...)                           -> connected topics
 
 ## Quick start
 
-**Prerequisites**: Node.js >= 22, [pnpm](https://pnpm.io/installation) (`npm i -g pnpm`), an MCP client ([Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Cursor](https://cursor.com), etc.)
+**Prerequisites**: Node.js >= 22, an MCP client ([Claude Code](https://docs.anthropic.com/en/docs/claude-code), [Cursor](https://cursor.com), etc.)
 
 ```bash
-git clone https://github.com/pocketlantern/pocketlantern.git
-cd pocketlantern && pnpm install && pnpm build
+npm install -g pocketlantern
 ```
-
-> The first `pnpm install` may show a bin-link warning — this is harmless and resolves after `pnpm build`.
-
-**v1 public essentials** (what we promise, what we don't, install, issues, Free vs Pro, refresh semantics): [docs/v1-public.md](docs/v1-public.md).
 
 ### Claude Code
 
 ```bash
-npx pocketlantern init
+pocketlantern init
 ```
 
 `init` registers the MCP server in `~/.claude.json` **and** adds a one-line rule to your project's `CLAUDE.md`. Restart Claude Code (`Ctrl+C`, then run `claude` again), then ask your first query.
@@ -115,8 +111,7 @@ Add to your MCP config (Cursor: `~/.cursor/mcp.json`):
 {
   "mcpServers": {
     "pocketlantern": {
-      "command": "node",
-      "args": ["/absolute/path/to/pocketlantern/apps/mcp-server/dist/server.js"]
+      "command": "pocketlantern-mcp"
     }
   }
 }
@@ -154,13 +149,13 @@ Blocker warnings appear in MCP responses when your AI agent calls `search_cards`
 ### Verify installation
 
 ```bash
-npx pocketlantern doctor               # check installation status
-npx pocketlantern search "auth pricing" # search cards from CLI
+pocketlantern doctor               # check installation status
+pocketlantern search "auth pricing" # search cards from CLI
 ```
 
 ## Local mode & connected mode
 
-**Local mode** (available now) — 100+ curated blocker-aware cards across 25 categories ship with this repo. Works immediately, no network, no account.
+**Local mode** (available now) — 100+ curated blocker-aware cards across 25 categories ship with the npm package. Works immediately, no network, no account.
 
 **Connected mode** (coming soon) — planned hosted retrieval will extend local mode with additional curated decision cards. Local cards always ship with this repo; connected mode adds more coverage when available.
 
