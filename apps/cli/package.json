@@ -1,6 +1,6 @@
 {
   "name": "pocketlantern",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Blocker-aware decision layer for AI agents — source-linked technology cards",
   "author": "PocketLantern",
