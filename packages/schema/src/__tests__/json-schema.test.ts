@@ -1,48 +1,62 @@
 import { describe, it, expect } from "vitest";
+import { CardSchema, CandidateSchema } from "../card.js";
 import { cardJsonSchema, candidateJsonSchema } from "../json-schema.js";
 
-describe("cardJsonSchema", () => {
-  it("is a valid JSON Schema object with type and properties", () => {
-    const schema = cardJsonSchema as Record<string, unknown>;
-    const def = (schema["$defs"] as Record<string, unknown>)?.["Card"] ?? schema;
+type JsonSchemaObj = {
+  type: string;
+  properties: Record<string, unknown>;
+  required?: string[];
+};
 
-    const defObj = def as Record<string, unknown>;
-    expect(defObj).toHaveProperty("type");
-    expect(defObj).toHaveProperty("properties");
+function resolveSchema(raw: unknown): JsonSchemaObj {
+  const schema = raw as Record<string, unknown>;
+  const def = (schema["$defs"] as Record<string, unknown>)?.["Card"] ?? schema;
+  return def as JsonSchemaObj;
+}
+
+describe("cardJsonSchema ↔ CardSchema sync", () => {
+  const jsonSchema = resolveSchema(cardJsonSchema);
+  const zodShape = CardSchema.shape;
+
+  it("JSON Schema properties match Zod schema fields exactly", () => {
+    const jsonProps = Object.keys(jsonSchema.properties).sort();
+    const zodFields = Object.keys(zodShape).sort();
+    expect(jsonProps).toEqual(zodFields);
   });
 
-  it("properties include all required card fields", () => {
-    const schema = cardJsonSchema as Record<string, unknown>;
-    const def = (schema["$defs"] as Record<string, unknown>)?.["Card"] ?? schema;
+  it("JSON Schema required fields match Zod non-optional fields", () => {
+    const jsonRequired = (jsonSchema.required ?? []).sort();
+    const zodRequired = Object.entries(zodShape)
+      .filter(([, v]) => !(v as { isOptional?: () => boolean }).isOptional?.())
+      .map(([k]) => k)
+      .sort();
+    expect(jsonRequired).toEqual(zodRequired);
+  });
 
-    const properties = (def as Record<string, unknown>)["properties"] as Record<string, unknown>;
-
-    const requiredFields = ["id", "title", "problem", "candidates", "tags", "updated"];
-    for (const field of requiredFields) {
-      expect(properties).toHaveProperty(field);
-    }
+  it("id field preserves regex pattern from Zod", () => {
+    const idProp = jsonSchema.properties.id as { pattern?: string };
+    expect(idProp.pattern).toBeDefined();
+    expect(new RegExp(idProp.pattern!).test("auth/jwt-vs-session")).toBe(true);
+    expect(new RegExp(idProp.pattern!).test("BAD")).toBe(false);
   });
 });
 
-describe("candidateJsonSchema", () => {
-  it("is a valid JSON Schema object with type and properties", () => {
-    const schema = candidateJsonSchema as Record<string, unknown>;
-    const def = (schema["$defs"] as Record<string, unknown>)?.["Candidate"] ?? schema;
+describe("candidateJsonSchema ↔ CandidateSchema sync", () => {
+  const jsonSchema = resolveSchema(candidateJsonSchema);
+  const zodShape = CandidateSchema.shape;
 
-    const defObj = def as Record<string, unknown>;
-    expect(defObj).toHaveProperty("type");
-    expect(defObj).toHaveProperty("properties");
+  it("JSON Schema properties match Zod schema fields exactly", () => {
+    const jsonProps = Object.keys(jsonSchema.properties).sort();
+    const zodFields = Object.keys(zodShape).sort();
+    expect(jsonProps).toEqual(zodFields);
   });
 
-  it("properties include all required candidate fields", () => {
-    const schema = candidateJsonSchema as Record<string, unknown>;
-    const def = (schema["$defs"] as Record<string, unknown>)?.["Candidate"] ?? schema;
-
-    const properties = (def as Record<string, unknown>)["properties"] as Record<string, unknown>;
-
-    const requiredFields = ["name", "summary", "when_to_use", "tradeoffs", "cautions"];
-    for (const field of requiredFields) {
-      expect(properties).toHaveProperty(field);
-    }
+  it("JSON Schema required fields match Zod non-optional fields", () => {
+    const jsonRequired = (jsonSchema.required ?? []).sort();
+    const zodRequired = Object.entries(zodShape)
+      .filter(([, v]) => !(v as { isOptional?: () => boolean }).isOptional?.())
+      .map(([k]) => k)
+      .sort();
+    expect(jsonRequired).toEqual(zodRequired);
   });
 });

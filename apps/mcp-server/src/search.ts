@@ -112,7 +112,7 @@ function matches(text: string, keyword: string): boolean {
  * Score a card against a set of keywords.
  * Higher score = more relevant.
  */
-function scoreCard(card: Card, keywords: string[]): number {
+export function scoreCard(card: Card, keywords: string[]): number {
   let score = 0;
 
   for (const keyword of keywords) {

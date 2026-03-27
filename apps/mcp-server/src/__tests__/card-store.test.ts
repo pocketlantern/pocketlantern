@@ -1,15 +1,6 @@
 import { describe, it, expect } from "vitest";
-import type { Card } from "@pocketlantern/schema";
 import { LocalCardStore, MergedCardStore } from "../card-store.js";
-
-const makeCard = (id: string, title = `Card ${id}`): Card => ({
-  id,
-  title,
-  problem: `Problem for ${id}`,
-  candidates: [{ name: "A", summary: "s", when_to_use: "always" }],
-  tags: ["test"],
-  updated: "2026-01-01",
-});
+import { makeCard } from "./fixtures.js";
 
 describe("LocalCardStore", () => {
   it("returns all cards", () => {
@@ -46,8 +37,8 @@ describe("MergedCardStore", () => {
   });
 
   it("local cards take priority on id conflict", () => {
-    const local = [makeCard("cat/a", "Local Version")];
-    const remote = [makeCard("cat/a", "Remote Version")];
+    const local = [makeCard("cat/a", { title: "Local Version" })];
+    const remote = [makeCard("cat/a", { title: "Remote Version" })];
     const store = new MergedCardStore(local, remote);
     expect(store.getAll()).toHaveLength(1);
     expect(store.getById("cat/a")?.title).toBe("Local Version");

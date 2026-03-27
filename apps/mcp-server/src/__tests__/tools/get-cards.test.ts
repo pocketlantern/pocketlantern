@@ -1,57 +1,24 @@
 import { describe, it, expect } from "vitest";
-import type { Card } from "@pocketlantern/schema";
 import { LocalCardStore } from "../../card-store.js";
 import { handleGetCards, GetCardsArgsSchema } from "../../tools/get-cards.js";
+import { makeCard } from "../fixtures.js";
 
-const fixtureCards: Card[] = [
-  {
-    id: "cat-a/card-1",
+const fixtureCards = [
+  makeCard("cat-a/card-1", {
     title: "Card One",
     problem: "Choosing between X and Y",
-    candidates: [
-      {
-        name: "X",
-        summary: "X summary",
-        when_to_use: "Small teams",
-        tradeoffs: "Simple",
-        cautions: "Limited",
-      },
-    ],
     tags: ["alpha"],
-    updated: "2026-01-01",
-  },
-  {
-    id: "cat-a/card-2",
+  }),
+  makeCard("cat-a/card-2", {
     title: "Card Two",
     problem: "Selecting a tool for Z",
-    candidates: [
-      {
-        name: "Z1",
-        summary: "Z1 summary",
-        when_to_use: "Always",
-        tradeoffs: "None",
-        cautions: "None",
-      },
-    ],
     tags: ["beta"],
-    updated: "2026-01-01",
-  },
-  {
-    id: "cat-b/card-3",
+  }),
+  makeCard("cat-b/card-3", {
     title: "Card Three",
     problem: "Handling real-time data",
-    candidates: [
-      {
-        name: "RT1",
-        summary: "RT1 summary",
-        when_to_use: "Real-time",
-        tradeoffs: "Complexity",
-        cautions: "Scale",
-      },
-    ],
     tags: ["gamma"],
-    updated: "2026-01-01",
-  },
+  }),
 ];
 
 const store = new LocalCardStore(fixtureCards);

@@ -15,7 +15,11 @@ export function handleGetCard(store: CardStore, args: z.infer<typeof GetCardArgs
 
   if (!card) {
     return errorResponse(
-      `Card not found: ${args.id}. Use search_cards to find available cards, or list_categories to see what topics are covered.`,
+      JSON.stringify({
+        error_type: "card_not_found",
+        card_id: args.id,
+        message: `Card not found: ${args.id}. Use search_cards to find available cards, or list_categories to see what topics are covered.`,
+      }),
     );
   }
 

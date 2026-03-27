@@ -1,106 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { searchCards } from "../search.js";
-import type { Card } from "@pocketlantern/schema";
-
-const fixtureCards: Card[] = [
-  {
-    id: "cat-a/card-1",
-    title: "Card One",
-    problem: "Choosing between X and Y",
-    candidates: [
-      {
-        name: "X",
-        summary: "X summary",
-        when_to_use: "Small teams",
-        tradeoffs: "Simple",
-        cautions: "Limited",
-      },
-      {
-        name: "Y",
-        summary: "Y summary",
-        when_to_use: "Large orgs",
-        tradeoffs: "Complex",
-        cautions: "Costly",
-      },
-    ],
-    tags: ["alpha", "beta"],
-    constraints: ["serverless", "small-team"],
-    context: ["web"],
-    aliases: ["x-vs-y"],
-    related_cards: ["cat-a/card-2"],
-    updated: "2026-01-01",
-  },
-  {
-    id: "cat-a/card-2",
-    title: "Card Two",
-    problem: "Selecting a tool for Z",
-    candidates: [
-      {
-        name: "Z1",
-        summary: "Z1 summary",
-        when_to_use: "Always",
-        tradeoffs: "None",
-        cautions: "None",
-      },
-    ],
-    tags: ["beta", "gamma"],
-    constraints: ["enterprise", "high-scale"],
-    related_cards: ["cat-a/card-1", "cat-b/card-3"],
-    updated: "2026-01-01",
-  },
-  {
-    id: "cat-b/card-3",
-    title: "Card Three",
-    problem: "Handling real-time data",
-    candidates: [
-      {
-        name: "RT1",
-        summary: "RT1 summary",
-        when_to_use: "Real-time apps",
-        tradeoffs: "Complexity",
-        cautions: "Scale",
-      },
-    ],
-    tags: ["gamma", "delta"],
-    constraints: ["real-time", "serverless"],
-    related_cards: ["cat-a/card-2"],
-    updated: "2026-01-01",
-  },
-  {
-    id: "cat-b/card-4",
-    title: "Deprecated Card",
-    problem: "Old approach to something",
-    candidates: [
-      {
-        name: "Old",
-        summary: "Old summary",
-        when_to_use: "Never",
-        tradeoffs: "All",
-        cautions: "Deprecated",
-      },
-    ],
-    tags: ["alpha"],
-    status: "deprecated" as const,
-    updated: "2025-01-01",
-  },
-  {
-    id: "cat-b/card-5",
-    title: "Draft Card",
-    problem: "Work in progress",
-    candidates: [
-      {
-        name: "WIP",
-        summary: "WIP summary",
-        when_to_use: "TBD",
-        tradeoffs: "TBD",
-        cautions: "TBD",
-      },
-    ],
-    tags: ["delta"],
-    status: "draft" as const,
-    updated: "2026-01-01",
-  },
-];
+import { searchCards, scoreCard, tokenize } from "../search.js";
+import { fixtureCards, makeCard } from "./fixtures.js";
 
 describe("searchCards", () => {
   // ---------------------------------------------------------------------------
@@ -156,19 +56,11 @@ describe("searchCards", () => {
     });
 
     it("scores partial tag matches lower than exact", () => {
-      // "alph" partially matches "alpha" tag but is not exact
-      const resultsPartial = searchCards(fixtureCards, "alph");
-      const resultsExact = searchCards(fixtureCards, "alpha");
+      const card = fixtureCards[0]; // has tag "alpha"
+      const exactScore = scoreCard(card, tokenize("alpha"));
+      const partialScore = scoreCard(card, tokenize("alph"));
 
-      // Both should find card-1
-      expect(resultsPartial.length).toBeGreaterThan(0);
-      expect(resultsExact.length).toBeGreaterThan(0);
-      expect(resultsPartial[0].id).toBe("cat-a/card-1");
-      expect(resultsExact[0].id).toBe("cat-a/card-1");
-
-      // Exact tag match query should not produce fewer results or lower relevance
-      // We verify indirectly that "alpha" (exact) scores 2 while "alph" (partial) scores 1
-      // by checking both return card-1 first (the only active card with that tag)
+      expect(exactScore).toBeGreaterThan(partialScore);
     });
 
     it("finds cards by alias match", () => {
@@ -301,26 +193,13 @@ describe("searchCards", () => {
     });
 
     it("returns empty constraints array for cards without constraints", () => {
-      // Remove constraints from a card to test the ?? [] fallback
-      const cardsWithoutConstraints: Card[] = [
-        {
-          id: "test/no-constraints",
+      const cards = [
+        makeCard("test/no-constraints", {
           title: "No Constraints Card",
           problem: "Testing missing constraints",
-          candidates: [
-            {
-              name: "NC",
-              summary: "NC summary",
-              when_to_use: "Test",
-              tradeoffs: "None",
-              cautions: "None",
-            },
-          ],
-          tags: ["test"],
-          updated: "2026-01-01",
-        },
+        }),
       ];
-      const results = searchCards(cardsWithoutConstraints, "constraints");
+      const results = searchCards(cards, "constraints");
       expect(results.length).toBe(1);
       expect(results[0].constraints).toEqual([]);
     });
@@ -350,24 +229,18 @@ describe("searchCards", () => {
 
   describe("tier-based scoring", () => {
     it("ranks core cards above foundational cards with same keyword match", () => {
-      const tieredCards: Card[] = [
-        {
-          id: "test/foundational-auth",
+      const tieredCards = [
+        makeCard("test/foundational-auth", {
           title: "Auth Strategy",
           problem: "Choosing an auth approach",
-          candidates: [{ name: "A", summary: "A", when_to_use: "Always" }],
           tags: ["auth"],
           tier: "foundational" as const,
-          updated: "2026-01-01",
-        },
-        {
-          id: "test/core-auth",
+        }),
+        makeCard("test/core-auth", {
           title: "Auth Vendor Choice",
           problem: "Choosing an auth vendor",
-          candidates: [{ name: "B", summary: "B", when_to_use: "Always" }],
           tags: ["auth"],
-          updated: "2026-01-01",
-        },
+        }),
       ];
       const results = searchCards(tieredCards, "auth");
       expect(results.length).toBe(2);
@@ -375,18 +248,14 @@ describe("searchCards", () => {
     });
 
     it("excludes foundational cards when penalty drops score to zero", () => {
-      const tieredCards: Card[] = [
-        {
-          id: "test/foundational-weak",
+      const tieredCards = [
+        makeCard("test/foundational-weak", {
           title: "Something Else",
           problem: "Unrelated problem",
-          candidates: [{ name: "X", summary: "X", when_to_use: "Always" }],
           tags: ["niche"],
           tier: "foundational" as const,
-          updated: "2026-01-01",
-        },
+        }),
       ];
-      // "niche" matches tag (score 2), penalty -3 → score -1 → filtered out
       const results = searchCards(tieredCards, "niche");
       expect(results.length).toBe(0);
     });
@@ -415,9 +284,73 @@ describe("searchCards", () => {
     });
 
     it("only returns cards with score > 0", () => {
-      // "zzzzunique" won't match anything
       const results = searchCards(fixtureCards, "zzzzunique");
       expect(results).toEqual([]);
     });
+  });
+});
+
+describe("scoreCard (direct)", () => {
+  it("title match (weight 3) > problem match (weight 2)", () => {
+    const titleCard = makeCard("a/title", { title: "auth", problem: "unrelated" });
+    const problemCard = makeCard("a/problem", { title: "unrelated", problem: "auth" });
+
+    const titleScore = scoreCard(titleCard, ["auth"]);
+    const problemScore = scoreCard(problemCard, ["auth"]);
+
+    expect(titleScore).toBe(3);
+    expect(problemScore).toBe(2);
+    expect(titleScore).toBeGreaterThan(problemScore);
+  });
+
+  it("exact tag (weight 2) > partial tag (weight 1)", () => {
+    const card = makeCard("a/tag", { tags: ["serverless"] });
+
+    const exactScore = scoreCard(card, ["serverless"]);
+    const partialScore = scoreCard(card, ["server"]);
+
+    expect(exactScore).toBe(2);
+    expect(partialScore).toBe(1);
+  });
+
+  it("alias match scores 2", () => {
+    const card = makeCard("a/alias", { aliases: ["jwt-auth"] });
+    expect(scoreCard(card, ["jwt-auth"])).toBe(2);
+  });
+
+  it("candidate name match scores 1", () => {
+    const card = makeCard("a/cand", {
+      candidates: [{ name: "Redis", summary: "s", when_to_use: "w" }],
+    });
+    expect(scoreCard(card, ["redis"])).toBe(1);
+  });
+
+  it("context match scores 1", () => {
+    const card = makeCard("a/ctx", { context: ["kubernetes"] });
+    expect(scoreCard(card, ["kubernetes"])).toBe(1);
+  });
+
+  it("constraint match scores 2", () => {
+    const card = makeCard("a/cst", { constraints: ["serverless"] });
+    expect(scoreCard(card, ["serverless"])).toBe(2);
+  });
+
+  it("accumulates across multiple keywords", () => {
+    const card = makeCard("a/multi", {
+      title: "Auth Strategy",
+      problem: "Choosing auth for serverless",
+      tags: ["auth"],
+      constraints: ["serverless"],
+    });
+    const score = scoreCard(card, ["auth", "serverless"]);
+    // "auth": title(3) + problem(2) + exact tag(2) = 7
+    // "serverless": problem(2) + constraint(2) = 4
+    expect(score).toBe(11);
+  });
+
+  it("does not double-count exact and partial tag match for same keyword", () => {
+    const card = makeCard("a/tag", { tags: ["serverless"] });
+    // "serverless" exact matches → 2 (not 2+1)
+    expect(scoreCard(card, ["serverless"])).toBe(2);
   });
 });

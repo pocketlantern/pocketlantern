@@ -47,10 +47,16 @@ export const SearchCardsArgsSchema = z.object({
     ),
 });
 
+export interface SearchHint {
+  type: "no_results" | "no_results_filtered";
+  filters_used: string[];
+  message: string;
+}
+
 interface SearchResponse {
   cards: SearchResult[];
   mode?: string;
-  hint?: string;
+  hint?: SearchHint;
   pro_hint?: ProHint;
   blockers?: BlockerSummary[];
   blocker_note?: string;
@@ -74,14 +80,17 @@ export async function handleSearchCards(
   const localCardIds = catalog ? new Set(cards.map((c) => c.id)) : null;
 
   if (results.length === 0) {
-    const hints: string[] = [];
+    const filtersUsed: string[] = [];
+    const messageParts: string[] = [];
     if (args.constraints?.length) {
-      hints.push("try removing constraints to broaden results");
+      filtersUsed.push("constraints");
+      messageParts.push("try removing constraints to broaden results");
     }
     if (args.tags?.length) {
-      hints.push("try removing tag filters");
+      filtersUsed.push("tags");
+      messageParts.push("try removing tag filters");
     }
-    hints.push("use list_categories or list_tags to discover available topics");
+    messageParts.push("use list_categories or list_tags to discover available topics");
 
     let proHint: ProHint | null = null;
     if (catalog && localCardIds) {
@@ -92,7 +101,11 @@ export async function handleSearchCards(
     if (proHint) {
       response.pro_hint = proHint;
     } else {
-      response.hint = `No cards found. ${hints.join(", or ")}.`;
+      response.hint = {
+        type: filtersUsed.length > 0 ? "no_results_filtered" : "no_results",
+        filters_used: filtersUsed,
+        message: `No cards found. ${messageParts.join(", or ")}.`,
+      };
     }
 
     logSearch(args.query, []);
