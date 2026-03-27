@@ -1,5 +1,15 @@
 # pocketlantern
 
+## 0.1.3
+
+### Patch Changes
+
+- [`5ab0950`](https://github.com/pocketlantern/pocketlantern/commit/5ab0950219949749c0321169fc5f83c8219cab26) Thanks [@allssu](https://github.com/allssu)! - Fix first-time user experience: expose pocketlantern-mcp binary, add Node.js version check, improve error messages
+
+- Updated dependencies [[`5ab0950`](https://github.com/pocketlantern/pocketlantern/commit/5ab0950219949749c0321169fc5f83c8219cab26)]:
+  - @pocketlantern/mcp-server@0.1.3
+  - @pocketlantern/schema@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
