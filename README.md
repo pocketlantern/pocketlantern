@@ -187,6 +187,8 @@ pnpm lint               # ESLint
 pnpm format:check       # Prettier check
 ```
 
+Missing a topic? Request coverage in [Card Requests](https://github.com/pocketlantern/pocketlantern/discussions/categories/card-requests).
+
 ## Contributing
 
 Contributions to the tool (schema, MCP server, CLI, search) are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
