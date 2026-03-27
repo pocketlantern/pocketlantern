@@ -11,7 +11,14 @@ export async function runSearch(query: string, cardsDir?: string) {
   const results = searchCards(cards, query);
 
   if (results.length === 0) {
-    console.log(`No cards found for "${query}"`);
+    console.log(`No cards found for "${query}"\n`);
+    console.log("This topic may not be covered yet. Try:");
+    console.log('  pocketlantern search "auth pricing"');
+    console.log('  pocketlantern search "database migration"');
+    console.log('  pocketlantern search "serverless cost"');
+    console.log(
+      "\nRequest a card: https://github.com/pocketlantern/pocketlantern/discussions/categories/card-requests",
+    );
     return;
   }
 

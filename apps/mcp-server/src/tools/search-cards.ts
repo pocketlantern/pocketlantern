@@ -92,6 +92,9 @@ export async function handleSearchCards(
     }
     messageParts.push("use list_categories or list_tags to discover available topics");
 
+    const categorySet = new Set(cards.map((c) => c.id.split("/")[0]));
+    const categories = [...categorySet].sort();
+
     let proHint: ProHint | null = null;
     if (catalog && localCardIds) {
       proHint = searchProCatalog(catalog, args.query, localCardIds);
@@ -104,7 +107,7 @@ export async function handleSearchCards(
       response.hint = {
         type: filtersUsed.length > 0 ? "no_results_filtered" : "no_results",
         filters_used: filtersUsed,
-        message: `No cards found. ${messageParts.join(", or ")}.`,
+        message: `No cards found. ${messageParts.join(", or ")}. Available categories: ${categories.join(", ")}.`,
       };
     }
 

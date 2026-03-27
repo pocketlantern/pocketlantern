@@ -18,7 +18,8 @@ describe("searchCards", () => {
     });
 
     it("filters stopwords but matches on real words", () => {
-      const results = searchCards(fixtureCards, "how to handle data");
+      // "real-time data" hits title(3 for "three") + problem(2 for "real-time" + 2 for "data") >= 3
+      const results = searchCards(fixtureCards, "how to handle real-time data");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-b/card-3");
     });
@@ -42,47 +43,52 @@ describe("searchCards", () => {
     });
 
     it("ranks problem matches high", () => {
-      // "Choosing" appears only in card-1's problem
-      const results = searchCards(fixtureCards, "Choosing");
+      // "Choosing X" hits problem(2+2) on card-1 — score 4 >= 3
+      const results = searchCards(fixtureCards, "Choosing X");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-a/card-1");
     });
 
     it("ranks exact tag matches high", () => {
-      // "alpha" is an exact tag on card-1 (and card-4 which is deprecated)
-      const results = searchCards(fixtureCards, "alpha");
+      // "alpha Card" hits tag(2) + title(3) on card-1 — score >= 3
+      const results = searchCards(fixtureCards, "alpha Card");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-a/card-1");
     });
 
-    it("scores partial tag matches lower than exact", () => {
-      const card = fixtureCards[0]; // has tag "alpha"
-      const exactScore = scoreCard(card, tokenize("alpha"));
-      const partialScore = scoreCard(card, tokenize("alph"));
+    it("scores exact tag matches higher than non-tag matches", () => {
+      const card = fixtureCards[0]; // has tag "alpha", context "web"
+      const tagScore = scoreCard(card, tokenize("alpha"));
+      const contextScore = scoreCard(card, tokenize("web"));
 
-      expect(exactScore).toBeGreaterThan(partialScore);
+      // exact tag(2) > context(1)
+      expect(tagScore).toBeGreaterThan(contextScore);
     });
 
     it("finds cards by alias match", () => {
-      const results = searchCards(fixtureCards, "x-vs-y");
+      // "x-vs-y Card" hits alias(2) + title(3) on card-1 — score >= 3
+      const results = searchCards(fixtureCards, "x-vs-y Card");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-a/card-1");
     });
 
     it("finds cards by candidate name match", () => {
-      const results = searchCards(fixtureCards, "Z1");
+      // "Z1 tool" hits candidate(1) + problem(2 for "tool") on card-2 — score 3
+      const results = searchCards(fixtureCards, "Z1 tool");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-a/card-2");
     });
 
     it("finds cards by context match", () => {
-      const results = searchCards(fixtureCards, "web");
+      // "web One" hits context(1) + title(3) on card-1 — score >= 3
+      const results = searchCards(fixtureCards, "web One");
       expect(results.length).toBeGreaterThan(0);
       expect(results.some((r) => r.id === "cat-a/card-1")).toBe(true);
     });
 
     it("finds cards by constraint match", () => {
-      const results = searchCards(fixtureCards, "serverless");
+      // "serverless Card" hits constraint(2) + title(3) — score >= 3 for card-1 and card-3
+      const results = searchCards(fixtureCards, "serverless Card");
       expect(results.length).toBeGreaterThanOrEqual(2);
       const ids = results.map((r) => r.id);
       expect(ids).toContain("cat-a/card-1");
@@ -261,7 +267,8 @@ describe("searchCards", () => {
     });
 
     it("treats cards without tier as core (no penalty)", () => {
-      const results = searchCards(fixtureCards, "alpha");
+      // "alpha Card" hits tag(2) + title(3) on card-1 — score >= 3 (no tier penalty)
+      const results = searchCards(fixtureCards, "alpha Card");
       expect(results.length).toBeGreaterThan(0);
       expect(results[0].id).toBe("cat-a/card-1");
     });
@@ -283,7 +290,7 @@ describe("searchCards", () => {
       expect(results).toEqual([]);
     });
 
-    it("only returns cards with score > 0", () => {
+    it("only returns cards with score >= 3", () => {
       const results = searchCards(fixtureCards, "zzzzunique");
       expect(results).toEqual([]);
     });
@@ -303,14 +310,15 @@ describe("scoreCard (direct)", () => {
     expect(titleScore).toBeGreaterThan(problemScore);
   });
 
-  it("exact tag (weight 2) > partial tag (weight 1)", () => {
+  it("exact tag (weight 2) vs no match for partial word", () => {
     const card = makeCard("a/tag", { tags: ["serverless"] });
 
     const exactScore = scoreCard(card, ["serverless"]);
-    const partialScore = scoreCard(card, ["server"]);
+    const noMatchScore = scoreCard(card, ["server"]);
 
     expect(exactScore).toBe(2);
-    expect(partialScore).toBe(1);
+    // "server" no longer matches "serverless" with word-boundary matching
+    expect(noMatchScore).toBe(0);
   });
 
   it("alias match scores 2", () => {

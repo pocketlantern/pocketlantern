@@ -102,10 +102,12 @@ export function tokenize(text: string): string[] {
 }
 
 /**
- * Check if a text contains a keyword (case-insensitive).
+ * Check if a text contains a keyword at a word boundary (case-insensitive).
+ * Prevents "rest" matching "restrictions" or "Restate".
  */
 function matches(text: string, keyword: string): boolean {
-  return text.toLowerCase().includes(keyword);
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i").test(text);
 }
 
 /**
@@ -144,6 +146,32 @@ export function scoreCard(card: Card, keywords: string[]): number {
 
   return score;
 }
+
+/**
+ * Count how many keywords have at least one match in a card.
+ */
+function countMatchedKeywords(card: Card, keywords: string[]): number {
+  let matched = 0;
+  for (const keyword of keywords) {
+    const hit =
+      matches(card.title, keyword) ||
+      matches(card.problem, keyword) ||
+      card.tags.some((tag) => tag.toLowerCase() === keyword || matches(tag, keyword)) ||
+      (card.aliases?.some((alias) => matches(alias, keyword)) ?? false) ||
+      card.candidates.some((c) => matches(c.name, keyword)) ||
+      (card.context?.some((ctx) => matches(ctx, keyword)) ?? false) ||
+      (card.constraints?.some((c) => matches(c, keyword)) ?? false);
+    if (hit) matched++;
+  }
+  return matched;
+}
+
+/**
+ * Minimum fraction of query keywords that must match a card.
+ * For multi-keyword queries (2+), at least half must hit.
+ * Single-keyword queries are exempt (threshold handles quality).
+ */
+const MIN_KEYWORD_COVERAGE = 0.5;
 
 /**
  * Search cards by keyword query with optional tag/constraint filtering.
@@ -195,7 +223,15 @@ export function searchCards(
       }
       return { card, score };
     })
-    .filter((s) => s.score > 0)
+    .filter((s) => {
+      if (s.score < 3) return false;
+      // Query coverage gate: multi-keyword queries require >= 50% keyword match
+      if (keywords.length >= 2) {
+        const matched = countMatchedKeywords(s.card, keywords);
+        if (matched / keywords.length < MIN_KEYWORD_COVERAGE) return false;
+      }
+      return true;
+    })
     .sort((a, b) => b.score - a.score);
 
   // Return summaries with constraints (token-efficient but filterable)
