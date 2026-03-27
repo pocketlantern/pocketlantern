@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.pocketlantern/pocketlantern",
+  "description": "Blocker-aware decision layer for AI agents. Surfaces source-linked blocker facts — EOL dates, breaking changes, lock-in risks, pricing shifts — that your AI agent misses from stale training data.",
+  "repository": {
+    "url": "https://github.com/pocketlantern/pocketlantern",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@pocketlantern/mcp-server",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

@@ -2,6 +2,7 @@
   "name": "@pocketlantern/mcp-server",
   "version": "0.1.1",
   "type": "module",
+  "mcpName": "io.github.pocketlantern/pocketlantern",
   "description": "MCP server for PocketLantern — factual decision cards for AI agents",
   "author": "PocketLantern",
   "license": "MIT",
