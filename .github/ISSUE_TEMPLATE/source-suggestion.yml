@@ -1,0 +1,26 @@
+name: Source Suggestion
+description: Suggest a source link to add or update in an existing card
+labels: ["source-suggestion"]
+body:
+  - type: input
+    id: card-id
+    attributes:
+      label: Card ID
+      description: "e.g. auth/clerk-vs-auth0-vs-cognito-2026"
+      placeholder: "category/card-name"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Source URL
+      description: Official documentation, changelog, or announcement
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: What does this source cover?
+      description: Brief description of what fact this source supports
+    validations:
+      required: true

@@ -197,6 +197,18 @@ CI runs these in order — all must pass before merge:
 2. `pnpm format:check` — Prettier. Run `npx prettier --write .` locally before pushing.
 3. `pnpm test` — Vitest. Smoke test (`smoke.test.ts`) requires `dist/` from step 1.
 
+## Release Checklist
+
+MCP Registry publish is automated in the Release workflow (`release.yml`). After changesets publishes to npm, the workflow automatically:
+
+1. Syncs `server.json` version fields from `apps/mcp-server/package.json`
+2. Authenticates via GitHub OIDC (no secrets needed)
+3. Publishes to the MCP Registry
+
+**Manual verification** (optional): `curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.pocketlantern"`
+
+**Note: Registry metadata changes (name, description) also require a new version — duplicate version publish is rejected (400). If you need to change description without code changes, bump the patch version.**
+
 ## Don't
 
 - Don't write card content in languages other than English.

@@ -2,7 +2,7 @@
   "name": "pocketlantern-toolkit",
   "private": true,
   "type": "module",
-  "description": "Blocker-aware decision layer for AI agents — MCP server, CLI, and schema",
+  "description": "Blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts",
   "repository": {
     "type": "git",
     "url": "https://github.com/pocketlantern/pocketlantern.git"

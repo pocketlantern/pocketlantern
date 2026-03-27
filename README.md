@@ -4,25 +4,16 @@
 [![npm downloads](https://img.shields.io/npm/dm/pocketlantern)](https://www.npmjs.com/package/pocketlantern)
 [![CI](https://github.com/pocketlantern/pocketlantern/actions/workflows/ci.yml/badge.svg)](https://github.com/pocketlantern/pocketlantern/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org)
 
 **Your AI agent sounds confident. It missed the blockers.**
 
-Prices shift, versions break, licenses change. PocketLantern surfaces the constraints your AI agent doesn't know about — grounded in source-linked, time-sensitive facts, not stale training data.
+Prices shift, versions break, licenses change. PocketLantern is a blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts.
 
-![PocketLantern demo — Node.js 20→24 upgrade blockers surfaced in seconds](demo.gif)
+## Try these queries
 
-## What it catches
+Ask your AI agent after installing PocketLantern:
 
-### Auth vendor lock-in
-
-Ask: "Which auth provider — Clerk, Auth0, or Cognito?"
-
-Without PocketLantern:
-
-> "It depends on your team size and requirements."
-
-With PocketLantern:
+**"Which auth provider — Clerk, Auth0, or Cognito?"**
 
 ```
 ⚠️ Cognito password hashes are permanently non-exportable
@@ -31,15 +22,7 @@ With PocketLantern:
 ✅ Clerk has the most flexible migration path
 ```
 
-### Breaking upgrade
-
-Ask: "Should I upgrade to Next.js 16?"
-
-Without PocketLantern:
-
-> "Turbopack is default now. Use the codemod and upgrade."
-
-With PocketLantern:
+**"Should I upgrade to Next.js 16?"**
 
 ```
 ⚠️ Sync API access fully removed — all dynamic calls must be awaited
@@ -49,15 +32,7 @@ With PocketLantern:
 ✅ Plan phased migration — codemod doesn't cover webpack or middleware
 ```
 
-### Hard deadline
-
-Ask: "Can I use the OpenAI Realtime API?"
-
-Without PocketLantern:
-
-> "GA is available. Use gpt-4o-realtime-preview."
-
-With PocketLantern:
+**"Can I use the OpenAI Realtime API?"**
 
 ```
 ⚠️ gpt-4o-realtime-preview removed 2026-05-07
@@ -68,24 +43,7 @@ With PocketLantern:
 
 Three questions. Three blocker types. Same AI, different facts.
 
-## How it works
-
-PocketLantern is an MCP server. Your AI agent calls `search_cards` — and gets source-linked decision cards **plus source-linked blocker warnings** where available.
-
-```
-Agent asks question
-  -> search_cards("clerk vs auth0 authentication")
-  -> 3 cards + 5 blocker warnings (lock-in, EOL, export restrictions)
-  -> Agent answers with source-linked constraints
-```
-
-Local cardset. Instant lookup. No vector database. No embeddings. Keyword search, card links, and source-linked blocker warnings where available. The value is in **source-linked decision cards**, not clever retrieval alone.
-
-```
-search_cards("auth", constraints:["serverless"]) -> cards + blockers
-get_card("auth/clerk-vs-auth0-vs-cognito-2026")  -> full card with facts
-get_related_cards(...)                           -> connected topics
-```
+![PocketLantern demo — Node.js 20→24 upgrade blockers surfaced in seconds](demo.gif)
 
 ## Quick start
 
@@ -101,7 +59,7 @@ npm install -g pocketlantern
 pocketlantern init
 ```
 
-`init` registers the MCP server in `~/.claude.json` **and** adds a one-line rule to your project's `CLAUDE.md`. Restart Claude Code (`Ctrl+C`, then run `claude` again), then ask your first query.
+`init` registers the MCP server in `~/.claude.json` and adds a one-line rule to your project's `CLAUDE.md`. Restart Claude Code, then ask your first query.
 
 ### Cursor / Windsurf / other MCP clients
 
@@ -125,18 +83,7 @@ For technology decisions, upgrades, migrations, or licensing questions: before f
 
 Reload MCP servers: Cursor — `Cmd+Shift+P` -> "MCP: Restart Servers". Windsurf — restart the editor.
 
-### Try these queries
-
-Ask your AI agent:
-
-1. **"Which auth provider — Clerk, Auth0, or Cognito?"**
-   Cognito password hashes permanently locked, Auth0 export requires support ticket, Clerk most flexible
-
-2. **"Should I upgrade to Next.js 16?"**
-   4 simultaneous breaking changes, webpack config breaks build, Node.js 20.9.0+ required
-
-3. **"Can I use the OpenAI Realtime API?"**
-   Beta + preview model removed 2026-05-07, GA event schema incompatible
+### More queries to try
 
 4. **"How did Vercel pricing change with Fluid Compute?"**
    Billing split to Active CPU + Memory, shared-process concurrency breaks isolation
@@ -144,13 +91,30 @@ Ask your AI agent:
 5. **"Prisma or Drizzle for Edge/serverless?"**
    Prisma v7 ESM + driver adapter breaking, Edge preview-only; Drizzle 0.30-1.0 also breaking
 
-Blocker warnings appear in MCP responses when your AI agent calls `search_cards` with blocker data. The CLI `search` command shows matched cards; full blocker detail is delivered through the MCP tool in your AI agent.
-
 ### Verify installation
 
 ```bash
 pocketlantern doctor               # check installation status
 pocketlantern search "auth pricing" # search cards from CLI
+```
+
+## How it works
+
+PocketLantern is an MCP server. Your AI agent calls `search_cards` — and gets source-linked decision cards **plus source-linked blocker warnings** where available.
+
+```
+Agent asks question
+  -> search_cards("clerk vs auth0 authentication")
+  -> 3 cards + 5 blocker warnings (lock-in, EOL, export restrictions)
+  -> Agent answers with source-linked constraints
+```
+
+Local cardset. Instant lookup. No vector database. No embeddings. Keyword search, card links, and source-linked blocker warnings where available. The value is in **source-linked decision cards**, not clever retrieval alone.
+
+```
+search_cards("auth", constraints:["serverless"]) -> cards + blockers
+get_card("auth/clerk-vs-auth0-vs-cognito-2026")  -> full card with facts
+get_related_cards(...)                           -> connected topics
 ```
 
 ## What's included

@@ -1,0 +1,32 @@
+name: Answer Changed
+description: Your AI agent's answer changed after using PocketLantern — report what shifted
+labels: ["answer-changed"]
+body:
+  - type: input
+    id: query
+    attributes:
+      label: Query
+      description: What did you ask your AI agent?
+    validations:
+      required: true
+  - type: textarea
+    id: before
+    attributes:
+      label: Before PocketLantern
+      description: What did the AI agent answer without PocketLantern?
+    validations:
+      required: true
+  - type: textarea
+    id: after
+    attributes:
+      label: After PocketLantern
+      description: What did the AI agent answer with PocketLantern?
+    validations:
+      required: true
+  - type: input
+    id: card-id
+    attributes:
+      label: Card ID (if known)
+      placeholder: "category/card-name"
+    validations:
+      required: false

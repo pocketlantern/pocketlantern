@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.pocketlantern/pocketlantern",
-  "description": "Blocker-aware decision layer for AI agents — EOL dates, breaking changes, pricing shifts.",
+  "description": "Blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts.",
   "repository": {
     "url": "https://github.com/pocketlantern/pocketlantern",
     "source": "github"
   },
-  "version": "0.1.2",
+  "version": "0.0.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@pocketlantern/mcp-server",
-      "version": "0.1.2",
+      "version": "0.0.0",
       "transport": {
         "type": "stdio"
       }

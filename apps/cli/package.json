@@ -2,7 +2,7 @@
   "name": "pocketlantern",
   "version": "0.1.2",
   "type": "module",
-  "description": "Blocker-aware decision layer for AI agents — source-linked technology cards",
+  "description": "Blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts",
   "author": "PocketLantern",
   "license": "MIT",
   "keywords": [

@@ -1,0 +1,26 @@
+name: Stale Fact
+description: A fact in a decision card is outdated or incorrect
+labels: ["stale-fact"]
+body:
+  - type: input
+    id: card-id
+    attributes:
+      label: Card ID
+      description: "e.g. auth/clerk-vs-auth0-vs-cognito-2026"
+      placeholder: "category/card-name"
+    validations:
+      required: true
+  - type: textarea
+    id: stale-fact
+    attributes:
+      label: What changed?
+      description: Which fact is outdated and what is the current information?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source link
+      description: Official documentation or announcement URL
+    validations:
+      required: true

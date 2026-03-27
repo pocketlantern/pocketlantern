@@ -1,0 +1,26 @@
+name: Missing Card
+description: Request a decision card for a topic not yet covered
+labels: ["missing-card"]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+      description: "e.g. Bun vs Deno vs Node.js runtime choice"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does this need a card?
+      description: What time-sensitive facts or blockers would the card surface?
+    validations:
+      required: true
+  - type: input
+    id: category
+    attributes:
+      label: Suggested category
+      description: "e.g. runtime, database, auth"
+      placeholder: "existing or new category"
+    validations:
+      required: false
