@@ -122,7 +122,7 @@ get_related_cards(...)                           -> connected topics
 
 ## What's included
 
-Blocker-aware decision cards across 25 categories — plus source-linked blocker warnings from the bundled graph index. Ships with the npm package, works immediately, no network, no account:
+Blocker-aware decision cards across 27 categories — plus source-linked blocker warnings from the bundled graph index. Ships with the npm package, works immediately, no network, no account:
 
 | Category   | What it covers                                           |
 | ---------- | -------------------------------------------------------- |
@@ -181,7 +181,7 @@ pocketlantern/
 
 ```bash
 pnpm build              # Build all packages
-pnpm test               # Run tests (295 tests)
+pnpm test               # Run tests (299 tests)
 pnpm test:coverage      # Run with coverage report
 pnpm lint               # ESLint
 pnpm format:check       # Prettier check

@@ -19,12 +19,12 @@ The primary interface is an **MCP (Model Context Protocol) server** that AI agen
 
 ## Current Status
 
-This is the **public toolkit** repo. It contains the MCP server, CLI, schema, and curated blocker-aware decision cards across 25 categories.
+This is the **public toolkit** repo. It contains the MCP server, CLI, schema, and curated blocker-aware decision cards across 27 categories.
 
 ### What's here
 
 - MCP server + CLI + schema (the tool)
-- Curated decision cards across 25 categories (local mode — works immediately)
+- Curated decision cards across 27 categories (local mode — works immediately)
 
 ## Quick Reference
 
@@ -76,7 +76,7 @@ pocketlantern/
       doctor.ts              <- Installation diagnostics
 
   packages/knowledge/        <- Decision cards data package
-    cards/                   <- 25 categories (auth, database, infra, serverless, ...)
+    cards/                   <- 27 categories (auth, database, infra, serverless, ...)
     graph/                   <- Sidecar blocker edge index (_index.json)
 
   docs/
