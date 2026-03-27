@@ -24,6 +24,12 @@ export interface SearchResult {
   constraints: string[];
 }
 
+export interface SearchOutput {
+  results: SearchResult[];
+  /** True when results exist but top score is weak (3–5 with multi-keyword query) */
+  weak: boolean;
+}
+
 /**
  * Common English stopwords filtered from search queries.
  * Prevents noise when agents use natural language queries
@@ -234,12 +240,42 @@ export function searchCards(
     })
     .sort((a, b) => b.score - a.score);
 
+  const topScored = scored.slice(0, limit);
+
   // Return summaries with constraints (token-efficient but filterable)
-  return scored.slice(0, limit).map(({ card }) => ({
+  return topScored.map(({ card }) => ({
     id: card.id,
     title: card.title,
     problem: card.problem,
     tags: card.tags,
     constraints: card.constraints ?? [],
   }));
+}
+
+/**
+ * Search with quality signal — returns results + weak indicator.
+ * Weak = results exist but best card matches fewer than 75% of query keywords.
+ * This catches cases where "Deno Bun runtime" returns runtime cards without Deno/Bun.
+ */
+const STRONG_COVERAGE = 0.75;
+
+export function searchCardsWithQuality(
+  cards: Card[],
+  query: string,
+  options: SearchOptions = {},
+): SearchOutput {
+  const results = searchCards(cards, query, options);
+  if (results.length === 0) return { results, weak: false };
+
+  const keywords = tokenize(query);
+  if (keywords.length < 2) return { results, weak: false };
+
+  // Check if best result covers enough of the query
+  const topCard = cards.find((c) => c.id === results[0].id);
+  if (!topCard) return { results, weak: false };
+
+  const matched = countMatchedKeywords(topCard, keywords);
+  const weak = matched / keywords.length < STRONG_COVERAGE;
+
+  return { results, weak };
 }

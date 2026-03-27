@@ -5,7 +5,7 @@ vi.mock("@pocketlantern/mcp-server/loader", () => ({
 }));
 
 vi.mock("@pocketlantern/mcp-server/search", () => ({
-  searchCards: vi.fn(),
+  searchCardsWithQuality: vi.fn(),
 }));
 
 vi.mock("@pocketlantern/mcp-server", () => ({
@@ -13,11 +13,11 @@ vi.mock("@pocketlantern/mcp-server", () => ({
 }));
 
 import { loadCards } from "@pocketlantern/mcp-server/loader";
-import { searchCards } from "@pocketlantern/mcp-server/search";
+import { searchCardsWithQuality } from "@pocketlantern/mcp-server/search";
 import { runSearch } from "../../commands/search.js";
 
 const mockLoadCards = vi.mocked(loadCards);
-const mockSearchCards = vi.mocked(searchCards);
+const mockSearch = vi.mocked(searchCardsWithQuality);
 
 describe("runSearch", () => {
   beforeEach(() => {
@@ -26,12 +26,13 @@ describe("runSearch", () => {
     mockLoadCards.mockResolvedValue([]);
   });
 
-  it("prints 'No cards found' when no results", async () => {
-    mockSearchCards.mockReturnValue([]);
+  it("prints zero-result message with suggestions when no results", async () => {
+    mockSearch.mockReturnValue({ results: [], weak: false });
 
     await runSearch("test query");
 
-    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("No cards found"));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("No matching decision cards"));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("card request"));
   });
 
   it("prints each card's id, title, problem, and tags when results found", async () => {
@@ -42,7 +43,7 @@ describe("runSearch", () => {
       tags: ["tag1", "tag2"],
       constraints: [],
     };
-    mockSearchCards.mockReturnValue([card] as any);
+    mockSearch.mockReturnValue({ results: [card] as any, weak: false });
 
     await runSearch("test");
 
@@ -60,12 +61,28 @@ describe("runSearch", () => {
       tags: ["tag1"],
       constraints: ["constraint1", "constraint2"],
     };
-    mockSearchCards.mockReturnValue([card] as any);
+    mockSearch.mockReturnValue({ results: [card] as any, weak: false });
 
     await runSearch("test");
 
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining("constraints: constraint1, constraint2"),
     );
+  });
+
+  it("shows 'closest matches' prefix and request link for weak results", async () => {
+    const card = {
+      id: "test-card",
+      title: "Test Title",
+      problem: "Test Problem",
+      tags: ["tag1"],
+      constraints: [],
+    };
+    mockSearch.mockReturnValue({ results: [card] as any, weak: true });
+
+    await runSearch("test");
+
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("Closest matches"));
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("may not be exactly"));
   });
 });

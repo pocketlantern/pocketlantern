@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ConstraintSchema } from "@pocketlantern/schema";
 import type { CardStore } from "../card-store.js";
-import { searchCards, type SearchResult } from "../search.js";
+import { searchCardsWithQuality, type SearchResult } from "../search.js";
 import type { GraphIndex, BlockerSummary } from "../graph-loader.js";
 import { getBlockersForCards } from "../graph-loader.js";
 import { loadProCatalog, searchProCatalog, type ProHint } from "../pro-catalog.js";
@@ -48,9 +48,10 @@ export const SearchCardsArgsSchema = z.object({
 });
 
 export interface SearchHint {
-  type: "no_results" | "no_results_filtered";
+  type: "no_results" | "no_results_filtered" | "weak_match";
   filters_used: string[];
   message: string;
+  categories?: string[];
 }
 
 interface SearchResponse {
@@ -68,7 +69,7 @@ export async function handleSearchCards(
   graphIndex?: GraphIndex | null,
 ) {
   const cards = store.getAll();
-  const results = searchCards(cards, args.query, {
+  const { results, weak } = searchCardsWithQuality(cards, args.query, {
     tags: args.tags,
     constraints: args.constraints,
     limit: args.limit,
@@ -107,7 +108,8 @@ export async function handleSearchCards(
       response.hint = {
         type: filtersUsed.length > 0 ? "no_results_filtered" : "no_results",
         filters_used: filtersUsed,
-        message: `No cards found. ${messageParts.join(", or ")}. Available categories: ${categories.join(", ")}.`,
+        message: `No matching decision cards yet. ${messageParts.join(", or ")}. Try narrower queries like "auth pricing", "nextjs upgrade", or "openai migration". Card request: https://github.com/pocketlantern/pocketlantern/discussions/categories/card-requests`,
+        categories,
       };
     }
 
@@ -125,6 +127,17 @@ export async function handleSearchCards(
 
   const currentMode = store.mode;
   const response: SearchResponse = { cards: results, mode: currentMode };
+
+  if (weak) {
+    const categorySet = new Set(cards.map((c) => c.id.split("/")[0]));
+    response.hint = {
+      type: "weak_match",
+      filters_used: [],
+      message:
+        "These are closest matches, not exact topic hits. Try a narrower query or use list_categories to browse available topics. Card request: https://github.com/pocketlantern/pocketlantern/discussions/categories/card-requests",
+      categories: [...categorySet].sort(),
+    };
+  }
 
   if (catalog && localCardIds) {
     const proHint = searchProCatalog(catalog, args.query, localCardIds);
