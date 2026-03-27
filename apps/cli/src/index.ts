@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+const [major] = process.versions.node.split(".").map(Number);
+if (major < 22) {
+  console.error(
+    `PocketLantern requires Node.js >= 22. You have ${process.versions.node}.\nUpgrade: https://nodejs.org/`,
+  );
+  process.exit(1);
+}
+
 import { createRequire } from "node:module";
 import { runServe } from "./commands/serve.js";
 import { runSearch } from "./commands/search.js";

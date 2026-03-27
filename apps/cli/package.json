@@ -23,7 +23,8 @@
     "node": ">=22"
   },
   "bin": {
-    "pocketlantern": "dist/index.js"
+    "pocketlantern": "dist/index.js",
+    "pocketlantern-mcp": "dist/mcp-entry.js"
   },
   "files": [
     "dist",

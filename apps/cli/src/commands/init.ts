@@ -39,7 +39,7 @@ function addProjectRule(): "added" | "exists" {
 export function runInit(options?: { cardsDir?: string; scope?: string }) {
   const serverPath = resolveMcpServerPath();
   if (!existsSync(serverPath)) {
-    console.error("MCP server not built. Run: pnpm build");
+    console.error("MCP server binary not found. Try reinstalling: npm install -g pocketlantern");
     process.exit(1);
   }
 

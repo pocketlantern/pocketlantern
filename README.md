@@ -55,11 +55,14 @@ npm install -g pocketlantern
 
 ### Claude Code
 
+In your project directory:
+
 ```bash
+cd your-project
 pocketlantern init
 ```
 
-`init` registers the MCP server in `~/.claude.json` and adds a one-line rule to your project's `CLAUDE.md`. Restart Claude Code, then ask your first query.
+`init` registers the MCP server in `~/.claude.json` and adds a one-line rule to your project's `CLAUDE.md`. Restart Claude Code (`Ctrl+C`, then run `claude` again), then ask your first query.
 
 ### Cursor / Windsurf / other MCP clients
 

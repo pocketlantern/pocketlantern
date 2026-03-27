@@ -46,7 +46,9 @@ describe("runInit", () => {
   it("prints error and exits when server is not built", () => {
     mockExistsSync.mockReturnValue(false);
     runInit();
-    expect(console.error).toHaveBeenCalledWith("MCP server not built. Run: pnpm build");
+    expect(console.error).toHaveBeenCalledWith(
+      "MCP server binary not found. Try reinstalling: npm install -g pocketlantern",
+    );
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
