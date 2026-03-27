@@ -1,6 +1,6 @@
 {
   "name": "@pocketlantern/mcp-server",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "mcpName": "io.github.pocketlantern/pocketlantern",
   "description": "MCP server for PocketLantern — blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts",
