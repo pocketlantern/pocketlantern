@@ -1,0 +1,43 @@
+{
+  "name": "pocketlantern",
+  "displayName": "PocketLantern",
+  "description": "Blocker-aware decision layer for AI coding agents. Adds source-linked, time-sensitive blockers to technical choices — breaking changes, EOLs, lock-in, pricing shifts, and migration risk.",
+  "icon": "https://pocketlantern.dev/favicon-192x192.png",
+  "homepage": "https://pocketlantern.dev",
+  "repository": "https://github.com/pocketlantern/pocketlantern",
+  "license": "MIT",
+  "runtime": "node",
+  "command": "pocketlantern-mcp",
+  "transport": "stdio",
+  "tools": [
+    {
+      "name": "search_cards",
+      "description": "Search blocker-aware decision cards by query, tags, and constraints"
+    },
+    {
+      "name": "get_card",
+      "description": "Get full card details including candidates, blockers, and source links"
+    },
+    {
+      "name": "get_cards",
+      "description": "Batch retrieve up to 5 cards"
+    },
+    {
+      "name": "get_related_cards",
+      "description": "Explore connected decision topics"
+    },
+    {
+      "name": "list_categories",
+      "description": "Browse available decision card categories"
+    },
+    {
+      "name": "list_tags",
+      "description": "Discover available search tags"
+    },
+    {
+      "name": "list_constraints",
+      "description": "List constraint filters (serverless, enterprise, etc.)"
+    }
+  ],
+  "tags": ["mcp", "ai-agents", "developer-tools", "technical-decisions", "breaking-changes", "eol", "migration", "lock-in"]
+}
