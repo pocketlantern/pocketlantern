@@ -1,0 +1,193 @@
+id: data/bigquery-on-demand-vs-editions-capacity-pricing-2026
+title: BigQuery On-Demand vs Editions Capacity Pricing
+problem: Choose BigQuery pricing mode for analytics workloads after the
+  flat-rate era, considering editions, slot commitments, autoscaling behavior,
+  and workload predictability.
+context:
+  - bigquery
+  - google-cloud
+  - analytics
+  - data-warehouse
+  - pricing
+  - reservations
+constraints:
+  - serverless
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - compliance
+candidates:
+  - name: On-demand query pricing
+    summary: Default BigQuery compute model. As of 2026-03-15, queries are billed by
+      bytes processed, the first 1 TiB per month is free per account, and usage
+      above that is listed at $6.25 per TiB on the official pricing page.
+    when_to_use: Choose this for serverless + small-team + cost-sensitive workloads
+      where query volume is modest, scan patterns are unpredictable, and you
+      want zero reservation setup. It also fits exploratory analytics where
+      paying per query is simpler than managing slots.
+    tradeoffs: No reservation administration and no baseline commitment risk, but
+      cost and performance are variable because billing tracks bytes scanned and
+      execution uses a shared per-project pool. Official docs say on-demand
+      workloads generally have access to up to 2,000 concurrent slots per
+      project, with temporary burst behavior and possible lower availability
+      under location contention.
+    cautions: "Use BigQuery cost controls if you stay on on-demand: custom query
+      quotas apply only to on-demand, are approximate rather than a strict cap,
+      and maximum bytes billed can reject queries before execution. On-demand
+      pricing does not support assignments."
+    links:
+      - https://cloud.google.com/bigquery/pricing?hl=en_US
+      - https://cloud.google.com/bigquery/docs/custom-quotas
+      - https://cloud.google.com/bigquery/docs/best-practices-costs
+      - https://cloud.google.com/bigquery/docs/reservations-intro
+  - name: Editions capacity pricing with autoscaling and no commitments
+    summary: Capacity-based pricing bills slot-hours instead of bytes processed. As
+      of 2026-03-15, Standard edition pay-as-you-go pricing in Iowa is listed at
+      $0.04 per slot-hour with no commitment, billed per second with a 1 minute
+      minimum.
+    when_to_use: Choose this for serverless + high-scale + low-ops workloads that
+      are spiky enough to benefit from autoscaling, but not predictable enough
+      to lock into multi-year commitments. It is the cleanest step up from
+      on-demand when scan-based billing is becoming noisy and you want slot
+      budgets per reservation.
+    tradeoffs: "Capacity pricing removes per-byte query charges and lets you isolate
+      workloads with reservations, baselines, and autoscaling. The tradeoff is
+      more operational setup: you must create reservations and assignments, the
+      minimum reservation size is 50 slots, autoscaling is rounded to multiples
+      of 50, and autoscaled slots are billed on scaled capacity rather than
+      actual slots consumed."
+    cautions: "Standard edition has no access to capacity commitments. Standard also
+      has narrower workload-management features than Enterprise tiers: official
+      edition docs show project assignments only, `QUERY` and `PIPELINE`
+      assignment types only, and no managed disaster recovery. Idle slots can
+      only be shared within the same edition and region, and Google recommends
+      not relying only on idle slots for strict production deadlines because
+      they are preemptible."
+    links:
+      - https://cloud.google.com/bigquery/pricing?hl=en_US
+      - https://cloud.google.com/bigquery/docs/editions-intro
+      - https://cloud.google.com/bigquery/docs/slots-autoscaling-intro
+      - https://cloud.google.com/bigquery/docs/reservations-intro
+  - name: Enterprise or Enterprise Plus capacity pricing with commitments
+    summary: Enterprise and Enterprise Plus are the editions that support 1-year and
+      3-year capacity commitments. As of 2026-03-15, the official editions table
+      says commitments are discounted 20% for 1 year and 40% for 3 years, and
+      the pricing page lists Iowa pay-as-you-go rates at $0.06 per slot-hour for
+      Enterprise and $0.10 per slot-hour for Enterprise Plus.
+    when_to_use: Choose this for enterprise + compliance + high-scale environments
+      where a meaningful baseline is predictable across projects or folders,
+      centralized purchasing matters, and you want to mix reserved baseline
+      capacity with autoscaling. Enterprise Plus is the fit when you
+      specifically need managed disaster recovery or Assured Workloads platform
+      controls.
+    tradeoffs: "This model is the best fit for steady-state analytics because you
+      can centralize reservations, buy commitments in 50-slot increments, and
+      use autoscaling above the baseline. It also unlocks broader
+      workload-management features: official docs show folder and organization
+      assignments in Enterprise and Enterprise Plus, and Enterprise/Enterprise
+      Plus support reservation-based fairness."
+    cautions: "Commitments are regional, auto-renew unless set to cancel, and only
+      apply to Enterprise or Enterprise Plus. Use the slot recommender before
+      committing: Google says it models the last 30 days of slot usage, targets
+      P99 usage coverage for cost recommendations, and compares pay-as-you-go,
+      1-year, and 3-year options. Legacy flat-rate reservations are not the
+      normal path anymore: official legacy docs say flat-rate features are only
+      available to allow-listed customers and new purchases of flat-rate annual,
+      monthly, and flex commitments stopped on July 5, 2023."
+    links:
+      - https://cloud.google.com/bigquery/pricing?hl=en_US
+      - https://cloud.google.com/bigquery/docs/editions-intro
+      - https://cloud.google.com/bigquery/docs/slot-recommender
+      - https://cloud.google.com/bigquery/docs/reservations-commitments-legacy
+      - https://cloud.google.com/bigquery/docs/reservations-details-legacy
+tags:
+  - data
+  - analytics
+  - bigquery
+  - google-cloud
+  - pricing
+  - reservations
+  - slots
+  - comparison
+aliases:
+  - bigquery pricing
+  - bigquery on-demand vs capacity
+  - bigquery editions pricing
+  - bigquery reservations
+  - bigquery slot commitments
+  - bigquery flat-rate replacement
+related_cards:
+  - database/object-storage-s3-vs-r2-vs-gcs
+  - web/google-maps-platform-essentials-pro-enterprise-pricing-migration-2026
+  - data/data-pipeline-orchestration-dbt-cloud-vs-fivetran-vs-airbyte-2026
+  - cloud/reserved-instances-vs-spot-vs-savings-plans-optimization-2026
+  - data/data-warehouse-bigquery-vs-snowflake-vs-redshift-startup-2026
+  - data/snowflake-credit-pricing-and-serverless-cost-shifts-2026
+  - data/clickhouse-cloud-pricing-after-warehouse-packaging-2026
+  - data/snowflake-standard-vs-enterprise-vs-business-critical-pricing-2026
+  - data/motherduck-lite-vs-business-after-2025-pricing-change
+  - data/dremio-cloud-vs-starburst-galaxy-lakehouse-pricing-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/google-cloud
+      name: Google Cloud
+    - type: package
+      id: package/bigquery
+      name: BigQuery
+    - type: framework
+      id: framework/bigquery-on-demand-query-pricing
+      name: On-demand query pricing
+    - type: framework
+      id: framework/bigquery-standard-edition-capacity-pricing
+      name: Standard edition capacity pricing
+    - type: framework
+      id: framework/bigquery-enterprise-edition-capacity-pricing
+      name: Enterprise capacity pricing
+    - type: framework
+      id: framework/bigquery-enterprise-plus-edition-capacity-pricing
+      name: Enterprise Plus capacity pricing
+    - type: capability
+      id: capability/bigquery-capacity-commitments
+      name: Capacity commitments
+    - type: capability
+      id: capability/bigquery-legacy-flat-rate-commitments
+      name: Legacy flat-rate commitments
+    - type: capability
+      id: capability/bigquery-reservations-and-assignments
+      name: Reservations and assignments
+  edges:
+    - type: requires_version
+      from: capability/bigquery-capacity-commitments
+      to: framework/bigquery-enterprise-edition-capacity-pricing
+      requirement: Only Enterprise and Enterprise Plus support 1-year and 3-year
+        capacity commitments.
+    - type: requires_version
+      from: capability/bigquery-capacity-commitments
+      to: framework/bigquery-enterprise-plus-edition-capacity-pricing
+      requirement: Only Enterprise and Enterprise Plus support 1-year and 3-year
+        capacity commitments.
+    - type: locks_via
+      from: framework/bigquery-enterprise-edition-capacity-pricing
+      to: capability/bigquery-capacity-commitments
+      mechanism: 1-year and 3-year capacity commitments in 50-slot increments.
+    - type: locks_via
+      from: framework/bigquery-enterprise-plus-edition-capacity-pricing
+      to: capability/bigquery-capacity-commitments
+      mechanism: 1-year and 3-year capacity commitments in 50-slot increments.
+    - type: locks_via
+      from: framework/bigquery-standard-edition-capacity-pricing
+      to: capability/bigquery-reservations-and-assignments
+      mechanism: You must create reservations and assignments.
+    - type: eol_date
+      from: capability/bigquery-legacy-flat-rate-commitments
+      to: null
+      date: 2023-07-05
+      event: New purchases of flat-rate annual, monthly, and flex commitments stopped.

@@ -1,0 +1,173 @@
+id: "devtools/npm-classic-token-shutdown-and-session-auth-2026"
+title: "npm Classic Token Shutdown and 2-Hour Session Auth After December 2025"
+problem: "Teams still publishing with old npm credentials need to choose between
+  short-lived local sessions, granular tokens, or OIDC after classic tokens were
+  revoked and npm login switched to two-hour session tokens."
+context:
+  - "npm"
+  - "nodejs"
+  - "ci-cd"
+  - "package-publishing"
+constraints:
+  - "small-team"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Use \"npm login\" session auth for local interactive publishing"
+    summary: "As of 2026-03-19, this is the default path for local interactive npm
+      publishing after the classic-token shutdown. GitHub's npm changelog states
+      that all npm classic tokens were permanently revoked on December 9, 2025,
+      and that `npm login` now issues a two-hour session token instead of a
+      long-lived token. During that session, 2FA is enforced for publishing
+      operations. The session token does not appear in UI or CLI token lists and
+      expires automatically after two hours."
+    when_to_use: "Use this when humans publish manually from a workstation and can
+      complete interactive authentication plus 2FA. It is the simplest
+      replacement for old local classic-token workflows, but only when repeated
+      re-authentication is acceptable."
+    tradeoffs: "No long-lived local publish token to manage, which reduces exposure.
+      The downside is operational friction because sessions expire after two
+      hours and cannot support unattended publishing."
+    cautions: "This is not a durable CI/CD credential. GitHub also restored the
+      legacy `/user/org.couchdb.user:` endpoint only temporarily to ease
+      migration, and explicitly warned that its removal is planned; Yarn v1 and
+      v2 users are specifically called out as affected by this transition."
+    links:
+      - "https://github.blog/changelog/2025-12-09-npm-classic-tokens-revoked-se\
+        ssion-based-auth-and-cli-token-management-now-available/"
+      - "https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settin\
+        gs-modification/"
+  - name: "Use granular access tokens for CI/CD when OIDC is unavailable"
+    summary: "As of 2026-03-19, granular access tokens are npm's token-based
+      replacement for classic tokens in automation. GitHub's November 5, 2025
+      npm security update says new write-capable npm tokens enforce 2FA by
+      default, add a Bypass 2FA option for CI/CD, and cap write-capable granular
+      tokens at a 90-day maximum lifetime; existing write tokens expiring after
+      February 3, 2026 were adjusted to that date. npm Docs also state you can
+      create up to 1000 granular tokens per account, each token can cover up to
+      50 organizations and up to 50 packages/scopes combinations, and access
+      requires npm CLI 5.5.1 or greater."
+    when_to_use: "Use this when you need noninteractive publishing but your CI/CD
+      provider cannot use npm trusted publishing. It is the fallback for
+      deployment automation, especially when you need scoped permissions, token
+      revocation, or CIDR/IP restrictions."
+    tradeoffs: "Granular tokens preserve automation and can be tightly scoped. The
+      cost is token lifecycle management, short write-token expiry, and the
+      security exception created by enabling Bypass 2FA for unattended
+      publishing."
+    cautions: "npm Docs say Bypass 2FA is false by default and, when enabled, it
+      overrides account-level and package-level 2FA checks. Another blocker is
+      package policy: if a package is set to \"Require two-factor authentication
+      and disallow tokens,\" granular tokens cannot publish regardless of bypass
+      settings."
+    links:
+      - "https://github.blog/changelog/2025-11-05-npm-security-update-classic-t\
+        oken-creation-disabled-and-granular-token-changes/"
+      - "https://docs.npmjs.com/about-access-tokens/"
+      - "https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow/"
+      - "https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settin\
+        gs-modification/"
+  - name: "Use OIDC trusted publishing for supported CI/CD providers"
+    summary: "As of 2026-03-19, npm Docs recommend trusted publishing over access
+      tokens for package publishing from CI/CD. Trusted publishing uses OpenID
+      Connect (OIDC) so the workflow authenticates without storing long-lived
+      npm publish tokens, and npm Docs say it requires npm CLI 11.5.1 or later
+      plus Node 22.14.0 or higher. The trusted publishers documentation lists
+      supported hosted providers as GitHub Actions, GitLab CI/CD Pipelines, and
+      CircleCI cloud; self-hosted runners are not currently supported."
+    when_to_use: "Use this first for modern hosted CI/CD publishing when your
+      provider is supported and you can meet the Node and npm version floor. It
+      is the best fit for compliance-sensitive or enterprise pipelines because
+      it removes token storage and rotation from the release path."
+    tradeoffs: "This is the strongest security posture and the least
+      token-management overhead once configured. The tradeoff is platform
+      eligibility: unsupported providers or self-hosted runners still need
+      another path."
+    cautions: "Provider support is limited to the documented hosted environments, so
+      many bespoke runners cannot use it yet. npm Docs also note that the CLI
+      detects OIDC first and falls back to traditional tokens, so mixed
+      environments should be reviewed carefully to avoid assuming trusted
+      publishing is active everywhere."
+    links:
+      - "https://docs.npmjs.com/trusted-publishers/"
+      - "https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow/"
+      - "https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settin\
+        gs-modification/"
+tags:
+  - "devtools"
+  - "npm"
+  - "nodejs"
+  - "ci-cd"
+  - "package-publishing"
+  - "security"
+aliases:
+  - "npm classic token revocation"
+  - "npm two hour session token"
+  - "npm granular token bypass 2fa"
+  - "npm trusted publishing oidc"
+related_cards:
+  - "devtools/npm-yarn-v1-v2-publishing-auth-migration-after-session-token-and-\
+    legacy-endpoint-changes-2026"
+  - "security/npm-trusted-publishing-vs-granular-tokens-after-classic-token-rev\
+    ocation"
+  - "security/supply-chain-security-for-node"
+  - devtools/npm-trusted-publishing-vs-bypass-2fa-granular-tokens-2026
+  - security/npm-granular-token-lifetime-cap-february-3-2026
+  - devtools/npm-classic-token-removal-and-90-day-max-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: vendor
+      id: vendor/npm
+      name: npm
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: package
+      id: package/npm-cli
+      name: npm CLI
+    - type: capability
+      id: capability/npm-classic-tokens
+      name: npm classic tokens
+    - type: capability
+      id: capability/npm-login-session-auth
+      name: npm login session auth
+    - type: capability
+      id: capability/granular-access-tokens
+      name: granular access tokens
+    - type: capability
+      id: capability/trusted-publishing
+      name: trusted publishing
+    - type: protocol
+      id: protocol/oidc
+      name: OpenID Connect
+      standard: OIDC
+  edges:
+    - type: eol_date
+      from: capability/npm-classic-tokens
+      to: null
+      date: 2025-12-09
+    - type: breaking_change_in
+      from: capability/npm-login-session-auth
+      to: vendor/npm
+      date: 2025-12-09
+      change: npm login issues a two-hour session token instead of a long-lived token
+    - type: requires_version
+      from: capability/granular-access-tokens
+      to: package/npm-cli
+      version: ">=5.5.1"
+    - type: requires_version
+      from: capability/trusted-publishing
+      to: package/npm-cli
+      version: ">=11.5.1"
+    - type: requires_version
+      from: capability/trusted-publishing
+      to: runtime/nodejs
+      version: ">=22.14.0"
+    - type: locks_via
+      from: capability/trusted-publishing
+      to: protocol/oidc

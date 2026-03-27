@@ -163,6 +163,8 @@ related_cards:
   - testing/browserbase-free-vs-developer-vs-scale-after-2025-price-cut-2026
   - testing/browserbase-vs-browserless-browser-session-pricing-2026
   - testing/cypress-cloud-results-overage-vs-self-hosted-reporting-2026
+  - testing/mabl-vs-qawolf-vs-testim-seat-and-run-pricing-2026
+  - testing/octomind-basic-vs-pro-ai-e2e-run-cap-2026
 status: "active"
 tier: "core"
 updated: "2026-03-16"

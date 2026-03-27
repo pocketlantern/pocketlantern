@@ -1,0 +1,174 @@
+id: "devtools/gitlab-runner-authentication-token-vs-registration-token-before-20-0"
+title: "GitLab Runner Authentication Tokens vs Deprecated Registration Tokens"
+problem: "Plan the migration from deprecated runner registration tokens to
+  runner authentication tokens without relying on the legacy workflow remaining
+  available."
+context:
+  - "gitlab"
+  - "gitlab-runner"
+  - "ci-cd"
+  - "kubernetes"
+constraints:
+  - "enterprise"
+  - "low-ops"
+candidates:
+  - name: "Migrate fully to runner creation plus runner authentication tokens"
+    summary: "As of 2026-03-26, GitLab's current docs recommend the runner creation
+      workflow with runner authentication tokens, which are recognizable by the
+      \"glrt-\" prefix. This workflow is documented for Free, Premium, and
+      Ultimate, and for GitLab.com, Self-Managed, and Dedicated. You create the
+      runner in the UI or with \"POST /user/runners\", receive the runner
+      authentication token, and register with \"gitlab-runner register --token\"
+      or the Helm \"runnerToken\" field. GitLab documents better ownership
+      traceability and reuse of one runner configuration across multiple runner
+      managers via unique system IDs, and no separate pricing change is
+      documented."
+    when_to_use: "Use this when you want the durable path with the fewest future
+      surprises, especially for shared platform teams or any environment
+      upgrading beyond GitLab 17.x. It is the decisive choice if you can move
+      runner attributes out of the registration command and into the UI, API,
+      Terraform, or templates."
+    tradeoffs: "Best long-term compatibility and traceability, but it forces you to
+      refactor bootstrap automation that previously packed configuration into
+      \"gitlab-runner register\" arguments."
+    cautions: "The access token used to create runners is only visible once in the
+      UI, and the returned runner authentication token is also only returned
+      once from the API, so secrets handling must be in place. The runner
+      authentication token is stored in \"config.toml\" and GitLab warns that
+      file-system exposure can let an attacker clone the runner. GitLab also
+      documents token-rotation caveats: when the same authentication token is
+      reused across multiple runner managers, automatic rotation only updates
+      the first manager, and GitLab Operator CRDs do not update automatically
+      during rotation."
+    links:
+      - "https://docs.gitlab.com/ci/runners/new_creation_workflow/"
+      - "https://docs.gitlab.com/tutorials/automate_runner_creation/"
+      - "https://docs.gitlab.com/security/tokens/"
+      - "https://docs.gitlab.com/api/runners/"
+  - name: "Use the legacy-compatible bridge with an authentication token in old
+      automation"
+    summary: "As of 2026-03-26, GitLab still supports a legacy-compatible
+      registration path where you pass a runner authentication token through the
+      old \"--registration-token\" parameter. This keeps older automation
+      entrypoints alive while still moving off actual registration tokens.
+      GitLab documents that registration succeeds in this mode, but several
+      runner configuration arguments are ignored and must be set when the runner
+      is created in the UI or through \"POST /user/runners\". There is no
+      documented pricing difference for this bridge."
+    when_to_use: "Use this when your scripts, cloud-init, or wrapper tooling still
+      assume the old command shape, but you can already create runners ahead of
+      time and supply \"glrt-\" tokens. It is the decisive option when you need
+      a low-disruption transition phase without immediately rewriting every
+      bootstrap path."
+    tradeoffs: "Less disruptive than a full rewrite, but easy to misunderstand
+      because the command still looks legacy while configuration authority has
+      moved elsewhere."
+    cautions: "GitLab documents that if an authentication token is supplied in
+      \"--registration-token\", the legacy-compatible process ignores
+      \"--locked\", \"--access-level\", \"--run-untagged\",
+      \"--maximum-timeout\", \"--paused\", \"--tag-list\", and
+      \"--maintenance-note\". On Kubernetes and Helm, using the deprecated
+      \"runnerRegistrationToken\" field with an authentication token can still
+      register, but the other values are ignored; GitLab says to move to
+      \"runnerToken\" and update the secret layout."
+    links:
+      - "https://docs.gitlab.com/runner/register/"
+      - "https://docs.gitlab.com/ci/runners/new_creation_workflow/"
+  - name: "Temporarily keep real registration tokens enabled as a short-term
+      exception"
+    summary: "As of 2026-03-26, GitLab still allows legacy runner registration
+      tokens, but only as a legacy path that can be disabled. GitLab's Runners
+      API states that the legacy \"POST /runners\" endpoint uses registration
+      tokens and is disabled by default in GitLab 17.0 and later, returning HTTP
+      410 when registration tokens are disallowed. Current docs say GitLab.com
+      top-level groups and Self-Managed admins can manually enable the legacy
+      runner registration process. Archived GitLab migration docs had described
+      GitLab 20.0 as the planned disable point, but GitLab's current docs now
+      frame the path as legacy or not recommended rather than promising a fixed
+      removal date."
+    when_to_use: "Use this only when a blocker prevents immediate migration, such as
+      autoscaling or Helm-based workflows that still depend on registration
+      tokens. It is the decisive fallback when keeping runner provisioning alive
+      matters more than cleanup speed, but only for a bounded migration window."
+    tradeoffs: "Lowest immediate change cost, but it keeps you on the least
+      preferred workflow and leaves you exposed to admin-level defaults, HTTP
+      410 failures, and future policy drift."
+    cautions: "Do not treat this as a stable long-term contract. GitLab explicitly
+      warns in migration docs that future timing can change, and the current
+      product guidance is to use the runner creation workflow instead. Existing
+      runners continue working after GitLab 17.0; the breakage is about
+      registering new runners, which can hide risk until the next scale-out or
+      node replacement event."
+    links:
+      - "https://docs.gitlab.com/api/runners/"
+      - "https://docs.gitlab.com/ci/runners/new_creation_workflow/"
+      - "https://docs.gitlab.com/runner/register/"
+tags:
+  - "devtools"
+  - "gitlab"
+  - "gitlab-runner"
+  - "ci-cd"
+aliases:
+  - "gitlab runner registration token deprecation"
+  - "gitlab runner authentication token migration"
+  - "gitlab 410 gone runner registration disallowed"
+related_cards:
+  - "_archived/ci-cd-pipeline"
+  - "_archived/migration-strategy"
+  - "infra/production-readiness"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/gitlab
+      name: GitLab
+    - type: package
+      id: package/gitlab-runner
+      name: GitLab Runner
+    - type: package
+      id: package/gitlab-17-0
+      name: GitLab 17.0
+    - type: package
+      id: package/gitlab-20-0
+      name: GitLab 20.0
+    - type: capability
+      id: capability/runner-authentication-tokens
+      name: Runner authentication tokens
+    - type: capability
+      id: capability/registration-tokens
+      name: Runner registration tokens
+    - type: capability
+      id: capability/legacy-compatible-registration
+      name: Legacy-compatible registration path
+    - type: protocol
+      id: protocol/glrt-prefix
+      name: glrt- token prefix
+  edges:
+    - type: locks_via
+      from: capability/runner-authentication-tokens
+      to: protocol/glrt-prefix
+      field: token_prefix
+    - type: breaking_change_in
+      from: capability/registration-tokens
+      to: package/gitlab-17-0
+      scope: POST /runners legacy registration endpoint disabled by default in GitLab
+        17.0 and later
+    - type: breaking_change_in
+      from: capability/legacy-compatible-registration
+      to: package/gitlab-runner
+      scope: when an authentication token is supplied via --registration-token,
+        several runner configuration arguments are ignored
+    - type: requires_version
+      from: capability/legacy-compatible-registration
+      to: capability/runner-authentication-tokens
+      reason: legacy-compatible path passes a runner authentication token through the
+        old --registration-token parameter
+    - type: breaking_change_in
+      from: capability/registration-tokens
+      to: package/gitlab-20-0
+      scope: archived migration docs had described GitLab 20.0 as the planned disable
+        point, but current docs no longer promise a fixed removal date

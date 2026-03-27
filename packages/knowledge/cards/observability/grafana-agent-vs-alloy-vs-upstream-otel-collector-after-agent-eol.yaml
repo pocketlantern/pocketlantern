@@ -1,0 +1,168 @@
+id: observability/grafana-agent-vs-alloy-vs-upstream-otel-collector-after-agent-eol
+title: Grafana Agent vs Alloy vs Upstream OTel Collector After Agent EOL
+problem: Choose the replacement path for Grafana Agent deployments given
+  end-of-life timelines, config migration cost, vendor lock-in tolerance,
+  Prometheus pipeline needs, and OpenTelemetry collector ecosystem changes.
+context:
+  - observability
+  - telemetry
+  - metrics
+  - tracing
+  - logging
+  - migration
+  - prometheus
+  - opentelemetry
+constraints:
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - high-scale
+  - microservices
+  - compliance
+candidates:
+  - name: Grafana Alloy
+    summary: The default replacement when you are already on Grafana Agent and want
+      the closest supported successor. As of 2026-03-15, Grafana's official docs
+      say Grafana Agent reached EOL on November 1, 2025, and the Alloy docs show
+      v1.14 as the latest documentation track.
+    when_to_use: Best for low-ops + microservices or enterprise + high-scale
+      environments where you already depend on Grafana Agent or Prometheus-style
+      pipelines and want the least disruptive migration path. Choose this when
+      Prometheus scraping and remote_write still matter, you want official
+      Grafana migration guides for Agent Static, Agent Flow, Prometheus, and
+      upstream OTel Collector configs, and you accept Grafana-specific
+      configuration and release cadence.
+    tradeoffs: Strongest migration path from Grafana Agent because Grafana documents
+      direct migration from Agent Static and Agent Flow, and Alloy can also
+      convert Prometheus and OTel Collector configs. Alloy keeps Prometheus
+      pipelines available while also embedding an OpenTelemetry Collector
+      runtime. The tradeoff is that the main Alloy experience is its own
+      configuration model rather than plain upstream Collector YAML.
+    cautions: Do not treat every Alloy path as equally stable. Grafana's migration
+      docs warn that bypassing conversion errors can change behavior and require
+      full production testing. The Alloy 'OTel Engine' page also marks the
+      embedded upstream Collector runtime as experimental, so choose Alloy for
+      the default stable engine unless you specifically need that compatibility
+      layer.
+    links:
+      - https://grafana.com/docs/agent/latest/
+      - https://grafana.com/docs/alloy/latest/
+      - https://grafana.com/docs/alloy/latest/set-up/migrate/from-static/
+      - https://grafana.com/docs/alloy/latest/set-up/migrate/from-flow/
+      - https://grafana.com/docs/alloy/latest/set-up/migrate/from-prometheus/
+      - https://grafana.com/docs/alloy/latest/set-up/migrate/from-otelcol/
+      - https://grafana.com/docs/alloy/latest/introduction/otel_alloy/
+  - name: Upstream OpenTelemetry Collector
+    summary: The portability-first replacement if you want a vendor-agnostic
+      collector and are willing to own more collector design choices yourself.
+      As of 2026-03-15, the official OpenTelemetry docs describe the Collector
+      as vendor-agnostic and say its status is mixed because core components
+      have mixed stability levels.
+    when_to_use: Best for enterprise + compliance or cost-sensitive + microservices
+      environments where backend portability matters more than a Grafana-native
+      migration workflow. Choose this when you want standard OTel deployment
+      patterns, want to avoid committing new pipelines to Alloy syntax, and can
+      tolerate the work of selecting distributions, components, and deployment
+      topology explicitly.
+    tradeoffs: Lowest product-specific lock-in of the three options because the
+      upstream project documents standard agent and gateway deployment patterns
+      plus official core and contrib distributions. It is the cleanest base for
+      multi-backend or future-backend-change strategies. The cost is more
+      engineering ownership around component selection, stability review,
+      scaling, and packaging.
+    cautions: The official docs explicitly say component maturity is mixed, and the
+      component tables show that stability varies by receiver, processor, and
+      exporter. Validate the exact components you need before standardizing,
+      especially if your pipeline depends on Prometheus export paths, advanced
+      processors, or specialized contrib integrations.
+    links:
+      - https://opentelemetry.io/docs/collector/
+      - https://opentelemetry.io/docs/collector/distributions/
+      - https://opentelemetry.io/docs/collector/deploy/agent/
+      - https://opentelemetry.io/docs/collector/deploy/gateway/
+      - https://opentelemetry.io/docs/collector/components/exporter/
+      - https://opentelemetry.io/docs/collector/components/processor/
+  - name: "Split Stack: Prometheus Server for Metrics plus Upstream OTel Collector
+      for OTLP Pipelines"
+    summary: A deliberate split architecture when Prometheus pull-based metrics are
+      still the center of gravity, but logs and traces are moving toward OTLP
+      and collector-managed processing. As of 2026-03-15, Prometheus still
+      documents pull-based HTTP scraping as a core design, while OpenTelemetry
+      documents agent and gateway collector patterns for OTLP pipelines.
+    when_to_use: Best for high-scale + cost-sensitive or small-team + low-ops
+      environments where replacing Grafana Agent with one binary would force
+      unnecessary rework in mature Prometheus scraping setups. Choose this when
+      Prometheus scraping, rules, and local metric storage are already working
+      well, but you want OTel collectors only where traces, logs, remote
+      processing, or backend fan-out justify them.
+    tradeoffs: "This avoids a forced all-in migration and lets each system do what
+      its docs optimize for: Prometheus scrapes and stores numeric time series,
+      while the OTel Collector receives, processes, and exports telemetry. The
+      tradeoff is architectural split-brain: you now operate separate metrics
+      and OTLP control planes instead of one programmable agent."
+    cautions: This is not a drop-in one-binary replacement for Grafana Agent. You
+      need clear ownership boundaries between Prometheus and Collector
+      pipelines, and you should verify where metric transformations,
+      remote_write, and alerting responsibilities live before migration to avoid
+      duplicate collection or fragmented troubleshooting.
+    links:
+      - https://prometheus.io/docs/introduction/overview/
+      - https://opentelemetry.io/docs/collector/
+      - https://opentelemetry.io/docs/collector/deploy/agent/
+      - https://opentelemetry.io/docs/collector/deploy/gateway/
+tags:
+  - observability
+  - grafana-agent
+  - grafana-alloy
+  - opentelemetry
+  - otel-collector
+  - prometheus
+  - collector
+  - migration
+  - comparison
+aliases:
+  - grafana agent replacement
+  - grafana agent eol
+  - grafana alloy vs otel collector
+  - grafana agent vs alloy
+  - alloy vs upstream collector
+  - prometheus and otel collector
+  - otel collector distro choice
+related_cards:
+  - observability/opentelemetry-vendor-pipeline
+  - infra/monitoring-observability
+  - observability/datadog-vs-grafana-cloud-vs-new-relic
+  - observability/otel-logs-vs-fluent-bit-vs-vector-after-logs-stabilization
+  - observability/coralogix-vs-logzio-otel-ingest-pricing-2026
+  - observability/promtail-to-alloy-before-march-2-2026-eol
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-07-20
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/grafana
+      name: Grafana Labs
+      category: observability
+    - type: package
+      id: package/grafana-agent
+      name: Grafana Agent
+      version: null
+    - type: package
+      id: package/grafana-alloy-1.14
+      name: Grafana Alloy v1.14
+      version: "1.14"
+  edges:
+    - type: eol_date
+      from: package/grafana-agent
+      to: null
+      date: 2025-11-01
+      successor: package/grafana-alloy-1.14
+    - type: locks_via
+      from: vendor/grafana
+      to: package/grafana-alloy-1.14
+      surface: Alloy uses its own configuration model, not standard OTel Collector
+        YAML; Grafana-specific release cadence
+      severity: low

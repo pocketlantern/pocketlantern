@@ -1,0 +1,136 @@
+id: "search/opensearch-js-client-2-x-vs-3-x-breaking-changes-2026"
+title: "OpenSearch JavaScript Client 2.x vs 3.x Breaking Changes in 2026"
+problem: "Node teams need to know whether upgrading the OpenSearch JS client
+  will break auth or API compatibility with their current cluster version."
+context:
+  - "search"
+  - "nodejs"
+  - "opensearch"
+  - "typescript"
+constraints:
+  - "small-team"
+  - "enterprise"
+  - "monorepo"
+candidates:
+  - name: "Stay on OpenSearch JS client 2.x for OpenSearch 2.x clusters"
+    summary: "As of 2026-03-27, OpenSearch recommends matching client and cluster
+      major versions, and 2.19.x remains the maintained 2.x line. Staying on 2.x
+      avoids the documented 3.x breaks around camelCase params, HTTP method
+      overrides, and generated TypeScript types."
+    when_to_use: "Use this when your cluster is still on OpenSearch 2.x and upgrade
+      risk is driven by application compatibility rather than missing client
+      features. The decisive factor is that the documented 2.x to 3.x client
+      breakage is in API call shape and typings, so staying on 2.x avoids code
+      churn while 2.19.x remains maintained."
+    tradeoffs: "Lowest immediate migration risk and aligned with same-major
+      compatibility guidance, but you stay on a maintenance branch with no new
+      client features."
+    cautions: "Do not expect 2.x behavior to carry forward unchanged: the 3.x
+      upgrade guide explicitly removes camelCase parameter translation and HTTP
+      method overrides, and replaces older handwritten TypeScript types with
+      generated ones. If you later move the cluster to 3.x, plan a coordinated
+      client and application test pass rather than treating the client bump as
+      trivial."
+    links:
+      - "https://opensearch.org/releases/"
+      - "https://docs.opensearch.org/1.0/clients/index/"
+      - "https://raw.githubusercontent.com/opensearch-project/opensearch-js/mai\
+        n/UPGRADING.md"
+  - name: "Upgrade to OpenSearch JS client 3.x with an OpenSearch 3.x cluster
+      migration"
+    summary: "As of 2026-03-27, OpenSearch 3.x is the current major line, and the JS
+      client 3.x adds generated APIs and stricter generated types. The
+      documented 2.x to 3.x breaks are removal of camelCase params, API-level
+      HTTP method overrides, older Node.js support, and older handwritten
+      TypeScript assumptions."
+    when_to_use: "Use this when you are moving to an OpenSearch 3.x cluster or you
+      need the generated API surface and stricter TypeScript support. The
+      decisive factor is same-major alignment: 3.x is the path that matches
+      current OpenSearch 3.x releases, while 2.x remains a maintenance branch."
+    tradeoffs: "You get newer API coverage and more accurate types, but the upgrade
+      can break request parameter names, custom method override patterns, and
+      compile-time TypeScript assumptions."
+    cautions: "Official 2.x to 3.x breaking notes focus on API surface and typing
+      changes, not a published auth model rewrite; the current user guide still
+      documents basic auth, TLS options, and AWS SigV4 examples, so auth should
+      be verified in your integration tests rather than assumed broken.
+      Cluster-side 3.0 also removed deprecated server behaviors such as
+      compatibility.override_main_response_version and support for indexes
+      created before 2.x, so client upgrade planning should be paired with
+      cluster upgrade checks."
+    links:
+      - "https://opensearch.org/blog/introducing-opensearch-js-client-3-0/"
+      - "https://raw.githubusercontent.com/opensearch-project/opensearch-js/mai\
+        n/UPGRADING.md"
+      - "https://opensearch.org/releases/"
+      - "https://docs.opensearch.org/latest/breaking-changes/"
+tags:
+  - "search"
+  - "opensearch"
+  - "nodejs"
+  - "typescript"
+aliases:
+  - "opensearch js client 2.x vs 3.x"
+  - "opensearch javascript client breaking changes"
+  - "opensearch node client upgrade 3.x"
+related_cards:
+  - "search/opensearch-service-managed-vs-serverless-pricing-2026"
+  - "database/search-postgres-vs-opensearch-vs-meilisearch"
+  - "_archived/migration-strategy"
+  - search/solr-vs-opensearch-vs-elasticsearch-license-and-upgrade-tradeoffs-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: package
+      id: package/opensearch-js-client-2-x
+      name: OpenSearch JS client 2.x
+    - type: package
+      id: package/opensearch-js-client-3-x
+      name: OpenSearch JS client 3.x
+    - type: package
+      id: package/opensearch-2-x
+      name: OpenSearch 2.x cluster
+    - type: package
+      id: package/opensearch-3-x
+      name: OpenSearch 3.x cluster
+    - type: capability
+      id: capability/camelcase-params
+      name: camelCase params
+    - type: capability
+      id: capability/http-method-overrides
+      name: HTTP method overrides
+    - type: capability
+      id: capability/typescript-types
+      name: TypeScript types
+    - type: vendor
+      id: vendor/opensearch
+      name: OpenSearch
+  edges:
+    - type: requires_version
+      from: package/opensearch-js-client-2-x
+      to: package/opensearch-2-x
+      statement: OpenSearch recommends matching client and cluster major versions;
+        stay on client 2.x for OpenSearch 2.x clusters.
+    - type: requires_version
+      from: package/opensearch-js-client-3-x
+      to: package/opensearch-3-x
+      statement: Upgrade to client 3.x with an OpenSearch 3.x cluster migration
+        because OpenSearch recommends matching client and cluster major
+        versions.
+    - type: breaking_change_in
+      from: package/opensearch-js-client-3-x
+      to: capability/camelcase-params
+      statement: The 3.x upgrade guide removes camelCase parameter translation.
+    - type: breaking_change_in
+      from: package/opensearch-js-client-3-x
+      to: capability/http-method-overrides
+      statement: The 3.x upgrade guide removes API-level HTTP method overrides.
+    - type: breaking_change_in
+      from: package/opensearch-js-client-3-x
+      to: capability/typescript-types
+      statement: The 3.x upgrade replaces older handwritten TypeScript types with
+        generated ones.

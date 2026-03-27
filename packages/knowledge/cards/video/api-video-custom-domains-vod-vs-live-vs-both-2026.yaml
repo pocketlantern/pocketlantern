@@ -1,0 +1,160 @@
+id: "video/api-video-custom-domains-vod-vs-live-vs-both-2026"
+title: "api.video Custom Domains Pricing: $60/month VOD vs $60/month Live vs
+  $100/month Both in 2026"
+problem: "Decide whether to buy the VOD-only, livestream-only, or combined
+  custom domains add-on based on whether you need branded VOD delivery, branded
+  live URLs, or both."
+context:
+  - "video"
+  - "api.video"
+  - "vod"
+  - "livestreaming"
+  - "custom-domains"
+constraints:
+  - "cost-sensitive"
+  - "real-time"
+candidates:
+  - name: "Buy the VOD-only custom domain add-on"
+    summary: "As of 2026-03-27, api.video's Help Center lists custom domains at
+      \"$60 for Video on Demand (VOD).\" The official docs say custom domains
+      let you deliver video content on your own domain, and the setup requires
+      DNS changes plus TLS certificates for the domains you use. For VOD with
+      api.video's player, the Help Center shows you may need separate `vod`,
+      `embed`, and `collector` subdomains depending on your setup. This is the
+      cheapest verified path if your branding need is limited to prerecorded
+      playback and embeds."
+    when_to_use: "Use this when you need branded playback URLs for prerecorded video
+      but do not need a branded live ingest or live playback domain. It is the
+      right choice for cost-sensitive teams whose live workflow is out of
+      scope."
+    tradeoffs: "Lowest monthly price for prerecorded delivery, but it is optimized
+      around playback and embed branding rather than live operations. VOD setups
+      can still require multiple subdomains such as `vod`, `embed`, and
+      `collector`, so the cheaper price does not mean a single-hostname setup.
+      If you later add livestreaming, buying Live separately would bring the
+      total to $120/month rather than the $100/month combined option."
+    cautions: "This add-on is available only in the Production environment.
+      api.video requires valid TLS certificates and keys for each custom domain,
+      and VOD setups can require multiple subdomains such as `vod`, `embed`, and
+      `collector` depending on whether you use api.video's player or your own
+      player with analytics."
+    links:
+      - "https://help.api.video/en/articles/7902787-custom-domains"
+      - "https://docs.api.video/delivery/using-custom-domains"
+      - "https://api.video/pricing/"
+  - name: "Buy the Livestream-only custom domain add-on"
+    summary: "As of 2026-03-27, api.video's Help Center lists custom domains at
+      \"$60 for Livestream.\" The official docs say custom domains can be used
+      to start a live stream using your own custom URL, which is the core
+      requirement when branded ingest or live playback endpoints matter. The
+      Help Center shows that live setups can require `live`, `embed`, and
+      `collector` subdomains when using api.video's player, or `live` plus
+      optionally `collector` when using your own player with analytics. This is
+      the focused choice if your white-label need is live-only."
+    when_to_use: "Use this when the requirement is branded live URLs, including live
+      delivery and live-start URLs, but not VOD playback on a custom domain. It
+      is the lowest verified cost for teams shipping live events or broadcast
+      features without a VOD white-label requirement."
+    tradeoffs: "Lowest monthly price for live-branded workflows, but it is the
+      option with the strongest operational dependency on live-specific setup
+      such as a `live` domain for stream start URLs. Live implementations may
+      also need `embed` and `collector` subdomains depending on player and
+      analytics choices, so the operational footprint can be broader than the
+      sticker price suggests. If you later need both live and VOD, separate
+      purchases cost more than the combined option."
+    cautions: "This is also Production-only and requires TLS certificates and DNS
+      configuration. If you need analytics with an external player, the
+      `collector` subdomain is an extra setup dependency even when the player
+      itself is not hosted on api.video."
+    links:
+      - "https://help.api.video/en/articles/7902787-custom-domains"
+      - "https://docs.api.video/delivery/using-custom-domains"
+      - "https://api.video/pricing/"
+  - name: "Buy the combined VOD and Livestream custom domains add-on"
+    summary: "As of 2026-03-27, api.video's Help Center lists custom domains at
+      $100/month for both VOD and Livestream, versus $60/month for either mode
+      alone. Choose this when both branded VOD delivery and branded live URLs
+      are actual requirements."
+    when_to_use: "Use this when you already know you need both prerecorded playback
+      and livestream branding, or when your roadmap will require both in the
+      near term. The decisive factor is avoiding the higher $120 combined spend
+      of separate add-ons."
+    tradeoffs: "Best total price if both use cases are required, and it reduces
+      procurement churn by avoiding a later second purchase. The tradeoff is
+      paying more upfront than a single-purpose add-on if one side may never be
+      used."
+    cautions: "The technical setup can still require multiple subdomains and
+      certificates such as `vod`, `live`, `embed`, and `collector`, so the
+      combined price does not mean a single hostname. The pricing page says
+      custom domains start at $60 per month, while the Help Center gives the
+      VOD/Live/Both breakdown; use the Help Center breakdown for comparing these
+      three options."
+    links:
+      - "https://help.api.video/en/articles/7902787-custom-domains"
+      - "https://docs.api.video/delivery/using-custom-domains"
+      - "https://api.video/pricing/"
+tags:
+  - "video"
+  - "api-video"
+  - "pricing"
+  - "custom-domains"
+  - "livestreaming"
+aliases:
+  - "api.video custom domain pricing"
+  - "api.video vod vs live custom domain"
+  - "api.video custom domain both option"
+related_cards:
+  - "video/api-video-sandbox-vs-production-minute-billing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/api-video
+      name: api.video
+    - type: capability
+      id: capability/custom-domains-vod
+      name: Custom domains for VOD
+    - type: capability
+      id: capability/custom-domains-live
+      name: Custom domains for Livestream
+    - type: capability
+      id: capability/custom-domains-both
+      name: Custom domains for VOD and Livestream
+    - type: protocol
+      id: protocol/tls
+      name: TLS
+    - type: protocol
+      id: protocol/dns
+      name: DNS
+  edges:
+    - type: locks_via
+      from: capability/custom-domains-vod
+      to: protocol/tls
+      note: VOD custom domains require valid TLS certificates and keys for each custom
+        domain.
+    - type: locks_via
+      from: capability/custom-domains-vod
+      to: protocol/dns
+      note: VOD custom domains setup requires DNS changes.
+    - type: locks_via
+      from: capability/custom-domains-live
+      to: protocol/tls
+      note: Livestream custom domains require TLS certificates.
+    - type: locks_via
+      from: capability/custom-domains-live
+      to: protocol/dns
+      note: Livestream custom domains require DNS configuration.
+    - type: locks_via
+      from: capability/custom-domains-both
+      to: protocol/tls
+      note: The combined option can require multiple certificates such as for vod,
+        live, embed, and collector domains.
+    - type: locks_via
+      from: capability/custom-domains-both
+      to: protocol/dns
+      note: The combined option can require multiple custom-domain DNS setups such as
+        vod, live, embed, and collector.

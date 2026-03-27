@@ -1,0 +1,190 @@
+id: "data/timestream-for-influxdb-vs-questdb-vs-influxdb-cloud-pricing-2026"
+title: "Timestream for InfluxDB vs QuestDB vs InfluxDB Cloud Pricing 2026"
+problem: "Choose a time-series database when ingestion pricing, retention
+  economics, and hosted-vs-self-managed tradeoffs differ widely across the
+  options."
+context:
+  - "aws"
+  - "time-series"
+  - "observability"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+candidates:
+  - name: "Amazon Timestream for InfluxDB"
+    summary: "Amazon positions Timestream for InfluxDB as a managed InfluxDB service
+      with two cost shapes as of 2026-03-20: InfluxDB 2 is billed on running DB
+      instance-hours plus provisioned storage, and InfluxDB 3 is billed on
+      node-hours plus object storage and data transfer out. AWS bills in
+      1-second increments with a 10-minute minimum after billable state changes,
+      and stopped DB instances stop compute charges but still incur storage
+      charges. Official AWS examples show the InfluxDB 2 economics are
+      provisioned-capacity style rather than ingest-metered, for example a
+      Single-AZ db.influx.2xlarge at $0.956 per hour and 3K IOPS storage at
+      $0.10 per GB-month in the pricing example. Timestream for InfluxDB 3 adds
+      a 200 GB minimum monthly storage charge and, for Enterprise, a separate
+      InfluxData license billed per vCPU-hour through AWS Marketplace."
+    when_to_use: "Use this when you want AWS-native operations, low ops burden, and
+      compatibility with InfluxDB tooling without running the database yourself.
+      It is the better fit when AWS procurement, VPC integration, or Multi-AZ
+      failover matter more than absolute ingest cost efficiency at low
+      utilization."
+    tradeoffs: "Managed operations and AWS integration are strong, but the billing
+      model is not serverless-scale-to-zero for InfluxDB engines. Multi-AZ
+      roughly doubles core infrastructure charges and can add write latency
+      because replication is synchronous."
+    cautions: "As of 2026-03-20, Multi-AZ standby nodes do not serve reads; read
+      scaling requires the separate Read Replica cluster feature, which also
+      introduces AWS Marketplace licensing for the add-on. For InfluxDB 3
+      Enterprise on AWS, budget for both node-hours and the separate per-vCPU
+      enterprise license. Cross-AZ placement can also create EC2 regional data
+      transfer charges depending on whether the service is inside your VPC."
+    links:
+      - "https://aws.amazon.com/timestream/pricing/"
+      - "https://aws.amazon.com/timestream/faqs/"
+      - "https://docs.aws.amazon.com/timestream/latest/developerguide/influxdb3\
+        .html"
+  - name: "QuestDB"
+    summary: "QuestDB is an open-source time-series database with a SQL-first model
+      and InfluxDB Line Protocol support; the current official site shows
+      version 9.3.3 as of 2026-03-20. QuestDB does not publish a simple public
+      hosted price on its official BYOC page; the managed offer is BYOC and
+      requires contacting sales, while self-managed cost is mainly your own
+      compute, storage, and cloud I/O. Official high-availability docs
+      explicitly call out that object-store replication adds per-request cloud
+      charges and estimate storage around $20/TB/month for object storage versus
+      roughly $60 to $300/TB/month for managed NFS tiers, with operation costs
+      varying by poll/flush settings. This makes QuestDB attractive when you
+      want long retention on cheap storage and are willing to own capacity
+      planning or BYOC infrastructure."
+    when_to_use: "Use this when you are cost-sensitive at high ingest volumes, want
+      SQL-first querying, or want to keep data in your own cloud account. It is
+      the strongest option when self-managed or BYOC economics beat per-usage
+      SaaS pricing and your team can tolerate more infrastructure
+      responsibility."
+    tradeoffs: "Retention can be very cheap on your own object storage, and BYOC
+      lets you apply cloud commitments, but there is no simple public all-in
+      hosted list price to forecast from. You gain control over infrastructure
+      economics, but you also inherit more design and migration work."
+    cautions: "As of 2026-03-20, QuestDB BYOC pricing is quote-based, so you cannot
+      verify a public flat rate from official docs and should check sales terms
+      directly. If migrating from InfluxDB exports, QuestDB's migration docs
+      warn that InfluxDB exports one metric per line, which can produce multiple
+      rows with NULLs and may require post-load transformation. If you use HA
+      with object storage, request pricing can become material because every WAL
+      upload and replica poll is billable cloud I/O."
+    links:
+      - "https://questdb.com/byoc/"
+      - "https://questdb.com/docs/high-availability/tuning/"
+      - "https://questdb.com/docs/guides/influxdb-migration"
+      - "https://questdb.com/docs/deployment/docker/"
+  - name: "InfluxDB Cloud"
+    summary: "InfluxDB Cloud is InfluxData's managed offering with a free plan and
+      usage-based paid plan as of 2026-03-20. Official pricing lists four usage
+      vectors: Data In at $0.0025/MB, Query Count at $0.012 per 100 query
+      executions, Storage at $0.002 per GB-hour, and Data Out at $0.09/GB, with
+      no minimum spend and a $250 credit for the first 30 days on the
+      Usage-Based Plan. The free plan is rate-limited and keeps 30 days of
+      retention, while paid plans remove the retention cap and most resource
+      limits. This is the clearest fully managed pay-as-you-go option of the
+      three if you want billing tied directly to writes, query activity,
+      retained data, and egress."
+    when_to_use: "Use this when you want the least capacity planning and want a true
+      usage-metered hosted service instead of provisioned instances. It is the
+      best fit for small teams and variable workloads where idle periods should
+      not force node-hour charges."
+    tradeoffs: "The pricing model is easy to start with, but query-heavy dashboards,
+      alerts, tasks, and Data Explorer usage all count toward billable query
+      executions. Long retention is operationally simple, but storage is billed
+      continuously in GB-hours and data returned to clients is billed
+      separately."
+    cautions: "As of 2026-03-20, each query, task, alert, notification, and Data
+      Explorer action counts as an individual billable query operation, and
+      multi-cell dashboard refreshes multiply that count. Free-plan retention is
+      only 30 days; paid plans support unlimited retention but remove the
+      natural cost guardrail. If your fallback plan is self-managed InfluxDB 3
+      Core, official docs note a roughly 72-hour query time-range limit and no
+      Flux support there, so migration away from Cloud is not necessarily
+      feature-equivalent."
+    links:
+      - "https://www.influxdata.com/influxdb-pricing"
+      - "https://docs.influxdata.com/influxdb/cloud/account-management/pricing-\
+        plans/"
+      - "https://www.influxdata.com/influxdb-cloud-pricing"
+      - "https://www.influxdata.com/influxdb-cloud-pricing-faq"
+tags:
+  - "data"
+  - "time-series"
+  - "pricing"
+  - "influxdb"
+  - "questdb"
+  - "aws"
+aliases:
+  - "timestream for influxdb pricing vs questdb vs influxdb cloud"
+  - "time series database pricing 2026"
+  - "influxdb cloud vs questdb cost"
+related_cards:
+  - "data/clickhouse-cloud-pricing-after-warehouse-packaging-2026"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: vendor
+      id: vendor/influxdata
+      name: InfluxData
+    - type: package
+      id: package/amazon-timestream-for-influxdb
+      name: Amazon Timestream for InfluxDB
+    - type: engine
+      id: engine/influxdb-2
+      name: InfluxDB 2
+    - type: engine
+      id: engine/influxdb-3
+      name: InfluxDB 3
+    - type: engine
+      id: engine/influxdb-3-enterprise
+      name: InfluxDB 3 Enterprise
+    - type: package
+      id: package/influxdb-cloud
+      name: InfluxDB Cloud
+    - type: engine
+      id: engine/influxdb-3-core
+      name: InfluxDB 3 Core
+    - type: package
+      id: package/questdb
+      name: QuestDB
+    - type: protocol
+      id: protocol/influxdb-line-protocol
+      name: InfluxDB Line Protocol
+      standard: protocol
+    - type: protocol
+      id: protocol/flux
+      name: Flux
+      standard: query-language
+  edges:
+    - type: requires_version
+      from: package/amazon-timestream-for-influxdb
+      to: engine/influxdb-2
+    - type: requires_version
+      from: package/amazon-timestream-for-influxdb
+      to: engine/influxdb-3
+    - type: requires_version
+      from: package/amazon-timestream-for-influxdb
+      to: engine/influxdb-3-enterprise
+    - type: locks_via
+      from: package/questdb
+      to: protocol/influxdb-line-protocol
+    - type: breaking_change_in
+      from: package/influxdb-cloud
+      to: engine/influxdb-3-core
+    - type: breaking_change_in
+      from: engine/influxdb-3-core
+      to: protocol/flux

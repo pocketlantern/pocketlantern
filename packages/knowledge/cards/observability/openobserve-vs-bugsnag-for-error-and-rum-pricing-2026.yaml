@@ -1,0 +1,144 @@
+id: "observability/openobserve-vs-bugsnag-for-error-and-rum-pricing-2026"
+title: "OpenObserve vs Bugsnag for Error and RUM Pricing in 2026"
+problem: "Web teams choosing frontend observability need a current comparison
+  because OpenObserve and Bugsnag price error and performance data very
+  differently for small and mid-size apps."
+context:
+  - "frontend"
+  - "web-observability"
+  - "error-tracking"
+  - "rum"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "OpenObserve Cloud"
+    summary: "OpenObserve folds frontend monitoring into a broader usage-based
+      observability platform. As of 2026-03-26, its official pricing surfaces
+      are not perfectly aligned: the current pricing page search snippet shows
+      \"Real User Monitoring (RUM)\" at \"$0.15 / 1K sessions\", \"Session
+      Replay\" at \"$0.005 / recording\", and \"Error Tracking\" at \"$0.15 / 1K
+      events\", while OpenObserve's June 2, 2025 pricing update announced fully
+      usage-based Cloud pricing with no minimums, no Cloud free tier, and \"RUM
+      & Session Replay\" at \"$1 per 1,000 sessions\" plus error tracking at
+      \"$0.15 per 1,000 events\". The current pricing page also shows a 14-day
+      free trial, 15 days included retention, unlimited users, RBAC, and
+      logs/metrics/traces ingestion at \"$0.50 per GB\". It also offers a
+      self-hosted path with no software license charge."
+    when_to_use: "Best when you already want logs, metrics, traces, frontend
+      monitoring, and error tracking in one platform, and you are comfortable
+      with usage-based billing on sessions and events. It also fits teams that
+      are explicitly willing to run self-hosted observability infrastructure to
+      avoid software license fees. Choose it when stack consolidation or
+      self-hosting matters more than having a pure SaaS frontend tool with a
+      simpler packaged quota model."
+    tradeoffs: "Broad platform coverage and a self-hosting option, but the official
+      Cloud pricing surfaces currently disagree on key frontend line items. The
+      main risk is quoting and budgeting uncertainty unless you confirm the live
+      rate card directly with OpenObserve."
+    cautions: "As of 2026-03-26, the June 2, 2025 pricing-policy change has already
+      occurred, including the end of the old Cloud free tier. Verify the current
+      RUM and session replay line items in official docs or sales before
+      budgeting because the pricing page snippet and the June 2025 policy post
+      do not match."
+    links:
+      - "https://openobserve.ai/pricing/"
+      - "https://openobserve.ai/blog/june-25-pricing-policy-updates/"
+      - "https://openobserve.ai/docs/user-guide/rum/error-tracking/"
+  - name: "Bugsnag"
+    summary: "BugSnag prices frontend monitoring around two main meters: error
+      events and performance spans, not public session-based RUM pricing. As of
+      2026-03-26, the official pricing page shows a free plan with \"7.5K events
+      and 1M spans per month\", and a public search snippet shows paid plans
+      starting at \"$20/mo\". The same pricing page defines an event as an
+      unhandled or handled exception you report, and its performance packs cover
+      App Start, Screen Loads, and Web Vitals, with public tier ranges from 1M
+      to 150M spans. The key differentiator is packaged error-plus-performance
+      quotas with dynamic sampling and burst protection instead of per-session
+      RUM billing."
+    when_to_use: "Best when your frontend workload is primarily exception monitoring
+      plus performance telemetry such as Web Vitals, and you want to budget
+      around monthly event and span quotas rather than session counts. It fits
+      teams that do not need to consolidate logs/metrics/traces into the same
+      product and do not require a self-hosted option. Choose it when polished
+      error-monitoring workflows matter more than session-priced RUM or broader
+      observability-platform coverage."
+    tradeoffs: "Cleaner packaged quotas and mature error-monitoring UX, but the
+      product is centered on events and spans rather than session-priced RUM and
+      broad observability consolidation. The main downside versus OpenObserve is
+      less flexibility if you want one tool for logs, metrics, traces, frontend
+      telemetry, and a self-hosted deployment path."
+    cautions: "Do not model BugSnag as a session-replay or per-session RUM product
+      from the public pricing page alone. As of 2026-03-26, the official pricing
+      materials emphasize error events and performance spans, and advanced
+      filtering for real-user performance data starts with paid performance
+      plans at 7.5M spans."
+    links:
+      - "https://www.bugsnag.com/pricing/"
+      - "https://www.bugsnag.com/"
+      - "https://www.bugsnag.com/product/open-source/"
+tags:
+  - "observability"
+  - "openobserve"
+  - "bugsnag"
+  - "pricing"
+  - "rum"
+  - "error-tracking"
+aliases:
+  - "openobserve vs bugsnag pricing"
+  - "bugsnag spans vs openobserve rum sessions"
+  - "frontend observability pricing 2026"
+related_cards:
+  - "observability/openobserve-cloud-paygo-vs-enterprise-after-june-2025-pricin\
+    g-policy-2026"
+  - "observability/raygun-vs-bugsnag-vs-rollbar-error-monitoring-pricing-2026"
+  - "frontend/frontend-error-boundary-and-monitoring"
+  - mobile/instabug-vs-embrace-vs-bugsnag-mobile-observability-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/openobserve
+      name: OpenObserve
+    - type: vendor
+      id: vendor/bugsnag
+      name: BugSnag
+    - type: capability
+      id: capability/rum
+      name: Real User Monitoring (RUM)
+    - type: capability
+      id: capability/error-tracking
+      name: Error Tracking
+    - type: capability
+      id: capability/openobserve-cloud-free-tier
+      name: old Cloud free tier
+  edges:
+    - type: eol_date
+      from: capability/openobserve-cloud-free-tier
+      to: null
+      date: 2025-06-02
+    - type: breaking_change_in
+      from: vendor/openobserve
+      to: capability/openobserve-cloud-free-tier
+      date: 2025-06-02
+    - type: locks_via
+      from: vendor/openobserve
+      to: capability/rum
+      basis: usage-based billing on sessions
+    - type: locks_via
+      from: vendor/openobserve
+      to: capability/error-tracking
+      basis: usage-based billing on events
+    - type: locks_via
+      from: vendor/bugsnag
+      to: capability/error-tracking
+      basis: monthly event quotas
+    - type: locks_via
+      from: vendor/bugsnag
+      to: capability/rum
+      basis: performance spans rather than public session-based RUM pricing

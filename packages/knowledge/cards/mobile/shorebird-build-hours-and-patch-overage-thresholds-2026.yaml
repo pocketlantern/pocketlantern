@@ -1,0 +1,198 @@
+id: "mobile/shorebird-build-hours-and-patch-overage-thresholds-2026"
+title: "Shorebird Patch Install Overage and 100 Build-Hour Limits in 2026"
+problem: "Teams already on Shorebird need to know when the included
+  patch-install and CI-hour limits push them into overage billing or a Business
+  upgrade."
+context:
+  - "mobile"
+  - "flutter"
+  - "ota-updates"
+  - "ci-cd"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on Pro monthly"
+    summary: "As of 2026-03-27, Shorebird Pro is priced at $20 per month on monthly
+      billing with 50,000 patch installs, 100 private-repository build hours,
+      and published patch overage at $1 per 2,500 installs."
+    when_to_use: "Best for cost-sensitive small teams whose normal monthly patch
+      volume stays near or below 50,000 and whose private-repo CI usage stays
+      within 100 build hours. The decisive factor is that Pro is the cheapest
+      paid plan and still allows patch-install overage billing instead of
+      forcing an immediate plan upgrade."
+    tradeoffs: "Lowest entry price, but it reaches install overage much sooner than
+      Business and does not include the larger-team admin, billing, or support
+      features."
+    cautions: "Do not assume Business is required as soon as you exceed 50,000
+      installs on monthly billing, because Pro already has published overage
+      billing. For CI-heavy teams, the public pricing page is not enough to
+      verify what happens after 100 build hours."
+    links:
+      - "https://shorebird.dev/pricing"
+      - "https://shorebird.dev/blog/simplified-pricing"
+  - name: "Upgrade to Business monthly"
+    summary: "As of 2026-03-27, Shorebird Business is priced at $400 per month on
+      monthly billing. The public pricing page includes 1,000,000 patch installs
+      and also lists 100 private-repository build hours on Business. Monthly
+      patch overage is still published as $1 per 2,500 installs, the same public
+      overage rate shown for Pro. Business adds larger-team features such as
+      Viewer and App Manager roles, invoice billing, and private support, while
+      SAML is marked as custom."
+    when_to_use: "Best for enterprise or high-scale mobile teams that routinely
+      exceed Pro's 50,000 included monthly installs or need the extra admin and
+      billing controls. The decisive factor is the much larger included install
+      pool and business features, not a cheaper published overage rate."
+    tradeoffs: "Much higher base cost, but it materially delays when install overage
+      begins on monthly billing. It does not publicly advertise more than 100
+      included private-repo build hours."
+    cautions: "Do not upgrade to Business expecting a lower published per-install
+      overage price or a clearly higher CI-hour allowance, because the public
+      pricing table does not show either. If CI hours are the main blocker,
+      check official docs or contact Shorebird before treating Business as the
+      fix."
+    links:
+      - "https://shorebird.dev/pricing"
+  - name: "Switch to yearly Pro"
+    summary: "Shorebird introduced yearly plans on 2025-04-23. As of 2026-03-27, the
+      pricing page shows Pro at $240 per year. Shorebird's yearly-plan
+      announcement says patches are credited upfront for the full year and that
+      yearly plans have no overages, so teams can avoid monthly patch-install
+      charges if they stay within the annual total."
+    when_to_use: "Best for cost-sensitive teams with spiky patch usage and a known
+      annual budget. The decisive factor is eliminating monthly install overage
+      billing on Pro, not increasing the published 100 build-hour allowance."
+    tradeoffs: "More predictable patch-install billing than Pro monthly, but it
+      requires paying upfront and managing against an annual pool instead of a
+      monthly threshold. It is less helpful if the real constraint is CI time
+      rather than patch volume."
+    cautions: "The yearly-plan announcement is specifically about patch usage, not
+      higher CI-hour entitlements. The pricing page still shows 100 private-repo
+      build hours on paid plans, so check official docs or sales if CI-hour
+      overage is your main concern."
+    links:
+      - "https://shorebird.dev/pricing"
+      - "https://shorebird.dev/blog/yearly-plans"
+  - name: "Switch to yearly Business"
+    summary: "Shorebird introduced yearly plans on 2025-04-23. As of 2026-03-27, the
+      pricing page shows Business at $4,800 per year. Shorebird's yearly-plan
+      announcement says patches are credited upfront for the full year and that
+      yearly plans have no overages, so teams can avoid monthly patch-install
+      charges if they stay within the annual total."
+    when_to_use: "Best for enterprise teams with seasonal or incident-driven patch
+      spikes that also want Business roles, billing controls, and support on an
+      annual contract. The decisive factor is combining Business features with
+      predictable yearly patch budgeting, not increasing the published 100
+      build-hour allowance."
+    tradeoffs: "Most predictable option for high-scale patch usage, but it has the
+      largest upfront commitment and still does not publicly promise more than
+      100 private-repo build hours."
+    cautions: "The yearly-plan announcement is specifically about patch usage, not
+      higher CI-hour entitlements. The pricing page still shows 100 private-repo
+      build hours on paid plans, so check official docs or sales if CI-hour
+      overage is your main concern."
+    links:
+      - "https://shorebird.dev/pricing"
+      - "https://shorebird.dev/blog/yearly-plans"
+tags:
+  - "mobile"
+  - "flutter"
+  - "shorebird"
+  - "pricing"
+  - "ci"
+aliases:
+  - "shorebird overage billing"
+  - "shorebird 100 build hours"
+  - "shorebird patch install limits"
+related_cards:
+  - "mobile/shorebird-free-vs-pro-vs-business-pricing-2026"
+  - "mobile/eas-update-vs-appcenter-codepush-post-shutdown-2026"
+  - "deployment/bitrise-vs-appcircle-mobile-ci-credit-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/shorebird
+      name: Shorebird
+    - type: capability
+      id: capability/patch-install-overage-billing
+      name: patch-install overage billing
+    - type: capability
+      id: capability/private-repository-build-hours
+      name: private-repository build hours
+    - type: package
+      id: package/shorebird-pro-monthly
+      name: Shorebird Pro monthly
+      vendor: vendor/shorebird
+      price: $20/month
+      as_of: 2026-03-27
+    - type: package
+      id: package/shorebird-business-monthly
+      name: Shorebird Business monthly
+      vendor: vendor/shorebird
+      price: $400/month
+      as_of: 2026-03-27
+    - type: package
+      id: package/shorebird-pro-yearly
+      name: Shorebird Pro yearly
+      vendor: vendor/shorebird
+      price: $240/year
+      introduced: 2025-04-23
+      as_of: 2026-03-27
+    - type: package
+      id: package/shorebird-business-yearly
+      name: Shorebird Business yearly
+      vendor: vendor/shorebird
+      price: $4800/year
+      introduced: 2025-04-23
+      as_of: 2026-03-27
+  edges:
+    - type: requires_version
+      from: capability/patch-install-overage-billing
+      to: package/shorebird-pro-monthly
+      included_installs: 50000
+      overage_rate: $1 per 2,500 installs
+      as_of: 2026-03-27
+    - type: requires_version
+      from: capability/private-repository-build-hours
+      to: package/shorebird-pro-monthly
+      included_hours: 100
+      as_of: 2026-03-27
+    - type: requires_version
+      from: capability/patch-install-overage-billing
+      to: package/shorebird-business-monthly
+      included_installs: 1000000
+      overage_rate: $1 per 2,500 installs
+      as_of: 2026-03-27
+    - type: requires_version
+      from: capability/private-repository-build-hours
+      to: package/shorebird-business-monthly
+      included_hours: 100
+      as_of: 2026-03-27
+    - type: locks_via
+      from: package/shorebird-pro-yearly
+      to: capability/patch-install-overage-billing
+      rule: patches are credited upfront for the full year and yearly plans have no
+        overages
+      stated_on: 2025-04-23
+    - type: requires_version
+      from: capability/private-repository-build-hours
+      to: package/shorebird-pro-yearly
+      included_hours: 100
+      as_of: 2026-03-27
+    - type: locks_via
+      from: package/shorebird-business-yearly
+      to: capability/patch-install-overage-billing
+      rule: patches are credited upfront for the full year and yearly plans have no
+        overages
+      stated_on: 2025-04-23
+    - type: requires_version
+      from: capability/private-repository-build-hours
+      to: package/shorebird-business-yearly
+      included_hours: 100
+      as_of: 2026-03-27

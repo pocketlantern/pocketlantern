@@ -114,6 +114,17 @@ related_cards:
   - auth/kinde-vs-logto-vs-supertokens-b2b-auth-pricing-2026
   - auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026
   - auth/workos-authkit-vs-sso-directory-sync-pricing-2026
+  - security/workos-vs-fusionauth-vs-keycloak-b2b-sso-2026
+  - auth/stytch-b2b-free-tier-vs-paid-scale-2026
+  - auth/descope-free-vs-pro-vs-growth-mau-tenant-and-connector-limits-2026
+  - cloud/kong-konnect-plus-vs-enterprise-gateway-limits-and-sign-in-policy-2026
+  - devtools/cursor-teams-vs-individual-plans-after-2025-pricing-reset
+  - security/teleport-community-vs-enterprise-license-and-access-policy-2026
+  - auth/workos-directory-sync-125-per-connection-2026
+  - security/1password-business-vs-enterprise-developer-tools-pricing-2026
+  - auth/duo-free-vs-essentials-vs-advantage-vs-premier-2026
+  - devtools/insomnia-essentials-vs-pro-vs-enterprise-mock-request-pricing-2026
+tier: core
 updated: 2026-03-15
 review_by: 2026-09-21
 sidecar_hard_facts:

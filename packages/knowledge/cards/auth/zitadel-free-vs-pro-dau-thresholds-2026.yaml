@@ -1,0 +1,113 @@
+id: "auth/zitadel-free-vs-pro-dau-thresholds-2026"
+title: "ZITADEL Free 100 DAU vs Pro 25K DAU Pricing in 2026"
+problem: "Teams evaluating managed auth need to decide when ZITADEL’s free tier
+  stops being viable and whether the Pro jump is justified for B2B identity
+  workloads."
+context:
+  - "auth"
+  - "b2b-saas"
+  - "iam"
+  - "identity-management"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on ZITADEL Free"
+    summary: "As of 2026-03-27, ZITADEL Cloud Free is priced at \"US$0/Month\" and
+      includes \"100 Daily Active Users\", \"3 identity providers\", community
+      support, and all security features. The detailed pricing page also lists
+      one instance, 5,000 management API requests, one administrator, 1 day of
+      audit trail history, and 30 minutes of logs on Free. ZITADEL’s billing
+      docs define DAU as users who authenticate or refresh tokens on a given
+      day, and monthly quota is the sum of those daily counts across the billing
+      period. That means Free is only viable for very light usage, because
+      repeated logins by the same human count again on different days."
+    when_to_use: "Use this when you are in a small-team plus cost-sensitive
+      evaluation phase and your auth traffic is genuinely low. It fits
+      prototypes, internal tools, and early B2B pilots where both human logins
+      and service-account auth stay well below the monthly sum implied by 100
+      DAU."
+    tradeoffs: "Zero subscription cost and broad feature access are the main
+      advantages. The downside is that the DAU allowance is extremely small once
+      you account for repeat logins, token refreshes, and service users, plus
+      Free has tighter limits on API requests, admins, audit history, and logs."
+    cautions: "Do not read \"100 Daily Active Users\" as 100 monthly active users.
+      ZITADEL states that one user logging in on 20 different days counts as 20
+      DAUs, and service users that authenticate or access the management API are
+      counted the same way."
+    links:
+      - "https://zitadel.com/pricing"
+      - "https://zitadel.com/pricing/detail"
+      - "https://help.zitadel.com/pricing-and-billing-of-zitadel-services"
+      - "https://help.zitadel.com/how-is-daily-active-users-calculated"
+  - name: "Upgrade to ZITADEL Pro"
+    summary: "As of 2026-03-27, ZITADEL Cloud Pro starts at \"US$100/Month\" and
+      includes \"25'000 Daily Active Users per month\", 3 identity providers,
+      500,000 management API requests, 3 administrators, 1 custom domain, 2
+      weeks of audit trail history, 1 day of logs, and a 99.5% uptime guarantee.
+      ZITADEL also offers optional Pro add-ons listed publicly: extended support
+      and SLA for \"$999 / Month\" and data location for \"$100 / Month\".
+      ZITADEL’s August 1, 2025 V4 GA announcement described a more transparent
+      pricing model, and stated that the cloud deployment happens when the GA
+      release lands. For teams that expect regular employee or customer logins,
+      Pro is the first tier where managed ZITADEL becomes production-shaped
+      rather than trial-shaped."
+    when_to_use: "Use this when you need low-ops managed auth and expect Free to
+      break on normal B2B login patterns, especially with recurring daily usage
+      or machine-to-machine auth. The decisive factor is whether your real
+      monthly summed DAU, admin count, API volume, retention needs, or domain
+      requirements exceed Free by enough to make the $100 base plan the simpler
+      path."
+    tradeoffs: "The main advantages are a much larger included DAU envelope,
+      stronger operational limits, custom domain support, and an SLA-backed
+      managed service. The tradeoff is that costs step up quickly if you also
+      need premium support or non-default data residency."
+    cautions: "The 25,000 figure is an included monthly DAU allowance, not a flat
+      unlimited plan. If you need self-hosting support, custom metrics, custom
+      threat analysis, or tailored volume pricing, ZITADEL positions those under
+      Enterprise rather than Pro."
+    links:
+      - "https://zitadel.com/pricing"
+      - "https://zitadel.com/pricing/detail"
+      - "https://help.zitadel.com/pricing-and-billing-of-zitadel-services"
+      - "https://zitadel.com/blog/announcing-the-general-availability-of-zitade\
+        l-v4"
+tags:
+  - "auth"
+  - "zitadel"
+  - "pricing"
+  - "iam"
+aliases:
+  - "zitadel free 100 dau"
+  - "zitadel pro 25000 dau"
+  - "zitadel dau pricing"
+  - "zitadel free vs pro 2026"
+related_cards:
+  - "auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026"
+  - "auth/auth-provider-migration-and-lock-in-2026"
+  - "auth/clerk-vs-auth0-vs-cognito-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/zitadel
+      name: ZITADEL
+    - type: capability
+      id: capability/auth
+      name: Auth
+    - type: package
+      id: package/zitadel-v4
+      name: ZITADEL V4
+  edges:
+    - type: breaking_change_in
+      from: vendor/zitadel
+      to: package/zitadel-v4
+      date: 2025-08-01
+      summary: ZITADEL's August 1, 2025 V4 GA announcement described a more
+        transparent pricing model and stated that cloud deployment happens when
+        the GA release lands.

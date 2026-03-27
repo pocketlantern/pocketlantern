@@ -1,0 +1,179 @@
+id: "mobile/firebase-crashlytics-crash-free-metrics-sdk-cutover-2026"
+title: "Firebase Crashlytics Crash-Free Metrics Behavior After the 2026 SDK Cutover"
+problem: "Mobile teams need to know whether upgrading Crashlytics SDK versions
+  will change crash-free user metrics and alert thresholds enough to require
+  dashboard and SLO recalibration."
+context:
+  - "mobile"
+  - "firebase"
+  - "crashlytics"
+  - "release-monitoring"
+  - "observability"
+constraints:
+  - "small-team"
+  - "low-ops"
+  - "enterprise"
+candidates:
+  - name: "Upgrade to sessions-capable Crashlytics SDKs and reset your baseline"
+    summary: "As of 2026-03-27, Firebase documents a metric cutover for builds using
+      sessions-capable Crashlytics SDKs: Apple v10.8.0+, Android v18.6.0+ with
+      BoM v32.6.0+, Flutter v3.4.5+, and Unity v11.7.0+. For those builds,
+      Crashlytics no longer uses Google Analytics to calculate crash-free users,
+      and crash-free sessions becomes available. Release Monitoring also
+      requires these same SDK minimums and uses session data for comparisons and
+      active-user percentages. Firebase pricing lists Crashlytics as no-cost as
+      of 2026-03-27, so the main impact is metric behavior and operational
+      baselining rather than spend."
+    when_to_use: "Use this when you want the current Crashlytics feature set,
+      including crash-free sessions and Release Monitoring, and you can tolerate
+      a metrics discontinuity. Treat the first compatible production release as
+      a new baseline, because Firebase states that a first release with a
+      compatible SDK has no previous session data to compare against."
+    tradeoffs: "You get the most accurate current Crashlytics metrics and new
+      dashboards, but historical continuity is weaker because the crash-free
+      users calculation source changes and session-based metrics appear only on
+      compatible builds."
+    cautions: "Do not compare pre-cutover and post-cutover crash-free metrics as if
+      they were identical measures. If automatic Crashlytics data collection is
+      disabled, Firebase says metrics quality is reduced. Release Monitoring
+      also will not show a build until it has sufficient users in the last 3
+      days."
+    links:
+      - "https://firebase.google.com/docs/crashlytics/crash-free-metrics"
+      - "https://firebase.google.com/docs/release/release-monitoring"
+      - "https://firebase.google.com/pricing"
+  - name: "Hold older Crashlytics SDKs temporarily to preserve pre-cutover
+      continuity"
+    summary: "As of 2026-03-27, Firebase states that older Crashlytics SDK versions
+      still rely on Google Analytics for crash-free users calculations, while
+      newer sessions-capable SDKs do not. Holding on older versions can preserve
+      continuity with the older crash-free users methodology for a short period
+      while teams prepare dashboards, SLOs, and alert thresholds for the new
+      metric behavior. The cost posture does not materially change because
+      Firebase pricing lists Crashlytics as no-cost as of 2026-03-27. The
+      downside is that older builds do not qualify for crash-free sessions or
+      Release Monitoring's session-driven features."
+    when_to_use: "Use this only as a short migration bridge when metric continuity
+      matters more than immediate access to new Crashlytics features. The
+      decisive factor is whether your org needs one more release cycle to
+      recalibrate alerting and stakeholder reporting before accepting the new
+      baseline."
+    tradeoffs: "This minimizes short-term reporting churn, but it delays access to
+      crash-free sessions, Release Monitoring comparisons, and Firebase's
+      recommended metric path."
+    cautions: "Firebase strongly recommends updating to the latest Crashlytics SDK
+      when an older version still depends on Google Analytics for crash-free
+      users. This is a temporary risk-management choice, not a steady-state
+      recommendation."
+    links:
+      - "https://firebase.google.com/docs/crashlytics/crash-free-metrics"
+      - "https://firebase.google.com/docs/release/release-monitoring"
+      - "https://firebase.google.com/pricing"
+tags:
+  - "mobile"
+  - "firebase"
+  - "crashlytics"
+  - "observability"
+aliases:
+  - "firebase crashlytics crash-free users google analytics cutover"
+  - "firebase crashlytics sessions-capable sdk"
+  - "firebase release monitoring crash-free sessions"
+related_cards:
+  - "mobile/app-analytics-appsflyer-vs-firebase-vs-mixpanel-2026"
+  - "observability/error-monitoring-sentry-vs-platform-native"
+  - "infra/monitoring-observability"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/firebase
+      name: Firebase
+    - type: capability
+      id: capability/crash-free-users
+      name: Crash-free users
+    - type: capability
+      id: capability/crash-free-sessions
+      name: Crash-free sessions
+    - type: capability
+      id: capability/release-monitoring
+      name: Release Monitoring
+    - type: package
+      id: package/crashlytics-apple-10-8-0
+      name: Crashlytics Apple SDK v10.8.0+
+    - type: package
+      id: package/crashlytics-android-18-6-0
+      name: Crashlytics Android SDK v18.6.0+
+    - type: package
+      id: package/firebase-bom-32-6-0
+      name: Firebase BoM v32.6.0+
+    - type: package
+      id: package/crashlytics-flutter-3-4-5
+      name: Crashlytics Flutter SDK v3.4.5+
+    - type: package
+      id: package/crashlytics-unity-11-7-0
+      name: Crashlytics Unity SDK v11.7.0+
+  edges:
+    - type: breaking_change_in
+      from: capability/crash-free-users
+      to: package/crashlytics-apple-10-8-0
+      vendor: vendor/firebase
+      change: For sessions-capable builds, Crashlytics no longer uses Google Analytics
+        to calculate crash-free users.
+    - type: breaking_change_in
+      from: capability/crash-free-users
+      to: package/crashlytics-android-18-6-0
+      vendor: vendor/firebase
+      change: For sessions-capable builds, Crashlytics no longer uses Google Analytics
+        to calculate crash-free users.
+    - type: breaking_change_in
+      from: capability/crash-free-users
+      to: package/crashlytics-flutter-3-4-5
+      vendor: vendor/firebase
+      change: For sessions-capable builds, Crashlytics no longer uses Google Analytics
+        to calculate crash-free users.
+    - type: breaking_change_in
+      from: capability/crash-free-users
+      to: package/crashlytics-unity-11-7-0
+      vendor: vendor/firebase
+      change: For sessions-capable builds, Crashlytics no longer uses Google Analytics
+        to calculate crash-free users.
+    - type: requires_version
+      from: capability/crash-free-sessions
+      to: package/crashlytics-apple-10-8-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/crash-free-sessions
+      to: package/crashlytics-android-18-6-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: package/crashlytics-android-18-6-0
+      to: package/firebase-bom-32-6-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/crash-free-sessions
+      to: package/crashlytics-flutter-3-4-5
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/crash-free-sessions
+      to: package/crashlytics-unity-11-7-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/release-monitoring
+      to: package/crashlytics-apple-10-8-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/release-monitoring
+      to: package/crashlytics-android-18-6-0
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/release-monitoring
+      to: package/crashlytics-flutter-3-4-5
+      vendor: vendor/firebase
+    - type: requires_version
+      from: capability/release-monitoring
+      to: package/crashlytics-unity-11-7-0
+      vendor: vendor/firebase

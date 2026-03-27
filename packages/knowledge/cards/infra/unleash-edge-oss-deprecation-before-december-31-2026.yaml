@@ -1,0 +1,139 @@
+id: "infra/unleash-edge-oss-deprecation-before-december-31-2026"
+title: "Unleash Edge OSS Deprecation Before December 31, 2026"
+problem: "Teams running Unleash Edge OSS need to decide whether to stay on
+  long-term support through December 31, 2026 or move early to Enterprise Edge
+  after the OSS deprecation announcement."
+context:
+  - "feature-flags"
+  - "edge"
+  - "self-hosting"
+constraints:
+  - "enterprise"
+  - "high-scale"
+  - "cost-sensitive"
+  - "low-ops"
+candidates:
+  - name: "Stay on Unleash Edge OSS through LTS"
+    summary: "Unleash documents that Edge OSS is deprecated, is in long-term support
+      as of December 2025, and reaches end-of-life on December 31, 2026. As of
+      2026-03-27, the OSS edition remains available under Apache 2.0 with no
+      license fee, but Unleash recommends migrating to Enterprise Edge for
+      support beyond the OSS lifecycle."
+    when_to_use: "Use this when you are cost-sensitive, already stable on OSS Edge,
+      and can accept a hard migration deadline before December 31, 2026. The
+      decisive factor is whether avoiding Enterprise seat spend now outweighs
+      operating on a deprecated component with no path past the 2026 cutoff."
+    tradeoffs: "Lowest immediate software cost and least short-term change, but you
+      are staying on a deprecated product line with a fixed end date and fewer
+      forward-looking capabilities than Enterprise Edge."
+    cautions: "Do not treat LTS as indefinite support. Unleash's docs are not
+      perfectly aligned on the LTS start date: the availability page says
+      December 10, 2025, while the December 12, 2025 release notes announce
+      long-term maintenance starting December 12, 2025. If you upgrade the
+      Unleash server to v6, Unleash says Edge should be at least v19.1.3 to
+      preserve metrics collection because the old /edge/metrics endpoint was
+      removed; older Edge versions still evaluate flags but lose that metrics
+      path. If you are planning broader Unleash server upgrades, note that
+      Unleash v7 requires Node.js 22+ and PostgreSQL 14+ for self-hosted server
+      deployments."
+    links:
+      - "https://docs.getunleash.io/unleash-edge"
+      - "https://docs.getunleash.io/support/availability"
+      - "https://docs.getunleash.io/deploy/upgrading-unleash"
+      - "https://docs.getunleash.io/release-notes/2025/12/12"
+  - name: "Migrate now to Unleash Enterprise Edge"
+    summary: "Unleash positions Enterprise Edge as the replacement path for
+      deprecated OSS Edge. As of 2026-03-27, Unleash documents Enterprise Edge
+      as an Enterprise-only offering intended for supported, post-2026 Edge
+      deployments, with Enterprise version requirements and
+      hosted-versus-self-hosted details that should be confirmed before
+      committing."
+    when_to_use: "Use this when you need a supported Edge path beyond December 31,
+      2026, are willing to pay Enterprise seat minimums now, and can meet
+      Unleash's Enterprise prerequisites for your target deployment. This is the
+      stronger fit when you want to avoid a later forced migration and can
+      verify that your required hosting model and Enterprise version
+      requirements are available for your rollout."
+    tradeoffs: "You get a supported path beyond 2026 and Enterprise-only operational
+      features, but you take on seat pricing, minimum-seat commitments, and
+      possible migration work tied to Enterprise server version requirements."
+    cautions: "Verify your intended hosting model before committing. Unleash's
+      official materials are inconsistent as of 2026-03-27: the availability
+      page says Enterprise Edge is available as cloud-hosted or self-hosted and
+      requires Unleash Enterprise v7.3+, while the SLA page says Enterprise Edge
+      is currently available as a hosted option only. If you need self-hosted
+      Enterprise Edge specifically, confirm the current official sales or
+      support position before planning migration."
+    links:
+      - "https://www.getunleash.io/upgrade-unleash"
+      - "https://docs.getunleash.io/support/availability"
+      - "https://docs.getunleash.io/unleash-edge"
+      - "https://www.getunleash.io/sla"
+tags:
+  - "infra"
+  - "unleash"
+  - "feature-flags"
+  - "pricing"
+aliases:
+  - "unleash edge oss deprecation"
+  - "unleash enterprise edge migration"
+  - "unleash edge lts 2026"
+related_cards:
+  - "infra/feature-flag-platform-launchDarkly-vs-statsig-vs-growthbook-2026"
+  - "deployment/feature-flags-vendor-choice"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/unleash
+      name: Unleash
+    - type: package
+      id: package/unleash-edge-oss
+      name: Unleash Edge OSS
+    - type: package
+      id: package/unleash-enterprise-edge
+      name: Unleash Enterprise Edge
+    - type: package
+      id: package/unleash-server-v6
+      name: Unleash server v6
+    - type: package
+      id: package/unleash-server-v7
+      name: Unleash server v7
+    - type: package
+      id: package/unleash-edge-v19-1-3
+      name: Unleash Edge v19.1.3
+    - type: package
+      id: package/unleash-enterprise-v7-3
+      name: Unleash Enterprise v7.3+
+    - type: runtime
+      id: runtime/nodejs-22
+      name: Node.js 22+
+    - type: package
+      id: package/postgresql-14
+      name: PostgreSQL 14+
+  edges:
+    - type: eol_date
+      from: package/unleash-edge-oss
+      to: null
+      date: 2026-12-31
+    - type: requires_version
+      from: package/unleash-server-v6
+      to: package/unleash-edge-v19-1-3
+      requirement: at least v19.1.3 to preserve metrics collection
+    - type: requires_version
+      from: package/unleash-server-v7
+      to: runtime/nodejs-22
+      requirement: 22+
+    - type: requires_version
+      from: package/unleash-server-v7
+      to: package/postgresql-14
+      requirement: 14+
+    - type: requires_version
+      from: package/unleash-enterprise-edge
+      to: package/unleash-enterprise-v7-3
+      requirement: v7.3+

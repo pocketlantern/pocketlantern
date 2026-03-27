@@ -1,0 +1,181 @@
+id: "devtools/readme-startup-vs-business-vs-ai-booster-pack-2026"
+title: "ReadMe Startup vs Business vs AI Booster Pack Pricing 2026"
+problem: "Choose the right ReadMe packaging for API docs teams now that AI usage
+  can be expanded separately with the $150/month booster instead of a full plan
+  jump."
+context:
+  - "api-docs"
+  - "developer-experience"
+  - "readme"
+  - "ai-docs"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Startup"
+    summary: "As of 2026-03-20, ReadMe Startup is $79/month. It includes unlimited
+      published versions, bidirectional sync, MDX components, changelog,
+      discussion forums, landing pages, custom domains, and the standard
+      paid-plan AI set. It is the lowest self-serve paid plan that can take
+      add-ons."
+    when_to_use: "Use this when you need a paid docs plan with custom domain support
+      and standard AI features, but do not need Business governance controls or
+      expanded AI capacity."
+    tradeoffs: "Lowest paid entry point and add-on eligible, but it lacks
+      Business-only controls such as reviews, branching, reusable content,
+      export doc metrics, custom integrations, and removal of ReadMe branding."
+    cautions: "If your team is coming from the Business trial and downgrades to
+      Startup, ReadMe says you lose some Business features including reusable
+      content. Startup also remains a single-project plan."
+    links:
+      - "https://readme.com/pricing"
+      - "https://docs.readme.com/main/docs/plans-and-pricing"
+      - "https://docs.readme.com/main/docs/payment-and-billing-info"
+  - name: "Startup + AI Booster Pack"
+    summary: "As of 2026-03-20, Startup plus the AI Booster Pack is effectively
+      $229/month before any other add-ons. It combines the $79/month Startup
+      plan with the $150/month AI Booster Pack for expanded AI features and
+      usage."
+    when_to_use: "Use this when your main gap is AI capacity or AI feature depth,
+      and you want to keep Startup instead of paying Business pricing for non-AI
+      features you do not need."
+    tradeoffs: "You spend much more than plain Startup to expand AI, but you still
+      keep Startup-level governance, branding, and single-project limits instead
+      of gaining Business workflow and presentation controls."
+    cautions: "The booster is not available on Free or Trial-only usage; ReadMe says
+      add-ons require a step up from Trial or Free plans. If you choose annual
+      billing, ReadMe says add-ons are billed for the full year upfront on the
+      same cycle as the base plan."
+    links:
+      - "https://readme.com/pricing"
+      - "https://docs.readme.com/main/docs/plans-and-pricing"
+      - "https://docs.readme.com/main/docs/payment-and-billing-info"
+  - name: "Business"
+    summary: "As of 2026-03-20, ReadMe Business is $349/month. It includes
+      everything in Startup plus reviews, branching in ReadMe, custom HTML and
+      CSS, reusable content, export doc metrics, custom integrations, and no
+      ReadMe branding. It keeps the same standard paid-plan AI baseline as
+      Startup."
+    when_to_use: "Use this when your blocker is editorial workflow, governance,
+      content reuse, metrics export, integrations, or branded presentation
+      rather than AI expansion."
+    tradeoffs: "You get materially better content governance and presentation
+      controls, but at a much higher base price than Startup. If AI is the only
+      reason you were considering upgrading, Business may be unnecessary."
+    cautions: "Do not assume Business is required for stronger AI usage by itself,
+      because ReadMe now sells the AI Booster Pack separately. Business is still
+      a single-project plan; ReadMe says multi-project same-domain hosting and
+      related administration features require Enterprise."
+    links:
+      - "https://readme.com/pricing"
+      - "https://docs.readme.com/main/docs/plans-and-pricing"
+  - name: "Business + AI Booster Pack"
+    summary: "As of 2026-03-20, Business plus the AI Booster Pack is effectively
+      $499/month before any other add-ons. It combines Business governance and
+      branding features with the booster's expanded AI capabilities. It is the
+      strongest self-serve configuration before Enterprise."
+    when_to_use: "Use this when you need both Business workflow controls and the
+      expanded AI package, but do not yet need Enterprise-only capabilities."
+    tradeoffs: "Most capable self-serve option, but also the highest self-serve
+      recurring cost. If either the governance side or the AI side is
+      nonessential, a cheaper package is usually sufficient."
+    cautions: "Enterprise still has separate advantages that this combination does
+      not replace, including custom pricing, multi-project capabilities, audit
+      logs, SSO/OAuth, private AI context, global lint rules, and Ask AI API
+      access. Add-on billing follows the same monthly or annual cycle as the
+      base plan."
+    links:
+      - "https://readme.com/pricing"
+      - "https://docs.readme.com/main/docs/plans-and-pricing"
+      - "https://docs.readme.com/main/docs/payment-and-billing-info"
+tags:
+  - "devtools"
+  - "readme"
+  - "api-docs"
+  - "pricing"
+  - "ai"
+aliases:
+  - "readme pricing startup business ai booster"
+  - "readme ai booster pack pricing"
+  - "readme startup vs business 2026"
+related_cards:
+  - "ai/ai-feature-cost-governance"
+  - "devtools/redocly-vs-mintlify-vs-stoplight-api-docs-pricing-2026"
+  - devtools/readme-developer-dashboard-log-threshold-pricing-2026
+  - design/readme-vs-redocly-vs-scalar-api-reference-stack-2026
+  - analytics/mintlify-vs-readme-ai-doc-assistant-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/readme
+      name: ReadMe
+    - type: package
+      id: package/startup
+      name: Startup
+      vendor: vendor/readme
+      price_month_usd: 79
+    - type: package
+      id: package/business
+      name: Business
+      vendor: vendor/readme
+      price_month_usd: 349
+    - type: package
+      id: package/ai-booster-pack
+      name: AI Booster Pack
+      vendor: vendor/readme
+      price_month_usd: 150
+    - type: capability
+      id: capability/custom-domains
+      name: Custom domains
+    - type: capability
+      id: capability/reviews
+      name: Reviews
+    - type: capability
+      id: capability/branching-in-readme
+      name: Branching in ReadMe
+    - type: capability
+      id: capability/reusable-content
+      name: Reusable content
+    - type: capability
+      id: capability/export-doc-metrics
+      name: Export doc metrics
+    - type: capability
+      id: capability/custom-integrations
+      name: Custom integrations
+    - type: capability
+      id: capability/no-readme-branding
+      name: No ReadMe branding
+    - type: capability
+      id: capability/expanded-ai-features-and-usage
+      name: Expanded AI features and usage
+  edges:
+    - type: locks_via
+      from: capability/custom-domains
+      to: package/startup
+    - type: locks_via
+      from: capability/reviews
+      to: package/business
+    - type: locks_via
+      from: capability/branching-in-readme
+      to: package/business
+    - type: locks_via
+      from: capability/reusable-content
+      to: package/business
+    - type: locks_via
+      from: capability/export-doc-metrics
+      to: package/business
+    - type: locks_via
+      from: capability/custom-integrations
+      to: package/business
+    - type: locks_via
+      from: capability/no-readme-branding
+      to: package/business
+    - type: locks_via
+      from: capability/expanded-ai-features-and-usage
+      to: package/ai-booster-pack

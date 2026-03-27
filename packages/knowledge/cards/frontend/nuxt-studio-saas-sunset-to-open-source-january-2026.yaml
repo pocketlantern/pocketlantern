@@ -1,0 +1,131 @@
+id: "frontend/nuxt-studio-saas-sunset-to-open-source-january-2026"
+title: "Nuxt Studio SaaS Sunset to Open Source on January 5, 2026"
+problem: "Choose whether to migrate documentation editing to the new self-hosted
+  Nuxt Studio module now that the hosted \"nuxt.studio\" service has been
+  sunset."
+context:
+  - "nuxt"
+  - "nuxt-content"
+  - "documentation"
+  - "cms"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Migrate now to the self-hosted Nuxt Studio module"
+    summary: "Nuxt's current Studio path is the self-hosted, open source module for
+      production editing on Nuxt Content sites."
+    when_to_use: "Use this when you still want non-developers to edit docs in
+      production, your site is a Nuxt Content site, and you can run it on
+      SSR-capable hosting with the required auth and repository write-token
+      setup."
+    tradeoffs: "You keep a visual editor, media management, real-time preview, and
+      direct Git publishing without paying a Nuxt Studio SaaS fee. The tradeoff
+      is that you now own deployment, OAuth setup, token handling, and runtime
+      security on your own infrastructure."
+    cautions: "Nuxt Studio only supports Nuxt Content websites. The new module
+      requires a server-side auth route, so a fully static hosting target
+      without SSR support is not enough even if you prerender pages. If you use
+      Google OAuth or custom auth, Studio also requires a GitHub or GitLab
+      personal access token for write operations. Upcoming Nuxt Content versions
+      will remove legacy Studio code, and Nuxt recommends removing the
+      \"preview\" key now."
+    links:
+      - "https://content.nuxt.com/blog/studio-oss"
+      - "https://nuxt.com/modules/studio"
+      - "https://nuxt.studio/introduction"
+      - "https://nuxt.studio/setup"
+  - name: "Skip Studio and keep a plain Git-based docs workflow"
+    summary: "Keep editing content directly in your repository with your existing
+      editor, pull request, and CI/CD workflow instead of adopting the new
+      Studio module."
+    when_to_use: "Use this when your team is already comfortable editing Markdown,
+      YAML, or JSON directly and you do not need non-technical editors to
+      publish from the live site. It is the decisive choice if you want to avoid
+      adding SSR auth routes, OAuth clients, and repository write tokens just to
+      replace a service that has already been shut down."
+    tradeoffs: "This is the simplest and lowest-risk operational path because your
+      current repository, review, and deployment flow stays intact. The downside
+      is no visual editor, no media library, no real-time preview inside
+      production, and no direct publishing UI for content editors."
+    cautions: "This is a fallback, not a continuation of the old SaaS, because as of
+      2026-03-20 the hosted \"nuxt.studio\" platform has already been sunset and
+      subscriptions were canceled. If your main blocker is static hosting, note
+      that the new Studio module still needs SSR support for auth, so staying
+      Git-only may remain the cleaner option until your hosting model changes."
+    links:
+      - "https://content.nuxt.com/blog/studio-oss"
+      - "https://nuxt.studio/setup"
+      - "https://nuxt.studio/introduction"
+tags:
+  - "frontend"
+  - "nuxt"
+  - "nuxt-content"
+  - "documentation"
+  - "cms"
+aliases:
+  - "nuxt studio sunset"
+  - "nuxt studio open source"
+  - "nuxt studio self hosted migration"
+related_cards:
+  - "_archived/migration-strategy"
+  - "_archived/rendering-strategy"
+  - frontend/nuxt-3-vs-4-before-july-2026-maintenance-end
+  - design/nuxt-studio-hosted-sunset-vs-open-source-module-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: framework
+      id: framework/nuxt
+      name: Nuxt
+    - type: package
+      id: package/nuxt-content
+      name: Nuxt Content
+    - type: package
+      id: package/nuxt-studio-saas
+      name: Nuxt Studio SaaS
+    - type: package
+      id: package/nuxt-studio-module
+      name: Nuxt Studio module
+    - type: protocol
+      id: protocol/oauth
+      name: OAuth
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: vendor
+      id: vendor/gitlab
+      name: GitLab
+  edges:
+    - type: eol_date
+      from: package/nuxt-studio-saas
+      to: null
+      date: 2026-01-05
+      note: The hosted "nuxt.studio" service has been sunset.
+    - type: requires_version
+      from: package/nuxt-studio-module
+      to: package/nuxt-content
+      note: Nuxt Studio only supports Nuxt Content websites.
+    - type: locks_via
+      from: package/nuxt-studio-module
+      to: protocol/oauth
+      note: The new module requires a server-side auth route.
+    - type: locks_via
+      from: package/nuxt-studio-module
+      to: vendor/github
+      note: If you use Google OAuth or custom auth, Studio requires a GitHub personal
+        access token for write operations.
+    - type: locks_via
+      from: package/nuxt-studio-module
+      to: vendor/gitlab
+      note: If you use Google OAuth or custom auth, Studio requires a GitLab personal
+        access token for write operations.
+    - type: breaking_change_in
+      from: package/nuxt-content
+      to: package/nuxt-studio-saas
+      note: Upcoming Nuxt Content versions will remove legacy Studio code.

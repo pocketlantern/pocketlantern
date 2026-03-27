@@ -1,0 +1,151 @@
+id: "frontend/tailwindcss-v4-upgrade-node20-browser-floor-2026"
+title: "Tailwind CSS v4 Upgrade With Node 20 Requirement and Modern Browser Floor"
+problem: "Decide whether to upgrade now or stay on v3.4 when Tailwind v4 moves
+  config into CSS, splits CLI/PostCSS packages, requires Node 20+, and drops
+  older browser support."
+context:
+  - "frontend"
+  - "tailwindcss"
+  - "css"
+  - "postcss"
+  - "vite"
+constraints:
+  - "small-team"
+  - "monorepo"
+candidates:
+  - name: "Upgrade to Tailwind CSS v4 now"
+    summary: "As of 2026-03-19, Tailwind CSS v4's official upgrade guide says the
+      upgrade tool requires Node.js 20 or higher. The guide also says migration
+      typically updates dependencies, migrates configuration into CSS, and
+      adjusts template files. Tailwind v4 splits packaging so the PostCSS plugin
+      is now `@tailwindcss/postcss`, the CLI is now `@tailwindcss/cli`, and Vite
+      users are steered to `@tailwindcss/vite`. Browser support is now a modern
+      floor: Safari 16.4+, Chrome 111+, and Firefox 128."
+    when_to_use: "Use this when your runtime and CI are already on Node 20+ and your
+      supported browsers are at or above Tailwind's new floor. It is the better
+      choice when you want to align with the current Tailwind architecture and
+      can absorb CSS-import, package, and config migration work now."
+    tradeoffs: "You get onto the current major version and official migration path,
+      but you must update build tooling, review breaking utility changes, and
+      retest browser support. Teams using older browser targets or older Node
+      baselines will take on real rollout risk."
+    cautions: "JavaScript config files are still supported only for backward
+      compatibility and are no longer auto-detected; v4 requires explicit
+      `@config` if you keep one, and `corePlugins`, `safelist`, and `separator`
+      from JS config are not supported in v4.0. Tailwind v4 is also not designed
+      for Sass, Less, or Stylus."
+    links:
+      - "https://tailwindcss.com/docs/upgrade-guide"
+      - "https://tailwindcss.com/docs/installation/using-postcss"
+      - "https://tailwindcss.com/docs/installation/tailwind-cli"
+      - "https://tailwindcss.com/docs/compatibility"
+  - name: "Stay on Tailwind CSS v3.4 for now"
+    summary: "As of 2026-03-19, Tailwind's own upgrade guide explicitly recommends
+      sticking with v3.4 if you need to support browsers older than Safari 16.4,
+      Chrome 111, or Firefox 128. Staying on v3.4 also avoids the Node 20+
+      requirement of the official upgrade tool and avoids immediate migration to
+      CSS-based configuration and new package names. This is the lowest-risk
+      option if your stack still depends on older browser coverage or on
+      established v3 PostCSS and CLI wiring."
+    when_to_use: "Use this when browser compatibility or Node upgrade timing is the
+      real blocker, not Tailwind feature demand. It is the better short-term
+      choice when your team needs stability and cannot yet standardize on the v4
+      toolchain assumptions."
+    tradeoffs: "You preserve compatibility and avoid migration churn, but you defer
+      the inevitable major-version transition and remain on the older package
+      and configuration model. Future framework or tooling upgrades may become
+      harder if the rest of the stack moves ahead first."
+    cautions: "This is a deferral strategy, not a long-term simplification. Check
+      official docs before planning around any future compatibility mode because
+      Tailwind only says it is being explored, not that it is available."
+    links:
+      - "https://tailwindcss.com/docs/upgrade-guide"
+      - "https://v3.tailwindcss.com/docs/installation"
+tags:
+  - "frontend"
+  - "tailwind"
+  - "tailwindcss"
+  - "css"
+  - "postcss"
+  - "browser-support"
+aliases:
+  - "tailwind v4 upgrade"
+  - "tailwind node 20 requirement"
+  - "tailwind v4 browser support"
+  - "tailwind v3.4 vs v4"
+related_cards:
+  - "frontend/tailwind-v4-migration-decisions"
+  - "deployment/node-upgrade-lts-breakage"
+  - "frontend/vite-7-esm-only-and-node-runtime-upgrade-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: package
+      id: package/tailwindcss-v4
+      name: Tailwind CSS
+      category: css-framework
+      version: "4"
+    - type: package
+      id: package/tailwindcss-v3-4
+      name: Tailwind CSS
+      category: css-framework
+      version: "3.4"
+    - type: runtime
+      id: runtime/nodejs-20-plus
+      name: Node.js
+      category: javascript-runtime
+      version: 20+
+    - type: package
+      id: package/tailwindcss-postcss
+      name: "@tailwindcss/postcss"
+      category: postcss-plugin
+    - type: package
+      id: package/tailwindcss-cli
+      name: "@tailwindcss/cli"
+      category: cli
+    - type: package
+      id: package/tailwindcss-vite
+      name: "@tailwindcss/vite"
+      category: vite-plugin
+    - type: framework
+      id: framework/vite
+      name: Vite
+      category: build-tool
+    - type: data_format
+      id: format/css-based-configuration
+      name: CSS-based configuration
+      category: configuration
+    - type: capability
+      id: capability/browser-floor-safari-16-4-chrome-111-firefox-128
+      name: Modern browser floor
+      category: browser-support
+      standard: Safari 16.4+, Chrome 111+, Firefox 128
+  edges:
+    - type: requires_version
+      from: package/tailwindcss-v4
+      to: runtime/nodejs-20-plus
+      requirement: Node.js 20 or higher
+    - type: breaking_change_in
+      from: package/tailwindcss-v4
+      to: format/css-based-configuration
+      change: configuration moves into CSS
+    - type: breaking_change_in
+      from: package/tailwindcss-v4
+      to: package/tailwindcss-postcss
+      change: PostCSS plugin package is now @tailwindcss/postcss
+    - type: breaking_change_in
+      from: package/tailwindcss-v4
+      to: package/tailwindcss-cli
+      change: CLI package is now @tailwindcss/cli
+    - type: breaking_change_in
+      from: package/tailwindcss-v4
+      to: package/tailwindcss-vite
+      change: Vite users are steered to @tailwindcss/vite
+    - type: breaking_change_in
+      from: package/tailwindcss-v4
+      to: capability/browser-floor-safari-16-4-chrome-111-firefox-128
+      change: older browser support is dropped in favor of a modern browser floor

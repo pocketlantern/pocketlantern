@@ -1,0 +1,183 @@
+id: "compliance/minnesota-consumer-data-privacy-act-uoom-and-loyalty-conflict-2026"
+title: "Minnesota Consumer Data Privacy Act UOOM and Loyalty-Program Conflict
+  Rules 2026"
+problem: "Consumer apps need a current Minnesota implementation rule for
+  universal opt-out mechanisms in 2026, especially when a browser or device
+  signal conflicts with controller-specific privacy settings or participation in
+  loyalty, rewards, discount, premium-feature, or club-card programs."
+context:
+  - "compliance"
+  - "privacy"
+  - "consumer-apps"
+  - "adtech"
+  - "loyalty-programs"
+constraints:
+  - "compliance"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Honor a recognized multi-state opt-out signal and let it override
+      conflicting loyalty-linked settings by default"
+    summary: "As of 2026-03-19, Minnesota Statutes section 325M.14 is already in
+      effect and requires controllers to allow opt-out of targeted advertising
+      and sale of personal data through an opt-out preference signal sent with
+      the consumer's consent. The statute says a controller that recognizes
+      opt-out preference signals approved by other state laws or regulations is
+      in compliance, so Minnesota does not require a Minnesota-only signal
+      format in the statutory text. The same section says that if the signal
+      conflicts with an existing controller-specific privacy setting or
+      voluntary participation in a bona fide loyalty, rewards, premium-features,
+      discounts, or club-card program, the controller must comply with the
+      opt-out preference signal. This is the lowest-friction compliance posture
+      if you already honor an approved multi-state browser signal."
+    when_to_use: "Use this when you already support a recognized universal opt-out
+      signal and want the simplest Minnesota path with minimal product
+      branching. The decisive factor is that Minnesota expressly accepts signals
+      approved elsewhere and requires the signal to win when it conflicts with
+      loyalty-linked settings."
+    tradeoffs: "This minimizes engineering duplication and reduces the risk of
+      ignoring a valid browser signal. The downside is that loyalty or rewards
+      experiences tied to sale or targeted advertising logic may stop working
+      until the user affirmatively re-confirms them."
+    cautions: "Minnesota's statutory UOOM right in section 325M.14 covers targeted
+      advertising and sale of personal data, not the profiling opt-out listed
+      elsewhere in subdivision 1. The statute also says IP-based geolocation is
+      sufficient to determine Minnesota residence for this purpose, so residence
+      gating can be simpler than full account verification."
+    links:
+      - "https://www.revisor.mn.gov/statutes/cite/325M.14/pdf"
+      - "https://www.revisor.mn.gov/statutes/2024/cite/325M.14"
+      - "https://www.revisor.mn.gov/laws/2024/0/121/laws.2.55.0"
+  - name: "Honor the signal first, then show a conflict notice and ask the user to
+      re-confirm the controller-specific setting or program"
+    summary: "As of 2026-03-19, Minnesota allows a controller to notify the consumer
+      when a universal opt-out signal conflicts with an existing
+      controller-specific privacy setting or voluntary participation in a bona
+      fide loyalty or rewards program. The controller still must comply with the
+      opt-out preference signal first, but it may provide the consumer a choice
+      to confirm the controller-specific setting or participation in the
+      program. This creates a lawful recovery path for rewards or premium
+      features that depend on processing affected by the signal. It is the best
+      fit when product or revenue impact from signal-driven overrides is
+      material and you need a clean reconfirmation UX."
+    when_to_use: "Use this when loyalty, discounts, or premium features depend on
+      data uses that may be shut off by a browser signal, and you need a
+      compliant way to preserve user choice. The decisive factor is that
+      Minnesota expressly permits a post-conflict notice and reconfirmation
+      flow, but only after the signal has been honored."
+    tradeoffs: "This preserves more business value than a silent hard override and
+      gives users a clear explanation of the conflict. The cost is added UX,
+      consent-state handling, and recordkeeping complexity around what the user
+      re-confirmed after the signal."
+    cautions: "Do not design this as a dark-pattern override because the statute
+      requires the mechanism to be consumer-friendly and based on an
+      affirmative, freely given, and unambiguous choice. As of 2026-03-19, the
+      MCDPA's early warning and cure period has already ended on 2026-01-31, and
+      the Minnesota Attorney General has publicly said the office has already
+      sent warning letters involving responses to universal opt-out signals."
+    links:
+      - "https://www.revisor.mn.gov/statutes/cite/325M.14/pdf"
+      - "https://www.revisor.mn.gov/laws/2024/0/121/laws.2.55.0"
+      - "https://www.revisor.mn.gov/statutes/2024/cite/325M.14"
+      - "https://www.revisor.mn.gov/laws/2024/0/121/laws.2.55.0"
+  - name: "Apply Minnesota residence detection to the signal path and keep the
+      override logic scoped to Minnesota users"
+    summary: "As of 2026-03-19, Minnesota's UOOM provision requires the mechanism to
+      enable the controller to accurately determine whether the consumer is a
+      Minnesota resident and whether the request is legitimate. The statute
+      explicitly says that using an Internet Protocol address to estimate the
+      consumer's location is sufficient to determine residence for this
+      paragraph. This supports a state-scoped implementation for consumer apps
+      that run a broader national privacy stack. It is a practical choice if
+      your existing browser-signal handling is not yet uniform across all
+      states."
+    when_to_use: "Use this when you need to ship Minnesota compliance quickly
+      without forcing one nationwide behavior for every browser signal. The
+      decisive factor is the statute's explicit acceptance of IP-based residence
+      estimation for the UOOM path."
+    tradeoffs: "This can reduce rollout risk and avoid unnecessary product changes
+      for non-Minnesota traffic. The downside is more geo-routing and
+      policy-branch complexity, plus the risk of inconsistent experiences for
+      traveling or border-state users."
+    cautions: "Residence estimation solves the Minnesota applicability question, but
+      it does not remove the need to honor the signal when a qualifying
+      Minnesota conflict exists. If you deny an opt-out request as fraudulent,
+      the statute requires a good-faith, reasonable, and documented basis and
+      notice to the requester."
+    links:
+      - "https://www.revisor.mn.gov/statutes/cite/325M.14/pdf"
+      - "https://www.revisor.mn.gov/statutes/2024/cite/325M.14"
+tags:
+  - "compliance"
+  - "privacy"
+  - "minnesota"
+  - "uoom"
+  - "loyalty-programs"
+aliases:
+  - "minnesota uoom loyalty conflict"
+  - "mcdpa browser signal rewards program"
+  - "minnesota universal opt-out mechanism 2026"
+  - "minnesota mcdpa uoom rules"
+  - "mn privacy signal loyalty"
+  - "minnesota opt out rewards"
+  - "mcdpa browser signal conflict"
+  - "mn universal opt-out club card"
+  - "minnesota privacy preference conflict"
+  - "mcdpa loyalty program exception"
+  - "minnesota uoom premium features"
+  - "mn browser opt out discounts"
+  - "minnesota universal optout rewards"
+related_cards:
+  - "compliance/delaware-opt-out-signal-by-2026-01-01"
+  - "compliance/oregon-privacy-law-sensitive-data-and-opt-out-workflows-2026"
+  - "compliance/california-admt-compliance-planning-before-2027"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/minnesota-mcdpa-325m14
+      name: Minnesota Statutes section 325M.14
+      category: privacy_law
+    - type: protocol
+      id: protocol/recognized-multi-state-opt-out-preference-signal
+      name: recognized multi-state opt-out preference signal
+      standard: approved by other state laws or regulations
+    - type: capability
+      id: capability/loyalty-rewards-premium-discount-club-card-participation
+      name: voluntary participation in a bona fide loyalty, rewards, premium-features,
+        discounts, or club-card program
+      category: consumer_program_participation
+    - type: capability
+      id: capability/ip-based-geolocation-residence-estimation
+      name: IP-based geolocation residence estimation
+      category: residency_detection
+    - type: framework
+      id: framework/mcdpa-early-warning-and-cure-period
+      name: MCDPA early warning and cure period
+      category: enforcement
+  edges:
+    - type: requires_version
+      from: framework/minnesota-mcdpa-325m14
+      to: protocol/recognized-multi-state-opt-out-preference-signal
+      requirement: controller recognizes opt-out preference signals approved by other
+        state laws or regulations for compliance
+    - type: breaking_change_in
+      from: protocol/recognized-multi-state-opt-out-preference-signal
+      to: capability/loyalty-rewards-premium-discount-club-card-participation
+      change: if the signal conflicts with controller-specific privacy settings or
+        loyalty-linked participation, the controller must comply with the
+        opt-out preference signal first
+    - type: locks_via
+      from: framework/minnesota-mcdpa-325m14
+      to: capability/ip-based-geolocation-residence-estimation
+      mechanism: using an Internet Protocol address to estimate the consumer's
+        location is sufficient to determine Minnesota residence for this
+        paragraph
+    - type: eol_date
+      from: framework/mcdpa-early-warning-and-cure-period
+      to: null
+      date: 2026-01-31

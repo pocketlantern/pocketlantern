@@ -1,0 +1,220 @@
+id: "analytics/june-vs-hockeystack-vs-commons-room-b2b-usage-pricing-2026"
+title: "June vs HockeyStack vs Common Room B2B Usage Pricing 2026"
+problem: "Choose a B2B product and account analytics stack when workspace
+  pricing, event allowances, and CRM sync gating vary materially in 2026."
+context:
+  - "b2b-saas"
+  - "product-analytics"
+  - "account-analytics"
+  - "crm"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "June"
+    summary: "June is a B2B SaaS-focused product and company analytics tool. As of
+      2026-03-27, June's pricing page does not publish a public monthly price,
+      but it does state that the all-in-one offering includes company-level
+      analytics, product analytics, Salesforce, HubSpot, and Attio integrations,
+      custom insights with SQL and AI, computed traits, alerts, and onboarding
+      support. The pricing FAQ also says there is no startup plan and that June
+      is intended for companies with at least $1M ARR. As of 2026-03-27, June
+      also states that it joined Amplitude on August 8, 2025, so vendor-roadmap
+      and packaging continuity should be checked directly with sales."
+    when_to_use: "Use June when you want a B2B product analytics tool with native
+      CRM-facing workflows and you are comfortable with custom pricing. It is
+      the best fit when account-level product usage in HubSpot or Salesforce is
+      the decisive requirement and you are past the early-stage budget band."
+    tradeoffs: "Strong B2B positioning and built-in CRM integrations, but no public
+      pricing makes quick budget screening harder. The public site emphasizes
+      assisted setup rather than transparent self-serve allowances."
+    cautions: "As of 2026-03-27, the public pricing page does not expose event caps,
+      seat caps, or retention terms, so procurement requires a sales
+      conversation. June's own site says it joined Amplitude on August 8, 2025,
+      so confirm current contract terms, roadmap, and any migration implications
+      before standardizing on it."
+    links:
+      - "https://www.june.so/pricing"
+      - "https://www.june.so/integration/hubspot"
+      - "https://www.june.so/integration/salesforce"
+  - name: "HockeyStack"
+    summary: "HockeyStack is positioned in 2026 as an AI-driven GTM analytics stack
+      rather than a simple self-serve product analytics tool. As of 2026-03-27,
+      its pricing page does not expose public dollar pricing, but it does show
+      two packages: GTM Intelligence and GTM Execution; the higher GTM Execution
+      package includes everything in GTM Intelligence plus all out-of-the-box
+      agents, a custom agent builder, and 250k credits. Official docs show CRM
+      and workflow capabilities are mature: HubSpot workflows can sync contact
+      or company records into HubSpot, and HubSpot and Salesforce data pulls are
+      generally daily rather than real-time. This makes HockeyStack more of a
+      revenue intelligence and attribution platform with CRM operationalization
+      than a lightweight PLG analytics tool."
+    when_to_use: "Use HockeyStack when marketing, revenue attribution, audience
+      sync, scoring, and CRM activation matter more than low-cost self-serve
+      workspace pricing. It is the better fit when your deciding factor is GTM
+      execution depth and you can tolerate custom pricing plus daily sync
+      patterns."
+    tradeoffs: "Broader GTM and CRM activation surface than a pure product analytics
+      tool, but less transparent pricing. Higher-value features appear packaged
+      into premium tiers and credit-based AI usage, which adds budgeting
+      complexity."
+    cautions: "As of 2026-03-27, public pricing does not disclose the base contract
+      amount, and the visible 250k-credit allowance is attached to the GTM
+      Execution package only. Official docs note multiple 24-hour or daily sync
+      patterns for CRM-derived data, so do not assume near-real-time CRM
+      propagation."
+    links:
+      - "https://www.hockeystack.com/pricing"
+      - "https://docs.hockeystack.com/account-intelligence/workflows/nodes/dest\
+        inations/hubspot"
+      - "https://docs.hockeystack.com/integrations/crms/hubspot"
+      - "https://docs.hockeystack.com/documentation/track-date-properties"
+  - name: "Common Room"
+    summary: "Common Room is a buyer intelligence and account analytics platform
+      with explicit public entry pricing. As of 2026-03-27, Starter is listed at
+      $1k/mo billed annually and includes up to 35k contacts, 2 seats, select
+      integrations, and unlimited alerts, workflows, and segments; Team and
+      Enterprise are custom, with 100k and 200k included contacts respectively.
+      The pricing page also publishes website activity IP enrichment allowances
+      of 240k per year on Starter, 480k on Team, and 960k on Enterprise. Common
+      Room's official HubSpot docs say the HubSpot integration is included on
+      all plans, while the pricing page separately notes that product activity
+      is an add-on, which is a key packaging distinction if you need true
+      product-usage ingestion rather than only web, CRM, and go-to-market
+      signals."
+    when_to_use: "Use Common Room when you want a publicly priced starting point for
+      account-centric GTM analytics and can size the tool primarily by contacts
+      and website-signal volume. It is the strongest option when transparent
+      entry pricing and all-plan HubSpot access matter more than built-in
+      product analytics breadth."
+    tradeoffs: "Much clearer starter pricing than June or HockeyStack, and strong
+      CRM/workflow support, but product activity is not included by default.
+      Contact-based and enrichment-based allowances can become the real budget
+      driver before seats do."
+    cautions: "As of 2026-03-27, product activity is explicitly listed as an add-on,
+      so teams wanting in-app usage analytics should price that separately.
+      Common Room's HubSpot docs also note daily outbound sync to HubSpot and
+      optional activity ingestion by request, so sync behavior and scope should
+      be validated during evaluation."
+    links:
+      - "https://www.commonroom.io/pricing/"
+      - "https://www.commonroom.io/pricing/integrations/"
+      - "https://www.commonroom.io/docs/signals/business-integrations/hubspot/"
+tags:
+  - "analytics"
+  - "b2b"
+  - "pricing"
+  - "crm"
+  - "product-analytics"
+aliases:
+  - "june vs hockeystack vs common room pricing"
+  - "b2b analytics crm sync pricing 2026"
+  - "common room starter pricing contacts"
+related_cards:
+  - "analytics/usermaven-vs-june-vs-pendo-b2b-analytics-pricing-2026"
+  - "analytics/product-analytics-posthog-vs-amplitude-vs-mixpanel-2026"
+  - "analytics/rudderstack-vs-segment-cdp-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/june
+      name: June
+    - type: vendor
+      id: vendor/hockeystack
+      name: HockeyStack
+    - type: vendor
+      id: vendor/common-room
+      name: Common Room
+    - type: vendor
+      id: vendor/amplitude
+      name: Amplitude
+    - type: package
+      id: package/june-all-in-one
+      name: All-in-one offering
+      vendor: vendor/june
+    - type: package
+      id: package/hockeystack-gtm-intelligence
+      name: GTM Intelligence
+      vendor: vendor/hockeystack
+    - type: package
+      id: package/hockeystack-gtm-execution
+      name: GTM Execution
+      vendor: vendor/hockeystack
+    - type: package
+      id: package/common-room-starter
+      name: Starter
+      vendor: vendor/common-room
+    - type: package
+      id: package/common-room-team
+      name: Team
+      vendor: vendor/common-room
+    - type: package
+      id: package/common-room-enterprise
+      name: Enterprise
+      vendor: vendor/common-room
+    - type: package
+      id: package/common-room-product-activity-add-on
+      name: Product activity add-on
+      vendor: vendor/common-room
+    - type: capability
+      id: capability/company-level-analytics
+      name: Company-level analytics
+    - type: capability
+      id: capability/product-analytics
+      name: Product analytics
+    - type: capability
+      id: capability/hubspot-integration
+      name: HubSpot integration
+    - type: capability
+      id: capability/salesforce-integration
+      name: Salesforce integration
+    - type: capability
+      id: capability/custom-agent-builder
+      name: Custom agent builder
+    - type: capability
+      id: capability/out-of-the-box-agents
+      name: Out-of-the-box agents
+    - type: capability
+      id: capability/product-activity
+      name: Product activity
+  edges:
+    - type: breaking_change_in
+      from: vendor/june
+      to: vendor/amplitude
+      date: 2025-08-08
+      note: June states that it joined Amplitude on August 8, 2025.
+    - type: requires_version
+      from: capability/company-level-analytics
+      to: package/june-all-in-one
+      vendor: vendor/june
+    - type: requires_version
+      from: capability/product-analytics
+      to: package/june-all-in-one
+      vendor: vendor/june
+    - type: requires_version
+      from: capability/hubspot-integration
+      to: package/june-all-in-one
+      vendor: vendor/june
+    - type: requires_version
+      from: capability/salesforce-integration
+      to: package/june-all-in-one
+      vendor: vendor/june
+    - type: requires_version
+      from: capability/custom-agent-builder
+      to: package/hockeystack-gtm-execution
+      vendor: vendor/hockeystack
+    - type: requires_version
+      from: capability/out-of-the-box-agents
+      to: package/hockeystack-gtm-execution
+      vendor: vendor/hockeystack
+    - type: locks_via
+      from: capability/product-activity
+      to: package/common-room-product-activity-add-on
+      vendor: vendor/common-room
+      note: Product activity is explicitly listed as an add-on.

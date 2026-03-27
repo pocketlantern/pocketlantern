@@ -63,6 +63,10 @@ related_cards:
   - auth/google-sign-in-fedcm-migration-vs-custom-oauth-2026
   - mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-links-vs-branch-2026
   - auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025
+  - auth/zendesk-oauth-refresh-token-enforcement-2026
+  - devtools/linear-oauth-refresh-token-migration-before-april-1-2026
+  - backend/nango-pricing-after-2026-managed-auth-and-sync-packaging
+  - auth/clerk-m2m-included-vs-billed-after-march-16-2026
 status: active
 tier: foundational
 updated: 2026-03-14

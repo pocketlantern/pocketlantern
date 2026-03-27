@@ -1,0 +1,193 @@
+id: "ai/llm-gateway-litellm-vs-portkey-vs-openrouter-pricing-and-routing-2026"
+title: "LLM Gateway: LiteLLM vs Portkey vs OpenRouter Pricing, Routing, and
+  Lock-In (2026)"
+problem: "Choosing an LLM gateway/router where LiteLLM (open-source,
+  self-hosted), Portkey (managed, per-log pricing), and OpenRouter (credit-based
+  marketplace) have fundamentally different pricing structures, routing
+  capabilities, observability depth, and lock-in profiles — and the wrong choice
+  locks you into a billing model that scales poorly or a routing layer that
+  becomes a single point of failure."
+context:
+  - "ai"
+  - "llm-gateway"
+  - "routing"
+  - "multi-provider"
+  - "cost-management"
+  - "observability"
+constraints:
+  - "high-scale"
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "LiteLLM (open-source gateway)"
+    summary: "Open-source Python SDK and proxy server (Apache 2.0) that translates
+      requests to 100+ LLM providers using OpenAI-compatible input/output
+      format. Self-hosted is free; enterprise adds SSO, RBAC, and team-level
+      budgets at usage-based pricing (contact sales). As of 2026-03-13, the
+      latest stable release is v1.81.14, with the proxy load-tested at 1,000
+      requests per second. SOC-2 Type 2 and ISO 27001 certified for enterprise
+      deployments."
+    when_to_use: "Best for enterprise + high-scale or cost-sensitive + small-team
+      environments that want full control over the routing layer, zero
+      per-request platform fees, and the ability to self-host on existing
+      infrastructure. Choose this when you need application-level load
+      balancing, retry/fallback logic across multiple deployments (e.g.,
+      Azure/OpenAI), per-user rate limiting, and multi-tenant spend tracking —
+      all without paying a gateway vendor."
+    tradeoffs: "Zero software cost for self-hosted. OpenAI-compatible format means
+      existing client code works without changes. Supports routing, fallbacks,
+      load balancing, spend tracking, rate limiting, and guardrails.
+      Observability callbacks for Lunary, MLflow, Langfuse, Helicone, and custom
+      logging. The tradeoff is operational responsibility: you manage the proxy
+      infrastructure, database (PostgreSQL required for enterprise), uptime, and
+      upgrades. Enterprise pricing is usage-based but not publicly listed —
+      requires sales contact."
+    cautions: "Self-hosted means you own the proxy's availability — a proxy outage
+      blocks all LLM traffic. Budget $100-$400/month for production
+      infrastructure (managed database with backups, replication, HA).
+      Enterprise SSO is free for up to 5 users only; beyond that requires
+      enterprise license. Releases are frequent (every ~17 hours for nightly) —
+      pin to stable releases and test before upgrading. The proxy adds a hop
+      (1-5ms latency overhead)."
+    links:
+      - "https://docs.litellm.ai/docs/"
+      - "https://docs.litellm.ai/docs/simple_proxy"
+      - "https://docs.litellm.ai/docs/enterprise"
+      - "https://docs.litellm.ai/docs/routing"
+      - "https://github.com/BerriAI/litellm"
+      - "https://github.com/BerriAI/litellm/releases"
+  - name: "Portkey (managed AI gateway)"
+    summary: "Managed AI gateway supporting 250+ models across providers with
+      built-in observability, cost tracking, guardrails, and semantic caching.
+      Dev plan is free (10,000 logs/month, 30-day retention). Pro plan is
+      custom-priced with $9 per 100K additional logs up to 3M/month. Enterprise
+      starts at an estimated $2,000-$10,000+/month for 10M+ logs with VPC
+      deployment. As of 2026-03-17, the platform processes 400B+ tokens for 200+
+      enterprises daily."
+    when_to_use: "Best for enterprise + compliance or small-team + low-ops
+      environments that want managed observability, per-request cost visibility,
+      and a policy UI without building infrastructure. Choose this when audit
+      logs, budget limits, guardrails, and compliance certifications matter more
+      than minimizing platform fees. Good when starting with few requests and
+      scaling incrementally."
+    tradeoffs: "Zero infrastructure to manage — Portkey handles the gateway.
+      Per-request cost visibility across all providers. Built-in semantic
+      caching (Pro+) reduces redundant LLM calls. Guardrail violations logged
+      alongside cost data. The tradeoff is per-log pricing that scales with
+      volume: 500K requests costs ~$36/month on top of base, 1M requests ~$81,
+      2M ~$171. Free tier is only ~330 requests/day. No semantic caching on Dev
+      tier."
+    cautions: "Per-log pricing means costs grow linearly with request volume — at
+      high scale, self-hosted LiteLLM may be significantly cheaper. Pro tier
+      caps at 3M logs/month; exceeding means logs stop being recorded, not that
+      requests fail, but you lose observability. Log retention is only 30 days
+      on Pro — enterprise required for 90+ days. Evaluate the PDP (Policy
+      Decision Point) deployment model: sidecar mode minimizes latency but
+      requires container infrastructure; cloud-only PDP adds network latency to
+      every authorization check."
+    links:
+      - "https://portkey.ai/pricing"
+      - "https://portkey.ai/docs/product/observability/cost-management"
+      - "https://docs.portkey.ai/docs/product/ai-gateway/fallbacks"
+      - "https://github.com/Portkey-AI/models"
+  - name: "OpenRouter (credit-based model marketplace)"
+    summary: "Credit-based LLM API marketplace providing access to 400+ models from
+      60+ providers through a single API. Zero markup on model inference pricing
+      — providers are paid at their listed rates. Platform charges a 5.5% fee
+      ($0.80 minimum) on credit purchases via Stripe. BYOK (Bring Your Own Key)
+      mode: first threshold per month free, then 0.5% fee on subsequent usage.
+      Credits denominated in USD, expire after one year of non-use."
+    when_to_use: "Best for small-team + cost-sensitive or low-ops environments that
+      want instant access to the widest model catalog without
+      provider-by-provider API key management. Choose this when model variety
+      and rapid experimentation matter, when you want automatic fallback across
+      providers without configuration, and when the 5.5% credit fee is
+      acceptable versus managing multiple provider relationships."
+    tradeoffs: "Widest model catalog (400+ models, 60+ providers) through one API
+      key. Automatic fallback: if a provider returns an error, OpenRouter falls
+      back to the next provider transparently. Dynamic routing variants: :nitro
+      (sort by throughput), :floor (sort by price), :exacto (sort by quality).
+      Zero inference markup — you pay provider rates. The tradeoff is the 5.5%
+      credit purchase fee, limited observability compared to Portkey/LiteLLM,
+      and less granular routing control (no custom retry policies, no per-user
+      budgets, no guardrails)."
+    cautions: "The 5.5% credit fee applies to all Stripe purchases regardless of
+      volume — no volume discounts. Credits expire after one year of non-use.
+      BYOK mode reduces fees to 0.5% but means you manage API keys yourself
+      (defeating a key benefit). Refunds available within 24 hours for unused
+      credits but platform fees are non-refundable; crypto purchases are never
+      refundable. OpenRouter is a passthrough — you depend on their availability
+      for all LLM traffic with no self-hosted option. Rate limits on free models
+      without credits are restrictive."
+    links:
+      - "https://openrouter.ai/docs/faq"
+      - "https://openrouter.ai/docs/guides/overview/models"
+      - "https://openrouter.ai/pricing"
+tags:
+  - "ai"
+  - "llm-gateway"
+  - "litellm"
+  - "portkey"
+  - "openrouter"
+  - "routing"
+  - "cost-management"
+  - "multi-provider"
+  - "comparison"
+aliases:
+  - "llm provider routing"
+  - "llm gateway comparison"
+  - "litellm vs portkey"
+  - "litellm vs openrouter"
+  - "portkey vs openrouter"
+  - "ai gateway pricing"
+  - "llm router"
+  - "model routing"
+related_cards:
+  - "ai/model-fallback-strategy"
+  - "ai/ai-feature-cost-governance"
+  - "backend/ai-sdk-selection"
+  - "ai/fine-tuning-vs-api-cost-openai-vs-anthropic-vs-llama-2026"
+  - ai/together-vs-fireworks-vs-groq-serverless-inference-pricing-2026
+  - ai/hugging-face-inference-providers-routed-vs-custom-provider-key-2026
+  - ai/cerebras-free-vs-developer-tier-after-october-2025-pay-per-token-launch
+  - cloud/kong-konnect-pre-march-1-2025-rate-card-vs-current-plus-pricing-2026
+  - devtools/pipedream-ai-token-bundles-vs-credit-budgeting-2026
+  - ai/perplexity-sonar-vs-sonar-pro-after-2026-model-and-price-changes
+status: "active"
+tier: "core"
+updated: "2026-03-17"
+review_by: "2026-06-15"
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/portkey
+      name: Portkey
+      category: ai-gateway
+    - type: vendor
+      id: vendor/openrouter
+      name: OpenRouter
+      category: ai-gateway
+    - type: capability
+      id: capability/llm-routing
+      name: LLM Request Routing & Fallback
+    - type: capability
+      id: capability/llm-observability
+      name: LLM Observability & Logging
+  edges:
+    - type: locks_via
+      from: vendor/portkey
+      to: capability/llm-observability
+      surface: Per-log pricing scales linearly; Pro caps at 3M logs/month (exceeding
+        stops logging, not requests); 30-day retention on Pro; enterprise
+        required for 90+ days
+      severity: medium
+    - type: locks_via
+      from: vendor/openrouter
+      to: capability/llm-routing
+      surface: 5.5% credit purchase fee with no volume discount; credits expire after
+        1 year of non-use; crypto purchases never refundable; all traffic
+        depends on OpenRouter availability
+      severity: medium

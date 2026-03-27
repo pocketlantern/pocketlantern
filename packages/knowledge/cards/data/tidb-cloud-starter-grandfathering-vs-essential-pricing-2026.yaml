@@ -1,0 +1,179 @@
+id: "data/tidb-cloud-starter-grandfathering-vs-essential-pricing-2026"
+title: "TiDB Cloud Starter Grandfathering vs New Essential Pricing 2026"
+problem: "Decide whether older TiDB Cloud Starter setups should be kept,
+  migrated, or replaced now that Essential pricing and capabilities changed the
+  small-production cost curve."
+context:
+  - "tidb-cloud"
+  - "database"
+  - "mysql-compatible"
+  - "aws"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Keep a grandfathered TiDB Cloud Starter cluster"
+    summary: "As of 2026-03-26, PingCAP had already renamed TiDB Cloud Serverless to
+      Starter on 2025-08-12 and said existing clusters kept the same features,
+      pricing, free quota, endpoints, connection strings, and data. Starter
+      remains the cheapest path: the first five Starter clusters per
+      organization each get 5 GiB row storage, 5 GiB columnar storage, and 50
+      million RUs per month; on AWS Oregon and N. Virginia, extra usage is
+      priced at $0.20 per GiB-month for row storage and $0.10 per 1 million RUs.
+      A key grandfathering policy matters: new Starter clusters created after
+      2025-09-09 only get partition high availability, but existing Starter
+      clusters that had regional high availability enabled before 2025-09-09
+      keep it."
+    when_to_use: "Use this when you already have a pre-2025-09-09 Starter cluster
+      that still fits Starter limits and you want to preserve the lowest monthly
+      cost. The decisive factor is whether your existing workload can stay
+      inside Starter's managed limitations without needing production-only
+      features that Essential or Dedicated add."
+    tradeoffs: "Lowest cost floor and minimal migration work, especially if you
+      already hold grandfathered regional HA. The downside is that Starter still
+      uses RU-based throttling, has hard free-tier and spend-limit behavior, and
+      lacks several production features."
+    cautions: "Starter does not support changefeed or Data Migration, and users
+      cannot self-initiate major or minor version upgrades. On AWS public
+      endpoints, idle timeout is 340 seconds because of AWS Global Accelerator.
+      If you delete a grandfathered regional-HA Starter cluster, new Starter
+      replacement clusters do not get that same HA posture."
+    links:
+      - "https://docs.pingcap.com/tidbcloud/tidb-cloud-release-notes/"
+      - "https://docs.pingcap.com/tidbcloud/serverless-limitations/"
+      - "https://www.pingcap.com/tidb-cloud-starter-pricing-details/"
+      - "https://docs.pingcap.com/tidbcloud/tidb-cloud-faq/"
+  - name: "Migrate small production to TiDB Cloud Essential"
+    summary: "As of 2026-03-26, TiDB Cloud Essential is still in public preview, and
+      PingCAP says preview pricing may change at GA, but customers who create
+      Essential clusters during preview will be offered a Price Protection Plan
+      through the GA transition. Essential has a much higher cost floor than
+      Starter: each cluster requires a minimum of 2,000 RCUs, and on AWS Oregon
+      and N. Virginia the price is $0.20 per RCU-month, implying about $400 per
+      month before storage; PingCAP's pricing page also markets a 'Typical small
+      prod' of about $20 per day. New Essential clusters default to regional
+      high availability from 2025-09-09, and the pricing page advertises
+      point-in-time backup with up to 30-day retention and 99.99% availability
+      with multi-zone protection."
+    when_to_use: "Use this when a Starter workload has become real production and
+      now needs higher availability, backup retention, or migration/networking
+      features, but Dedicated's price floor is still too high. The decisive
+      factor is whether a roughly $400-plus monthly baseline before storage is
+      acceptable in exchange for a materially better operational posture."
+    tradeoffs: "You get autoscaling compute, regional HA by default for new
+      clusters, stronger production positioning, and more migration/dataflow
+      capability than Starter. The tradeoff is a much higher minimum monthly
+      bill, preview-status pricing risk, and a current TiDB version that lags
+      Starter."
+    cautions: "Preview pricing can change at GA, so do not treat current Essential
+      pricing as permanently locked unless your contract or Price Protection
+      Plan confirms it. As of 2026-03-26, the docs are inconsistent on built-in
+      alerting: 2026 release notes say Essential added built-in alerting on
+      2026-02-10, while the Starter and Essential limitations page still lists
+      built-in alerting as unavailable, so verify the current console behavior
+      before relying on it."
+    links:
+      - "https://www.pingcap.com/tidb-cloud-essential-pricing-details/"
+      - "https://www.pingcap.com/pricing/"
+      - "https://docs.pingcap.com/tidbcloud/tidb-cloud-release-notes/"
+      - "https://docs.pingcap.com/tidbcloud/tidb-cloud-faq/"
+  - name: "Replace with TiDB Cloud Dedicated"
+    summary: "As of 2026-03-26, TiDB Cloud Dedicated is the higher-end managed
+      production tier, not a preview plan. PingCAP's pricing page shows
+      Dedicated compute starting at $0.22 per hour, while the smallest marketed
+      cluster configuration starts at about $1,376 per month, so the hourly
+      figure is a component rate and the monthly figure reflects a minimum
+      cluster-size baseline rather than two contradictory starting prices.
+      Dedicated is positioned for production use with customizable node sizes,
+      cross-zone high availability, and broader advanced capabilities."
+    when_to_use: "Use this when Essential preview status, Essential's version lag,
+      or Starter and Essential feature limits are blockers and you want the more
+      established production tier. The decisive factor is that Dedicated only
+      makes sense once reliability, feature scope, or governance requirements
+      outweigh the much higher monthly floor."
+    tradeoffs: "Dedicated has the strongest production packaging and newest default
+      version among the three options. The downside is the largest cost jump by
+      far, which makes it hard to justify for small-production workloads that
+      could fit in Essential."
+    cautions: "Do not treat Dedicated as a like-for-like upgrade from a cheap
+      Starter deployment; the spend profile changes from low hundreds or less to
+      a four-figure monthly starting point. If the main driver is only
+      preserving old Starter economics, Dedicated is usually the wrong
+      replacement."
+    links:
+      - "https://www.pingcap.com/pricing/"
+      - "https://docs.pingcap.com/tidbcloud/select-cluster-tier/"
+      - "https://docs.pingcap.com/tidbcloud/tidb-cloud-faq/"
+tags:
+  - "data"
+  - "tidb"
+  - "tidb-cloud"
+  - "database"
+  - "pricing"
+aliases:
+  - "tidb cloud starter vs essential pricing"
+  - "tidb cloud serverless renamed starter grandfathered"
+  - "tidb cloud essential minimum rcu pricing"
+related_cards:
+  - "_archived/migration-strategy"
+  - "database/cockroachdb-basic-vs-standard-vs-advanced-2026"
+  - data/tidb-cloud-essential-vs-dedicated-private-networking-and-changefeed-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/pingcap
+      name: PingCAP
+    - type: package
+      id: package/tidb-cloud-starter
+      name: TiDB Cloud Starter
+    - type: package
+      id: package/tidb-cloud-essential
+      name: TiDB Cloud Essential
+    - type: package
+      id: package/tidb-cloud-dedicated
+      name: TiDB Cloud Dedicated
+    - type: capability
+      id: capability/regional-high-availability
+      name: regional high availability
+    - type: capability
+      id: capability/partition-high-availability
+      name: partition high availability
+    - type: capability
+      id: capability/changefeed
+      name: changefeed
+    - type: capability
+      id: capability/data-migration
+      name: Data Migration
+    - type: capability
+      id: capability/price-protection-plan
+      name: Price Protection Plan
+  edges:
+    - type: breaking_change_in
+      from: package/tidb-cloud-starter
+      to: capability/regional-high-availability
+      date: 2025-09-09
+      note: New Starter clusters created after 2025-09-09 do not keep the older
+        regional HA posture.
+    - type: breaking_change_in
+      from: package/tidb-cloud-starter
+      to: capability/partition-high-availability
+      date: 2025-09-09
+      note: New Starter clusters created after 2025-09-09 only get partition high
+        availability.
+    - type: requires_version
+      from: capability/regional-high-availability
+      to: package/tidb-cloud-starter
+      before_date: 2025-09-09
+      note: Existing Starter clusters keep regional HA only if it was enabled before
+        2025-09-09.
+    - type: locks_via
+      from: package/tidb-cloud-essential
+      to: capability/price-protection-plan
+      note: Customers who create Essential clusters during preview are offered a Price
+        Protection Plan through the GA transition.

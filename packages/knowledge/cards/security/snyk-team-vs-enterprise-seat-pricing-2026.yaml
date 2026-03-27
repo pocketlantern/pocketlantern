@@ -16,16 +16,16 @@ constraints:
   - "compliance"
 candidates:
   - name: "Snyk Team"
-    summary: 'As of 2026-03-20, Snyk Team starts at "$25/month per contributing
-      developer," requires a minimum of 5 contributing developers, caps the
+    summary: "As of 2026-03-20, Snyk Team starts at \"$25/month per contributing
+      developer,\" requires a minimum of 5 contributing developers, caps the
       plan at 10 licenses per organization, and bills products separately under
       the same plan. The pricing page also states Team is billed monthly, with
-      "1 month free" on annual pricing. Team includes Jira integration and
+      \"1 month free\" on annual pricing. Team includes Jira integration and
       license compliance, but it does not include reports, private package
       registries, self-hosted source code management, SAML SSO, custom user
       roles, service accounts, or the rich API. Team also has tenant-scale
       limits in docs: up to 25,000 Projects per Organization and up to five
-      Organizations per Tenant.'
+      Organizations per Tenant."
     when_to_use: "Use this when you have a small cloud-hosted engineering team, need
       10 or fewer paid seats, and can live without SSO, custom RBAC, service
       accounts, self-hosted SCM, or advanced reporting. The decisive factor is
@@ -47,16 +47,16 @@ candidates:
       - "https://docs.snyk.io/implementation-and-setup/enterprise-implementatio\
         n-guide/trial-limitations"
   - name: "Snyk Ignite"
-    summary: 'As of 2026-03-20, Snyk positions Ignite as the enterprise-grade bridge
-      for organizations with fewer than 50 developers, priced at "$1,260/year
-      per contributing developer." Unlike Team, Ignite bundles SCA, SAST, IaC,
+    summary: "As of 2026-03-20, Snyk positions Ignite as the enterprise-grade bridge
+      for organizations with fewer than 50 developers, priced at \"$1,260/year
+      per contributing developer.\" Unlike Team, Ignite bundles SCA, SAST, IaC,
       and Container, includes 10 DAST targets, and unlocks key admin and
       governance features such as reports, private package registries,
       self-hosted SCM integrations, SAML SSO, custom user roles, service
       accounts, rich API access, project tags, SBOM generation, and
       multi-organization management. Snyk’s pricing FAQ explicitly directs
       customers needing more than 10 Team licenses to contact sales about Ignite
-      and Enterprise.'
+      and Enterprise."
     when_to_use: "Use this when Team’s 10-seat limit or feature gates are the
       blocker, but your org is still below 50 developers and wants a published
       enterprise-family seat price. The decisive factor is that Ignite removes
@@ -119,6 +119,9 @@ related_cards:
   - "security/code-scanning-vendor-cost-sonarqube-vs-github-advanced-security-v\
     s-snyk-2026"
   - "security/dependency-scanning-sast-sca-boundary"
+  - security/semgrep-community-vs-teams-contributor-pricing-2026
+  - security/checkmarx-one-vs-codacy-secure-code-pricing-2026
+  - security/snyk-fix-prs-ruby-31-eos-october-2025
 tier: "core"
 status: "active"
 updated: "2026-03-20"

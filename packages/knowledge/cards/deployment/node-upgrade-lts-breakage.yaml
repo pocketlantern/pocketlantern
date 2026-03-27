@@ -148,6 +148,14 @@ related_cards:
   - testing/jest-30-node18-typescript54-upgrade-breakage-2026
   - web/hubspot-projects-2025-1-deprecation-before-august-1-2026
   - desktop/electron-37-breaking-changes-and-support-window-2026
+  - backend/directus-v11-extension-api-and-policy-breaking-changes-2026
+  - devtools/dependabot-no-longer-supports-npm-v6-impact-2026
+  - devtools/verdaccio-6-upgrade-token-and-node-compatibility-breaks-2026
+  - frontend/vitepress-2-alpha-migration-node-20-and-theme-api-breaks-2026
+  - testing/wdio-v9-upgrade-after-node-version-floor-and-api-breaks-2026
+  - auth/clerk-core-2-vs-core-3-march-2026
+  - runtime/node-22-vs-node-24-after-release-schedule-change-2026
+  - runtime/node-22-maintenance-vs-node-24-active-lts-2026
 tier: "core"
 status: active
 updated: 2026-03-14

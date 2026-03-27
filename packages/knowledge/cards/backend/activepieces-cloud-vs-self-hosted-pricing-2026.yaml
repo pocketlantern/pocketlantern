@@ -1,0 +1,185 @@
+id: "backend/activepieces-cloud-vs-self-hosted-pricing-2026"
+title: "Activepieces Cloud vs Self-Hosted Pricing After 2025 Packaging Changes"
+problem: "Choose among Activepieces Cloud Standard, Cloud Unlimited, self-hosted
+  Community Edition, and self-hosted Enterprise based on current active-flow
+  billing, unlimited-run policy, and whether you need governance features beyond
+  the open-source edition."
+context:
+  - "workflow-automation"
+  - "self-hosting"
+  - "internal-tools"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Stay on Activepieces Cloud Standard"
+    summary: "As of 2026-03-26, Activepieces Cloud Standard is listed as free for up
+      to 10 active flows, then \"$5 per active flow per month.\" The pricing
+      page also says Standard includes unlimited runs, AI agents, unlimited MCP
+      servers, unlimited tables, and community support. This is the
+      lowest-friction option because Activepieces operates and updates the
+      platform for you."
+    when_to_use: "Use this when \"low-ops\" matters more than infrastructure control
+      and your workload fits the active-flow model. It is the default choice if
+      you do not need private-network residency or enterprise governance
+      features."
+    tradeoffs: "Operational burden is minimal and billing is transparent for small
+      numbers of active workflows. The downside is that cost scales with active
+      flows, not with how often those flows run, and you do not get the
+      enterprise governance features shown on the custom plan by default."
+    cautions: "Do not compare Cloud Standard against older execution-based pricing
+      assumptions. As of 2026-03-26, Activepieces explicitly markets unlimited
+      runs and prices Standard by active flows."
+    links:
+      - "https://www.activepieces.com/pricing"
+      - "https://www.activepieces.com/product/deployment-options"
+  - name: "Self-host Community Edition"
+    summary: "As of 2026-03-26, Activepieces positions Community Edition as \"MIT
+      Licensed,\" \"core features only,\" and self-hosted. The self-host docs
+      say Community Edition can be deployed with Docker, Docker Compose, and
+      Kubernetes, while the deployment page says self-hosted usage has \"$0 per
+      execution\" and that dev and staging environments are free. This route
+      avoids Cloud per-flow billing from Activepieces itself, but shifts cost
+      into your own infrastructure and operations."
+    when_to_use: "Use this when \"cost-sensitive\" plus \"compliance\" or
+      data-residency requirements push you toward owning the infrastructure, and
+      your team can operate the stack. It is the strongest fit if you need
+      unlimited run volume without paying Activepieces per active cloud flow and
+      you do not need enterprise controls."
+    tradeoffs: "You get maximum deployment control and no Activepieces execution
+      billing. You lose managed uptime, hosted support expectations, and the
+      broader governance feature set shown on the custom enterprise plan."
+    cautions: "Do not assume self-hosting gives you every product capability just
+      because the core is open source. Activepieces' pricing page says Community
+      Edition is \"core features only,\" so governance requirements can still
+      force a paid enterprise arrangement."
+    links:
+      - "https://www.activepieces.com/docs/install/overview"
+      - "https://www.activepieces.com/product/deployment-options"
+      - "https://www.activepieces.com/pricing"
+  - name: "Upgrade to Activepieces Cloud Unlimited"
+    summary: "As of 2026-03-26, Activepieces lists an \"Unlimited\" cloud plan on an
+      annual contract with custom pricing rather than a public rate card. The
+      pricing page attaches enterprise controls to this tier, including Team &
+      Personal Projects, Piece Access Controls, Global Connections, Custom RBAC,
+      SSO, and Audit Logs. This is the managed-cloud path when Cloud Standard is
+      not enough."
+    when_to_use: "Use this when \"enterprise\" requirements are real blockers but
+      you still want Activepieces to run the platform. It fits teams that need
+      SSO, RBAC, audit logs, or governed multi-project collaboration without
+      taking on self-hosting operations."
+    tradeoffs: "You keep the managed-cloud model and gain the governance layer
+      missing from Standard. The tradeoff is custom commercial negotiation,
+      annual-contract expectations, and no public pricing benchmark."
+    cautions: "Budgeting is harder because official public pricing is not listed. As
+      of 2026-03-26, treat this as a sales-led procurement decision, not a
+      self-serve upgrade with predictable published pricing."
+    links:
+      - "https://www.activepieces.com/pricing"
+      - "https://www.activepieces.com/product/deployment-options"
+  - name: "Buy self-hosted Enterprise via sales"
+    summary: "As of 2026-03-26, an official Activepieces community announcement
+      states that enterprise features can be unlocked on self-hosted installs,
+      that self-hosted has had a 14-day self-serve trial, and that enterprise
+      pricing is not publicly listed because requirements vary. This is the
+      self-hosted path when Community Edition is not enough."
+    when_to_use: "Use this when \"enterprise\" and \"compliance\" requirements both
+      matter and self-hosting is non-negotiable. It is the right path if you
+      need self-hosted deployment plus enterprise controls such as SSO, RBAC,
+      audit logs, or governed collaboration."
+    tradeoffs: "You keep deployment control and gain enterprise features beyond
+      Community Edition. The tradeoff is custom commercial negotiation, your own
+      infrastructure burden, and no public pricing benchmark."
+    cautions: "Do not budget from Community Edition assumptions alone. As of
+      2026-03-26, self-hosted enterprise is a sales-led procurement decision
+      with unpublished pricing."
+    links:
+      - "https://community.activepieces.com/t/self-try-activepieces-enterprise-\
+        on-prem/4800"
+      - "https://www.activepieces.com/pricing"
+      - "https://www.activepieces.com/product/deployment-options"
+tags: [ "backend", "activepieces", "automation", "pricing", "self-hosting" ]
+aliases:
+  [
+    "activepieces cloud vs self hosted pricing",
+    "activepieces enterprise self hosted pricing",
+    "activepieces active flow pricing"
+  ]
+related_cards:
+  - "devtools/n8n-cloud-vs-self-host-license-and-execution-cost-2026"
+  - "analytics/aptabase-cloud-vs-self-hosted-data-residency-and-pricing-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - backend/workato-embedded-vs-connector-sdk-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/activepieces
+      name: Activepieces
+    - type: package
+      id: package/activepieces-cloud-standard
+      name: Activepieces Cloud Standard
+    - type: package
+      id: package/activepieces-cloud-unlimited
+      name: Activepieces Cloud Unlimited
+    - type: package
+      id: package/activepieces-self-hosted-community-edition
+      name: Activepieces Self-Hosted Community Edition
+    - type: package
+      id: package/activepieces-self-hosted-enterprise
+      name: Activepieces Self-Hosted Enterprise
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: capability
+      id: capability/custom-rbac
+      name: Custom RBAC
+    - type: capability
+      id: capability/audit-logs
+      name: Audit Logs
+    - type: capability
+      id: capability/active-flow-billing
+      name: Active-flow billing
+    - type: capability
+      id: capability/unlimited-runs
+      name: Unlimited runs
+  edges:
+    - type: requires_version
+      from: capability/sso
+      to: package/activepieces-cloud-unlimited
+    - type: requires_version
+      from: capability/custom-rbac
+      to: package/activepieces-cloud-unlimited
+    - type: requires_version
+      from: capability/audit-logs
+      to: package/activepieces-cloud-unlimited
+    - type: requires_version
+      from: capability/sso
+      to: package/activepieces-self-hosted-enterprise
+    - type: requires_version
+      from: capability/custom-rbac
+      to: package/activepieces-self-hosted-enterprise
+    - type: requires_version
+      from: capability/audit-logs
+      to: package/activepieces-self-hosted-enterprise
+    - type: requires_version
+      from: capability/active-flow-billing
+      to: package/activepieces-cloud-standard
+    - type: requires_version
+      from: capability/unlimited-runs
+      to: package/activepieces-cloud-standard
+    - type: locks_via
+      from: package/activepieces-cloud-unlimited
+      to: vendor/activepieces
+    - type: locks_via
+      from: package/activepieces-cloud-standard
+      to: vendor/activepieces
+    - type: locks_via
+      from: package/activepieces-self-hosted-enterprise
+      to: vendor/activepieces

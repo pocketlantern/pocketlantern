@@ -1,0 +1,144 @@
+id: "messaging/mailgun-foundation-vs-scale-after-free-tier-shrink-2026"
+title: "Mailgun Foundation vs Scale After Free-Tier Contraction 2026"
+problem: "Decide which paid Mailgun plan fits best after trial-style free
+  allowances and monthly-plan minimums changed the economics for small-volume
+  transactional email."
+context:
+  - "transactional-email"
+  - "email-api"
+  - "smtp"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Mailgun Foundation"
+    summary: "Mailgun Foundation is the lower paid tier for teams that need more
+      than Mailgun's permanent free plan. As of 2026-03-20, Mailgun lists
+      Foundation at \"$35/mo\" after a free 1-month trial, with \"50,000
+      emails/mo included,\" overages from \"$1.30 / 1,000 emails,\" and
+      validations from \"$1.20 / 100 validations.\" The permanent free plan is
+      only \"100 messages per day\" with 1 custom domain and 1 day of log
+      retention, so Foundation is effectively the first meaningful self-serve
+      paid step if you need templates, inbound routing, and 1,000 sending
+      domains. The main economics change for small-volume senders is that
+      advanced Mailgun usage now starts at a monthly floor rather than a large
+      ongoing free allowance."
+    when_to_use: "Use Foundation when you are cost-sensitive, need Mailgun-specific
+      features beyond the free plan, and your monthly volume is still
+      comfortably below 100,000. It is the better fit when the decisive factor
+      is minimizing fixed spend while still getting template support, inbound
+      routing, and longer retention than Free."
+    tradeoffs: "Lower fixed cost than Scale at the 50,000-email point, but it does
+      not include the enterprise-leaning controls and support on Scale. Log
+      retention stays at 5 days, message retention at 1 day, and dedicated IP is
+      only included at Foundation 100k, not the 50,000-email starting point
+      shown on pricing."
+    cautions: "Do not confuse the permanent free plan with the paid-plan trial: as
+      of 2026-03-20, Mailgun offers a free plan with a 100-email-per-day cap,
+      while Foundation itself is \"Free for 1 month, then $35/mo.\" If your
+      usage is only a few thousand transactional emails per month, the monthly
+      minimum may dominate total cost even before overages matter."
+    links:
+      - "https://www.mailgun.com/pricing/"
+      - "https://help.mailgun.com/hc/en-us/articles/203068914-What-does-the-Fre\
+        e-plan-offer"
+  - name: "Mailgun Scale"
+    summary: "Mailgun Scale is the higher self-serve tier aimed at larger or more
+      operationally demanding senders. As of 2026-03-20, Mailgun lists Scale at
+      \"$90/mo\" after a free 1-month trial, with \"100,000 emails/mo
+      included,\" overages from \"$1.10 / 1,000 emails,\" and \"$0.80 / 100
+      validations.\" Compared with Foundation, it adds SAML SSO, 5,000 included
+      email validations, dedicated IP pools, send time optimization, live phone
+      and chat support, 30 days of log retention, and up to 7 days of message
+      retention. It is the tier where Mailgun adds materially stronger admin,
+      security, and support controls than the lower self-serve plan."
+    when_to_use: "Use Scale when you need stronger security and operations features
+      in addition to email volume, especially for enterprise or
+      compliance-leaning teams. It becomes the clearer choice when the decisive
+      factor is SAML SSO, support level, retention windows, or dedicated IP pool
+      management rather than just raw message cost."
+    tradeoffs: "Better included volume and lower marginal email and validation
+      pricing than Foundation, plus materially better support and retention. The
+      downside is the much higher monthly floor, which can be hard to justify
+      for small-volume transactional workloads that do not need SSO, phone
+      support, or dedicated IP pools."
+    cautions: "As of 2026-03-20, the economic break is not only about volume; it is
+      also about whether you actually need the non-volume features. If you only
+      want reliable transactional sending and remain under 100,000 emails per
+      month, Scale can be overkill even though its overage rates are better."
+    links:
+      - "https://www.mailgun.com/pricing/"
+      - "https://www.mailgun.com/pricing/optimize/"
+tags:
+  - "messaging"
+  - "mailgun"
+  - "email"
+  - "pricing"
+aliases:
+  - "mailgun foundation vs scale"
+  - "mailgun free tier 2026"
+  - "mailgun pricing 2026"
+related_cards:
+  - "messaging/postmark-10k-basic-vs-pro-vs-platform-after-aug-2025"
+  - "messaging/sendgrid-free-plan-removal-to-60-day-trial-2026"
+  - "web/resend-pricing-after-december-2025-plan-change-2026"
+  - messaging/brevo-free-vs-starter-vs-business-credit-and-channel-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/mailgun
+      name: Mailgun
+    - type: package
+      id: package/mailgun-foundation
+      name: Mailgun Foundation
+      category: paid_plan
+    - type: package
+      id: package/mailgun-scale
+      name: Mailgun Scale
+      category: paid_plan
+    - type: package
+      id: package/mailgun-free-plan
+      name: Mailgun Free
+      category: free_plan
+    - type: capability
+      id: capability/template-support
+      name: template support
+      category: email_feature
+    - type: capability
+      id: capability/inbound-routing
+      name: inbound routing
+      category: email_feature
+    - type: capability
+      id: capability/saml-sso
+      name: SAML SSO
+      category: security
+    - type: capability
+      id: capability/dedicated-ip-pools
+      name: dedicated IP pools
+      category: deliverability
+    - type: capability
+      id: capability/live-phone-chat-support
+      name: live phone and chat support
+      category: support
+  edges:
+    - type: locks_via
+      from: capability/template-support
+      to: package/mailgun-foundation
+    - type: locks_via
+      from: capability/inbound-routing
+      to: package/mailgun-foundation
+    - type: locks_via
+      from: capability/saml-sso
+      to: package/mailgun-scale
+    - type: locks_via
+      from: capability/dedicated-ip-pools
+      to: package/mailgun-scale
+    - type: locks_via
+      from: capability/live-phone-chat-support
+      to: package/mailgun-scale

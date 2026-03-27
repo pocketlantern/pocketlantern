@@ -1,0 +1,146 @@
+id: "compliance/dora-third-party-risk-platform-choice-2026"
+title: "DORA Third-Party Risk Platform Choice for 2026 Financial SaaS"
+problem: "Fintech and regulated vendors need a 2026 decision card on whether
+  DORA third-party obligations now justify buying dedicated third-party risk
+  tooling or extending an existing GRC stack, given that DORA is already in
+  force and vendors now package explicit register-of-information support."
+context:
+  - "dora"
+  - "tprm"
+  - "grc"
+  - "servicenow"
+  - "onetrust"
+  - "financial-saas"
+constraints:
+  - "compliance"
+  - "enterprise"
+  - "cost-sensitive"
+candidates:
+  - name: "Extend an existing ServiceNow IRM or TPRM stack"
+    summary: "As of 2026-03-19, ServiceNow documents show DORA support through the
+      Digital Operational Resilience Management app plus the Digital Operational
+      Resilience - Third Party Information Register app. ServiceNow states that
+      an IRM Pro or TPRM license is mandatory to download these applications,
+      and that full third-party engagement functionality is available for TPRM
+      users. ServiceNow's official risk portfolio materials place Operational
+      Resilience Management inside Integrated Risk Management and Third-party
+      Risk Management as a separate risk product on the Now Platform. Public
+      list pricing is not published in the cited official materials, so check
+      official docs or sales for commercial terms."
+    when_to_use: "Use this when you already run ServiceNow for enterprise risk
+      workflows and want DORA reporting without adding another vendor system.
+      The decisive factor is that DORA-specific register setup, reporting, and
+      validation already exist inside the licensed Now Platform path, so the
+      main question is license uplift and implementation effort rather than a
+      new platform purchase."
+    tradeoffs: "The main advantage is reuse of an existing integrated data model,
+      workflows, and reporting surface. The tradeoff is that DORA support
+      depends on the right ServiceNow entitlement and on careful data population
+      across legal entities, third parties, supply chains, assessments, and
+      contracts."
+    cautions: "ServiceNow's Zurich-era validation framework adds technical, schema,
+      and business-rule checks to register-of-information packages. Official
+      docs call out common failures such as invalid LEI formats, empty currency
+      fields, missing contract references, UTF-8 CSV requirements, and package
+      size/compression issues."
+    links:
+      - "https://www.servicenow.com/community/grc-articles/how-to-set-up-digita\
+        l-operational-resilience-management-dorm-on/ta-p/3131372"
+      - "https://www.servicenow.com/docs/en-US/bundle/zurich-governance-risk-co\
+        mpliance/page/product/grc-vendor-risk/concept/tprm-validation-roi.html"
+      - "https://www.servicenow.com/docs/r/governance-risk-compliance/grc-risk-\
+        management-workspace/grc-risk-overview.html"
+      - "https://www.servicenow.com/docs/r/governance-risk-compliance/third-par\
+        ty-risk-management/third-party-risk-mgt-landing-page.html"
+  - name: "Buy dedicated OneTrust Third-Party Risk Management"
+    summary: "As of 2026-03-19, OneTrust publishes Third-Party Risk Management
+      packaging as Base and Suite, with quote-based pricing tied to admin users
+      and third-party inventory rather than a public list price. OneTrust
+      publicly markets DORA-specific capabilities including automated
+      register-of-information report creation and out-of-the-box screening and
+      compliance data. Its DORA materials also describe centralized third-party
+      inventory, due diligence, risk assessments, and fourth- and nth-party
+      visibility. This is the more purpose-built TPRM route if your current GRC
+      stack is weak on vendor lifecycle operations."
+    when_to_use: "Use this when DORA pressure is exposing a real gap in vendor
+      inventory, due diligence, continuous monitoring, or fourth-party
+      visibility that your current GRC platform does not handle cleanly. The
+      decisive factor is whether you need a dedicated third-party operating
+      system with packaged data and workflows more than you need tight
+      consolidation into an existing enterprise GRC suite."
+    tradeoffs: "The upside is faster access to dedicated third-party lifecycle
+      features and DORA-oriented reporting. The downside is another control
+      plane, quote-based commercial packaging, and potential overlap with
+      broader GRC tooling you already own."
+    cautions: "Pricing is inventory- and admin-based, so total cost can move quickly
+      as your vendor population grows. Validate whether the DORA workflows you
+      need are covered in Base versus Suite, and confirm which external data
+      feeds and monitoring datasets are included in your purchased package."
+    links:
+      - "https://www.onetrust.com/pricing/"
+      - "https://www.onetrust.com/news/onetrust-automates-dora-ict-risk-managem\
+        ent-and-compliance/"
+      - "https://www.onetrust.com/blog/navigating-the-digital-operational-resil\
+        ience-act-dora-with-onetrust/"
+      - "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+tags:
+  - "compliance"
+  - "dora"
+  - "tprm"
+  - "grc"
+  - "financial-saas"
+aliases:
+  - "dora third-party risk tooling"
+  - "dora register of information platform choice"
+  - "servicenow vs dedicated tprm for dora"
+  - "dora tprm platform"
+  - "dora roi tooling"
+  - "dora register platform"
+  - "third party risk dora"
+  - "grc vs tprm dora"
+  - "servicenow dora roi"
+  - "archer dora register"
+  - "onetrust dora tprm"
+  - "dora third party register"
+  - "dora third-party tooling"
+related_cards:
+  - "compliance/logicgate-vs-auditboard-vs-onspring-enterprise-risk-pricing-2026"
+  - "compliance/drata-foundations-50-employee-cap-and-framework-limits-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/digital-operational-resilience-management-app
+      name: Digital Operational Resilience Management app
+    - type: package
+      id: package/digital-operational-resilience-third-party-information-register-app
+      name: Digital Operational Resilience - Third Party Information Register app
+    - type: package
+      id: package/irm-pro-license
+      name: IRM Pro license
+    - type: package
+      id: package/tprm-license
+      name: TPRM license
+    - type: capability
+      id: capability/full-third-party-engagement-functionality
+      name: full third-party engagement functionality
+  edges:
+    - type: requires_version
+      from: package/digital-operational-resilience-management-app
+      to: package/irm-pro-license
+    - type: requires_version
+      from: package/digital-operational-resilience-management-app
+      to: package/tprm-license
+    - type: requires_version
+      from: package/digital-operational-resilience-third-party-information-register-app
+      to: package/irm-pro-license
+    - type: requires_version
+      from: package/digital-operational-resilience-third-party-information-register-app
+      to: package/tprm-license
+    - type: requires_version
+      from: capability/full-third-party-engagement-functionality
+      to: package/tprm-license

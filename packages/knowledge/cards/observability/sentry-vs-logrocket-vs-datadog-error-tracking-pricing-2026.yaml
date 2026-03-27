@@ -1,0 +1,245 @@
+id: "observability/sentry-vs-logrocket-vs-datadog-error-tracking-pricing-2026"
+title: "Sentry vs LogRocket vs Datadog for Error Tracking, Session Replay, and
+  Logs 2026"
+problem: "Error observability vendor pricing diverged significantly in 2026.
+  Comparing Sentry quota-based pricing, LogRocket session replay rates, and
+  Datadog metering requires understanding exact event and retention costs to
+  avoid bill shock at scale."
+context:
+  - "error-tracking"
+  - "session-replay"
+  - "log-management"
+  - "observability"
+  - "frontend"
+  - "backend"
+  - "product-analytics"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "small-team"
+  - "enterprise"
+  - "low-ops"
+  - "compliance"
+candidates:
+  - name: "Sentry"
+    summary: "Purpose-built error tracking, session replay, tracing, and log
+      ingestion under a unified quota model. As of 2026-03-16, the Team plan is
+      $26/month (annual) and includes 50,000 errors, 50 session replays, 5GB
+      logs, and 5M spans per month. Additional events are pay-as-you-go: errors
+      from $0.0003625/event (50k-100k tier), replays from $0.00375/replay, logs
+      at $0.50/GB. Reserving volumes saves ~20% over PAYG rates."
+    when_to_use: "Best for cost-sensitive + small-team or cost-sensitive + low-ops
+      environments where error context depth — source maps, breadcrumbs, release
+      tracking, and session replays — is the primary need. The quota-drop model
+      (events are silently dropped once budget is exhausted, not overcharged)
+      makes spend predictable. Good for serverless architectures where per-host
+      pricing would be prohibitive. Spike protection prevents runaway costs
+      during incidents. Choose Sentry when you want a dedicated error platform
+      rather than paying for a full APM stack."
+    tradeoffs: "Strongest error context of the three options: stack traces with
+      source maps, breadcrumbs, release tracking, mobile and web session replays
+      (Android, iOS, React Native, web), and OpenTelemetry-compatible tracing.
+      Quota-based pricing is intuitive and capped. Only 50 replays/month
+      included on base Team plan — meaningful replay capture requires PAYG
+      budget. Sentry is not a full infrastructure observability platform; pair
+      with a metrics/infra tool for host-level monitoring."
+    cautions: "Spike protection is not on by default per-project — enable it under
+      Settings > Spike Protection to avoid draining PAYG budgets during
+      incidents. When reserved volume and PAYG budget are both exhausted, events
+      are dropped without alerting, so monitor quota usage proactively. The
+      Business plan ($80/month annual) adds SAML+SCIM and unlimited dashboards
+      but has the same base quotas as Team; upgrade for compliance, not for
+      higher included event counts. Sentry Logs ($0.50/GB PAYG) are newer and
+      separate from error events — treat them as a complement to structured log
+      pipelines, not a Datadog Log Management replacement."
+    links:
+      - "https://sentry.io/pricing/"
+      - "https://docs.sentry.io/pricing/"
+      - "https://docs.sentry.io/pricing/quotas/"
+      - "https://docs.sentry.io/product/session-replay/"
+  - name: "LogRocket"
+    summary: "Session replay-first platform combining product analytics, error
+      tracking, and Galileo AI root-cause analysis. As of 2026-03-16, the Team
+      plan starts at $69/month with 10,000–50,000 sessions/month. The
+      Professional plan (starting at $295/month, annual) covers any session
+      volume with custom retention and seats. Enterprise is fully custom-quoted
+      and includes a self-hosted deployment option. There is no pay-as-you-go
+      pricing tier — plans are session-volume bands."
+    when_to_use: "Best for cost-sensitive + small-team or enterprise + compliance
+      teams where the primary workflow is watching user sessions alongside
+      JavaScript errors, network requests, and console logs — rather than
+      backend error aggregation. Ideal when product and engineering share the
+      same tool: engineers debug JS exceptions, product teams watch session
+      funnels and heatmaps. Choose Professional or Enterprise when session
+      volume exceeds 50k/month or when custom data retention and SSO are
+      required. The self-hosted Enterprise option suits compliance environments
+      that cannot send user session recordings to a third-party SaaS."
+    tradeoffs: "Best session replay fidelity and product analytics integration of
+      the three options: pixel-accurate replay with network request inspection,
+      Galileo AI for pattern detection (Professional+), and tight coupling of
+      error events to session context. Pricing is session-count-based, which is
+      more predictable than per-event for user-facing apps. Error tracking is a
+      secondary capability — backend error aggregation, distributed tracing, and
+      server-side spans are not native strengths. No free PAYG overflow: once
+      your session band is full, you either upgrade or stop recording."
+    cautions: "LogRocket session pricing scales steeply with user traffic — high-MAU
+      consumer apps can exceed Professional pricing quickly; evaluate Enterprise
+      or conditional recording for cost control. Error tracking lacks the
+      source-map upload pipeline, release tracking, and breadcrumb depth of
+      Sentry; LogRocket is complementary to rather than a replacement for
+      backend error monitoring. Galileo AI and advanced analytics are
+      Professional-tier-only. Free plan is limited to 1,000 sessions/month and
+      1-month retention — not suitable for production debugging."
+    links:
+      - "https://logrocket.com/pricing"
+      - "https://logrocket.com/"
+  - name: "Datadog Error Tracking + Session Replay + Logs"
+    summary: "Datadog offers error tracking, session replay, RUM, and log management
+      as separate metered SKUs within its unified observability platform. As of
+      2026-03-16, standalone Error Tracking costs $25/month (annual) for up to
+      50,000 errors, then tiered at $0.25/1,000 errors (50k-100k), scaling down
+      to $0.10/1,000 at 20M+ errors. Session Replay is an add-on at $2.50/1,000
+      sessions (annual). Log ingestion is $0.10/GB plus $1.70/million indexed
+      events (15-day retention, annual). Error tracking is bundled across Log
+      Management, APM, and RUM — not available standalone without one of those
+      plans."
+    when_to_use: "Best for enterprise + high-scale or microservices + compliance
+      environments where you already use Datadog for infrastructure, APM, or
+      security and want unified error context across browser, mobile, and
+      backend in a single platform. The tiered volume pricing makes Datadog
+      cost-competitive at very high error volumes (20M+ errors/month drops to
+      $0.10/1,000). Choose Datadog when error tracking, session replay, and logs
+      must correlate with infrastructure metrics, distributed traces, and alerts
+      without cross-tool pivoting."
+    tradeoffs: "Strongest cross-signal correlation of the three options: errors link
+      to traces, logs, and infrastructure metrics natively. Tiered error
+      tracking pricing becomes cost-competitive at high scale. Session Replay
+      requires a RUM plan and is a separate add-on ($2.50/1,000 sessions
+      annual), making total digital experience cost the sum of multiple SKUs.
+      Log management two-part pricing ($0.10/GB ingestion plus $1.70/million
+      indexed events) means costs are not obvious from ingestion volume alone —
+      high-query-rate logs index costs can dominate. On-demand rates are
+      significantly higher than annual rates across all SKUs."
+    cautions: "Datadog Error Tracking is not a standalone product as of 2026-03-16 —
+      it requires being on a Log Management, APM, or RUM plan. Combining Error
+      Tracking ($25/month base), RUM ($0.15/1,000 sessions), and Session Replay
+      ($2.50/1,000 sessions) at even modest traffic quickly exceeds Sentry and
+      LogRocket equivalents. Log indexing costs are the most common bill-shock
+      vector: $1.70/million events at 15-day retention means 1 billion log
+      events/month = $1,700 in indexing alone, before ingestion. Use Flex
+      Storage ($0.05/million events) for archival logs to control indexing
+      costs. On-demand pricing (no annual commitment) carries a ~44-50% markup
+      across session replay and log indexing compared to annual rates."
+    links:
+      - "https://www.datadoghq.com/pricing/"
+      - "https://www.datadoghq.com/pricing/list/"
+      - "https://docs.datadoghq.com/error_tracking/"
+tags:
+  - "observability"
+  - "error-tracking"
+  - "session-replay"
+  - "sentry"
+  - "logrocket"
+  - "datadog"
+  - "log-management"
+  - "pricing"
+  - "comparison"
+  - "rum"
+aliases:
+  - "sentry vs logrocket"
+  - "sentry vs datadog error tracking"
+  - "logrocket vs datadog session replay"
+  - "error tracking pricing comparison"
+  - "session replay pricing 2026"
+  - "sentry quota pricing"
+  - "datadog rum pricing"
+  - "logrocket session pricing"
+  - "error observability vendor comparison"
+related_cards:
+  - "observability/error-monitoring-sentry-vs-platform-native"
+  - "observability/datadog-vs-grafana-cloud-vs-new-relic"
+  - "observability/synthetic-monitoring-vs-rum"
+  - "observability/log-retention-vs-trace-sampling"
+  - "frontend/frontend-error-boundary-and-monitoring"
+  - "observability/opentelemetry-vendor-pipeline"
+  - analytics/logrocket-ai-and-session-replay-packaging-2026
+  - analytics/sentry-session-replay-pricing-vs-full-replay-stack-2026
+  - observability/raygun-vs-bugsnag-vs-rollbar-error-monitoring-pricing-2026
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-09-21"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/sentry
+      name: Sentry
+    - type: vendor
+      id: vendor/logrocket
+      name: LogRocket
+    - type: vendor
+      id: vendor/datadog
+      name: Datadog
+    - type: capability
+      id: capability/error-tracking
+      name: Error Tracking
+      category: observability
+    - type: capability
+      id: capability/session-replay
+      name: Session Replay
+      category: observability
+    - type: capability
+      id: capability/log-management
+      name: Log Management
+      category: observability
+    - type: capability
+      id: capability/rum
+      name: RUM
+      category: observability
+    - type: package
+      id: package/datadog-error-tracking
+      name: Datadog Error Tracking
+    - type: package
+      id: package/datadog-session-replay
+      name: Datadog Session Replay
+    - type: package
+      id: package/datadog-log-management-plan
+      name: Datadog Log Management Plan
+    - type: package
+      id: package/datadog-apm-plan
+      name: Datadog APM Plan
+    - type: package
+      id: package/datadog-rum-plan
+      name: Datadog RUM Plan
+    - type: package
+      id: package/logrocket-professional-plan
+      name: LogRocket Professional Plan
+    - type: capability
+      id: capability/galileo-ai
+      name: Galileo AI root-cause analysis
+      category: ai-analysis
+  edges:
+    - type: requires_version
+      from: package/datadog-session-replay
+      to: package/datadog-rum-plan
+      requirement: Session Replay requires a RUM plan.
+    - type: requires_version
+      from: package/datadog-error-tracking
+      to: package/datadog-log-management-plan
+      requirement: Error Tracking is not available standalone without a Log
+        Management, APM, or RUM plan.
+    - type: requires_version
+      from: package/datadog-error-tracking
+      to: package/datadog-apm-plan
+      requirement: Error Tracking is not available standalone without a Log
+        Management, APM, or RUM plan.
+    - type: requires_version
+      from: package/datadog-error-tracking
+      to: package/datadog-rum-plan
+      requirement: Error Tracking is not available standalone without a Log
+        Management, APM, or RUM plan.
+    - type: requires_version
+      from: capability/galileo-ai
+      to: package/logrocket-professional-plan
+      requirement: Galileo AI and advanced analytics are Professional-tier-only.

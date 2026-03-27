@@ -15,10 +15,10 @@ constraints:
   - "low-ops"
 candidates:
   - name: "Deploy Fluid Compute in lower-cost U.S. regions"
-    summary: 'As of 2026-03-19, Vercel lists Washington, D.C. (iad1), Cleveland
-      (cle1), and Portland (pdx1) at "$0.128" per Active CPU hour and
-      "$0.0106" per GB-hour of provisioned memory, which is the documented
-      low-cost Fluid pricing band.'
+    summary: "As of 2026-03-19, Vercel lists Washington, D.C. (iad1), Cleveland
+      (cle1), and Portland (pdx1) at \"$0.128\" per Active CPU hour and
+      \"$0.0106\" per GB-hour of provisioned memory, which is the documented
+      low-cost Fluid pricing band."
     when_to_use: "Use this when you are cost-sensitive and do not yet have measured
       evidence that a user-local deployment changes conversion, interaction
       quality, or timeout risk. It is the default choice when most traffic can
@@ -38,11 +38,11 @@ candidates:
         -fluid-compute"
   - name: "Deploy Fluid Compute in higher-cost user-local regions such as Tokyo or
       Sao Paulo"
-    summary: 'As of 2026-03-19, Vercel lists Tokyo (hnd1) at "$0.202" per Active
-      CPU hour and "$0.0167" per GB-hour, and Sao Paulo (gru1) at "$0.221"
-      and "$0.0183". This is the higher regional pricing band versus the
-      "$0.128" and "$0.0106" U.S. baseline, so choose it only when lower
-      latency in those regions is worth the added spend.'
+    summary: "As of 2026-03-19, Vercel lists Tokyo (hnd1) at \"$0.202\" per Active
+      CPU hour and \"$0.0167\" per GB-hour, and Sao Paulo (gru1) at \"$0.221\"
+      and \"$0.0183\". This is the higher regional pricing band versus the
+      \"$0.128\" and \"$0.0106\" U.S. baseline, so choose it only when lower
+      latency in those regions is worth the added spend."
     when_to_use: "Use this only when your traffic is concentrated near Japan or
       Brazil and you have measured that lower latency changes a meaningful
       business or product outcome, or when geographic placement itself is a hard

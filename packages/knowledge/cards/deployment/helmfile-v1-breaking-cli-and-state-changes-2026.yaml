@@ -1,0 +1,168 @@
+id: "deployment/helmfile-v1-breaking-cli-and-state-changes-2026"
+title: "Helmfile v1 Breaking CLI and State Changes 2026"
+problem: "Decide whether to adopt Helmfile v1 immediately or hold on older
+  automation after command and state behavior changes raised deployment
+  regression risk."
+context:
+  - "kubernetes"
+  - "helm"
+  - "helmfile"
+  - "ci-cd"
+constraints:
+  - "low-ops"
+  - "small-team"
+  - "monorepo"
+candidates:
+  - name: "Adopt Helmfile v1 now with a controlled migration"
+    summary: "Helmfile is MIT-licensed open source with no product pricing as of
+      2026-03-27. The latest official release visible in the upstream releases
+      feed is v1.4.3 from 2026-03-24, and the docs state Helmfile supports both
+      Helm 3.x and Helm 4.x. Helmfile's v1 proposal and docs say v1 is intended
+      to be backward-compatible with v0.x except for a small set of explicit
+      breaks: split mixed `environments` and `releases` into separate YAML
+      documents, require `.gotmpl` when rendering state files as Go templates,
+      remove `--args`, remove `charts.yaml` autodiscovery, replace
+      `HELMFILE_SKIP_INSECURE_TEMPLATE_FUNCTIONS`, and remove `helmfile charts`
+      and `helmfile delete`. The same proposal says v1.x should avoid further
+      backward-incompatible changes, which lowers future churn once the
+      migration is complete."
+    when_to_use: "Use this when you need ongoing upstream compatibility, especially
+      if your automation is already touching Helm 4 or you want to stop carrying
+      v0-era behavior assumptions. It is the better choice when you can run a
+      short migration window and validate state-file rendering and command
+      wrappers before production rollout."
+    tradeoffs: "You get onto the maintained v1 line and reduce future major-version
+      uncertainty, but you must absorb one-time automation edits and retest
+      deployment flows. The main cost is migration QA rather than license or
+      runtime cost."
+    cautions: "Audit every templated state file before rollout. Mixed `environments`
+      plus `releases` in one templated document, use of `--args`, reliance on
+      implicit `charts.yaml`, or wrappers that call `helmfile delete` or
+      `helmfile charts` are blocker-level risks. Also note that v0.x offered
+      some v1-style behavior behind `HELMFILE_V1MODE=true`, and v1.2.3 added a
+      parameter to render a helmfile as a Go template without the `.gotmpl`
+      extension, so check the official docs for the exact compatibility path
+      your version supports."
+    links:
+      - "https://helmfile.readthedocs.io/en/stable/"
+      - "https://helmfile.readthedocs.io/en/stable/proposals/towards-1.0/"
+      - "https://github.com/helmfile/helmfile/releases"
+      - "https://github.com/helmfile/helmfile"
+  - name: "Hold on v0.x automation temporarily while pre-migrating state layout"
+    summary: "Helmfile's own v1 proposal says the latest v0.x release before v1
+      exposed alternative migration paths, with some enabled via
+      `HELMFILE_V1MODE=true`, so teams could prepare before cutting over. As of
+      2026-03-27, the core decision is no longer whether v1 will happen, because
+      Helmfile v1.0 and v1.1 had already been released by May 2025 and the
+      project docs recommend upgrading directly to v1.1 if still on v0.x. A
+      short-term hold can still be rational if your current deployment wrappers
+      depend on removed commands or ambiguous state rendering and you need time
+      to remove those assumptions first. This is a risk-containment choice, not
+      a long-term platform direction."
+    when_to_use: "Use this when deployment regression risk is currently higher than
+      the benefit of immediate upgrade, such as frozen release windows or
+      fragile CI/CD wrappers around deprecated commands and flags. It is the
+      better choice when you can immediately start making v1-compatible file and
+      command changes on v0.x, then switch versions only after dry runs pass."
+    tradeoffs: "This minimizes near-term production risk, but it extends time on
+      older automation and delays convergence on the stable v1 contract. You
+      also keep carrying operator confusion around v0 versus v1 behavior until
+      the cutover is finished."
+    cautions: "Do not treat 'hold' as indefinite. As of 2026-03-27, v1 has already
+      been in release for months and upstream release activity is on v1.4.x. If
+      you stay on v0.x, at minimum pre-split YAML documents with `---`, remove
+      `--args` usage, stop depending on `charts.yaml`, and replace deleted
+      subcommands with `sync` or `destroy` semantics so the actual version
+      cutover becomes low-risk."
+    links:
+      - "https://helmfile.readthedocs.io/en/stable/proposals/towards-1.0/"
+      - "https://helmfile.readthedocs.io/en/stable/"
+      - "https://github.com/helmfile/helmfile/releases"
+tags:
+  - "deployment"
+  - "kubernetes"
+  - "helm"
+  - "helmfile"
+  - "ci-cd"
+aliases:
+  - "helmfile v1 breaking changes"
+  - "helmfile v1 migration"
+  - "helmfile --args removed"
+  - "helmfile .gotmpl requirement"
+related_cards:
+  - "deployment/rollback-strategy-for-schema-plus-app"
+  - "_archived/ci-cd-pipeline"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/helmfile
+      name: Helmfile
+    - type: package
+      id: package/helmfile-v1
+      name: Helmfile v1
+    - type: package
+      id: package/helmfile-v0x
+      name: Helmfile v0.x
+    - type: package
+      id: package/helm-3
+      name: Helm 3.x
+    - type: package
+      id: package/helm-4
+      name: Helm 4.x
+    - type: data_format
+      id: format/gotmpl
+      name: .gotmpl
+    - type: capability
+      id: capability/args-flag
+      name: --args flag
+    - type: capability
+      id: capability/charts-yaml-autodiscovery
+      name: charts.yaml autodiscovery
+    - type: capability
+      id: capability/helmfile-charts-command
+      name: helmfile charts command
+    - type: capability
+      id: capability/helmfile-delete-command
+      name: helmfile delete command
+    - type: capability
+      id: capability/v1mode-env
+      name: HELMFILE_V1MODE=true
+  edges:
+    - type: requires_version
+      from: package/helmfile-v1
+      to: package/helm-3
+      note: Docs state Helmfile supports Helm 3.x.
+    - type: requires_version
+      from: package/helmfile-v1
+      to: package/helm-4
+      note: Docs state Helmfile supports Helm 4.x.
+    - type: breaking_change_in
+      from: capability/args-flag
+      to: package/helmfile-v1
+      note: v1 removes --args.
+    - type: breaking_change_in
+      from: format/gotmpl
+      to: package/helmfile-v1
+      note: v1 requires .gotmpl when rendering state files as Go templates.
+    - type: breaking_change_in
+      from: capability/charts-yaml-autodiscovery
+      to: package/helmfile-v1
+      note: v1 removes charts.yaml autodiscovery.
+    - type: breaking_change_in
+      from: capability/helmfile-charts-command
+      to: package/helmfile-v1
+      note: v1 removes helmfile charts.
+    - type: breaking_change_in
+      from: capability/helmfile-delete-command
+      to: package/helmfile-v1
+      note: v1 removes helmfile delete.
+    - type: locks_via
+      from: package/helmfile-v0x
+      to: capability/v1mode-env
+      note: v0.x offered some v1-style behavior behind HELMFILE_V1MODE=true.

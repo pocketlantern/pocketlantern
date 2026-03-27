@@ -1,0 +1,188 @@
+id: "storage/cloudinary-vs-uploadcare-vs-imagekit-pricing-2026"
+title: "Cloudinary vs Uploadcare vs ImageKit Transformation Pricing 2026"
+problem: "Choose a media pipeline provider based on current transformation
+  billing, bandwidth costs, and when seemingly cheap image plans become
+  expensive at scale."
+context:
+  - "media-cdn"
+  - "image-processing"
+  - "video-processing"
+  - "file-uploads"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Cloudinary"
+    summary: "As of 2026-03-20, Cloudinary self-service pricing is credit-based
+      rather than simple per-transform billing. The public plans shown are Free
+      with 25 monthly credits, Plus at 225 monthly credits for $99 per month
+      monthly or $89 per month yearly, and Advanced at 600 monthly credits for
+      $249 per month monthly or $224 per month yearly. Cloudinary documents that
+      1 credit equals 1000 transformations, or 1 GB of managed storage, or 1 GB
+      of delivered bandwidth. The important cost behavior is that uploads and
+      newly generated derivatives consume transformation usage, managed storage
+      includes derived assets and backups, and features like `f_auto` can
+      generate multiple derived assets for one logical URL."
+    when_to_use: "Use Cloudinary when you want a mature all-in-one media platform
+      and you accept credit pooling across transformations, storage, and
+      bandwidth. It fits teams that value broad image and video features more
+      than perfectly predictable unit economics."
+    tradeoffs: "Strong feature depth, CDN delivery, video support, and ecosystem
+      maturity. Cost forecasting is harder because one pooled credit budget
+      covers multiple dimensions and derived assets can increase both
+      transformation and storage consumption."
+    cautions: "Repeated delivery of the same derived asset does not re-consume
+      transformation quota, but every newly processed derivative does. Managed
+      storage includes derived versions, and Cloudinary explicitly says `f_auto`
+      can create multiple derived assets depending on browser format support."
+    links:
+      - "https://cloudinary.com/pricing"
+      - "https://cloudinary.com/pricing/compare-plans"
+      - "https://cloudinary.com/documentation/developer_onboarding_faq_credits"
+      - "https://support.cloudinary.com/hc/en-us/articles/203125631-How-does-Cl\
+        oudinary-count-my-plan-s-quotas-and-what-does-every-quota-mean"
+  - name: "Uploadcare"
+    summary: "As of 2026-03-20, Uploadcare prices around three separate meters:
+      operations, traffic, and storage. The public plans shown are Free, Pro at
+      $66 per month, and Business at $166 per month. Pro includes 100000
+      operations, 75 GB traffic, and 50 GB storage, then charges $0.5 per 1000
+      operations, $0.5 per GB traffic, and $0.5 per GB storage; Business
+      includes 250000 operations, 200 GB traffic, and 125 GB storage, then
+      charges $0.45 on the same units. Uploadcare defines operations broadly to
+      include file and API-related actions such as uploads, requests, and image
+      transformations, which means usage can grow faster than teams expect if
+      they focus only on bandwidth."
+    when_to_use: "Use Uploadcare when you want straightforward separate meters and
+      your workload is moderate enough that request plus transformation
+      operations will not dominate spend. It is a good fit for upload-heavy
+      products that want built-in ingestion widgets and CDN delivery without
+      Cloudinary's credit model."
+    tradeoffs: "Clear published overage rates and simpler storage and traffic
+      economics than pooled-credit pricing. The downside is that operations
+      include requests, uploads, and transforms, so high-volume delivery or many
+      file actions can make the plan more expensive than a bandwidth-first
+      comparison suggests."
+    cautions: "Do not estimate cost from storage and bandwidth alone. Uploadcare's
+      own pricing page says operations include requests and transformations, so
+      a large catalog with many resizes or API actions can hit the operations
+      meter before traffic becomes the main cost."
+    links:
+      - "https://uploadcare.com/pricing/"
+  - name: "ImageKit"
+    summary: "As of 2026-03-20, ImageKit's public media-processing plans are Forever
+      Free, Lite at $9 per month plus pay-as-you-go, and Pro at $89 per month
+      plus pay-as-you-go. Lite includes 40 GB bandwidth and 10 GB DAM storage,
+      then charges $0.5 per GB bandwidth and $0.1 per GB storage; Pro includes
+      225 GB bandwidth and 225 GB storage, then charges $0.45 per GB bandwidth
+      and $0.09 per GB storage. ImageKit explicitly says there is no limit to
+      the total traffic or number of media transformations on Lite and Pro for
+      images, while video processing and AI features are billed separately
+      through video processing units and extension units. It also documents that
+      image transformations are not billed toward storage, and connecting
+      external storage does not count toward DAM storage."
+    when_to_use: "Use ImageKit when your main workload is image optimization and
+      transformation at scale and you want image transforms to be effectively
+      bundled into bandwidth-driven pricing. It is the strongest fit for
+      cost-sensitive teams serving lots of transformed images from external
+      storage or a DAM without wanting per-request transform billing."
+    tradeoffs: "Very favorable economics for image-heavy sites because bandwidth,
+      not image transform count, is the primary cost driver. Video and AI
+      workloads are less simple because new video variants consume VPUs and
+      advanced AI features consume extension units."
+    cautions: "The low entry price can be misleading at scale because Lite includes
+      only 40 GB bandwidth and then moves to $0.5 per GB. ImageKit also states
+      that already processed and cached media still count toward bandwidth on
+      delivery, so high-traffic sites remain bandwidth-bound even when transform
+      generation is cheap."
+    links:
+      - "https://imagekit.io/plans/"
+      - "https://imagekit.io/docs/how-pricing-works"
+tags:
+  - "storage"
+  - "cloudinary"
+  - "uploadcare"
+  - "imagekit"
+  - "pricing"
+  - "media-pipeline"
+aliases:
+  - "cloudinary vs uploadcare vs imagekit pricing"
+  - "image transformation pricing 2026"
+  - "media cdn transformation billing"
+related_cards:
+  - "web/imgix-vs-imagekit-vs-uploadcare-image-cdn-pricing-2026"
+  - "serverless/file-upload-strategy-on-serverless"
+  - "database/object-storage-s3-vs-r2-vs-gcs"
+  - storage/mux-vs-cloudinary-video-delivery-pricing-2026
+  - backend/appwrite-image-transformations-pricing-after-april-1-2025-2026
+  - storage/imgproxy-open-source-vs-pro-features-and-commercial-pricing-2026
+  - storage/cloudinary-march-2026-video-unit-pricing-vs-imgix-images-only
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/cloudinary
+      name: Cloudinary
+    - type: vendor
+      id: vendor/uploadcare
+      name: Uploadcare
+    - type: vendor
+      id: vendor/imagekit
+      name: ImageKit
+    - type: capability
+      id: capability/image-processing
+      name: image-processing
+    - type: capability
+      id: capability/video-processing
+      name: video-processing
+    - type: capability
+      id: capability/file-uploads
+      name: file-uploads
+    - type: capability
+      id: capability/media-cdn
+      name: media-cdn
+  edges:
+    - type: locks_via
+      from: vendor/cloudinary
+      to: capability/image-processing
+      mechanism: credit-based pricing
+      evidence: Cloudinary self-service pricing is credit-based; 1 credit can be
+        consumed by transformations, storage, or bandwidth, and newly generated
+        derivatives consume transformation usage.
+    - type: locks_via
+      from: vendor/cloudinary
+      to: capability/media-cdn
+      mechanism: pooled credits across bandwidth and storage
+      evidence: Cloudinary pools credits across transformations, managed storage, and
+        delivered bandwidth, making cost forecasting dependent on multiple
+        dimensions.
+    - type: locks_via
+      from: vendor/uploadcare
+      to: capability/file-uploads
+      mechanism: operations meter
+      evidence: Uploadcare defines operations broadly to include file and API-related
+        actions such as uploads, requests, and image transformations.
+    - type: locks_via
+      from: vendor/uploadcare
+      to: capability/image-processing
+      mechanism: operations meter
+      evidence: Uploadcare pricing says operations include image transformations, so
+        many resizes or API actions can hit the operations meter.
+    - type: locks_via
+      from: vendor/imagekit
+      to: capability/image-processing
+      mechanism: bandwidth-driven pricing
+      evidence: ImageKit says there is no limit to total traffic or number of media
+        transformations on Lite and Pro for images; image transformations are
+        not billed toward storage.
+    - type: locks_via
+      from: vendor/imagekit
+      to: capability/video-processing
+      mechanism: video processing units
+      evidence: ImageKit states that video processing is billed separately through
+        video processing units.

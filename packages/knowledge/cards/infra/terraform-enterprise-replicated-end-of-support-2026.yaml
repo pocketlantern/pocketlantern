@@ -1,0 +1,187 @@
+id: "infra/terraform-enterprise-replicated-end-of-support-2026"
+title: "Terraform Enterprise on Replicated End of Support by April 1, 2026"
+problem: "Self-managed Terraform Enterprise operators need a migration decision
+  card on leaving Replicated Native Scheduler before support ends on April 1,
+  2026 and before installations become nonfunctional on December 31, 2027."
+context:
+  - "terraform-enterprise"
+  - "hashicorp"
+  - "self-managed"
+  - "docker"
+  - "kubernetes"
+  - "nomad"
+constraints:
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Migrate to Docker Engine"
+    summary: "Docker is a supported Flexible Deployment Options runtime for
+      self-managed Terraform Enterprise. As of 2026-03-19, HashiCorp states the
+      final Replicated release was in March 2025 and support for that final
+      release ends on April 1, 2026; migration requires moving to a supported
+      runtime on the same Terraform Enterprise version. The migration guide says
+      you must first upgrade the Replicated installation to \"v202309-1\" or
+      later, and you cannot combine an application upgrade with the migration
+      itself. Pricing for Flexible Deployment Options is not publicly listed in
+      the official docs as of 2026-03-19, so check official docs and your
+      HashiCorp account team."
+    when_to_use: "Use this when you want the lowest-ceremony exit from Replicated
+      and prefer to stay close to the existing single-host operational model. It
+      is the fastest path when you want to reuse the current host, generate a
+      compose file from the existing installation, and avoid taking on
+      Kubernetes or Nomad operations."
+    tradeoffs: "Operationally simpler than Kubernetes or Nomad, but it gives you
+      less built-in orchestration and scaling structure. It is a pragmatic
+      migration target, not the strongest choice for multi-node platform
+      standardization."
+    cautions: "You need a new Flexible Deployment Options license file, which is
+      different from the existing Replicated \".rli\" license. The migration
+      guide says compose configurations generated on releases older than
+      \"v202410-1\" can mis-format secrets containing special characters, so
+      manual review is required. The target runtime must run the same Terraform
+      Enterprise version as the Replicated source."
+    links:
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated\
+        -migration"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy"
+      - "https://developer.hashicorp.com/terraform/enterprise/releases/2025"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated"
+  - name: "Migrate to Kubernetes"
+    summary: "Kubernetes is a supported Flexible Deployment Options runtime and is
+      the most standardized target if your platform already runs clusters. As of
+      2026-03-19, the official 2025 release table lists Kubernetes support for
+      current Terraform Enterprise releases; for \"v202507-1\" it lists tested
+      versions of EKS \"1.33\", AKS \"1.33\", GKE \"1.32\", and Helm chart
+      \"1.6.5\". Replicated is already deprecated, its final release was in
+      March 2025, and support ends on April 1, 2026. Pricing for Flexible
+      Deployment Options is not publicly listed in official docs as of
+      2026-03-19, so check official docs and your HashiCorp account team."
+    when_to_use: "Use this when you already operate Kubernetes and want the
+      longest-term alignment with existing cluster tooling, security controls,
+      and scaling patterns. It is the better choice when platform teams already
+      manage Helm-based workloads and externalized data services."
+    tradeoffs: "Best fit for teams with existing Kubernetes maturity, but it adds
+      cluster complexity if Terraform Enterprise would be your only major
+      workload there. Migration is more operationally involved than Docker."
+    cautions: "The migration guide says you cannot combine upgrade and migration, so
+      source and target must be on the same Terraform Enterprise version. You
+      still need a Flexible Deployment Options license, and you should validate
+      your target cluster and Helm chart versions against the release table
+      before scheduling cutover."
+    links:
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated\
+        -migration"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy"
+      - "https://developer.hashicorp.com/terraform/enterprise/releases/2025"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated"
+  - name: "Migrate to Nomad"
+    summary: "Nomad is a supported Flexible Deployment Options runtime for
+      self-managed Terraform Enterprise and fits teams already standardized on
+      HashiCorp infrastructure tooling. As of 2026-03-19, the official 2025
+      release table lists tested Nomad version \"1.7\" and minimum supported
+      version \"1.5\" for current releases including \"v202507-1\". Replicated
+      is deprecated, the final Replicated release was in March 2025, and support
+      ends on April 1, 2026. Pricing for Flexible Deployment Options is not
+      publicly listed in official docs as of 2026-03-19, so check official docs
+      and your HashiCorp account team."
+    when_to_use: "Use this when your organization already runs Nomad and wants to
+      keep Terraform Enterprise inside the same operational stack. It is the
+      stronger fit when Nomad expertise already exists and Kubernetes would be
+      net-new complexity."
+    tradeoffs: "Cleaner operational fit for Nomad shops, but a weaker choice if your
+      broader platform and staffing are centered on Kubernetes. It also
+      introduces migration caveats around service dependencies that some
+      Replicated deployments did not manage explicitly."
+    cautions: "The migration guide says Replicated deployments in external
+      operational mode need an external Redis server when moving to Nomad. As
+      with other targets, the migration is version-matched and requires a
+      Flexible Deployment Options license distinct from the Replicated license."
+    links:
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated\
+        -migration"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy"
+      - "https://developer.hashicorp.com/terraform/enterprise/releases/2025"
+      - "https://developer.hashicorp.com/terraform/enterprise/deploy/replicated"
+tags:
+  - "infra"
+  - "terraform"
+  - "terraform-enterprise"
+  - "hashicorp"
+  - "migration"
+aliases:
+  - "terraform enterprise replicated end of support"
+  - "terraform enterprise flexible deployment options migration"
+  - "terraform enterprise replicated april 1 2026"
+related_cards:
+  - "infra/iac-tools"
+  - "infra/terraform-vs-pulumi-vs-opentofu"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: runtime
+      id: runtime/replicated-native-scheduler
+      name: Replicated Native Scheduler
+    - type: runtime
+      id: runtime/docker-engine
+      name: Docker Engine
+    - type: runtime
+      id: runtime/kubernetes
+      name: Kubernetes
+    - type: runtime
+      id: runtime/nomad
+      name: Nomad
+    - type: package
+      id: package/replicated-v202309-1
+      name: Replicated v202309-1
+    - type: package
+      id: package/tfe-v202507-1
+      name: Terraform Enterprise v202507-1
+    - type: framework
+      id: framework/helm-chart
+      name: Helm chart
+    - type: package
+      id: package/helm-chart-1.6.5
+      name: Helm chart 1.6.5
+    - type: package
+      id: package/nomad-1.5
+      name: Nomad 1.5
+    - type: package
+      id: package/nomad-1.7
+      name: Nomad 1.7
+    - type: capability
+      id: capability/migrate-to-docker-engine
+      name: Migrate to Docker Engine
+    - type: capability
+      id: capability/migrate-to-kubernetes
+      name: Migrate to Kubernetes
+    - type: capability
+      id: capability/migrate-to-nomad
+      name: Migrate to Nomad
+  edges:
+    - type: eol_date
+      from: runtime/replicated-native-scheduler
+      to: null
+      date: 2026-04-01
+      scope: support ends
+    - type: requires_version
+      from: capability/migrate-to-docker-engine
+      to: package/replicated-v202309-1
+      range: ">=v202309-1"
+      scope: must first upgrade the Replicated installation
+    - type: requires_version
+      from: package/tfe-v202507-1
+      to: package/helm-chart-1.6.5
+      scope: tested Helm chart version listed for Kubernetes
+    - type: requires_version
+      from: package/tfe-v202507-1
+      to: package/nomad-1.5
+      scope: minimum supported Nomad version
+    - type: requires_version
+      from: package/tfe-v202507-1
+      to: package/nomad-1.7
+      scope: tested Nomad version listed for current releases

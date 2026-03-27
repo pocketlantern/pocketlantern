@@ -1,0 +1,213 @@
+id: "devtools/localstack-community-vs-team-vs-enterprise-pricing-2026"
+title: "LocalStack Community vs Base vs Ultimate vs Enterprise Pricing and
+  Service Coverage 2026"
+problem: "Teams using LocalStack for AWS need to know when the legacy Community
+  path is no longer acceptable and when commercial Base, Ultimate, or Enterprise
+  tiers become necessary because of auth changes, service gating, shared state,
+  or CI and governance requirements."
+context:
+  - "aws"
+  - "localstack"
+  - "ci-cd"
+  - "integration-testing"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on the pinned legacy Community image"
+    summary: "As of 2026-03-27, the March 23, 2026 image consolidation has already
+      occurred: the latest LocalStack for AWS releases now require an account
+      and auth token, including in CI. LocalStack states the legacy Community
+      emulator will no longer receive product updates, including security
+      patches, and recommends pinning an older tag if you want to keep using the
+      old unauthenticated image. Their blog explicitly gives version 4.12 as an
+      example of a fixed Community tag to pin. This path avoids subscription
+      cost, but it also opts you out of future service parity and security
+      maintenance."
+    when_to_use: "Use this only for frozen hobby or low-risk internal experiments
+      where reproducibility matters more than staying current. The decisive
+      factor is whether you can tolerate no future fixes, no CVE patches, and no
+      access to newer AWS emulation improvements."
+    tradeoffs: "Cheapest option and no migration to account-based auth for pinned
+      tags, but it becomes technical debt immediately because updates stop."
+    cautions: "Do not use this if your workflows auto-pull
+      `localstack/localstack:latest`; that broke on 2026-03-23 for
+      unauthenticated usage. Pinning an old tag preserves current behavior, but
+      LocalStack says prior versions will not receive backport support or future
+      security updates."
+    links:
+      - "https://blog.localstack.cloud/localstack-single-image-next-steps/"
+      - "https://blog.localstack.cloud/the-road-ahead-for-localstack/"
+  - name: "Use LocalStack Base for commercial team workflows"
+    summary: "As of 2026-03-27, Base is the lowest commercial LocalStack for AWS
+      plan and is priced at \"$39\" per license per month billed annually or
+      \"$45\" per license per month billed monthly. LocalStack lists Base at 55+
+      emulated services, adds local state persistence, basic IAM policy
+      enforcement, Cloud Pod storage of 300 MB per workspace, and 100 sandbox
+      preview minutes per workspace per month. LocalStack also says CI usage is
+      now available across plans and no longer differentiated by CI credits, but
+      commercial CI and shared team pipelines should use a paid plan. In the
+      service matrix, Base unlocks some services beyond Hobby, such as Amazon
+      MQ, but many advanced services remain gated."
+    when_to_use: "Use this when Community or Hobby stops being viable because the
+      work is commercial, developers need maintained releases, or the team needs
+      shared cloud-backed state and authenticated CI. The decisive factor is
+      whether 55+ services and basic collaboration features cover your stack
+      without requiring Ultimate-only services."
+    tradeoffs: "Lowest-cost supported commercial path with team features, but it
+      does not include the broader 110+ service coverage or AWS Replicator."
+    cautions: "Base is not just a license change from Community; it requires the
+      account-and-token workflow introduced on 2026-03-23. Check the licensing
+      matrix if you need services such as Athena, EMR, Glue, EventBridge Pipes,
+      or MWAA, because those are not included in Base."
+    links:
+      - "https://www.localstack.cloud/pricing"
+      - "https://docs.localstack.cloud/aws/licensing/"
+  - name: "Use LocalStack Ultimate for broader AWS coverage and platform-team
+      features"
+    summary: "As of 2026-03-27, Ultimate is priced at \"$89\" per license per month
+      billed annually, with monthly purchasing available via AWS Marketplace.
+      LocalStack lists Ultimate at 110+ emulated services and adds advanced IAM
+      policy testing, AWS Replicator, 3 GB of Cloud Pod storage per workspace,
+      and 500 sandbox preview minutes per workspace per month. The official
+      licensing table shows multiple services move from unavailable in Hobby and
+      Base to available in Ultimate, including Athena, EMR, EMR Serverless,
+      Glue, Redshift Data API, Lake Formation, MSK, Managed Service for Apache
+      Flink, EventBridge Pipes, and MWAA. This is effectively the team tier when
+      your blocker is service coverage rather than just commercial rights."
+    when_to_use: "Use this when Base is too narrow because your app depends on
+      advanced analytics, workflow, streaming, or replication scenarios and you
+      want maintained parity in CI and developer environments. The decisive
+      factor is whether Ultimate-only service coverage or AWS Replicator would
+      otherwise force you back to real AWS for tests."
+    tradeoffs: "Much better parity and stronger IAM and replication tooling, but
+      per-seat cost is materially higher than Base."
+    cautions: "Do not assume all missing behavior is solved by moving from Base to
+      Ultimate; LocalStack's licensing page says plan tables show service
+      availability, not API completeness. If exact parity on a specific AWS
+      service matters, verify the service page before committing."
+    links:
+      - "https://www.localstack.cloud/pricing"
+      - "https://docs.localstack.cloud/aws/licensing/"
+      - "https://docs.localstack.cloud/aws/licensing/"
+  - name: "Use Enterprise for offline, governance, or region-specific requirements"
+    summary: "As of 2026-03-27, Enterprise pricing is custom via sales. LocalStack
+      positions Enterprise as including all LocalStack for AWS services and
+      features plus flexible deployment, unlimited users with custom workspace
+      configurations, CI support at scale, Kubernetes delivery, advanced
+      resiliency tooling, additional AWS regions, GovCloud, custom SSO plus
+      SCIM, and fully offline or air-gapped image delivery. The docs also show
+      some regional coverage is Enterprise-only, and the plan is the only path
+      for organizations with stricter procurement and compliance controls. This
+      is the point where LocalStack stops being a developer convenience and
+      becomes managed internal platform infrastructure."
+    when_to_use: "Use this when security, compliance, private deployment, SSO,
+      air-gapped delivery, GovCloud, or non-default-region emulation are hard
+      requirements. The decisive factor is not price optimization but whether
+      corporate controls or region requirements block Base or Ultimate
+      entirely."
+    tradeoffs: "Best fit for regulated or large organizations and removes the main
+      governance blockers, but procurement is custom and likely overkill for
+      ordinary small-team development."
+    cautions: "Enterprise is the only clearly documented route for fully offline
+      operation and additional AWS regions, so teams with those needs should not
+      plan on self-serving around them later. Engage sales early if your rollout
+      depends on SSO, SCIM, Kubernetes deployment, or air-gapped delivery."
+    links:
+      - "https://www.localstack.cloud/pricing"
+      - "https://docs.localstack.cloud/aws/licensing/"
+      - "https://docs.localstack.cloud/references/regions-coverage/"
+tags:
+  - "devtools"
+  - "aws"
+  - "localstack"
+  - "pricing"
+  - "testing"
+aliases:
+  - "localstack community vs paid plans"
+  - "localstack base ultimate enterprise pricing"
+  - "localstack single image auth token march 2026"
+related_cards:
+  - "_archived/ci-cd-pipeline"
+  - "_archived/testing-strategy"
+  - "testing/mocking-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/localstack
+      name: LocalStack
+    - type: package
+      id: package/localstack-community-legacy
+      name: LocalStack Community (legacy image path)
+    - type: package
+      id: package/localstack-4.12
+      name: LocalStack 4.12
+    - type: package
+      id: package/localstack-base
+      name: LocalStack Base
+    - type: package
+      id: package/localstack-ultimate
+      name: LocalStack Ultimate
+    - type: package
+      id: package/localstack-enterprise
+      name: LocalStack Enterprise
+    - type: capability
+      id: capability/account-auth-token
+      name: Account and auth token workflow
+    - type: capability
+      id: capability/unauthenticated-usage
+      name: Unauthenticated usage
+    - type: capability
+      id: capability/ci
+      name: CI usage
+    - type: capability
+      id: capability/aws-replicator
+      name: AWS Replicator
+    - type: capability
+      id: capability/offline-air-gapped
+      name: Offline or air-gapped delivery
+    - type: capability
+      id: capability/additional-aws-regions
+      name: Additional AWS regions
+  edges:
+    - type: breaking_change_in
+      from: vendor/localstack
+      to: capability/account-auth-token
+      date: 2026-03-23
+      note: Latest LocalStack for AWS releases require an account and auth token,
+        including in CI, after the March 23, 2026 image consolidation.
+    - type: eol_date
+      from: package/localstack-community-legacy
+      to: null
+      date: 2026-03-23
+      note: Legacy Community path no longer receives product updates, including
+        security patches.
+    - type: requires_version
+      from: capability/unauthenticated-usage
+      to: package/localstack-4.12
+      note: LocalStack explicitly gives version 4.12 as an example fixed Community tag
+        to pin for the old unauthenticated image.
+    - type: requires_version
+      from: capability/ci
+      to: capability/account-auth-token
+      date: 2026-03-23
+      note: CI usage now follows the account-and-token workflow.
+    - type: locks_via
+      from: capability/aws-replicator
+      to: package/localstack-ultimate
+      note: AWS Replicator is listed as part of Ultimate.
+    - type: locks_via
+      from: capability/offline-air-gapped
+      to: package/localstack-enterprise
+      note: Enterprise is the only clearly documented route for fully offline or
+        air-gapped image delivery.
+    - type: locks_via
+      from: capability/additional-aws-regions
+      to: package/localstack-enterprise
+      note: Docs show some regional coverage is Enterprise-only.

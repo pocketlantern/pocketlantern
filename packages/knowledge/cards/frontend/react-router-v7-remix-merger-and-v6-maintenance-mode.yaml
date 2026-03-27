@@ -1,0 +1,195 @@
+id: "frontend/react-router-v7-remix-merger-and-v6-maintenance-mode"
+title: "React Router v7 Absorbs Remix — v6 Enters Maintenance Mode 2025"
+problem: "React Router v7 merged Remix framework features. v6 is
+  maintenance-only with no new features. Teams on v6 must decide between
+  upgrading to v7 or staying for security patches only."
+context:
+  - "frontend"
+  - "react"
+  - "routing"
+  - "spa"
+  - "ssr"
+  - "migration"
+constraints:
+  - "small-team"
+  - "enterprise"
+  - "serverless"
+  - "low-ops"
+candidates:
+  - name: "Migrate to React Router v7 — Framework Mode"
+    summary: "React Router v7 Framework Mode is the successor to Remix v2, unified
+      under the react-router package (latest v7.13.1, released February 23,
+      2026). It provides a Vite plugin, file-based routing via routes.ts, SSR,
+      static pre-rendering, automatic code splitting, and type-safe route
+      modules — what would have been Remix v3. Remix v2 users upgrade primarily
+      by renaming packages and running the community codemod; React Router v6
+      users must additionally adopt the Vite plugin and file-based routing
+      conventions. RSC support is in preview as of 2026-03-18 and not
+      production-ready."
+    when_to_use: "Best for enterprise + small-team apps currently on Remix v2 or
+      React Router v6 that need SSR, pre-rendering, or code splitting without
+      adopting a separate meta-framework like Next.js. Ideal when you want
+      full-stack routing conventions — loaders, actions, file-based routes, and
+      server adapters — bundled into the router itself. The single most decisive
+      factor is whether your team is prepared to adopt Vite as the bundler,
+      since Framework Mode requires it."
+    tradeoffs: "Pros: first-class SSR and static pre-rendering, automatic code
+      splitting, type-safe route params and loader return types via generated
+      types, Vite plugin for fast dev builds, file-based routing conventions
+      with routes.ts, platform-agnostic server adapters. Cons: requires Vite
+      (Webpack and CRA builds must be migrated), requires Node >= 20 and React
+      >= 18, RSC support is preview-only as of 2026-03-18, framework conventions
+      carry an up-front learning curve for teams coming from plain v6."
+    cautions: "Framework Mode requires Vite -- teams on Webpack or Create React App
+      must migrate their bundler as part of the upgrade, making this a two-track
+      migration. Remix v2 users should run the community codemod (npx codemod
+      remix/2/react-router/upgrade) first to automate package renames before
+      touching any routing conventions. The react-router-dom package no longer
+      exists in v7; all imports move to react-router or react-router/dom for
+      DOM-specific APIs."
+    links:
+      - "https://reactrouter.com/start/modes"
+      - "https://reactrouter.com/upgrading/remix"
+      - "https://reactrouter.com/upgrading/v6"
+      - "https://remix.run/blog/react-router-v7"
+      - "https://reactrouter.com/changelog"
+  - name: "Migrate to React Router v7 — Declarative or Data Mode"
+    summary: "React Router v7 Declarative Mode is the direct upgrade path from v6's
+      BrowserRouter pattern, requiring only future-flag enablement and package
+      renames with no bundler change. Data Mode extends it with loaders,
+      actions, and useFetcher APIs from createBrowserRouter, without adopting
+      the Vite plugin or file-based routing. Both modes ship in the react-router
+      package (v7.13.1 as of February 2026) and receive active security and
+      feature updates, unlike v6 which is maintenance-only at v6.30.3. Neither
+      mode provides SSR or code splitting without upgrading to Framework Mode."
+    when_to_use: "Best for small-team + cost-sensitive SPAs using v6's BrowserRouter
+      or createBrowserRouter that want to exit the v6 maintenance window without
+      committing to a full-stack framework migration. The single most decisive
+      factor is whether your app is client-rendered with its own data-fetching
+      layer — if so, Declarative or Data Mode preserves your existing
+      architecture on a fully supported version."
+    tradeoffs: "Pros: minimal migration surface from v6 (enable future flags
+      one-by-one then update imports), no bundler change required, all existing
+      v6 data router features preserved in Data Mode, actively maintained with
+      security patches and new features. Cons: no SSR, server-side code
+      splitting, or type-safe route modules without upgrading to Framework Mode;
+      every future flag must be enabled before upgrading and each may require
+      small targeted code changes."
+    cautions: "Each future flag can break existing code in subtle ways --
+      v7_relativeSplatPath changes multi-segment splat route matching,
+      v7_normalizeFormMethod uppercases HTTP method strings, and
+      v7_fetcherPersist changes fetcher lifecycle. Enable and commit each flag
+      individually rather than all at once so regressions can be isolated. The
+      json() and defer() helpers are deprecated in v7 -- loaders should return
+      plain objects instead."
+    links:
+      - "https://reactrouter.com/start/modes"
+      - "https://reactrouter.com/upgrading/v6"
+      - "https://reactrouter.com/changelog"
+  - name: "Stay on React Router v6 (Maintenance Only)"
+    summary: "React Router v6 entered maintenance mode in 2025; the latest release
+      is v6.30.3, which contains only security patches with no new features
+      planned. The v6 branch has continued to receive critical CVE fixes in
+      parallel with v7 releases — v6.30.0 was the final feature release, and
+      v6.30.1 through v6.30.3 are patch and security-only releases. The
+      maintenance window is not formally bounded, making this a time-limited
+      option rather than a permanent strategy. Teams remaining on v6 forgo
+      type-safe route modules, the routes.ts API, RSC readiness, and the entire
+      v7 feature roadmap."
+    when_to_use: "Only justifiable for enterprise teams with active delivery
+      freezes, high-risk dependency chains, or codebases blocked by the Node >=
+      20 and React >= 18 requirements that v7 mandates. Not recommended beyond
+      6–12 months — the maintenance window carries no formal commitment and
+      ecosystem tooling, tutorials, and community support are converging on v7."
+    tradeoffs: "Pros: zero migration effort, zero regression risk, no bundler or
+      Node version change required. Cons: no new features ever — bugs that are
+      not security issues will not be fixed, no access to type-safe routing,
+      file-based routing, or SSR features, ecosystem momentum and hiring-pool
+      knowledge are shifting to v7, and the maintenance window is unspecified."
+    cautions: "Teams staying on v6 must still upgrade to v6.30.3 to be on the latest
+      security-patched release — simply being on v6 does not mean you are
+      protected. The maintenance window has no formal end-of-life date published
+      as of 2026-03-18, so monitor the GitHub releases page and changelog
+      actively rather than assuming coverage. Every month on v6 increases
+      migration debt as v7's ecosystem diverges further."
+    links:
+      - "https://reactrouter.com/changelog"
+      - "https://reactrouter.com/upgrading/v6"
+      - "https://remix.run/blog/merging-remix-and-react-router"
+tags:
+  - "frontend"
+  - "react"
+  - "react-router"
+  - "remix"
+  - "routing"
+  - "migration"
+  - "spa"
+  - "ssr"
+  - "upgrade"
+  - "maintenance"
+  - "vite"
+aliases:
+  - "react router v7 upgrade"
+  - "react router v6 eol"
+  - "react router v6 maintenance mode"
+  - "remix to react router v7"
+  - "react router v6 to v7 migration"
+  - "react router v7 framework mode vs library mode"
+  - "remix v3"
+  - "react router upgrade guide 2025"
+  - "react-router-dom v7"
+related_cards:
+  - "frontend/nextjs-vs-remix-for-b2b-saas-2026"
+  - "frontend/auth-in-frontend-routing-model"
+  - web/builderio-gen1-vs-gen2-sdk-breaking-changes-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/react-router-v7
+      name: React Router v7
+    - type: framework
+      id: framework/react-router-v7-framework-mode
+      name: React Router v7 Framework Mode
+    - type: package
+      id: package/vite
+      name: Vite
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: framework
+      id: framework/react
+      name: React
+    - type: package
+      id: package/react-router-dom
+      name: react-router-dom
+    - type: package
+      id: package/react-router-v6
+      name: React Router v6
+  edges:
+    - type: requires_version
+      from: framework/react-router-v7-framework-mode
+      to: package/vite
+      requirement: requires Vite
+    - type: requires_version
+      from: framework/react-router-v7-framework-mode
+      to: runtime/nodejs
+      version: ">=20"
+    - type: requires_version
+      from: framework/react-router-v7-framework-mode
+      to: framework/react
+      version: ">=18"
+    - type: breaking_change_in
+      from: package/react-router-v7
+      to: package/react-router-dom
+      change: react-router-dom package no longer exists in v7; imports move to
+        react-router or react-router/dom
+    - type: eol_date
+      from: package/react-router-v6
+      to: null
+      date: "2025"
+      status: maintenance-only

@@ -156,6 +156,7 @@ related_cards:
   - database/postgres-major-version-upgrade
   - database/postgres-major-upgrade-extension-compatibility-2026
   - database/render-flexible-postgres-vs-legacy-instance-types-2026
+  - database/timescale-cloud-performance-vs-scale-2026
 status: active
 tier: core
 updated: 2026-03-15

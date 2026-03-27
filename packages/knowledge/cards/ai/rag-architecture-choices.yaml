@@ -100,6 +100,14 @@ related_cards:
   - ai/pinecone-starter-vs-standard-50-dollar-minimum-2026
   - data/vectorchord-vs-pgvector-vs-qdrant-self-hosted-2026
   - ai/llamaindex-v0-x-to-v1-breaking-package-migration-2026
+  - search/azure-ai-search-semantic-ranker-free-vs-billable-2026
+  - search/vertex-ai-search-standard-vs-configurable-pricing-2026
+  - search/amazon-kendra-vs-azure-ai-search-vs-vertex-ai-search-pricing-2026
+  - search/opensearch-service-managed-vs-serverless-pricing-2026
+  - search/brave-search-api-search-vs-answers-plans-2026
+  - search/azure-ai-search-vectorizer-integrated-vs-external-embeddings-cost-2026
+  - search/amazon-kendra-developer-edition-vs-enterprise-2026
+tier: core
 updated: 2026-03-15
 sidecar_hard_facts:
   extracted: 2026-03-20

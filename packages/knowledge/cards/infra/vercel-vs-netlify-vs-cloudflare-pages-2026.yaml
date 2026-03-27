@@ -91,6 +91,7 @@ related_cards:
   - runtime/vercel-fluid-vs-legacy-functions-2026
   - runtime/vercel-fluid-regional-cost-bands-2026
   - web/cloudflare-pages-to-workers-migration-after-file-limit-and-static-asset-changes-2026
+  - deployment/vercel-hobby-pro-limits-feb-2026
 tier: "core"
 status: active
 updated: 2026-03-15

@@ -147,6 +147,8 @@ related_cards:
   - database/managed-postgres-major-upgrade-with-extension-compatibility-2026
   - database/postgres-major-version-upgrade
   - database/aurora-postgresql-17-5-lts-vs-16-after-256-tib-storage-limit-2025
+  - database/cockroachdb-basic-vs-standard-vs-advanced-2026
+  - database/mariadb-cloud-serverless-vs-provisioned-after-skysql-acquisition-2026
 status: active
 tier: core
 updated: 2026-03-15

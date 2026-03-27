@@ -86,6 +86,7 @@ related_cards:
   - "compliance/cookie-consent-platform-onetrust-vs-cookiebot-vs-privacy-first-\
     2026"
   - analytics/simple-analytics-vs-aptabase-vs-telemetrydeck-pricing-2026
+  - analytics/snowplow-bdp-vs-posthog-data-warehouse-cost-2026
 tier: "core"
 status: "active"
 updated: "2026-03-18"

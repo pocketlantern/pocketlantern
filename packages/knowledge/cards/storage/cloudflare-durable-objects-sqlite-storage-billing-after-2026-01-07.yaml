@@ -1,0 +1,149 @@
+id: "storage/cloudflare-durable-objects-sqlite-storage-billing-after-2026-01-07"
+title: "Cloudflare Durable Objects SQLite Storage Billing After January 7, 2026"
+problem: "Choose whether to use SQLite-backed Durable Objects or keep legacy
+  key-value-backed Durable Objects now that SQLite storage billing is live and
+  the main cost tradeoffs are clearer."
+context:
+  - "cloudflare"
+  - "workers"
+  - "durable-objects"
+  - "sqlite"
+constraints:
+  - "serverless"
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+candidates:
+  - name: "Use SQLite-backed Durable Objects as the default for new namespaces"
+    summary: "As of 2026-03-27, Cloudflare recommends SQLite-backed Durable Objects
+      for all new Durable Object classes, and Workers Free can only use this
+      backend. Storage billing already took effect on January 7, 2026, and only
+      usage on and after that date is billable. On Workers Paid, SQLite storage
+      pricing is first 25 billion row reads per month included plus $0.001 per
+      million rows, first 50 million row writes per month included plus $1.00
+      per million rows, and 5 GB-month included plus $0.20 per GB-month for
+      stored data. SQLite-backed objects also expose SQL, keep support for the
+      Durable Objects key-value API, and add point-in-time recovery for the past
+      30 days."
+    when_to_use: "Use this for new Durable Object designs when you need strong
+      consistency, embedded SQL tables, or transactional state with low
+      operational overhead. It is the decisive choice if you are on Workers Free
+      or want Cloudflare's recommended path with clearer long-term feature
+      support."
+    tradeoffs: "You get SQL, PITR, and a unified storage model, but row-based
+      billing makes chatty key-value-style access patterns and alarm-heavy write
+      paths more visible in cost. Stored data is billed until removed, and each
+      object still has a per-object storage ceiling."
+    cautions: "As of 2026-03-27, this billing change has already occurred. Key-value
+      API calls on a SQLite-backed object are still billed as SQLite row reads
+      and writes because they use a hidden SQLite table, `setAlarm()` counts as
+      a row write, deletes count as rows written, and Workers Free hard-stops
+      when daily limits are exceeded instead of charging overages."
+    links:
+      - "https://developers.cloudflare.com/durable-objects/platform/pricing/"
+      - "https://developers.cloudflare.com/durable-objects/best-practices/acces\
+        s-durable-objects-storage/"
+      - "https://developers.cloudflare.com/durable-objects/platform/limits/"
+      - "https://developers.cloudflare.com/changelog/2025-12-12-durable-objects\
+        -sqlite-storage-billing/"
+  - name: "Keep key-value-backed Durable Objects only for existing Paid-plan
+      namespaces with stable low-volume patterns"
+    summary: "As of 2026-03-27, key-value-backed Durable Objects remain available
+      only on the Workers Paid plan and are described as a
+      backwards-compatibility path rather than the recommended default. Their
+      storage billing model is still request-unit based: 1 million read request
+      units included plus $0.20 per million, 1 million write request units
+      included plus $1.00 per million, 1 million delete requests included plus
+      $1.00 per million, and 1 GB included plus $0.20 per GB-month. A request
+      unit is 4 KB read or written, so larger values or `list()` scans can
+      consume multiple units. This backend does not provide the SQLite SQL API
+      or SQLite point-in-time recovery."
+    when_to_use: "Use this only if you already have paid namespaces on the legacy
+      backend and your current request-unit economics are predictable enough
+      that a backend switch is not worth the migration risk. It is the decisive
+      choice when preserving an existing deployed namespace matters more than
+      adopting SQLite features."
+    tradeoffs: "It can stay cheaper for some simple small-value access patterns, but
+      it is a legacy path with weaker feature coverage and no Free-plan
+      availability. You also keep the older key-value limits, including smaller
+      value sizes than SQLite-backed storage."
+    cautions: "Cloudflare says the key-value storage backend remains for backwards
+      compatibility, and as of 2026-03-27 the docs still say a migration path
+      from KV-backed namespaces to SQLite-backed namespaces will be available in
+      the future. That means you should not assume an in-place migration is
+      already available, and you cannot downgrade to Workers Free until all
+      key-value-backed Durable Object namespaces are deleted."
+    links:
+      - "https://developers.cloudflare.com/durable-objects/platform/pricing/"
+      - "https://developers.cloudflare.com/durable-objects/best-practices/acces\
+        s-durable-objects-storage/"
+      - "https://developers.cloudflare.com/durable-objects/platform/limits/"
+tags:
+  - "storage"
+  - "cloudflare"
+  - "durable-objects"
+  - "sqlite"
+  - "pricing"
+aliases:
+  - "cloudflare durable objects sqlite billing"
+  - "durable objects sqlite storage pricing"
+  - "cloudflare durable objects sqlite vs kv storage"
+related_cards:
+  - "serverless/cloudflare-durable-objects-sqlite-storage-billing-enablement-20\
+    26"
+  - "web/cloudflare-workers-free-vs-paid-after-durable-object-storage-billing-2\
+    026"
+  - "serverless/cloudflare-workers-free-tier-100k-requests-per-day-limit-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-28
+  nodes:
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+    - type: capability
+      id: capability/durable-objects
+      name: Durable Objects
+    - type: data_format
+      id: format/sqlite
+      name: SQLite-backed Durable Objects
+    - type: data_format
+      id: format/key-value
+      name: Key-value-backed Durable Objects
+    - type: runtime
+      id: runtime/workers-free
+      name: Workers Free
+    - type: runtime
+      id: runtime/workers-paid
+      name: Workers Paid
+    - type: capability
+      id: capability/sql
+      name: SQL API
+    - type: capability
+      id: capability/point-in-time-recovery
+      name: Point-in-time recovery
+  edges:
+    - type: breaking_change_in
+      from: format/sqlite
+      to: vendor/cloudflare
+      date: 2026-01-07
+      name: SQLite storage billing took effect
+    - type: locks_via
+      from: runtime/workers-free
+      to: format/sqlite
+      note: Workers Free can only use the SQLite backend
+    - type: locks_via
+      from: format/key-value
+      to: runtime/workers-paid
+      note: Key-value-backed Durable Objects remain available only on Workers Paid
+    - type: requires_version
+      from: capability/sql
+      to: format/sqlite
+      note: SQLite-backed objects expose SQL
+    - type: requires_version
+      from: capability/point-in-time-recovery
+      to: format/sqlite
+      note: SQLite-backed objects add point-in-time recovery for the past 30 days

@@ -128,6 +128,8 @@ related_cards:
   - frontend/nuxt-4-migration-after-nuxt-3-maintenance-ended-jan-2026
   - frontend/tailwindcss-v4-upgrade-node20-browser-floor-2026
   - runtime/vite-6-module-runner-migration-2026
+  - frontend/svelte-5-runes-vs-legacy-mode-adoption-2026
+  - frontend/vitepress-2-alpha-migration-node-20-and-theme-api-breaks-2026
 status: active
 tier: core
 updated: 2026-03-15

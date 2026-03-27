@@ -160,6 +160,9 @@ related_cards:
   - infra/retool-vs-budibase-vs-appsmith-internal-tools-cost-2026
   - backend/pocketbase-vs-supabase-open-source-managed-2026
   - auth/auth-provider-migration-and-lock-in-2026
+  - auth/zitadel-free-vs-pro-dau-thresholds-2026
+  - auth/clerk-core-2-vs-core-3-march-2026
+  - auth/clerk-m2m-included-vs-billed-after-march-16-2026
 tier: "core"
 status: active
 updated: 2026-03-14

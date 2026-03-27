@@ -1,5 +1,9 @@
 {
-  "generated_at": "2026-03-21T03:34:08.709Z",
-  "card_count": 104,
-  "graph_index": "packages/knowledge/graph/_index.json"
+  "source": "pocketlantern/studio",
+  "studio_revision": "194dbecea476320d67eaef98e4b416d7ed2ac4b8",
+  "toolkit_revision": "6c63eee1fcff4f3fd54972e8b9f9878d92c07034",
+  "generated_at": "2026-03-27T19:03:31.869Z",
+  "card_count": 252,
+  "graph_index": "packages/knowledge/graph/_index.json",
+  "selection": "scripts/select-public-100.ts"
 }

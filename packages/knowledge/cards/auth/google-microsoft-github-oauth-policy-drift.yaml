@@ -135,6 +135,9 @@ related_cards:
   - auth/google-sign-in-fedcm-migration-vs-custom-oauth-2026
   - auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025
   - auth/okta-developer-edition-deactivation-to-integrator-free-plan-2025
+  - auth/zendesk-oauth-refresh-token-enforcement-2026
+  - backend/nango-pricing-after-2026-managed-auth-and-sync-packaging
+  - ai/composio-free-vs-team-tool-auth-and-execution-pricing-2026
 tier: "core"
 status: active
 updated: 2026-03-14

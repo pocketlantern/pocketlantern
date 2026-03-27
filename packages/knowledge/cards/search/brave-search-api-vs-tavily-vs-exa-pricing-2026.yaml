@@ -1,0 +1,180 @@
+id: "search/brave-search-api-vs-tavily-vs-exa-pricing-2026"
+title: "Brave Search API vs Tavily vs Exa Pricing and Free-Tier Limits in March 2026"
+problem: "Choose an AI-agent web search provider now that Brave, Tavily, and Exa
+  have materially different paid entry points, free-tier limits, and query
+  semantics that change total cost and fallback behavior."
+context:
+  - "ai-agents"
+  - "web-search"
+  - "rag"
+  - "tool-calling"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "real-time"
+candidates:
+  - name: "Brave Search API"
+    summary: "Brave is a web search API backed by Brave's own index and positioned
+      for AI apps. As of 2026-03-27, Brave's newer official pricing pages show a
+      consolidated model: Search costs \"$5 per 1,000 requests\" and includes
+      \"$5 in free credits every month,\" which effectively covers about 1,000
+      Search requests monthly. Brave also has a separate Answers product priced
+      at \"$4 per 1,000 queries\" plus token charges, so search-only and
+      answer-generation costs are no longer the same thing. A recent official
+      Brave announcement says all plans now receive monthly free credits, but
+      Brave still has older public pages showing legacy Free/Base/Pro tables, so
+      pricing documentation is in transition."
+    when_to_use: "Use Brave when you want a straightforward request-based entry
+      point and an independent search index, especially if your agent mostly
+      needs standard web search and occasional grounding context. It is the best
+      fit when you want low-friction monthly free usage and predictable
+      per-request pricing for plain search rather than credit math tied to query
+      depth."
+    tradeoffs: "Simple search pricing and free monthly credits are strong for cost
+      control, but Answers introduces separate search-plus-token billing. Public
+      pricing pages are not fully harmonized yet, so procurement and budgeting
+      should follow the newer pricing dashboard and announcement rather than
+      older marketing tables."
+    cautions: "As of 2026-03-27, Brave has conflicting official pages: one still
+      shows legacy \"Free AI / Base AI / Pro AI\" limits, while newer official
+      pricing pages and the February 2026 announcement describe the current
+      credit-based monthly-free-credit model. Treat the dashboard pricing as the
+      operational source of truth before rollout."
+    links:
+      - "https://brave.com/search/api/"
+      - "https://api-dashboard.search.brave.com/documentation/pricing"
+      - "https://brave.com/blog/most-powerful-search-api-for-ai/"
+  - name: "Tavily"
+    summary: "Tavily uses a credit-based pricing model rather than a flat request
+      price. As of 2026-03-27, Tavily gives \"1,000 free API Credits every
+      month\" with no credit card required, charges \"$0.008 per credit\" on
+      pay-as-you-go, and sells monthly plans starting at \"$30\" for 4,000
+      credits. Search pricing depends on query depth: basic search costs 1
+      credit per request and advanced search costs 2 credits, so the same tool
+      call can cost either about \"$0.008\" or \"$0.016\" on pay-as-you-go.
+      Tavily's broader product set also shares the same credit pool, and
+      Research requests can range from 4 to 110 credits on `mini` or 15 to 250
+      credits on `pro`."
+    when_to_use: "Use Tavily when your agent stack benefits from one vendor covering
+      search, extract, map, crawl, and research under one credit wallet. It is
+      the best fit when you can actively control search depth and avoid
+      expensive research-mode fallbacks."
+    tradeoffs: "The free tier is generous and onboarding is easy, but cost
+      predictability is weaker because request price depends on endpoint and
+      depth. Tavily can be cheap for basic search, yet expensive if your
+      orchestration silently escalates to advanced or research operations."
+    cautions: "Do not budget Tavily as a flat per-search API. The same user workflow
+      can multiply cost if you switch from `basic` to `advanced`, or if a
+      fallback path invokes Research, which has much higher per-request credit
+      ranges."
+    links:
+      - "https://docs.tavily.com/documentation/api-credits"
+      - "https://docs.tavily.com/documentation/api-reference/endpoint/search"
+      - "https://docs.tavily.com/documentation/api-reference/endpoint/research"
+  - name: "Exa"
+    summary: "Exa prices by product and by output shape rather than a single uniform
+      search request fee. As of 2026-03-27, Exa's pricing page says you can
+      \"Run up to 1,000 requests for free every month,\" with Search at \"$7/1k
+      requests (1-10 results),\" plus \"$1 per 1k additional results beyond 10\"
+      and \"+$1/1k summaries.\" Exa's Agentic Search is \"$12/1k requests\" with
+      an extra \"$3 per 1k requests with reasoning enabled,\" while Contents is
+      \"$1/1k pages per content type\" and Answer is \"$5/1k answers.\" This
+      means Exa's total cost depends heavily on whether your agent asks for more
+      than 10 results, summaries, deep mode, reasoning, or content fetches."
+    when_to_use: "Use Exa when your agent needs richer retrieval controls, semantic
+      search behavior, or agentic search modes and you are comfortable modeling
+      cost at the workflow level rather than the raw request level. It is the
+      strongest fit when result quality or structured deep-search behavior
+      matters more than having the simplest bill."
+    tradeoffs: "Exa's free entry point is comparable to Brave's and Tavily's
+      headline free tiers, but paid usage is less predictable because extra
+      results, summaries, reasoning, and contents all layer on additional
+      charges. It can be efficient for targeted search, yet surprisingly
+      expensive for broad retrieval or multi-step agent pipelines."
+    cautions: "The base Search price only covers 1 to 10 results. If your fallback
+      strategy routinely asks for larger result sets, summaries, or deep agentic
+      search, Exa's effective per-query cost can move materially above the
+      headline rate."
+    links:
+      - "https://exa.ai/pricing"
+      - "https://exa.ai/docs/reference/search"
+      - "https://exa.ai/docs/reference/get-contents"
+      - "https://exa.ai/docs/reference/answer"
+tags:
+  - "search"
+  - "ai"
+  - "pricing"
+  - "web-search"
+  - "agents"
+aliases:
+  - "brave vs tavily vs exa pricing"
+  - "ai search api free tier 2026"
+  - "agent web search provider pricing march 2026"
+related_cards:
+  - "ai/ai-feature-cost-governance"
+  - "ai/gemini-grounding-with-google-search-billing-start-vs-self-managed-searc\
+    h-rag-2026"
+  - "ai/model-fallback-strategy"
+  - search/serpapi-vs-searchapi-vs-serper-google-search-api-pricing-2026
+  - search/tavily-development-vs-production-keys-rate-limits-2026
+  - search/brave-search-api-search-vs-answers-plans-2026
+  - search/youcom-web-search-api-builder-vs-pro-plans-2026
+  - search/firecrawl-search-vs-scrape-credit-economics-2026
+  - search/agent-search-api-legal-coverage-serpapi-vs-searchapi-vs-brave-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/brave
+      name: Brave Search API
+    - type: vendor
+      id: vendor/tavily
+      name: Tavily
+    - type: vendor
+      id: vendor/exa
+      name: Exa
+    - type: capability
+      id: capability/query-depth
+      name: Query depth
+    - type: capability
+      id: capability/research
+      name: Research
+    - type: capability
+      id: capability/output-shape
+      name: Output shape
+    - type: capability
+      id: capability/reasoning
+      name: Reasoning
+    - type: capability
+      id: capability/monthly-free-credits
+      name: Monthly free credits
+  edges:
+    - type: locks_via
+      from: vendor/tavily
+      to: capability/query-depth
+      evidence: "Search pricing depends on query depth: basic search costs 1 credit
+        per request and advanced search costs 2 credits."
+    - type: locks_via
+      from: vendor/tavily
+      to: capability/research
+      evidence: Research requests can range from 4 to 110 credits on mini or 15 to 250
+        credits on pro.
+    - type: locks_via
+      from: vendor/exa
+      to: capability/output-shape
+      evidence: Exa prices by product and by output shape rather than a single uniform
+        search request fee.
+    - type: locks_via
+      from: vendor/exa
+      to: capability/reasoning
+      evidence: Agentic Search is $12/1k requests with an extra $3 per 1k requests
+        with reasoning enabled.
+    - type: locks_via
+      from: vendor/brave
+      to: capability/monthly-free-credits
+      evidence: Brave's newer official pricing pages show Search costs $5 per 1,000
+        requests and includes $5 in free credits every month.

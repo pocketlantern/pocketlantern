@@ -1,0 +1,178 @@
+id: "backend/intercom-run-assignment-rules-removal-december-31-2026"
+title: "Intercom Run Assignment Rules Removal Before December 31, 2026"
+problem: "Teams automating Intercom conversations need to choose a replacement
+  workflow for assignment logic before the Run Assignment Rules action is
+  removed at the end of 2026."
+context:
+  - "intercom"
+  - "customer-support"
+  - "rest-api"
+  - "webhooks"
+constraints:
+  - "low-ops"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Replace reruns with explicit assignment via Manage Conversation API"
+    summary: "Intercom's official developer FAQ says teams can assign a conversation
+      directly to an admin or team with the Manage Conversation API instead of
+      running saved assignment rules. As of 2026-03-21, Run Assignment Rules is
+      deprecated in API version 2.12 and later, and the endpoint is scheduled to
+      fail completely after December 31, 2026. The cited docs show Run
+      Assignment Rules required Inbox Pro, but Intercom does not expose a
+      current numeric price for direct assignment in these docs, so check
+      official pricing docs for current packaging. The differentiator is
+      determinism: your app computes the assignee and sends the final assignment
+      directly."
+    when_to_use: "Use this when you already have routing logic in your own backend
+      and want the least ambiguous migration path. It is the best fit for teams
+      that can own assignment logic themselves and do not need Intercom to
+      re-evaluate inbox rules after each event."
+    tradeoffs: "You remove dependence on a deprecated endpoint and avoid version
+      pinning, but you now own routing logic, assignee resolution, and fallback
+      handling."
+    cautions: "Do not plan around API version 2.12+ supporting rule reruns; as of
+      2026-03-21, that removal has already occurred. You also need the Intercom
+      conversation id plus the target admin_id or team id."
+    links:
+      - "https://developers.intercom.com/docs/references/rest-api/api.intercom.\
+        io/Conversations/manageConversation/"
+      - "https://www.intercom.com/help/en/articles/9071694-intercom-developer-f\
+        aqs"
+  - name: "Build an event-driven router with Intercom webhooks plus direct
+      assignment"
+    summary: "Intercom webhooks let your app react to conversation events, and the
+      webhook reference includes assignment- and conversation-related topics
+      such as \"conversation.user.created\" and \"conversation.admin.assigned\".
+      As of 2026-03-21, this is the cleanest official pattern for replacing
+      \"rerun assignment rules\" with custom automation: receive the event,
+      evaluate routing externally, then call Manage Conversation to assign.
+      Intercom's cited webhook docs do not publish a separate price for webhook
+      usage, so check official docs for current plan packaging. The
+      differentiator is that you preserve event-driven automation without
+      depending on the removed rule-rerun API."
+    when_to_use: "Use this when assignment depends on conversation lifecycle events
+      and you still want automatic routing after creation, replies, or
+      reassignment triggers. It fits enterprise or integration-heavy setups
+      better than small scripts because it requires a public endpoint and
+      reliable retry-safe processing."
+    tradeoffs: "You keep automation flexibility and can route on arbitrary business
+      rules, but you add webhook infrastructure, idempotency concerns, and
+      operational complexity."
+    cautions: "Treat webhook handling as at-least-once delivery and make assignment
+      operations idempotent. This is more moving parts than native inbox
+      routing, so it is not the lowest-ops option."
+    links:
+      - "https://developers.intercom.com/docs/webhooks/"
+      - "https://developers.intercom.com/docs/references/webhooks/webhook-model\
+        s/"
+      - "https://developers.intercom.com/docs/references/rest-api/api.intercom.\
+        io/Conversations/manageConversation/"
+  - name: "Move routing back into Intercom-native assignment rules and automations"
+    summary: "Intercom's deprecated endpoint page still points to Assignment Rules
+      as the native mechanism for assigning conversations, and it notes that Run
+      Assignment Rules was available only with Inbox Pro. Intercom's Fin AI
+      Agent help page says Fin follows existing assignment rules, automations,
+      and reporting, which indicates native routing remains the preferred
+      in-product path even as the rerun endpoint disappears. As of 2026-03-21,
+      the main blocker is architectural rather than price: if your workflow
+      depends on re-triggering rules from code, API version 2.12+ no longer
+      supports that. The differentiator is lowest operational overhead because
+      routing stays inside Intercom instead of your backend."
+    when_to_use: "Use this when your assignment logic can be expressed with
+      Intercom's own inbox rules and you want the smallest external integration
+      footprint. It is the best fit for low-ops teams that can accept
+      Intercom-native routing instead of custom code-driven reruns."
+    tradeoffs: "Operationally simpler and closer to Intercom's supported path, but
+      less flexible than owning routing logic in code."
+    cautions: "The deprecated endpoint explicitly says it cannot be used with
+      Workflows, so do not assume workflow adoption preserves the old rerun
+      behavior. If your current automation depends on mid-conversation
+      re-evaluation from code, validate that native rules cover those cases
+      before migrating."
+    links:
+      - "https://developers.intercom.com/docs/references/1.3/rest-api/conversat\
+        ions/run-conversation-assignment-rules"
+      - "https://developers.intercom.com/docs/references/2.12/changelog"
+      - "https://www.intercom.com/help/en/articles/7120684-fin-ai-agent-explain\
+        ed"
+tags:
+  - "backend"
+  - "intercom"
+  - "api"
+  - "automation"
+aliases:
+  - "intercom run assignment rules deprecation"
+  - "intercom assignment rules api removal"
+  - "intercom conversation assignment migration 2026"
+  - "intercom assignment rules sunset"
+  - "intercom run assignment rules end"
+  - "intercom assignment logic migration"
+  - "intercom convo assignment replacement"
+  - "intercom conversation routing 2026"
+  - "intercom assign rules deprecated"
+  - "intercom automation reassignment"
+  - "intercom assignment api sunset"
+  - "intercom routing workflow replacement"
+  - "intercom run assign rules removal"
+
+  - "intercom run assignment rules deprecation"
+  - "intercom assignment rules api removal"
+  - "intercom conversation assignment migration 2026"
+related_cards:
+  - "backend/api-versioning"
+  - "messaging/webhook-retry-idempotency-strategy"
+  - "_archived/migration-strategy"
+  - backend/intercom-contact-company-limit-1000-february-2026
+  - backend/intercom-api-v2-12-deprecation-before-december-2026
+tier: "core"
+status: "active"
+updated: "2026-03-21"
+review_by: "2026-06-19"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/intercom
+      name: Intercom
+    - type: capability
+      id: capability/run-assignment-rules
+      name: Run Assignment Rules
+    - type: capability
+      id: capability/direct-conversation-assignment
+      name: Direct conversation assignment via Manage Conversation API
+    - type: capability
+      id: capability/intercom-webhooks
+      name: Intercom webhooks
+    - type: capability
+      id: capability/native-assignment-rules
+      name: Intercom-native assignment rules and automations
+    - type: package
+      id: package/intercom-rest-api-2-12
+      name: Intercom REST API 2.12
+  edges:
+    - type: breaking_change_in
+      from: capability/run-assignment-rules
+      to: package/intercom-rest-api-2-12
+      change: deprecated in API version 2.12 and later; 2.12+ no longer supports rule
+        reruns
+    - type: eol_date
+      from: capability/run-assignment-rules
+      to: null
+      date: 2026-12-31
+      note: endpoint is scheduled to fail completely after December 31, 2026
+    - type: breaking_change_in
+      from: capability/run-assignment-rules
+      to: capability/native-assignment-rules
+      change: deprecated endpoint page points to Assignment Rules as the native
+        mechanism for assigning conversations
+    - type: breaking_change_in
+      from: capability/direct-conversation-assignment
+      to: capability/run-assignment-rules
+      change: official FAQ says teams can assign directly with Manage Conversation API
+        instead of running saved assignment rules
+    - type: breaking_change_in
+      from: capability/intercom-webhooks
+      to: capability/direct-conversation-assignment
+      change: official replacement pattern is to receive webhook events, evaluate
+        routing externally, then call Manage Conversation to assign

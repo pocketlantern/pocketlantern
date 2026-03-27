@@ -109,6 +109,8 @@ related_cards:
   - security/permit-community-vs-startup-vs-pro-quotas-2026
   - security/permitio-vs-oso-cloud-policy-hosting-2026
   - auth/descope-free-vs-pro-growth-agent-pricing-2026
+  - auth/authzed-cloud-serverless-vs-dedicated-pricing-2026
+tier: core
 updated: 2026-03-15
 review_by: 2026-09-07
 sidecar_hard_facts:

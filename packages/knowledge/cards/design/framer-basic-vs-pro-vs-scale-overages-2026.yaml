@@ -1,0 +1,171 @@
+id: "design/framer-basic-vs-pro-vs-scale-overages-2026"
+title: "Framer Basic vs Pro vs Scale With 2026 Bandwidth and CMS Overage Pricing"
+problem: "Marketing engineering teams need a decision card for when Framer stays
+  economical versus when CMS item, page, bandwidth, or editor overages push them
+  into a different tier."
+context:
+  - "framer"
+  - "website-hosting"
+  - "cms"
+  - "marketing-sites"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Stay on Framer Basic"
+    summary: "As of 2026-03-19, Framer lists Basic at \"$10\" per month on annual
+      billing. Basic includes 30 site pages, 1 CMS collection, 1,000 CMS items,
+      10 GB monthly bandwidth, 2 editor seats, and additional editors at \"$20
+      per editor\" per month. Limits are fixed on Basic, and Framer says that
+      when you reach certain limits it will ask you to upgrade."
+    when_to_use: "Use Basic when the site is a small personal or brochure property
+      that will stay under 30 pages, 1,000 CMS items, and 10 GB bandwidth. It is
+      the economical choice only if you do not need Pro-only workflow features
+      such as staging, roles and permissions, relational CMS, or site
+      redirects."
+    tradeoffs: "Lowest entry price and cheapest extra editor rate, but very tight
+      content and traffic limits. No flexible overage path is shown for Basic."
+    cautions: "If your workspace mixes plans, Framer says editors are charged and
+      limited according to the highest tier plan. Hitting non-bandwidth limits
+      can force an upgrade instead of a simple overage charge."
+    links:
+      - "https://www.framer.com/pricing"
+      - "https://www.framer.com/cms/"
+  - name: "Move to Framer Pro"
+    summary: "As of 2026-03-19, Framer lists Pro at \"$30\" per month on annual
+      billing. Pro includes 150 site pages, 10 CMS collections, 2,500 CMS items,
+      100 GB monthly bandwidth, 10 editor seats, and additional editors at \"$40
+      per editor\" per month. Framer positions Pro for agencies, startups, and
+      scale-ups, and includes staging, roles and permissions, relational CMS,
+      and site redirects."
+    when_to_use: "Use Pro when Basic limits are the blocker but traffic and content
+      volume still fit comfortably inside 150 pages, 2,500 CMS items, and 100 GB
+      bandwidth. It is the lowest tier that adds stronger team workflow and CMS
+      structure without entering usage-based Scale overages."
+    tradeoffs: "Much better operational headroom than Basic, but editor cost doubles
+      from \"$20\" to \"$40\" per added editor. Pro still has fixed limits
+      rather than the flexible overage model shown on Scale."
+    cautions: "Do not assume Pro can absorb sudden traffic spikes indefinitely.
+      Framer says some limits require upgrading, while bandwidth may be exceeded
+      for one month with an email notification."
+    links:
+      - "https://www.framer.com/pricing"
+      - "https://www.framer.com/features/analytics/"
+  - name: "Move to Framer Scale"
+    summary: "As of 2026-03-19, Framer lists Scale at \"$100\" per month on annual
+      billing only, plus usage. Scale includes 300 site pages, 20 CMS
+      collections, 10,000 CMS items, 200 GB monthly bandwidth, 10 editor seats,
+      premium CDN, priority support, and additional editors at \"$40 per
+      editor\" per month. Framer explicitly shows overage pricing on Scale:
+      \"$20 per 100\" extra pages up to 500 total, \"$40 per 10\" extra CMS
+      collections up to 40 total, \"$20 per 10,000\" extra CMS items up to
+      40,000 total, and \"$40 per 100 GB\" extra bandwidth up to 2 TB total."
+    when_to_use: "Use Scale when the site is already beyond Pro limits or when
+      predictable growth makes usage-based headroom cheaper than operationally
+      migrating away. It is the only listed self-serve tier with explicit
+      overage pricing for pages, CMS collections, CMS items, and bandwidth."
+    tradeoffs: "Most flexible plan for high-traffic marketing sites, but base price
+      jumps materially and usage charges can compound. Scale is annual-only on
+      the pricing page."
+    cautions: "Scale overages are capped: Framer says add-ons can take the plan only
+      up to 500 pages, 40 CMS collections, 40,000 CMS items, and 2 TB bandwidth.
+      Beyond that, Framer directs larger teams toward Enterprise with custom
+      limits."
+    links:
+      - "https://www.framer.com/pricing"
+      - "https://www.framer.com/"
+  - name: "Escalate to Framer Enterprise"
+    summary: "As of 2026-03-19, Framer describes Enterprise as the option for teams
+      that need custom limits, enterprise security, annual billing, and
+      dedicated support. The pricing page does not publish a fixed Enterprise
+      price. Enterprise is the stated path once self-serve Scale caps or
+      support/security needs become the main blocker."
+    when_to_use: "Use Enterprise when projected usage can exceed Scale caps or when
+      procurement, security review, and support commitments matter more than
+      self-serve pricing simplicity. It is also the fallback when custom limits
+      are more important than optimizing published overage rates."
+    tradeoffs: "Removes the self-serve cap problem, but price transparency is lower
+      and sales involvement increases. It is less suitable for teams that want
+      simple published economics."
+    cautions: "Check official docs and sales terms for exact Enterprise limits and
+      pricing, because the public pricing page does not publish those numbers."
+    links:
+      - "https://www.framer.com/pricing"
+      - "https://www.framer.com/enterprise"
+tags:
+  - "design"
+  - "framer"
+  - "pricing"
+  - "cms"
+  - "bandwidth"
+aliases:
+  - "framer pricing 2026"
+  - "framer basic vs pro vs scale"
+  - "framer cms overage pricing"
+  - "framer bandwidth overage"
+related_cards:
+  - "design/framer-legacy-vs-new-pricing-plan-migration-2026"
+  - "design/webflow-workspace-vs-site-plan-billing-after-pricing-rework-2025"
+  - design/framer-convert-add-on-vs-third-party-ab-testing-cost-2026
+  - design/framer-free-vs-paid-bandwidth-limits-2026
+  - design/framer-legacy-plans-vs-current-site-pricing-march-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/framer
+      name: Framer
+    - type: package
+      id: package/framer-basic
+      name: Framer Basic
+      category: site plan
+    - type: package
+      id: package/framer-pro
+      name: Framer Pro
+      category: site plan
+    - type: package
+      id: package/framer-scale
+      name: Framer Scale
+      category: site plan
+    - type: package
+      id: package/framer-enterprise
+      name: Framer Enterprise
+      category: site plan
+    - type: capability
+      id: capability/annual-billing
+      name: Annual billing
+    - type: capability
+      id: capability/staging
+      name: Staging
+    - type: capability
+      id: capability/roles-and-permissions
+      name: Roles and permissions
+    - type: capability
+      id: capability/relational-cms
+      name: Relational CMS
+    - type: capability
+      id: capability/site-redirects
+      name: Site redirects
+  edges:
+    - type: requires_version
+      from: capability/staging
+      to: package/framer-pro
+    - type: requires_version
+      from: capability/roles-and-permissions
+      to: package/framer-pro
+    - type: requires_version
+      from: capability/relational-cms
+      to: package/framer-pro
+    - type: requires_version
+      from: capability/site-redirects
+      to: package/framer-pro
+    - type: locks_via
+      from: package/framer-scale
+      to: capability/annual-billing
+    - type: locks_via
+      from: package/framer-enterprise
+      to: capability/annual-billing

@@ -136,6 +136,8 @@ related_cards:
   - mobile/apple-sdk-minimum-xcode-upgrade-deadline-planning-2026
   - mobile/android-16-edge-to-edge-enforcement-for-apps-targeting-api-36-2026
   - payment/revenuecat-1-percent-after-2500-mtr-pricing-2026
+  - mobile/revenuecat-mobile-only-vs-web-paywalls-after-january-2026-launch
+  - mobile/android-gradle-plugin-9-new-dsl-opt-out-removed-agp-10-2026
 status: active
 tier: core
 updated: 2026-03-15

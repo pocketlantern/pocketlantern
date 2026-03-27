@@ -1,0 +1,221 @@
+id: devtools/storybook-8-csf3-required-and-storiesof-api-removed
+title: "Storybook 8 CSF3 Format Required — storiesOf API Removed in v8.0"
+problem: "As of 2026-03-18, Storybook 8.0 (released March 2024) permanently
+  removed the storiesOf API, the *.stories.mdx hybrid format, and Storyshots.
+  Teams that used storiesOf (which required storyStoreV7: false in Storybook 7)
+  must migrate: static component stories move to CSF with a named-export meta
+  object, while teams that used storiesOf for programmatic story generation must
+  adopt the Indexer API. CSF2 function exports still work in v8, but CSF3 object
+  exports are the recommended target. Automated codemods are available for both
+  the storiesOf-to-CSF and CSF2-to-CSF3 migrations."
+context:
+  - "storybook"
+  - "component-testing"
+  - "ui-components"
+  - "frontend"
+  - "migration"
+constraints:
+  - "small-team"
+  - "monorepo"
+  - "enterprise"
+candidates:
+  - name: "CSF3 Named Object Exports"
+    summary: "CSF3 is Storybook's current recommended story format as of v8.0, using
+      a default export meta object (component field required, title optional via
+      auto-inference from file path) and named exports that are plain ES6
+      objects with args, render, parameters, and play fields. CSF3 is 100%
+      backward-compatible with CSF2 and is fully supported by Storybook's
+      automated codemod (npx storybook@latest migrate csf-2-to-3). The decisive
+      differentiator over CSF2 is object-based stories that support spread-based
+      composition and play function integration without explicit render
+      boilerplate."
+    when_to_use: "Best for small-team + monorepo setups starting a fresh Storybook 8
+      adoption or performing a full migration pass from storiesOf or CSF2. The
+      single most decisive factor is whether your team can run and review the
+      codemod output — CSF3's args-first composition and play function support
+      pay off most when teams are writing new stories or have capacity for a
+      thorough review pass."
+    tradeoffs: "Pros: official recommended format for Storybook 8+, supported by all
+      addons and tooling, auto-title from file path eliminates manual title
+      strings, object spread for story composition, play function for
+      interaction testing, cleanest TypeScript typing with Meta<typeof
+      Component> and StoryObj. Cons: migration from CSF2 via codemod is not
+      fully automated and requires per-file manual review; complex decorator
+      chains and dynamically-typed story builders often need manual fixup after
+      codemod."
+    cautions: "The migrate csf-2-to-3 codemod does not correctly handle every
+      pattern — stories with complex storyName overrides, manually-typed CSF2
+      stories, or args built from external functions often require manual
+      correction. Treating codemod output as complete without review is a common
+      source of subtle story regressions in large codebases."
+    links:
+      - "https://storybook.js.org/docs/writing-stories"
+      - "https://storybook.js.org/docs/8/api/csf"
+      - "https://storybook.js.org/docs/8/migration-guide"
+      - "https://storybook.js.org/blog/storybook-csf3-is-here/"
+  - name: "CSF2 Named Function Exports"
+    summary: "CSF2 is the function-based story format (stories as named function
+      exports, default export as the meta object) that remains fully supported
+      in Storybook 8 without requiring migration. As of 2026-03-18, the official
+      Storybook 8 migration guide explicitly classifies the CSF2-to-CSF3 upgrade
+      as optional, not a breaking-change requirement. CSF2 requires .bind({})
+      for story composition and does not support the play function natively, but
+      continues to work with all Storybook 8 addons and tooling."
+    when_to_use: "Best for enterprise + monorepo teams with large existing CSF2
+      codebases where running and auditing the codemod across hundreds of story
+      files is higher risk than deferring the upgrade. Choose this path when the
+      primary goal is unblocking a Storybook 8 upgrade without a parallel story
+      rewrite — treat it as a bridge state to CSF3."
+    tradeoffs: "Pros: no story file changes required if upgrading from Storybook 7
+      with CSF2 files; eliminates migration risk during the major version
+      upgrade; all Storybook 8 addons and the args system work identically.
+      Cons: requires .bind({}) boilerplate for story composition; no auto-title
+      inference; TypeScript typing is more verbose; future Storybook major
+      versions may strengthen the deprecation or remove CSF2 support entirely."
+    cautions: "CSF2 is not explicitly deprecated in Storybook 8 documentation, but
+      Storybook 9 deprecation signals are expected as the ecosystem fully
+      consolidates on CSF3. Teams using CSF2 in Storybook 8 should log a
+      follow-up migration ticket — deferring indefinitely increases the cost of
+      a future forced migration."
+    links:
+      - "https://storybook.js.org/docs/8/migration-guide"
+      - "https://storybook.js.org/docs/8/migration-guide/from-older-version"
+      - "https://storybook.js.org/docs/8/api/csf"
+  - name: "Indexer API (Dynamic Story Generation)"
+    summary: "The Indexer API (configured via experimental_indexers in
+      .storybook/main.js) is Storybook 8's only officially-supported path for
+      programmatic story generation, replacing the dynamic registration
+      capability of storiesOf. Indexers run in Node.js, process files matching a
+      configured pattern, and return story index entries — enabling stories
+      generated from JSON fixtures, custom DSLs, or alternative template
+      formats. As of 2026-03-18, the key remains experimental_indexers,
+      signaling API instability. The critical architectural difference from
+      storiesOf is that indexing is a build-time step: the actual module loaded
+      in the browser must still be valid CSF."
+    when_to_use: "Best for enterprise + monorepo teams where stories must be
+      generated from data sources (JSON fixtures, design tokens, API schemas) or
+      a custom non-CSF story authoring format must be preserved. Use only when
+      converting to static CSF is genuinely impractical — the Indexer API is
+      substantially more complex to implement and maintain than writing CSF
+      directly."
+    tradeoffs: "Pros: enables programmatic story generation in Storybook 8 without
+      storiesOf; supports custom file formats and non-JS story definitions;
+      integrates with the full Storybook addon ecosystem once indexed; decouples
+      story discovery from story format. Cons: experimental API surface;
+      requires transpiling custom formats to CSF for browser rendering (indexing
+      and rendering are separate concerns); no automated migration tooling from
+      storiesOf; demands Node.js implementation skill beyond typical story
+      authoring."
+    cautions: "The experimental_ prefix means Storybook reserves the right to make
+      breaking changes to the indexers API in minor or patch releases without
+      the standard deprecation cycle. Indexers only handle discovery — the
+      browser-loaded story module must still export valid CSF, so teams with
+      fully dynamic storiesOf patterns need to solve both the indexing and the
+      CSF rendering layers independently."
+    links:
+      - "https://storybook.js.org/docs/api/main-config/main-config-indexers"
+      - "https://storybook.js.org/releases/8.0"
+      - "https://storybook.js.org/docs/8/migration-guide"
+tags:
+  - "storybook"
+  - "csf3"
+  - "csf2"
+  - "storiesOf"
+  - "component-story-format"
+  - "migration"
+  - "devtools"
+  - "frontend"
+  - "breaking-change"
+aliases:
+  - "storiesOf removed"
+  - "storybook csf3 migration"
+  - "component story format 3"
+  - "storybook 8 breaking changes"
+  - "storybook migrate storiesOf"
+  - "storybook named exports"
+  - "storybook meta object"
+  - "storybook stories format"
+  - "csf2 to csf3"
+  - "storybook storiesOf alternative"
+related_cards:
+  - "devtools/eslint-9-flat-config-required-eslintrc-removed"
+  - "devtools/prettier-3-esm-only-requirement-and-cjs-plugin-breakage"
+  - testing/storybook-9-migration-from-pre-9-june-2025
+  - frontend/storybook-9-migration-from-pre-9-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2027-03-01"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: framework
+      id: framework/storybook-8
+      name: Storybook 8
+      category: ui-component-workbench
+      version: "8.0"
+    - type: framework
+      id: framework/storybook-7
+      name: Storybook 7
+      category: ui-component-workbench
+      version: "7"
+    - type: capability
+      id: capability/storiesof-api
+      name: storiesOf API
+      category: story-authoring-api
+    - type: data_format
+      id: format/stories-mdx-hybrid
+      name: "*.stories.mdx hybrid format"
+      category: story-format
+    - type: package
+      id: package/storyshots
+      name: Storyshots
+      category: testing-tool
+    - type: data_format
+      id: format/csf2
+      name: CSF2
+      category: story-format
+      standard: Component Story Format 2
+    - type: data_format
+      id: format/csf3
+      name: CSF3
+      category: story-format
+      standard: Component Story Format 3
+    - type: capability
+      id: capability/indexer-api
+      name: Indexer API
+      category: dynamic-story-generation
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+      category: javascript-runtime
+    - type: data_format
+      id: format/csf
+      name: CSF
+      category: story-format
+      standard: Component Story Format
+  edges:
+    - type: breaking_change_in
+      from: capability/storiesof-api
+      to: framework/storybook-8
+      change: removed
+    - type: breaking_change_in
+      from: format/stories-mdx-hybrid
+      to: framework/storybook-8
+      change: removed
+    - type: breaking_change_in
+      from: package/storyshots
+      to: framework/storybook-8
+      change: removed
+    - type: locks_via
+      from: capability/storiesof-api
+      to: framework/storybook-7
+      config: "storyStoreV7: false"
+    - type: requires_version
+      from: capability/indexer-api
+      to: runtime/nodejs
+      requirement: indexers run in Node.js
+    - type: requires_version
+      from: capability/indexer-api
+      to: format/csf
+      requirement: browser-loaded story module must still be valid CSF

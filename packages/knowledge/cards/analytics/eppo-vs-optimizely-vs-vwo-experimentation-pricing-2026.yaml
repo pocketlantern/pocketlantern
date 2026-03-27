@@ -1,0 +1,157 @@
+id: "analytics/eppo-vs-optimizely-vs-vwo-experimentation-pricing-2026"
+title: "Eppo vs Optimizely vs VWO Experimentation Pricing 2026"
+problem: "Product engineering teams need a current experimentation vendor answer
+  because seat, MAU, and stats-engine packaging still vary enough to change the
+  platform choice."
+context:
+  - "experimentation"
+  - "feature-flags"
+  - "data-warehouse"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Eppo"
+    summary: "Eppo is a warehouse-native experimentation platform. As of 2026-03-26,
+      its public site emphasizes direct warehouse integration, metric
+      governance, and a statistical engine with sequential, fixed-sample, and
+      Bayesian analysis plus CUPED. Pricing remains quote-based on the public
+      site, and Eppo became part of Datadog on 2025-05-05."
+    when_to_use: "Use Eppo when you already run serious product experimentation on
+      Snowflake, BigQuery, Redshift, or Databricks and want the data team to
+      control metrics and analysis. It is the strongest fit for enterprise plus
+      high-rigor teams where warehouse-native analysis and statistical
+      flexibility matter more than getting a public list price."
+    tradeoffs: "Strong statistical and warehouse-native positioning, but it is a
+      narrower fit for teams without an established warehouse-centric metrics
+      workflow."
+    cautions: "As of 2026-03-26, exact price, seat allowances, and MAU packaging are
+      not publicly listed on the official site, so procurement requires a sales
+      cycle. The Datadog acquisition has already occurred, so buyers should
+      confirm roadmap, contracting, and support alignment under Datadog before
+      standardizing."
+    links:
+      - "https://www.geteppo.com/"
+      - "https://www.geteppo.com/blog/eppo-is-now-part-of-datadog"
+      - "https://www.geteppo.com/blog/launchdarkly-vs-optimizely"
+  - name: "Optimizely"
+    summary: "Optimizely is a quote-based experimentation platform as of 2026-03-26.
+      Its public materials expose packaging details for experimentation
+      products, including MAU caps, collaboration seats, and tier-based feature
+      access, while official service documentation covers both Web
+      Experimentation and Feature Experimentation."
+    when_to_use: "Use Optimizely when you need an enterprise-grade experimentation
+      platform with formal collaboration workflows and you expect buyer scrutiny
+      around seat allocation, MAU bundles, and product-tier packaging. It is the
+      better fit for enterprise teams that want a mature experimentation suite
+      and can tolerate opaque quote-based pricing."
+    tradeoffs: "Rich packaging and governance features across the experimentation
+      suite, but more of the meaningful capability is gated to higher tiers and
+      product selection matters."
+    cautions: "As of 2026-03-26, official pricing is still quote-only, so budget
+      benchmarking requires direct sales engagement. Packaging is materially
+      tier- and product-dependent, so teams should verify whether they need Web
+      Experimentation, Feature Experimentation, bandits, MVT, or mutually
+      exclusive experiments before comparing quotes."
+    links:
+      - "https://www.optimizely.com/plans/"
+      - "https://world.optimizely.com/globalassets/products/pdf/webexperimentat\
+        ionfeaturematrixjuly2024.pdf"
+      - "https://world.optimizely.com/contentassets/b8414b56291e415aafe5fd2cf95\
+        6a8ef/optimizely-experimentation-service-description---13-september-202\
+        4.pdf"
+  - name: "VWO"
+    summary: "VWO is an experimentation platform that publicly exposes plan
+      structure and, as of 2026-03-26, shows Growth, Pro, and Enterprise
+      packaging across its experimentation offerings. Its official pricing
+      materials also document Monthly Tracked User counting, per-product quotas,
+      and quota-exhaustion behavior that can stop tests and data capture."
+    when_to_use: "Use VWO when you want a more transparent starting point for
+      evaluating an experimentation platform and need to understand MTU counting
+      and quota exhaustion before procurement. It is the best fit for
+      cost-sensitive or smaller teams that still want commercial experimentation
+      tooling without jumping immediately into a fully enterprise-first buying
+      motion."
+    tradeoffs: "More legible public packaging and self-serve evaluation path, but
+      MTUs are counted per product and quota exhaustion can halt active
+      testing."
+    cautions: "As of 2026-03-26, exact quoted pricing should still be checked on
+      official docs or with sales, because the official page is stronger on
+      packaging and MTU policy than on stable crawlable list-price figures. Do
+      not assume one visitor counts once across the whole suite; VWO documents
+      per-product MTU counting, and exhausted non-Insights quota stops tests."
+    links:
+      - "https://vwo.com/pricing/"
+      - "https://help.vwo.com/hc/en-us"
+tags:
+  - "analytics"
+  - "experimentation"
+  - "pricing"
+  - "ab-testing"
+  - "feature-flags"
+aliases:
+  - "eppo vs optimizely vs vwo pricing"
+  - "experimentation vendor pricing 2026"
+  - "optimizely vwo eppo MAU seat comparison"
+related_cards:
+  - "analytics/statsig-cloud-vs-warehouse-native-pricing-2026"
+  - "analytics/statsig-vs-split-vs-configcat-feature-experiment-pricing-2026"
+  - "deployment/feature-flags-vendor-choice"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/eppo
+      name: Eppo
+    - type: vendor
+      id: vendor/optimizely
+      name: Optimizely
+    - type: vendor
+      id: vendor/vwo
+      name: VWO
+    - type: package
+      id: package/optimizely-web-experimentation
+      name: Web Experimentation
+    - type: package
+      id: package/optimizely-feature-experimentation
+      name: Feature Experimentation
+    - type: package
+      id: package/vwo-growth
+      name: Growth
+    - type: package
+      id: package/vwo-pro
+      name: Pro
+    - type: package
+      id: package/vwo-enterprise
+      name: Enterprise
+  edges:
+    - type: locks_via
+      from: vendor/optimizely
+      to: package/optimizely-web-experimentation
+      basis: Official service documentation covers Web Experimentation, and packaging
+        is product-dependent.
+    - type: locks_via
+      from: vendor/optimizely
+      to: package/optimizely-feature-experimentation
+      basis: Official service documentation covers Feature Experimentation, and
+        packaging is product-dependent.
+    - type: locks_via
+      from: vendor/vwo
+      to: package/vwo-growth
+      basis: Public pricing materials show Growth packaging across VWO experimentation
+        offerings.
+    - type: locks_via
+      from: vendor/vwo
+      to: package/vwo-pro
+      basis: Public pricing materials show Pro packaging across VWO experimentation
+        offerings.
+    - type: locks_via
+      from: vendor/vwo
+      to: package/vwo-enterprise
+      basis: Public pricing materials show Enterprise packaging across VWO
+        experimentation offerings.

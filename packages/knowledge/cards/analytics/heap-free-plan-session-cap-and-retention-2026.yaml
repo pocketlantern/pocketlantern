@@ -1,0 +1,138 @@
+id: "analytics/heap-free-plan-session-cap-and-retention-2026"
+title: "Heap Free Plan Session Cap and Retention Limits in 2026"
+problem: "Teams comparing product analytics vendors need an updated answer on
+  Heap’s free-tier session cap, retention window, and upgrade triggers, since
+  old pre-packaging guidance is often wrong for current cost planning."
+context:
+  - "product-analytics"
+  - "session-replay"
+  - "web-analytics"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Stay on Heap Free"
+    summary: "As of 2026-03-18, Heap’s Free plan includes up to 10,000 monthly
+      sessions and 6 months of data history. Heap documents session usage on a
+      rolling 30-day basis across all projects in the account. Heap’s pricing
+      page says Free includes core analytics charts, unlimited enrichment
+      sources, guides integrations, and SSO. If usage exceeds the plan limit,
+      Heap says it does not drop or throttle data, but it requires an upgrade
+      before the team can view data again."
+    when_to_use: "Use this when the team is cost-sensitive, early-stage, and can
+      reliably stay under 10,000 monthly sessions. The decisive factor is
+      whether 6 months of history is enough for planning and whether a hard
+      view-block after overage is acceptable."
+    tradeoffs: "Lowest entry cost and enough for initial product analytics, but the
+      session ceiling and short retention window make it weak for seasonal
+      analysis or fast growth. The overage policy is softer than data loss, but
+      it still creates an operational stop because data access is gated until
+      upgrade."
+    cautions: "Do not plan around old Heap trial-era guidance. Check actual session
+      consumption in Account > Manage > Plan Usage because the metric is rolling
+      30 days and account-wide, not a simple calendar-month estimate."
+    links:
+      - "https://www.heap.io/pricing"
+      - "https://help.heap.io/hc/en-us/articles/37272001023249-How-can-I-see-my\
+        -plan-type-and-how-many-Heap-sessions-I-ve-used"
+      - "https://help.heap.io/hc/en-us/articles/37271837236113-Data-history"
+  - name: "Upgrade to Heap Growth or above"
+    summary: "As of 2026-03-18, Heap’s Growth plan raises data history to 12 months,
+      while Pro and Premier use custom session pricing and can extend data
+      history beyond the base plan with an add-on. Heap’s pricing page does not
+      publish a standard self-serve Growth price; it instructs users to install
+      the snippet to get an estimate. Heap’s help center says Pro and Premier
+      can purchase up to 36 months of data history, with an extra month
+      effectively available to preserve full calendar-month analysis. This path
+      is the current answer once Free plan limits block visibility or retention
+      needs exceed 6 months."
+    when_to_use: "Use this when the team expects to cross 10,000 monthly sessions,
+      needs at least 12 months of trend data, or wants to avoid a visibility
+      interruption after overage. The decisive factor is whether retention depth
+      and predictable continued access matter more than keeping the analytics
+      bill at zero."
+    tradeoffs: "More usable for real planning, budgeting, and year-over-year
+      analysis, but pricing is less transparent and may require sales or
+      usage-based estimation. Pro and Premier add flexibility, though extended
+      history is not included by default."
+    cautions: "Do not assume Growth has a public list price or that Pro includes 36
+      months automatically. Check official docs and current quote details before
+      budgeting, especially if extended history or session replay is part of the
+      requirement."
+    links:
+      - "https://www.heap.io/pricing"
+      - "https://help.heap.io/hc/en-us/articles/37271837236113-Data-history"
+tags:
+  - "analytics"
+  - "heap"
+  - "pricing"
+  - "retention"
+aliases:
+  - "heap free plan session limit"
+  - "heap 10000 monthly sessions"
+  - "heap data history free plan"
+  - "heap free tier sessions"
+  - "heap free plan retention"
+  - "heap session cap 2026"
+  - "heap free data retention"
+  - "heap starter plan sessions"
+  - "heap monthly session cap"
+  - "heap free usage limits"
+  - "heap free plan history"
+  - "heap free session quota"
+  - "heap retain data free plan"
+related_cards:
+  - "analytics/product-analytics-posthog-vs-amplitude-vs-mixpanel-2026"
+  - "analytics/fullstory-pricing-and-retention-tradeoffs-2026"
+  - analytics/posthog-vs-plausible-pricing-thresholds-2026
+  - analytics/mixpanel-free-vs-growth-event-and-replay-limits-2026
+  - analytics/simple-analytics-free-vs-simple-vs-team-retention-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/heap
+      name: Heap
+    - type: package
+      id: package/heap-free-plan
+      name: Heap Free
+      category: plan
+    - type: package
+      id: package/heap-growth-plan
+      name: Heap Growth
+      category: plan
+    - type: capability
+      id: capability/monthly-sessions-10000
+      name: 10,000 monthly sessions
+      category: usage_limit
+    - type: capability
+      id: capability/data-history-6-months
+      name: 6 months of data history
+      category: retention
+    - type: capability
+      id: capability/data-history-12-months
+      name: 12 months of data history
+      category: retention
+    - type: capability
+      id: capability/view-data-after-overage
+      name: View data after overage
+      category: access
+  edges:
+    - type: requires_version
+      from: capability/monthly-sessions-10000
+      to: package/heap-free-plan
+    - type: requires_version
+      from: capability/data-history-6-months
+      to: package/heap-free-plan
+    - type: requires_version
+      from: capability/data-history-12-months
+      to: package/heap-growth-plan
+    - type: locks_via
+      from: package/heap-free-plan
+      to: capability/view-data-after-overage
+      mechanism: upgrade required before data can be viewed again after exceeding the
+        plan limit

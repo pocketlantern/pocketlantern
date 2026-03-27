@@ -1,0 +1,144 @@
+id: "observability/honeycomb-vs-datadog-otel-cost-curves-2026"
+title: "Honeycomb vs Datadog OpenTelemetry cost curves in 2026"
+problem: "Teams standardizing on OTel need a current decision card comparing
+  verified pricing mechanics, retention behavior, and high-cardinality query
+  economics between Honeycomb and Datadog."
+context:
+  - "opentelemetry"
+  - "observability"
+  - "apm"
+  - "logging"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "microservices"
+  - "real-time"
+candidates:
+  - name: "Honeycomb"
+    summary: "As of 2026-03-20, Honeycomb prices core observability primarily by
+      events, with Free up to 20M events per month and Pro starting at $130 per
+      month for 100M events, scaling up to 1.5B events per month. Honeycomb also
+      advertises telemetry pipeline pricing starting at $0.10 per GB with query
+      access in Honeycomb. Honeycomb counts each OTel span as an event, so trace
+      volume maps directly to event volume. Official docs state all Honeycomb
+      datasets include 60-day fixed retention, and the pricing page highlights
+      unlimited querying plus unlimited custom fields, which makes
+      high-cardinality exploration economically straightforward relative to
+      indexed-search models."
+    when_to_use: "Use when you want OTel cost to scale mainly with total event
+      volume and you expect developers to explore high-cardinality dimensions
+      frequently. It is the cleaner fit for cost-sensitive teams that want broad
+      queryability on ingested trace data without separately budgeting indexed
+      spans or custom metrics."
+    tradeoffs: "Predictable event-based economics and fixed 60-day retention are
+      strong for exploratory tracing, but large span counts still translate
+      directly into billable events. Enterprise-only features such as Service
+      Map, Private Cloud support, and longer retention require sales
+      engagement."
+    cautions: "As of 2026-03-20, Honeycomb docs say sustained over-limit usage can
+      trigger throttling after warning periods, although burst protection can
+      exclude certain spikes above 2x the daily target up to three times per
+      calendar month. If you need retention longer than 60 days, check official
+      docs and sales terms."
+    links:
+      - "https://www.honeycomb.io/pricing"
+      - "https://docs.honeycomb.io/get-started/manage-costs/how-honeycomb-calcu\
+        lates-usage"
+      - "https://docs.honeycomb.io/send-data/opentelemetry"
+  - name: "Datadog"
+    summary: "As of 2026-03-20, Datadog APM cost is multi-part rather than purely
+      ingest-based: APM hosts are $31 per host per month billed annually, APM
+      ingestion is $0.10 per GB, and indexed spans are billed separately at
+      $1.27 per million for 7-day retention, $1.70 for 15-day retention, or
+      $2.50 for 30-day retention. Datadog's official allotments include
+      1,000,000 indexed spans and 150 GB of ingested spans per APM host per
+      month. Datadog retention filters control which spans are searchable in
+      Trace Explorer, while non-indexed spans can still appear as trace context.
+      Datadog also separately prices custom metrics at $5 per 100 custom metrics
+      per month, which matters if OTel attribute strategy creates large metric
+      cardinality."
+    when_to_use: "Use when you already want Datadog's broader platform and can
+      actively govern retention filters, host counts, and custom metric
+      cardinality. It is the better fit when teams accept operational cost
+      controls in exchange for Datadog's integrated suite and are willing to
+      search a curated subset of traces instead of treating all ingested spans
+      as query-first data."
+    tradeoffs: "Datadog gives flexible ingestion and retention controls, but the
+      cost curve is harder to predict because host, ingest, indexed-span, and
+      custom-metric charges can all move independently. Searchability depends on
+      retention filters, so high-cardinality exploration is more
+      budget-sensitive than in a flat event-query model."
+    cautions: "Do not model Datadog as simple OTel ingest pricing; official docs
+      show separate charges for APM hosts, ingested spans, indexed spans, and
+      custom metrics. For retention, official pricing pages expose 7-day,
+      15-day, and 30-day indexed-span tiers, but check official docs for your
+      account defaults and any contract-specific allotments."
+    links:
+      - "https://www.datadoghq.com/pricing/list/"
+      - "https://www.datadoghq.com/pricing/allotments/"
+      - "https://docs.datadoghq.com/account_management/billing/apm_tracing_prof\
+        iler/"
+      - "https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"
+tags:
+  - "observability"
+  - "opentelemetry"
+  - "honeycomb"
+  - "datadog"
+  - "pricing"
+aliases:
+  - "honeycomb vs datadog otel pricing"
+  - "otel observability cost curve honeycomb datadog"
+  - "datadog indexed spans vs honeycomb events"
+related_cards:
+  - "observability/honeycomb-free-vs-pro-event-pricing-2026"
+  - "observability/datadog-flex-logs-vs-standard-indexing-after-2025-pricing-sh\
+    ifts-2026"
+  - "observability/opentelemetry-vendor-pipeline"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/honeycomb
+      name: Honeycomb
+    - type: vendor
+      id: vendor/datadog
+      name: Datadog
+    - type: protocol
+      id: protocol/opentelemetry
+      name: OpenTelemetry
+      standard: OpenTelemetry
+    - type: capability
+      id: capability/event-based-pricing
+      name: event-based pricing
+    - type: capability
+      id: capability/fixed-60-day-retention
+      name: 60-day fixed retention
+    - type: capability
+      id: capability/indexed-spans
+      name: indexed spans
+    - type: capability
+      id: capability/custom-metrics
+      name: custom metrics
+    - type: capability
+      id: capability/retention-filters
+      name: retention filters
+  edges:
+    - type: locks_via
+      from: vendor/honeycomb
+      to: capability/event-based-pricing
+    - type: locks_via
+      from: vendor/honeycomb
+      to: capability/fixed-60-day-retention
+    - type: locks_via
+      from: vendor/datadog
+      to: capability/indexed-spans
+    - type: locks_via
+      from: vendor/datadog
+      to: capability/custom-metrics
+    - type: locks_via
+      from: vendor/datadog
+      to: capability/retention-filters

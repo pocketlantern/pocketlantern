@@ -1,0 +1,152 @@
+id: "data/dremio-cloud-vs-starburst-galaxy-lakehouse-pricing-2026"
+title: "Dremio Cloud vs Starburst Galaxy Lakehouse Pricing 2026"
+problem: "Choose a SQL lakehouse service after 2025-2026 packaging changes
+  altered how engines, acceleration, and concurrency are billed."
+context:
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "iceberg"
+  - "lakehouse"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+candidates:
+  - name: "Dremio Cloud"
+    summary: "As of 2026-03-20, Dremio Cloud publicly lists pricing at \"$0.20 per
+      DCU (Dremio Compute Unit).\" As of that date, its cloud packaging shows a
+      forever-free \"Standard\" edition and a paid \"Enterprise\" edition;
+      Enterprise is documented as purchasable through AWS Marketplace private
+      offer, Azure Marketplace private offer, or a prepaid Dremio contract. As
+      of 2026-03-20, Dremio also documents Standard as including key features
+      without limits on query scale or concurrency, while Dremio's public
+      materials are mixed on deployment surface: the pricing comparison page
+      labels Dremio Cloud as \"AWS (Azure Coming Soon),\" but Dremio separately
+      announced general availability of Dremio Cloud on Microsoft Azure in March
+      2024."
+    when_to_use: "Use Dremio Cloud when you want a low-ops managed service with a
+      true free starting point and your main concern is avoiding per-cluster
+      tier gating early on. It is the cleaner fit when Dremio's edition-based
+      packaging and auto-scaling matter more than a published per-worker credit
+      table."
+    tradeoffs: "The headline price is simple at \"$0.20 per DCU,\" and Standard
+      lowers entry cost, but public docs do not expose the same detailed
+      worker-by-worker consumption tables that Starburst publishes. Enterprise
+      procurement is also more sales-led because it relies on private offers or
+      prepaid contracts."
+    cautions: "As of 2026-03-20, \"free\" does not mean zero infrastructure bill:
+      Dremio states that AWS EC2 instances in your account are still billed for
+      connecting to sources and running queries. Standard is also capped at up
+      to 3 projects even though query scale and concurrency are documented as
+      unlimited."
+    links:
+      - "https://www.dremio.com/pricing/"
+      - "https://docs.dremio.com/cloud/subscription/"
+      - "https://docs.dremio.com/editions/"
+  - name: "Starburst Galaxy"
+    summary: "As of 2026-03-20, Starburst Galaxy publicly lists on-demand prices
+      starting at \"$0.50/credit\" for Pro, \"$0.75/credit\" for Enterprise, and
+      \"$1.00/credit\" for Mission Critical in common US regions. As of that
+      date, the free tier is listed as \"Free forever\" at \"$0\" with up to 3
+      clusters and standard cluster execution mode, and Starburst's published
+      credit table shows 1-worker clusters at 6 credits/hour, 2 workers at 12,
+      and 4 at 24, with separate rates for managed ingest and streaming ingest.
+      As of 2026-03-20, the trial is described as 30 days with \"$500\" in
+      compute resources plus access to accelerated \"Warp Speed\" and
+      fault-tolerant clusters before automatic downgrade to the free tier."
+    when_to_use: "Use Starburst Galaxy when you want published cost mechanics for
+      cluster size, ingest, and tier-based execution features before committing.
+      It is the stronger fit when you need explicit control over execution
+      modes, autoscaling features, private connectivity options, or
+      deployment-location-specific credit prices across AWS, Azure, and GCP."
+    tradeoffs: "Pricing is more transparent at the unit level because Starburst
+      publishes per-credit regional prices and per-worker hourly credit burn,
+      but total cost depends on tier, region, cluster size, and optional ingest
+      features. The free tier is useful for evaluation, yet important
+      capabilities such as flexible execution modes and stronger governance sit
+      behind paid tiers."
+    cautions: "As of 2026-03-20, the free tier is limited to 3 clusters and standard
+      execution mode only. Private connectivity is an extra charge at
+      \"$1/connection/day\" plus \"$0.02/GB\" for PrivateLink data transfer, and
+      the trial auto-downgrades after 30 days."
+    links:
+      - "https://www.starburst.io/pricing/"
+      - "https://www.starburst.io/pricing/pricing-details/"
+tags:
+  - "data"
+  - "lakehouse"
+  - "sql"
+  - "pricing"
+  - "dremio"
+  - "starburst"
+aliases:
+  - "dremio cloud pricing vs starburst galaxy"
+  - "lakehouse sql service pricing 2026"
+  - "dremio vs starburst cost"
+related_cards:
+  - "data/clickhouse-cloud-pricing-after-warehouse-packaging-2026"
+  - "data/bigquery-on-demand-vs-editions-capacity-pricing-2026"
+  - "data/snowflake-credit-pricing-and-serverless-cost-shifts-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/starburst
+      name: Starburst
+    - type: package
+      id: package/starburst-galaxy-free-tier
+      name: Starburst Galaxy Free tier
+      category: tier
+    - type: package
+      id: package/starburst-galaxy-paid-tiers
+      name: Starburst Galaxy paid tiers
+      category: tier-group
+    - type: package
+      id: package/starburst-galaxy-trial
+      name: Starburst Galaxy trial
+      category: trial
+    - type: capability
+      id: capability/flexible-execution-modes
+      name: Flexible execution modes
+    - type: capability
+      id: capability/stronger-governance
+      name: Stronger governance
+    - type: capability
+      id: capability/warp-speed
+      name: Warp Speed
+    - type: capability
+      id: capability/fault-tolerant-clusters
+      name: Fault-tolerant clusters
+    - type: capability
+      id: capability/standard-execution-mode
+      name: Standard execution mode
+  edges:
+    - type: locks_via
+      from: capability/flexible-execution-modes
+      to: package/starburst-galaxy-paid-tiers
+      evidence: important capabilities such as flexible execution modes ... sit behind
+        paid tiers
+    - type: locks_via
+      from: capability/stronger-governance
+      to: package/starburst-galaxy-paid-tiers
+      evidence: important capabilities such as ... stronger governance sit behind paid
+        tiers
+    - type: locks_via
+      from: capability/warp-speed
+      to: package/starburst-galaxy-trial
+      evidence: the trial is described as 30 days with "$500" in compute resources
+        plus access to accelerated "Warp Speed"
+    - type: locks_via
+      from: capability/fault-tolerant-clusters
+      to: package/starburst-galaxy-trial
+      evidence: the trial is described as 30 days ... plus access to ...
+        fault-tolerant clusters
+    - type: locks_via
+      from: capability/standard-execution-mode
+      to: package/starburst-galaxy-free-tier
+      evidence: the free tier is limited to 3 clusters and standard execution mode only

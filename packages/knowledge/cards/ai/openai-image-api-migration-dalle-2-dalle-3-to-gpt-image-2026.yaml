@@ -22,10 +22,10 @@ constraints:
   - "compliance"
 candidates:
   - name: "Migrate now to GPT Image 1.5 on the Image API"
-    summary: 'As of 2026-03-15, OpenAI says `gpt-image-1.5` is its latest and most
+    summary: "As of 2026-03-15, OpenAI says `gpt-image-1.5` is its latest and most
       advanced image generation model and recommends it for the best experience.
-      The official pricing page lists 1024x1024 image generation at "$0.009"
-      for low quality, "$0.034" for medium, and "$0.133" for high.'
+      The official pricing page lists 1024x1024 image generation at \"$0.009\"
+      for low quality, \"$0.034\" for medium, and \"$0.133\" for high."
     when_to_use: "Best for low-ops + small-team or enterprise + compliance teams
       where the main workload is single-prompt generation or editing rather than
       conversational image workflows, and where better instruction following,
@@ -80,11 +80,11 @@ candidates:
       - "https://developers.openai.com/api/docs/models/gpt-image-1-mini"
       - "https://developers.openai.com/api/docs/deprecations"
   - name: "Migrate cost-sensitive paths to gpt-image-1-mini"
-    summary: 'As of 2026-03-15, OpenAI describes `gpt-image-1-mini` as a
+    summary: "As of 2026-03-15, OpenAI describes `gpt-image-1-mini` as a
       cost-efficient version of GPT Image and recommends it when image quality
       is not a priority. The official pricing page lists 1024x1024 image
-      generation at "$0.005" for low quality, "$0.011" for medium, and
-      "$0.036" for high.'
+      generation at \"$0.005\" for low quality, \"$0.011\" for medium, and
+      \"$0.036\" for high."
     when_to_use: "Best for cost-sensitive + high-scale or serverless + small-team
       workloads where image generation volume matters more than top-end
       fidelity, and where you want the GPT Image API surface now without paying
@@ -98,21 +98,21 @@ candidates:
       the Responses API for richer workflows, `gpt-image-1-mini` does not solve
       conversational product needs by itself; it mainly reduces spend while
       keeping you on the current GPT Image stack."
-    cautions: 'OpenAI''s model page labels `gpt-image-1-mini` as cost-efficient but
-      also marks its speed as "Slowest," so do not assume it is the
+    cautions: "OpenAI's model page labels `gpt-image-1-mini` as cost-efficient but
+      also marks its speed as \"Slowest,\" so do not assume it is the
       latency-optimized option. The docs also position it as the lower-priority
       choice when image quality matters; OpenAI recommends `gpt-image-1.5` for
-      the best experience.'
+      the best experience."
     links:
       - "https://developers.openai.com/api/docs/guides/image-generation"
       - "https://developers.openai.com/api/docs/models/gpt-image-1-mini"
       - "https://developers.openai.com/api/docs/pricing"
       - "https://developers.openai.com/api/docs/deprecations"
   - name: "Keep DALL-E 2 or DALL-E 3 only as a short-lived bridge until shutdown"
-    summary: 'As of 2026-03-15, this is a containment strategy, not OpenAI''s forward
-      path. OpenAI''s deprecations page says both `dall-e-2` and `dall-e-3` will
-      be removed on "2026-05-12" and recommends `gpt-image-1` or
-      `gpt-image-1-mini` as replacements.'
+    summary: "As of 2026-03-15, this is a containment strategy, not OpenAI's forward
+      path. OpenAI's deprecations page says both `dall-e-2` and `dall-e-3` will
+      be removed on \"2026-05-12\" and recommends `gpt-image-1` or
+      `gpt-image-1-mini` as replacements."
     when_to_use: "Best only for frozen legacy + low-ops situations where you need a
       brief bridge while scheduling migration work, especially if you still
       depend on DALL-E-specific behavior such as DALL-E 2 image variations or an

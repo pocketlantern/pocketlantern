@@ -1,0 +1,156 @@
+id: "analytics/simple-analytics-free-vs-simple-vs-team-retention-2026"
+title: "Simple Analytics Free vs Simple vs Team Retention and Seat Pricing 2026"
+problem: "Choose the right Simple Analytics tier when retention jumps and
+  per-user costs change the economics for a growing product team."
+context:
+  - "analytics"
+  - "product-analytics"
+  - "privacy-first-analytics"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Free"
+    summary: "As of 2026-03-20, Simple Analytics says its Free plan is free forever
+      and includes 1 user and up to 5 websites. The pricing page FAQ says Free
+      keeps only 30 days of history, and older traffic data is automatically
+      deleted. The same FAQ says Free offers unlimited pageviews, but only under
+      a fair use policy. New accounts start with a 14-day unrestricted trial
+      before downgrading or choosing a paid plan."
+    when_to_use: "Use this when you are highly cost-sensitive and a single person
+      can manage analytics alone. It only fits if 30-day history is acceptable
+      and you do not need team collaboration or longer retention."
+    tradeoffs: "Zero subscription cost and unlimited pageviews under fair use are
+      strong advantages. The tradeoff is that the 30-day history cap makes the
+      plan weak for quarter-over-quarter analysis, annual trend review, or
+      product teams that need shared access."
+    cautions: "Do not treat Free as long-term storage for analytics history. As of
+      2026-03-20, the official FAQ says data older than 30 days is deleted, so
+      moving late can permanently erase older comparison windows."
+    links:
+      - "https://www.simpleanalytics.com/pricing"
+      - "https://docs.simpleanalytics.com"
+  - name: "Simple"
+    summary: "As of 2026-03-20, the Simple plan is listed at \"$15/month\" at the
+      20k monthly pageview or event level shown on the pricing page, with 1 user
+      and up to 10 websites. It includes 3 years of retention, email support,
+      event collection, a goals dashboard, and trendlines. The pricing FAQ says
+      charges track usage and are based on recent usage history rather than a
+      fixed hard cap. The page also advertises annual billing with \"2 months
+      off.\""
+    when_to_use: "Use this when one operator or founder needs materially longer
+      history than Free but you still want the lowest paid tier. It is the
+      practical choice when retention is the main driver and you do not yet need
+      shared roles, export API access, or multi-user collaboration."
+    tradeoffs: "The main benefit is getting 3-year retention at the lowest posted
+      paid starting price. The limitation is that it still includes only 1 user,
+      so team growth usually forces either account workarounds or an upgrade to
+      Team."
+    cautions: "The posted \"$15/month\" is tied to the 20k pageview or event setting
+      visible on the pricing page, and the FAQ says monthly fees rise or fall
+      with usage. If traffic is rising quickly, check the live slider before
+      budgeting off the base figure."
+    links:
+      - "https://www.simpleanalytics.com/pricing"
+      - "https://docs.simpleanalytics.com"
+  - name: "Team"
+    summary: "As of 2026-03-20, the Team plan is listed at \"$40/month\" at the 20k
+      monthly pageview or event level shown on the pricing page. It includes
+      everything in Simple, 2 users, and charges \"+$20/user\" for additional
+      seats. Team raises retention to 5 years and adds custom views, role-based
+      access, export API, ad-blocker bypass, and IP range blocking. The page
+      also shows up to 20 websites on this tier."
+    when_to_use: "Use this when retention needs jump beyond 3 years or when
+      analytics becomes a shared workflow across product, growth, and
+      engineering. It becomes the decisive tier once you need multi-user access
+      with permissions, exports, or shared team views instead of a single-owner
+      setup."
+    tradeoffs: "Team is the first plan that meaningfully supports collaboration and
+      longer retention. The downside is seat economics: the base price is higher
+      than Simple, and each extra user adds a clear recurring cost."
+    cautions: "At the posted 20k base prices, two separate Simple subscriptions
+      would still be cheaper than Team, but they would not provide Team-only
+      features such as 5-year retention, RBAC, custom views, or export API.
+      Treat Team as a collaboration-and-retention upgrade, not just a seat
+      bundle."
+    links:
+      - "https://www.simpleanalytics.com/pricing"
+      - "https://docs.simpleanalytics.com"
+tags:
+  - "analytics"
+  - "simple-analytics"
+  - "pricing"
+  - "retention"
+aliases:
+  - "simple analytics pricing"
+  - "simple analytics free vs simple vs team"
+  - "simple analytics seat pricing"
+related_cards:
+  - "analytics/simple-analytics-vs-aptabase-vs-telemetrydeck-pricing-2026"
+  - "analytics/heap-free-plan-session-cap-and-retention-2026"
+  - "analytics/growthbook-free-vs-pro-seat-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/simple-analytics
+      name: Simple Analytics
+    - type: capability
+      id: capability/free
+      name: Free
+      category: pricing_tier
+    - type: capability
+      id: capability/simple
+      name: Simple
+      category: pricing_tier
+    - type: capability
+      id: capability/team
+      name: Team
+      category: pricing_tier
+    - type: capability
+      id: capability/retention-30-days
+      name: 30 days of history
+      category: retention
+    - type: capability
+      id: capability/retention-3-years
+      name: 3 years of retention
+      category: retention
+    - type: capability
+      id: capability/retention-5-years
+      name: 5 years of retention
+      category: retention
+    - type: capability
+      id: capability/multi-user-access
+      name: Multi-user access
+      category: collaboration
+    - type: capability
+      id: capability/role-based-access
+      name: Role-based access
+      category: access_control
+    - type: capability
+      id: capability/export-api
+      name: Export API
+      category: api
+  edges:
+    - type: locks_via
+      from: capability/free
+      to: capability/retention-30-days
+    - type: locks_via
+      from: capability/simple
+      to: capability/retention-3-years
+    - type: locks_via
+      from: capability/team
+      to: capability/retention-5-years
+    - type: locks_via
+      from: capability/team
+      to: capability/multi-user-access
+    - type: locks_via
+      from: capability/team
+      to: capability/role-based-access
+    - type: locks_via
+      from: capability/team
+      to: capability/export-api

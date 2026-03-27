@@ -121,6 +121,7 @@ related_cards:
   - serverless/cold-start-mitigation-by-runtime
   - database/neon-vs-supabase-vs-planetscale-2026
   - infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026
+tier: core
 updated: 2026-03-15
 review_by: 2026-10-12
 sidecar_hard_facts:

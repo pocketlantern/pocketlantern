@@ -1,0 +1,176 @@
+id: "payment/plaid-bank-of-america-api-reconnect-wave-update-mode-planning-2026"
+title: "Plaid Bank of America API Reconnect Wave Update-Mode Planning 2026"
+problem: "Plan how to handle the mid-March through late-October 2026 Bank of
+  America reconnect wave in Plaid, including whether to trigger update mode
+  proactively for affected Items."
+context:
+  - "plaid"
+  - "bank-linking"
+  - "oauth"
+  - "webhooks"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+candidates:
+  - name: "Default to webhook-driven update mode on PENDING_DISCONNECT"
+    summary: "As of 2026-03-26, Plaid's documented migration path for existing Bank
+      of America Items is to listen for the \"PENDING_DISCONNECT\" webhook and
+      send the Item through update mode after that webhook arrives. Plaid states
+      that existing Items are being disconnected from the old Bank of America
+      API throughout the period from mid-March 2026 through late October 2026,
+      and that an Item enters \"ITEM_LOGIN_REQUIRED\" if it has not completed
+      update mode within one week after the webhook fires. Once migrated, the
+      Item moves to the new Bank of America API, gets a 12-month consent
+      expiration policy, and uses a Bank of America-hosted account select
+      screen. Plaid's public pricing page does not publish numeric product
+      prices as of 2026-03-26; it only states that billing is one-time,
+      subscription, or per-request and directs customers to Plaid Billing or
+      sales for exact pricing."
+    when_to_use: "Use this when you want the plan that matches Plaid's explicit
+      guidance and minimizes unnecessary reconnect prompts. It is the strongest
+      default for low-ops teams that can reliably ingest webhooks and trigger
+      update mode within the documented one-week window."
+    tradeoffs: "Pros: aligns with Plaid's stated migration flow, avoids broad
+      preemptive user outreach, and limits reconnect prompts to Items Plaid has
+      actually scheduled for cutoff. Cons: requires dependable webhook handling
+      and fast user re-engagement once the countdown starts."
+    cautions: "Treat the one-week post-webhook window as the operational SLA. If
+      your app cannot surface update mode quickly, users can fall into
+      \"ITEM_LOGIN_REQUIRED\" before you recover them."
+    links:
+      - "https://plaid.com/docs/changelog/"
+      - "https://plaid.com/docs/link/oauth/"
+      - "https://plaid.com/docs/link/update-mode/"
+      - "https://plaid.com/pricing/"
+  - name: "Use a hybrid plan: inventory all Bank of America Items now, but
+      proactively prompt only high-value cohorts"
+    summary: "As of 2026-03-26, Plaid has announced a long reconnect wave rather
+      than a single cutoff date: new Bank of America Items are rolling onto the
+      new API from February through mid-March 2026, while existing Items are
+      disconnected gradually from mid-March 2026 through late October 2026.
+      Plaid's explicit disruption-minimization guidance is still to react to
+      \"PENDING_DISCONNECT\", but the long migration window makes it reasonable
+      to pre-identify high-value or high-risk Bank of America Items and prepare
+      messaging, support flows, and in-app entry points before those Items
+      receive the webhook. This keeps the actual update-mode launch tied to
+      Plaid's migration signal for most Items while reserving limited proactive
+      prompts for cases where a missed reconnect would be costly. Public Plaid
+      pricing remains non-numeric on the public pricing page as of 2026-03-26,
+      so cost modeling for extra reconnect traffic should be confirmed in Plaid
+      Billing or with Plaid sales."
+    when_to_use: "Use this when you have enterprise accounts, critical payment or
+      underwriting flows, or support obligations that make a failed reconnect
+      materially expensive. It is the best compromise when you want to stay
+      close to Plaid's documented path but still reduce risk for the most
+      important Items."
+    tradeoffs: "Pros: lowers outage risk for sensitive cohorts without forcing every
+      Bank of America user through a broad early reconnect campaign. Cons: adds
+      segmentation, messaging, and support complexity, and still depends on
+      webhook-based execution for the long tail."
+    cautions: "Do not assume that October 2026 dates shown in the Bank of America
+      portal are the post-migration consent dates; Plaid says those portal dates
+      can reflect pre-migration expirations and will update after migration.
+      Keep user messaging precise so customers do not confuse the migration wave
+      with the new 12-month consent cycle."
+    links:
+      - "https://plaid.com/docs/changelog/"
+      - "https://plaid.com/docs/link/oauth/"
+      - "https://plaid.com/pricing/"
+  - name: "Run a broad proactive reconnect campaign for all known Bank of America
+      Items"
+    summary: "This approach means initiating update mode ahead of
+      \"PENDING_DISCONNECT\" for most or all known Bank of America Items during
+      the March to October 2026 migration window. The verified Plaid docs in
+      this search pass do not recommend this as the default; instead, they say
+      to listen for \"PENDING_DISCONNECT\" and use update mode after that event
+      to minimize disruptions. The main factual drivers are still the same:
+      Items not migrated within one week after the webhook can fall into
+      \"ITEM_LOGIN_REQUIRED\", and migrated Items move onto the new API with
+      12-month consent expiration and Bank of America-hosted account selection.
+      Because Plaid does not publish numeric public pricing as of 2026-03-26,
+      the cost impact of a broad campaign cannot be quantified from public docs
+      alone."
+    when_to_use: "Use this only when the business cost of any reconnect failure is
+      higher than the user-friction cost of asking many customers to reconnect
+      early. It fits tightly managed, high-touch programs more than self-serve
+      consumer flows."
+    tradeoffs: "Pros: can reduce the chance that important users hit the one-week
+      deadline unprepared. Cons: creates more customer friction, may prompt
+      unaffected Items earlier than necessary, and diverges from Plaid's
+      documented disruption-minimization pattern."
+    cautions: "Validate exact billing and success metrics with Plaid before scaling
+      this approach. The public docs confirm the migration mechanics, but not a
+      public batch-migration program, public per-Item pricing, or a public
+      recommendation to prompt every Bank of America user early."
+    links:
+      - "https://plaid.com/docs/changelog/"
+      - "https://plaid.com/docs/link/oauth/"
+      - "https://plaid.com/pricing/"
+tags:
+  - "payment"
+  - "plaid"
+  - "banking"
+  - "oauth"
+aliases:
+  - "plaid bank of america migration 2026"
+  - "plaid pending_disconnect boa update mode"
+  - "bank of america plaid reconnect wave"
+related_cards:
+  - "_archived/migration-strategy"
+  - "messaging/webhook-retry-idempotency-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/plaid
+      name: Plaid
+    - type: capability
+      id: capability/update-mode
+      name: update mode
+    - type: capability
+      id: capability/webhooks
+      name: webhooks
+    - type: capability
+      id: capability/bank-linking
+      name: bank linking
+    - type: protocol
+      id: protocol/oauth
+      name: OAuth
+    - type: protocol
+      id: protocol/bank-of-america-old-api
+      name: Bank of America old API
+    - type: protocol
+      id: protocol/bank-of-america-new-api
+      name: Bank of America new API
+  edges:
+    - type: locks_via
+      from: capability/bank-linking
+      to: protocol/oauth
+      evidence: context includes "bank-linking" and "oauth"
+    - type: breaking_change_in
+      from: vendor/plaid
+      to: protocol/bank-of-america-old-api
+      window_start: 2026-03
+      window_end: 2026-10
+      evidence: Plaid states that existing Items are being disconnected from the old
+        Bank of America API throughout the period from mid-March 2026 through
+        late October 2026.
+    - type: breaking_change_in
+      from: vendor/plaid
+      to: protocol/bank-of-america-new-api
+      window_start: 2026-02
+      window_end: 2026-03
+      evidence: Plaid announced that new Bank of America Items are rolling onto the
+        new API from February through mid-March 2026.
+    - type: locks_via
+      from: capability/update-mode
+      to: capability/webhooks
+      event: PENDING_DISCONNECT
+      evidence: Plaid's documented migration path is to listen for the
+        "PENDING_DISCONNECT" webhook and send the Item through update mode after
+        that webhook arrives.

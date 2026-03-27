@@ -126,6 +126,7 @@ related_cards:
   - database/supabase-compute-add-on-vs-plan-upgrade-2026
   - database/turso-free-vs-paid-plan-limits-2026
   - serverless/firebase-storage-spark-vs-blaze-after-feb-2026
+  - backend/nhost-free-vs-pro-resource-limits-2026
 status: active
 tier: core
 updated: 2026-03-16

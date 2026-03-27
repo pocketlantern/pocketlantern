@@ -1,0 +1,137 @@
+id: "auth/authzed-cloud-serverless-vs-dedicated-pricing-2026"
+title: "AuthZed Cloud Serverless vs Dedicated Pricing 2026"
+problem: "Teams adopting relationship-based authorization need to decide between
+  AuthZed deployment tiers using current request economics, support packaging,
+  and scale limits."
+context:
+  - "auth"
+  - "authorization"
+  - "spicedb"
+  - "kubernetes"
+constraints:
+  - "serverless"
+  - "high-scale"
+  - "low-ops"
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+  - "microservices"
+  - "real-time"
+candidates:
+  - name: "AuthZed Cloud"
+    summary: "AuthZed Cloud is the self-service managed SpiceDB offering with
+      usage-based billing and monthly invoicing in arrears. As of 2026-03-26,
+      AuthZed says teams can deploy a permissions system for \"$2/hr*\" and pay
+      only for what they use. The official product guide says Cloud has
+      no-commit pricing, includes workload isolation, audit logging, restricted
+      API access, rate limiting, automated updates, and SOC2 compliance. Its key
+      packaging limits versus Dedicated are a shared control plane, pre-selected
+      supported regions, no private networking, and no multi-region
+      deployments."
+    when_to_use: "Use this when you want low-ops plus cost-sensitive adoption and do
+      not need private networking or custom region placement. It is the default
+      fit when you want to start quickly with commitment-free pricing and
+      standard support, then evaluate whether your scale or compliance boundary
+      later justifies Dedicated."
+    tradeoffs: "Lowest entry cost and fastest provisioning, but less isolation and
+      infrastructure control than Dedicated. You keep managed operations and
+      enterprise-style platform features, but you give up private networking and
+      multi-region topology."
+    cautions: "As of 2026-03-26, Cloud uses a shared control plane and AuthZed's
+      pre-selected regions. Standard support is lighter than Dedicated support;
+      the pricing page lists P3 response at 24 hours and does not list P1/P2
+      SLAs for Standard support."
+    links:
+      - "https://authzed.com/pricing"
+      - "https://authzed.com/products/authzed-cloud"
+      - "https://authzed.com/docs/authzed/guides/picking-a-product"
+  - name: "AuthZed Dedicated"
+    summary: "AuthZed Dedicated is the private managed cloud tier for teams that
+      need isolated infrastructure and premium support. As of 2026-03-26,
+      pricing is not self-serve; AuthZed describes it as tailored,
+      resource-based pricing based on reserved vCPU capacity, and the product
+      guide says it is sold and renewed annually. Dedicated adds private cloud
+      infrastructure, dedicated control plane infrastructure, multi-region
+      deployments, private networking, and cloud-provider or region choice. It
+      is the higher-governance option when Cloud's shared-control-plane model is
+      not acceptable."
+    when_to_use: "Use this when enterprise, compliance, or network-boundary
+      constraints matter more than commitment-free pricing. It is the decisive
+      choice if you need private networking, multi-region deployments, reserved
+      isolated resources, or premium support with faster incident response."
+    tradeoffs: "More control, isolation, and deployment flexibility, but with
+      sales-led sizing and annual commitment instead of self-service hourly
+      entry pricing. It suits large or regulated workloads better, but it is a
+      worse fit for experimentation or small teams optimizing for minimum
+      spend."
+    cautions: "As of 2026-03-26, Dedicated is a consultation-led purchase, so exact
+      spend must be confirmed with AuthZed based on reserved vCPU sizing.
+      Premium support is materially different from Cloud standard support; the
+      pricing page lists included Slack support, a dedicated account team, four
+      weekly onboarding calls, and 12-hour P1/P2 response SLAs."
+    links:
+      - "https://authzed.com/pricing"
+      - "https://authzed.com/products/authzed-dedicated"
+      - "https://authzed.com/docs/authzed/guides/picking-a-product"
+      - "https://authzed.com/docs/authzed/concepts/private-networking"
+tags:
+  - "auth"
+  - "authzed"
+  - "spicedb"
+  - "pricing"
+  - "authorization"
+aliases:
+  - "authzed cloud pricing"
+  - "authzed dedicated pricing"
+  - "authzed cloud vs dedicated"
+  - "spicedb managed pricing"
+related_cards:
+  - "auth/rbac-vs-abac-vs-rebac"
+  - "auth/multi-tenant-auth-boundary"
+  - "security/permitio-vs-oso-cloud-policy-hosting-2026"
+  - cloud/azure-container-apps-consumption-vs-dedicated-plan-types-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/authzed
+      name: AuthZed
+    - type: package
+      id: package/authzed-cloud
+      name: AuthZed Cloud
+    - type: package
+      id: package/authzed-dedicated
+      name: AuthZed Dedicated
+    - type: package
+      id: package/spicedb
+      name: SpiceDB
+    - type: capability
+      id: capability/private-networking
+      name: private networking
+    - type: capability
+      id: capability/multi-region-deployments
+      name: multi-region deployments
+  edges:
+    - type: locks_via
+      from: package/authzed-cloud
+      to: package/spicedb
+      evidence: AuthZed Cloud is the self-service managed SpiceDB offering.
+    - type: locks_via
+      from: package/authzed-dedicated
+      to: package/spicedb
+      evidence: AuthZed Dedicated is the private managed cloud tier for teams that
+        need isolated infrastructure and premium support.
+      context: Dedicated is presented as the private managed cloud tier in the same
+        AuthZed/SpiceDB product family.
+    - type: locks_via
+      from: package/authzed-dedicated
+      to: capability/private-networking
+      evidence: Dedicated adds private networking.
+    - type: locks_via
+      from: package/authzed-dedicated
+      to: capability/multi-region-deployments
+      evidence: Dedicated adds multi-region deployments.

@@ -1,0 +1,176 @@
+id: "compliance/hitrust-e1-vs-i1-vs-r2-pricing-and-assurance-2026"
+title: "HITRUST e1 vs i1 vs r2 Pricing and Assurance Level 2026"
+problem: "Healthcare and regulated SaaS teams need a current 2026 decision card
+  on which HITRUST assessment tier to buy because assurance level,
+  time-to-certification, and assessor cost differ materially across e1, i1, and
+  r2."
+context:
+  - "healthcare"
+  - "regulated-saas"
+  - "third-party-risk-management"
+  - "cybersecurity-assurance"
+constraints:
+  - "compliance"
+  - "cost-sensitive"
+  - "enterprise"
+candidates:
+  - name: "HITRUST e1"
+    summary: "As of 2026-03-19, HITRUST positions e1 as the entry-level, one-year
+      validated certification for lower-risk organizations. The current e1 web
+      page says teams can complete it in as few as 4-6 weeks and that average
+      time is around 30 days, with annual renewal required. HITRUST public
+      assessment pages do not publish list pricing; budget should be checked in
+      official docs and with HITRUST plus an authorized External Assessor. A
+      current migration caveat is that e1/i1 assessments created on CSF v11.6.0
+      can only be newly created until 2026-03-31, and submissions on v11.6.0 or
+      earlier are blocked after 2026-06-30."
+    when_to_use: "Use e1 when you need the fastest and lowest-assurance HITRUST
+      certification path for vendor diligence, early healthcare sales, or a
+      stepping-stone into the HITRUST portfolio. It is the practical choice when
+      cost sensitivity and speed matter more than tailored control scoping or
+      deep maturity evidence."
+    tradeoffs: "Fastest path and lightest control set, but lower assurance than i1
+      or r2 and annual renewal means more frequent re-buying. It is less
+      suitable when customers expect tailored, multi-framework, or
+      high-risk-system assurance."
+    cautions: "As of 2026-03-19, HITRUST official materials are inconsistent on e1
+      control count: the live e1 page says 43 essential controls, while other
+      HITRUST pages still reference 44. CSF v11.7.0 states the e1 baseline size
+      is 43 requirement statements."
+    links:
+      - "https://hitrustalliance.net/assessments-and-certifications/e1"
+      - "https://hitrustalliance.net/advisories/haa-2025-006"
+      - "https://hitrustalliance.net/advisories/haa-2025-005"
+      - "https://hitrustalliance.net/find-an-external-assessor"
+  - name: "HITRUST i1"
+    summary: "As of 2026-03-19, HITRUST positions i1 as the fixed-scope,
+      moderate-assurance certification with 182 controls focused on implemented
+      security and threat adaptability. HITRUST says most companies complete i1
+      in 6-12 months, and the official i1 datasheet says certification is one
+      year with rapid recertification in year two. HITRUST public assessment
+      pages do not publish list pricing; teams should check official docs and
+      get quotes from HITRUST and an authorized External Assessor. The same CSF
+      v11.6.0 to v11.7.0 migration deadlines apply to i1 as to e1."
+    when_to_use: "Use i1 when customers need stronger evidence than e1 but you still
+      want a fixed baseline instead of r2's tailored, risk-based scope. It fits
+      healthcare and regulated SaaS vendors that need recognizable moderate
+      assurance and want work product that can later accelerate an r2."
+    tradeoffs: "Stronger assurance and better market signal than e1, with less
+      scoping complexity than r2. The tradeoff is materially more time and
+      effort than e1, while still not matching r2 for tailored regulatory or
+      high-risk-system coverage."
+    cautions: "As of 2026-03-19, Assessment Handbook v1.2 has been released and
+      HITRUST QA will enforce its new criteria on assessments submitted as of
+      2026-04-15. That update also adds the ability to use an e1 or i1 in lieu
+      of an interim assessment, which can change year-two planning for teams
+      considering r2."
+    links:
+      - "https://hitrustalliance.net/assessments-and-certifications/i1"
+      - "https://hitrustalliance.net/hubfs/FY24%20-%20Q4%20-%20Data%20Sheets/i1\
+        -Data%20Sheet.pdf"
+      - "https://hitrustalliance.net/advisories/haa-2026-001"
+      - "https://hitrustalliance.net/advisories/haa-2025-006"
+  - name: "HITRUST r2"
+    summary: "As of 2026-03-19, HITRUST positions r2 as its highest-assurance,
+      risk-based certification for sensitive or complex systems. It is valid for
+      two years, but HITRUST requires an interim assessment after one year to
+      confirm continued compliance, and the full assessment evaluates policy,
+      procedure, and implementation rather than only implementation. HITRUST
+      public assessment pages do not publish list pricing; teams should check
+      official docs and expect separate budgeting with HITRUST and an authorized
+      External Assessor. Official HITRUST material does not expose a fixed
+      requirement count for every r2 because scoping is tailored, although
+      HITRUST's trust report has shown r2 submissions averaging materially more
+      requirement statements than i1."
+    when_to_use: "Use r2 when customers, regulators, or insurers need the strongest
+      HITRUST assurance and your scope includes high-value systems, sensitive
+      regulated data, or multiple framework obligations. Choose it when
+      assurance depth and tailoring matter more than shortest path or lowest
+      assessor cost."
+    tradeoffs: "Highest assurance and best fit for complex regulated environments,
+      but it is the heaviest assessment to scope, validate, and maintain. The
+      interim-year obligation and assessor-led validation usually make it the
+      slowest and most expensive option."
+    cautions: "As of 2026-03-19, the current Assessment Handbook v1.2 will start
+      being enforced on 2026-04-15, and HITRUST says e1 or i1 may be used in
+      lieu of an interim assessment. Teams budgeting r2 should confirm with
+      their assessor whether that policy changes the year-two plan or favors
+      starting with i1 first."
+    links:
+      - "https://hitrustalliance.net/assessments-and-certifications/r2"
+      - "https://hitrustalliance.net/advisories/haa-2026-001"
+      - "https://hitrustalliance.net/find-an-external-assessor"
+      - "https://hitrustalliance.net/hubfs/TrustReport.pdf"
+tags:
+  - "compliance"
+  - "hitrust"
+  - "healthcare"
+  - "pricing"
+  - "assurance"
+aliases:
+  - "hitrust e1 vs i1 vs r2"
+  - "hitrust pricing 2026"
+  - "hitrust assurance levels"
+  - "hitrust e1 i1 r2 cost"
+related_cards:
+  - "compliance/drata-foundations-50-employee-cap-and-framework-limits-2026"
+  - "compliance/thoropass-vs-vanta-vs-secureframe-audit-included-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: vendor
+      id: vendor/hitrust
+      name: HITRUST
+    - type: framework
+      id: framework/hitrust-e1
+      name: HITRUST e1
+      category: assessment_tier
+      standard: HITRUST
+    - type: framework
+      id: framework/hitrust-i1
+      name: HITRUST i1
+      category: assessment_tier
+      standard: HITRUST
+    - type: framework
+      id: framework/hitrust-r2
+      name: HITRUST r2
+      category: assessment_tier
+      standard: HITRUST
+    - type: framework
+      id: framework/hitrust-csf-v11-6-0
+      name: HITRUST CSF v11.6.0
+      category: version
+      standard: HITRUST CSF
+    - type: framework
+      id: framework/hitrust-csf-v11-7-0
+      name: HITRUST CSF v11.7.0
+      category: version
+      standard: HITRUST CSF
+    - type: package
+      id: package/hitrust-assessment-handbook-v1-2
+      name: Assessment Handbook v1.2
+      category: handbook
+      standard: HITRUST
+  edges:
+    - type: requires_version
+      from: framework/hitrust-e1
+      to: framework/hitrust-csf-v11-6-0
+    - type: requires_version
+      from: framework/hitrust-i1
+      to: framework/hitrust-csf-v11-6-0
+    - type: breaking_change_in
+      from: framework/hitrust-i1
+      to: package/hitrust-assessment-handbook-v1-2
+      date: 2026-04-15
+    - type: breaking_change_in
+      from: framework/hitrust-r2
+      to: package/hitrust-assessment-handbook-v1-2
+      date: 2026-04-15
+    - type: eol_date
+      from: framework/hitrust-csf-v11-6-0
+      to: null
+      date: 2026-06-30

@@ -14,20 +14,20 @@ constraints:
   - "low-ops"
 candidates:
   - name: "Stay on Pinecone Starter"
-    summary: 'As of 2026-03-19, Pinecone Starter is still free with no monthly
+    summary: "As of 2026-03-19, Pinecone Starter is still free with no monthly
       minimum. The official pricing page lists Starter as AWS-only in
-      "us-east-1", with up to 5 indexes, 1 project, up to 2 users, 100
+      \"us-east-1\", with up to 5 indexes, 1 project, up to 2 users, 100
       namespaces per index, up to 2 GB of database storage, 2M write units per
-      month, and 1M read units per month. Pinecone''s database limits page states
+      month, and 1M read units per month. Pinecone's database limits page states
       that when you hit the Starter read or write unit cap, requests fail with
       429 errors until you upgrade. Starter is the lowest-friction option if
       your workload fits inside those hard limits and you do not need region
-      placement control.'
-    when_to_use: 'Use this when you are strongly cost-sensitive, have a small team,
+      placement control."
+    when_to_use: "Use this when you are strongly cost-sensitive, have a small team,
       and your app is still prototyping or operating comfortably inside
-      Starter''s hard caps. The decisive factor is whether AWS "us-east-1"
+      Starter's hard caps. The decisive factor is whether AWS \"us-east-1\"
       only, 2 GB total storage, and capped monthly read/write units are
-      acceptable in production.'
+      acceptable in production."
     tradeoffs: "Zero fixed cost and simple onboarding, but hard plan ceilings can
       cause failed requests instead of graceful overage billing. You also give
       up cloud and region choice, broader org features, and Standard-only
@@ -39,32 +39,32 @@ candidates:
       - "https://www.pinecone.io/pricing/"
       - "https://docs.pinecone.io/reference/api/database-limits"
   - name: "Move to Pinecone Standard"
-    summary: 'As of 2026-03-19, Pinecone Standard has a "$50/month min. usage" and
+    summary: "As of 2026-03-19, Pinecone Standard has a \"$50/month min. usage\" and
       then bills pay-as-you-go once usage exceeds that floor. The official
       pricing page says Standard adds Dedicated Read Nodes (DRN), cloud and
       region choice across AWS, Azure, and GCP, import from object storage,
       multiple projects and users, SAML SSO, API and user RBAC, backup and
-      restore, and Prometheus metrics. Pinecone''s cost docs confirm the $50
+      restore, and Prometheus metrics. Pinecone's cost docs confirm the $50
       minimum is a usage commitment, not a flat fee cap: if monthly usage is
       below $50, you still pay $50; if usage is above $50, you pay actual usage.
       Standard is the production tier when you need predictable scaling headroom
-      or operational controls that Starter does not expose.'
-    when_to_use: 'Use this when production reliability matters more than avoiding a
+      or operational controls that Starter does not expose."
+    when_to_use: "Use this when production reliability matters more than avoiding a
       fixed monthly floor, especially for real workloads that may outgrow
-      Starter''s capped read/write units or need region placement outside AWS
-      "us-east-1". The decisive factor is whether DRN, backups, org controls,
-      or multi-region deployment are worth at least $50/month.'
+      Starter's capped read/write units or need region placement outside AWS
+      \"us-east-1\". The decisive factor is whether DRN, backups, org controls,
+      or multi-region deployment are worth at least $50/month."
     tradeoffs: "You remove Starter's hard monthly RU/WU ceilings and gain
       production-oriented controls, but you accept a non-zero monthly commitment
       even for light usage. Standard is materially better for scaling, but it is
       a worse fit for hobby or sporadic workloads that may never consume
       $50/month of value."
-    cautions: 'Pinecone''s trial and downgrade docs show that falling back to Starter
+    cautions: "Pinecone's trial and downgrade docs show that falling back to Starter
       later can require cleanup and migration. To return to Starter, you must be
       at 5 or fewer serverless indexes, 1 project, 2 GB or less of data, 100 or
       fewer namespaces per index, and all serverless indexes in AWS
-      "us-east-1"; indexes in other regions must be recreated and
-      re-upserted.'
+      \"us-east-1\"; indexes in other regions must be recreated and
+      re-upserted."
     links:
       - "https://www.pinecone.io/pricing/"
       - "https://docs.pinecone.io/guides/manage-cost/understanding-cost"
@@ -94,6 +94,7 @@ related_cards:
   - "database/pinecone-serverless-vs-pod-based-indexes-after-august-2025-cutoff"
   - "database/vector-database-consolidation-pinecone-vs-weaviate-vs-milvus-2026"
   - "ai/rag-architecture-choices"
+  - search/weaviate-shared-cloud-pricing-change-october-27-2025
 tier: "core"
 status: "active"
 updated: "2026-03-19"

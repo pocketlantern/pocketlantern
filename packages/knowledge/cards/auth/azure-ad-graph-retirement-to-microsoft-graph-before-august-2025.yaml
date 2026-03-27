@@ -1,0 +1,192 @@
+id: "auth/azure-ad-graph-retirement-to-microsoft-graph-before-august-2025"
+title: "Azure AD Graph Retirement: Migrate to Microsoft Graph Before August 31, 2025"
+problem: "Teams still calling Azure AD Graph need to decide whether any
+  extension path is viable and finish a Microsoft Graph migration before
+  extended access ends and production calls stop working across tenants and
+  clouds as the 2025 retirement phases roll out."
+context:
+  - "auth"
+  - "microsoft-graph"
+  - "azure-ad-graph"
+  - "microsoft-entra-id"
+  - "app-registrations"
+  - "service-principals"
+  - "permissions"
+  - "migration"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "microservices"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Migrate first-party app registrations directly to Microsoft Graph"
+    summary: "As of 2026-03-15, Microsoft Learn says you can keep the existing app
+      registration `appId`, but you must move calls from Azure AD Graph to
+      Microsoft Graph, review request and permission differences, and regrant
+      application permissions. Microsoft also recommends staging the auth change
+      by first switching token acquisition from `https://graph.windows.net` to
+      `https://graph.microsoft.com`, then finishing the move from retired ADAL
+      to MSAL."
+    when_to_use: "Best for enterprise + compliance teams, or microservices +
+      small-team teams, that own the source code for apps registered in their
+      tenant and need the fastest supported path with the least identity-object
+      churn. Use this when you can test API parity in Graph v1.0, update
+      endpoint and permission mappings, and roll out in stages instead of
+      re-registering the app."
+    tradeoffs: "You keep the current app registration and can often preserve
+      delegated consent, which reduces tenant-level reconfiguration. The
+      tradeoff is nontrivial migration work around request syntax, resource
+      names, IDs, permissions, and SDK or auth-library changes."
+    cautions: "Do not assume a simple endpoint swap is enough. Microsoft says
+      delegated permissions granted for Azure AD Graph are implicitly considered
+      granted for Microsoft Graph, but application permissions must be granted
+      again. Production migrations should verify required APIs are generally
+      available in Microsoft Graph v1.0 and should test behavior in a test
+      tenant before rollout."
+    links:
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-overview"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-plannin\
+        g-checklist"
+      - "https://learn.microsoft.com/graph/migrate-azure-ad-graph-request-diffe\
+        rences"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-app-reg\
+        istration"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-authent\
+        ication-library"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-permiss\
+        ions-differences"
+  - name: "Use Microsoft Entra recommendations to drive owner-by-owner and
+      vendor-by-vendor remediation"
+    summary: "As of 2026-03-15, Microsoft documents two separate Entra
+      recommendations for this retirement: `aadGraphDeprecationApplication` for
+      apps registered in your tenant and `aadGraphDeprecationServicePrincipal`
+      for apps registered elsewhere but used in your tenant. This is the best
+      operational path when you need a verified inventory, 30-day activity
+      counts, last request dates, and a split workflow for internal developers
+      versus third-party vendors."
+    when_to_use: "Best for enterprise + low-ops environments, or compliance +
+      small-team organizations, where many apps and enterprise applications
+      exist and ownership is fragmented. Use this when you need to prioritize by
+      observed usage, send concrete remediation tasks to internal owners, and
+      separately pressure vendors to ship Microsoft Graph-compatible versions."
+    tradeoffs: "You get a usage-based migration queue instead of guessing from code
+      or portal configuration alone, and Microsoft marks recommendations
+      completed after 30 days with no Azure AD Graph activity. The tradeoff is
+      that recommendation data still leaves you with real follow-up work:
+      internal apps need code changes, and vendor-backed service principals
+      often require software upgrades outside your direct control."
+    cautions: "Microsoft's FAQ says the email list of affected app IDs only captures
+      apps used in the last 28 days, so do not rely on one email snapshot as
+      your full inventory. For service principals, Microsoft says you will
+      likely need to contact the vendor for a newer version; this is not usually
+      something you can fix entirely inside your tenant."
+    links:
+      - "https://learn.microsoft.com/en-us/entra/identity/monitoring-health/rec\
+        ommendation-migrate-to-microsoft-graph-api"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-plannin\
+        g-checklist"
+  - name: "Retire, replace, or isolate dead-end Azure AD Graph dependencies instead
+      of chasing an extension"
+    summary: "As of 2026-03-15, there is no viable long-term extension strategy.
+      Microsoft Learn still documents the historical
+      `authenticationBehaviors.blockAzureADGraphAccess` switch, but the same
+      Learn page says the setting was only for extended access and that after
+      retirement all apps receive `403 Unauthorized`; the migration FAQ also
+      says any app using Azure AD Graph stops functioning after retirement."
+    when_to_use: "Best for small-team + low-ops teams, or enterprise + compliance
+      teams, where some old integration is abandoned, vendor support is missing,
+      or the business value no longer justifies a code migration. Use this when
+      replacement, decommissioning, or temporary isolation is cheaper and safer
+      than rebuilding an obsolete dependency."
+    tradeoffs: "This avoids spending engineering time on low-value legacy code and
+      forces a clean supported end state on Microsoft Graph or on a replacement
+      product. The tradeoff is functional loss during decommissioning, migration
+      work onto a different integration path, or business coordination if a
+      vendor cannot supply an updated version quickly."
+    cautions: "Microsoft's official sources conflict on exact cutoff wording: the
+      Microsoft Graph overview says extended access ended on August 31, 2025,
+      the `authenticationBehaviors` page still says extended access was
+      available only until June 30, 2025, and Microsoft's later June 27, 2025
+      Entra update said apps on extended access stop working starting in early
+      September 2025 with temporary outage tests between late July and early
+      September 2025. Treat that conflict as a reason not to plan around any
+      remaining extension path."
+    links:
+      - "https://learn.microsoft.com/en-us/graph/applications-authenticationbeh\
+        aviors"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-faq"
+      - "https://learn.microsoft.com/en-us/graph/migrate-azure-ad-graph-overview"
+tags:
+  - "auth"
+  - "microsoft-graph"
+  - "azure-ad-graph"
+  - "microsoft-entra-id"
+  - "deprecation"
+  - "migration"
+  - "app-registrations"
+  - "service-principals"
+  - "permissions"
+  - "policy"
+aliases:
+  - "azure ad graph retirement"
+  - "azure ad graph extended access"
+  - "migrate azure ad graph to microsoft graph"
+  - "blockAzureADGraphAccess"
+  - "aadGraphDeprecationApplication"
+  - "aadGraphDeprecationServicePrincipal"
+  - "graph.windows.net migration"
+related_cards:
+  - "auth/google-microsoft-github-oauth-policy-drift"
+  - "auth/oauth2-flows"
+  - "auth/multi-tenant-auth-boundary"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-09-28"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: protocol
+      id: protocol/azure-ad-graph
+      name: Azure AD Graph
+    - type: protocol
+      id: protocol/microsoft-graph
+      name: Microsoft Graph
+    - type: package
+      id: package/adal
+      name: ADAL
+    - type: package
+      id: package/msal
+      name: MSAL
+    - type: capability
+      id: capability/authenticationbehaviors-blockazureadgraphaccess
+      name: authenticationBehaviors.blockAzureADGraphAccess
+    - type: capability
+      id: capability/aadgraphdeprecationapplication
+      name: aadGraphDeprecationApplication
+    - type: capability
+      id: capability/aadgraphdeprecationserviceprincipal
+      name: aadGraphDeprecationServicePrincipal
+  edges:
+    - type: eol_date
+      from: protocol/azure-ad-graph
+      to: null
+      date: 2025-08-31
+      label: extended access ends / retirement cutoff referenced by the card title and
+        problem
+    - type: breaking_change_in
+      from: protocol/azure-ad-graph
+      to: protocol/microsoft-graph
+      reason: teams must move calls from Azure AD Graph to Microsoft Graph before
+        retirement
+    - type: breaking_change_in
+      from: package/adal
+      to: package/msal
+      reason: the card says to finish the move from retired ADAL to MSAL
+    - type: locks_via
+      from: protocol/azure-ad-graph
+      to: capability/authenticationbehaviors-blockazureadgraphaccess
+      reason: historical extended access path referenced via
+        authenticationBehaviors.blockAzureADGraphAccess

@@ -1,0 +1,127 @@
+id: "backend/nhost-free-vs-pro-resource-limits-2026"
+title: "Nhost Free vs Pro Resource Limits and Pricing in 2026"
+problem: "Decide whether an app can remain on Nhost's free tier or needs Pro
+  because of current database, auth, and execution limits."
+context:
+  - "nhost"
+  - "postgres"
+  - "hasura"
+  - "auth"
+  - "serverless-functions"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+  - "real-time"
+candidates:
+  - name: "Stay on Nhost Starter"
+    summary: "As of 2026-03-27, Nhost Starter is the $0 tier with 1 active project,
+      1 GB database, 1 GB storage, 5 GB egress, and short-running functions on
+      shared compute, but no daily automated backups."
+    when_to_use: "Use Starter when you have a single low-traffic project, can
+      tolerate the project pausing after 1 week of inactivity, do not require
+      automated backups or point-in-time recovery, and your workload fits within
+      1 GB Postgres, 1 GB storage, 5 GB egress, and 10-second functions. It is a
+      fit for prototypes, demos, and small internal tools where zero base cost
+      matters more than recovery guarantees or sustained execution headroom."
+    tradeoffs: "Zero base cost and enough for prototypes or low-traffic internal
+      tools, but tight database, storage, egress, and function runtime ceilings
+      create an early production ceiling."
+    cautions: "Starter is not appropriate if you need automated backups,
+      point-in-time recovery, custom domains, dedicated compute, external
+      database connections, or more than one active project. Auth endpoints are
+      still rate-limited at the platform level, including limits such as 10 per
+      5 minutes for sign-in or signup categories and 100 requests per minute
+      total per client IP, so \"unlimited users\" does not mean unlimited auth
+      throughput."
+    links:
+      - "https://nhost.io/pricing"
+      - "https://docs.nhost.io/platform/cloud/compute-resources"
+      - "https://docs.nhost.io/products/database/backups"
+      - "https://docs.nhost.io/platform/cloud/rate-limits"
+  - name: "Upgrade to Nhost Pro"
+    summary: "As of 2026-03-27, Nhost Pro starts at $25/mo per organization and adds
+      larger included database, storage, and egress limits, longer-running
+      functions, daily backups, and access to paid add-ons such as PITR and
+      dedicated compute."
+    when_to_use: "Use Pro when the app is a production workload and you need a
+      combination of backup or recovery features, longer-running functions
+      beyond 10 seconds, more than Starter's 1 GB database or storage limits, or
+      operational options such as dedicated compute or external connections. It
+      is the better fit when you are willing to absorb ongoing paid usage in
+      exchange for recovery coverage, more execution headroom, and room to scale
+      beyond a single minimal project."
+    tradeoffs: "Much better operational headroom and recovery options, but the real
+      monthly cost can exceed the $25 base once you add extra active projects,
+      custom domains, database growth, egress, PITR, or dedicated compute."
+    cautions: "Billing is organization-level and usage is aggregated across
+      projects; docs state the included compute only covers one project's basic
+      compute, and additional active projects add about \"$15/month\" each for
+      basic compute. Custom domains are billed at \"$10 per project / month\",
+      and PITR is not included in base Pro pricing."
+    links:
+      - "https://nhost.io/pricing"
+      - "https://docs.nhost.io/platform/cloud/billing"
+      - "https://docs.nhost.io/platform/cloud/compute-resources"
+      - "https://docs.nhost.io/products/database/backups"
+tags:
+  - "backend"
+  - "nhost"
+  - "pricing"
+  - "postgres"
+  - "auth"
+  - "functions"
+aliases:
+  - "nhost free vs pro"
+  - "nhost starter vs pro"
+  - "nhost pricing limits"
+  - "nhost function limits"
+related_cards:
+  - "backend/appwrite-free-vs-pro-vs-scale-after-ga-pricing-2026"
+  - "backend/supabase-vs-firebase-baas-pricing-and-features-2026"
+  - "infra/baas-product-boundary-and-vendor-count-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/nhost
+      name: Nhost
+    - type: capability
+      id: capability/auth
+      name: Auth
+    - type: capability
+      id: capability/serverless-functions
+      name: Serverless Functions
+    - type: data_format
+      id: format/postgres
+      name: Postgres
+    - type: framework
+      id: framework/hasura
+      name: Hasura
+  edges:
+    - type: locks_via
+      from: capability/auth
+      to: vendor/nhost
+      evidence: Auth endpoints are rate-limited at the platform level on Nhost,
+        including limits such as 10 per 5 minutes for sign-in or signup
+        categories and 100 requests per minute total per client IP.
+    - type: locks_via
+      from: capability/serverless-functions
+      to: vendor/nhost
+      evidence: Nhost Starter and Pro define execution limits for functions, including
+        Starter's 10-second functions and Pro's longer-running functions.
+    - type: locks_via
+      from: format/postgres
+      to: vendor/nhost
+      evidence: The pricing tiers are defined in part by Nhost database limits,
+        including Starter's 1 GB Postgres limit and Pro's larger included
+        database limits.
+    - type: locks_via
+      from: framework/hasura
+      to: vendor/nhost
+      evidence: Hasura is listed in the card context as part of the Nhost-based stack
+        under evaluation.

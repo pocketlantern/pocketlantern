@@ -68,6 +68,7 @@ related_cards:
   - database/postgres-major-version-upgrade
   - deployment/rollback-strategy-for-schema-plus-app
   - database/postgres-major-upgrade-extension-compatibility-2026
+  - video/ant-media-support-599-vs-1199-monthly-2026
 tier: "core"
 status: active
 updated: 2026-03-14

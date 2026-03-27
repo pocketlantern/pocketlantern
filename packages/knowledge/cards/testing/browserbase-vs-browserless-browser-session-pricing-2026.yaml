@@ -79,6 +79,9 @@ aliases:
 related_cards:
   - "testing/playwright-cloud-vs-managed-browser-grid-2026"
   - "testing/e2e-testing-framework-playwright-vs-cypress-vs-selenium-2026"
+  - devtools/firecrawl-vs-scraperapi-vs-scrapingbee-pricing-2026
+  - devtools/firecrawl-vs-bright-data-web-unlocker-cost-2026
+  - testing/playwright-mcp-vs-browser-use-vs-stagehand-agent-browser-cost-2026
 tier: "core"
 status: "active"
 updated: "2026-03-20"

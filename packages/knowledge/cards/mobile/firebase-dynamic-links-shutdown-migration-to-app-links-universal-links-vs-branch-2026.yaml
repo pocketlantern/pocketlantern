@@ -1,0 +1,188 @@
+id: mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-links-vs-branch-2026
+title: Firebase Dynamic Links Shutdown Migration Strategy
+problem: Choose how to replace Firebase Dynamic Links after the August 25, 2025
+  shutdown, including whether to use native Universal Links/App Links plus
+  hosting, or switch to vendors like Branch, based on attribution and auth-link
+  requirements.
+context:
+  - mobile
+  - firebase
+  - firebase-dynamic-links
+  - firebase-authentication
+  - firebase-hosting
+  - android
+  - ios
+  - deep-linking
+  - attribution
+  - migration
+constraints:
+  - cost-sensitive
+  - low-ops
+  - small-team
+  - enterprise
+  - compliance
+  - serverless
+candidates:
+  - name: Native Universal Links and App Links with Firebase Hosting and Firebase
+      Auth migration
+    summary: As of 2026-03-15, Firebase's official migration path for teams that
+      only need post-install deep linking is to replace Firebase Dynamic Links
+      with Android App Links and iOS Universal Links, optionally using Firebase
+      Hosting to serve the required verification files. Firebase also documents
+      a separate Hosting-based migration for Firebase Authentication mobile
+      email link and other out-of-band email actions, replacing the old Dynamic
+      Links domain dependency.
+    when_to_use: Best for cost-sensitive + low-ops or small-team + serverless apps
+      where the real requirement is opening installed apps to specific content
+      and keeping Firebase Authentication mobile email actions working, but you
+      do not need install attribution, automatic store routing, or deferred deep
+      linking after first install. This is the default path when you want the
+      fewest vendors and can accept platform-native behavior instead of Firebase
+      Dynamic Links feature parity, as of 2026-03-15.
+    tradeoffs: You remove a deprecated service, stay on platform primitives, and can
+      use Firebase Hosting project domains that Firebase says are automatically
+      provisioned at no cost. The tradeoff is that Firebase's migration guide
+      explicitly says this replacement does not preserve correct-store routing
+      for uninstalled users or continuation after first install, and it does not
+      recreate Firebase Dynamic Links analytics, short-link management, or
+      social metadata behavior.
+    cautions: Verify both platform setups end to end. Android App Links depend on
+      Digital Asset Links verification, and Android documents that on Android 11
+      and lower one unverified host in an intent filter can block
+      default-handler verification for that filter. iOS Universal Links require
+      an HTTPS apple-app-site-association file with no redirects. For Firebase
+      Authentication mobile email links, Firebase documents the new path in iOS
+      SDK 11.8.0+ and Android SDK 23.2.0+ with Firebase BoM 33.9.0+.
+    links:
+      - https://firebase.google.com/support/dynamic-links-faq
+      - https://firebase.google.com/support/guides/app-links-universal-links
+      - https://firebase.google.com/docs/auth/ios/email-link-migration
+      - https://firebase.google.com/docs/auth/android/email-link-migration
+      - https://developer.android.com/training/app-links/add-applinks
+      - https://developer.android.com/training/app-links/verify-applinks
+      - https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html
+  - name: Branch for deep linking, deferred deep linking, and attribution
+    summary: As of 2026-03-15, Firebase says teams that need full feature parity
+      after Firebase Dynamic Links should evaluate third-party providers such as
+      Branch. Branch's official docs position it as a deep linking and
+      attribution platform with direct deep linking, deferred deep linking,
+      branded links, custom link data, and attribution plans, while its
+      NativeLink documentation adds an iOS deferred deep linking path that does
+      not rely on IP-based matching.
+    when_to_use: Best for enterprise + compliance or high-scale + attribution-heavy
+      mobile programs where marketing and lifecycle teams need install-time
+      continuation, link analytics, partner measurement, or branded short links
+      that native Universal Links and App Links do not provide. Choose this when
+      the missing Firebase Dynamic Links features called out by Firebase itself
+      are business requirements rather than nice-to-haves, as of 2026-03-15.
+    tradeoffs: You regain most of the Firebase Dynamic Links capability set that
+      Firebase lists as missing from the native-link migration path, including
+      store routing, deferred deep linking, analytics, and managed short links.
+      The tradeoff is added vendor dependency, SDK integration and routing work,
+      and pricing or packaging that is not fully published as public dollar
+      amounts on the pricing page.
+    cautions: Check live packaging directly with Branch as of 2026-03-15. Branch's
+      public pricing page shows Basics, Essentials, and Enterprise for
+      attribution with a Basics free trial, but its Deep Linking Overview says
+      Branch Deep Linking requires a premium plan, and its NativeLink deferred
+      deep linking docs also say access requires a premium plan. For sensitive
+      auto-login-style flows, Branch documents that apps should only deep link
+      when `+match_guaranteed` is true, and that post-iOS 14 install events are
+      usually not guaranteed unless users opt in to IDFA collection or you use
+      features such as NativeLink. If you also use Firebase Authentication
+      mobile email actions, Firebase still requires the separate Hosting-based
+      Auth migration.
+    links:
+      - https://firebase.google.com/support/dynamic-links-faq
+      - https://www.branch.io/pricing/
+      - https://help.branch.io/marketer-hub/docs/deep-linking
+      - https://help.branch.io/developer-hub/docs/implement-attribution-methods
+      - https://help.branch.io/developer-hub/docs/nativelink-deferred-deep-linking
+  - name: "Hybrid split: native links for product and auth flows, Branch only for
+      marketing and install attribution"
+    summary: "Inference from the official docs as of 2026-03-15: a hybrid split is
+      often cleaner than moving every link to one stack. Firebase's native-link
+      migration covers installed-app routing and Firebase Authentication mobile
+      links, while Branch's official docs cover attribution, deferred deep
+      linking, and managed campaign links."
+    when_to_use: Best for cost-sensitive + small-team or enterprise + compliance
+      teams where core product navigation and Firebase Authentication flows
+      should stay simple and vendor-light, but paid acquisition or CRM campaigns
+      still need install attribution or deferred deep linking. Use this when
+      only a subset of links truly needs third-party measurement and the rest
+      can be handled by platform-native URLs, as of 2026-03-15.
+    tradeoffs: "You keep product and auth URLs on standard platform mechanisms while
+      limiting Branch usage to the flows that need attribution or deferred
+      install continuation. The tradeoff is operational split-brain: two link
+      stacks, two routing policies, and more release discipline around domains,
+      path ownership, analytics taxonomy, and QA."
+    cautions: Define domain and path boundaries early. Firebase notes that if you
+      reuse a custom Firebase Dynamic Links domain with another provider and
+      keep the same path prefix, you may need to update Firebase Hosting rewrite
+      rules and redeploy. Also remember that native App Links and Universal
+      Links can fail silently when verification files, entitlements, or host
+      declarations are mis-scoped.
+    links:
+      - https://firebase.google.com/support/dynamic-links-faq
+      - https://firebase.google.com/support/guides/app-links-universal-links
+      - https://firebase.google.com/docs/auth/ios/email-link-migration
+      - https://firebase.google.com/docs/auth/android/email-link-migration
+      - https://help.branch.io/marketer-hub/docs/deep-linking
+      - https://www.branch.io/pricing/
+tags:
+  - mobile
+  - firebase
+  - firebase-dynamic-links
+  - firebase-authentication
+  - firebase-hosting
+  - android-app-links
+  - ios-universal-links
+  - branch
+  - deep-linking
+  - attribution
+  - migration
+  - shutdown
+aliases:
+  - firebase dynamic links replacement
+  - firebase dynamic links shutdown migration
+  - firebase dynamic links to app links universal links
+  - firebase dynamic links branch migration
+  - firebase auth email link migration after dynamic links
+  - universal links vs branch
+  - app links vs branch
+related_cards:
+  - auth/oauth2-flows
+  - mobile/firebase-apple-sdk-swift-6-toolchain-xcode-16-2-requirement-2025
+  - mobile/branch-activation-vs-engagement-vs-performance-pricing-2026
+  - mobile/firebase-auth-email-link-after-dynamic-links-shutdown-2026
+  - mobile/firebase-dynamic-links-replacement-after-august-25-2025-shutdown-2026
+  - auth/firebase-auth-email-link-migration-after-dynamic-links-shutdown-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-07-06
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/branch
+      name: Branch
+      category: mobile
+    - type: capability
+      id: capability/dynamic-links
+      name: Firebase Dynamic Links
+    - type: capability
+      id: capability/deferred-deep-linking
+      name: Deferred Deep Linking
+  edges:
+    - type: eol_date
+      from: capability/dynamic-links
+      to: null
+      date: 2025-08-25
+      successor: null
+    - type: locks_via
+      from: vendor/branch
+      to: capability/deferred-deep-linking
+      surface: Deep Linking and NativeLink require premium plan; proprietary SDK and
+        attribution model; pricing not publicly detailed
+      severity: medium

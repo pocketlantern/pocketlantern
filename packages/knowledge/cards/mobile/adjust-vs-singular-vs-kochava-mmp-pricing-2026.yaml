@@ -1,0 +1,177 @@
+id: "mobile/adjust-vs-singular-vs-kochava-mmp-pricing-2026"
+title: "Adjust vs Singular vs Kochava Mobile Measurement Pricing 2026"
+problem: "Choose an MMP when attribution event pricing, fraud modules, and SKAN
+  support packaging have changed enough to affect mobile analytics cost."
+context:
+  - "mobile"
+  - "ios"
+  - "android"
+  - "skan"
+  - "attribution"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Adjust"
+    summary: "Adjust uses volume-based plan tiers rather than publishing a simple
+      per-conversion price. As of 2026-03-19, its public pricing page shows a
+      free Base tier with up to 1,500 monthly attributions, a Core tier up to
+      250,000 annual attributions, and Enterprise above 250,000 annual
+      attributions. Adjust explicitly states its iOS 14+ and SKAdNetwork
+      solutions are included for every client at no extra charge. The main
+      pricing caveat is that the Fraud Prevention Suite is listed as a paid
+      add-on for Core and Enterprise rather than bundled by default."
+    when_to_use: "Use Adjust when you want SKAN included without separate packaging
+      and your team expects a negotiated enterprise-style contract instead of
+      transparent per-event metering. It fits teams that value broad measurement
+      coverage and can tolerate custom pricing for fraud prevention."
+    tradeoffs: "SKAN packaging is straightforward because it is included, and the
+      free entry tier is useful for small apps. The downside is lower public
+      pricing transparency for paid plans and extra-cost fraud tooling."
+    cautions: "As of 2026-03-19, Adjust does not publish a standard paid
+      per-attribution rate on its pricing page, so budget modeling requires
+      sales input. Fraud Prevention Suite, SpendWorks, Subscription Measurement,
+      and other growth solutions are listed as add-ons for paid tiers."
+    links:
+      - "https://demo-1.adjust.com/pricing/"
+      - "https://help.adjust.com/en/article/fraud-prevention-suite"
+      - "https://help.adjust.com/en/article/quickstart-guide-to-skan-campaigns#\
+        2-verify-your-app-id"
+  - name: "Singular"
+    summary: "Singular publishes the clearest self-serve MMP pricing of the three.
+      As of 2026-03-19, its pricing page lists a Free plan at $0 per conversion
+      with 15,000 paid conversions, a Growth plan at $0.05 per conversion, and
+      an Enterprise plan with custom pricing. Singular also states fraud
+      prevention is included in every plan and presents SKAdNetwork Attribution
+      as included in Free, with additional modeled SKAN analytics shown on
+      higher tiers. Singular further says customers can pay by ad spend or
+      conversions, with a 'no hidden fees' and 'avoid pricey add-ons'
+      positioning."
+    when_to_use: "Use Singular when cost predictability and public event-based
+      pricing matter more than negotiated packaging. It is the best fit for
+      cost-sensitive teams that want fraud prevention and SKAN included without
+      buying a separate fraud module."
+    tradeoffs: "Public pricing is the most transparent here, and fraud prevention is
+      bundled even on Free. The tradeoff is that advanced support, onboarding,
+      ETL, and enterprise controls still move you into higher tiers or add-ons."
+    cautions: "As of 2026-03-19, the public page shows Free and Growth conversion
+      pricing, but Enterprise is still custom. ETL is called out as an optional
+      add-on, and some modeled SKAN analytics appear to be tier-dependent."
+    links:
+      - "https://www.singular.net/pricing/"
+      - "https://www.singular.net/fraud-prevention/"
+      - "https://support.singular.net/hc/en-us/articles/360047448611-Introducti\
+        on-to-Singular-s-SKAdNetwork-Solution"
+  - name: "Kochava"
+    summary: "Kochava now publishes tiered starting prices for its measurement
+      product family. As of 2026-03-19, its pricing page shows Free App
+      Analytics at $0 per month with 10,000 conversions per month, Foundation
+      starting at $500 per month with 33,000 conversions per month, and
+      Enterprise starting at $2,000 per month with 200,000 MAU per month.
+      SKAN/AAK support on iOS and AI-powered ad fraud prevention are included in
+      the free tier, while Fraud Console and custom fraud prevention are
+      reserved for Enterprise. Foundation is the tier where all integrated
+      partners and media cost aggregation become available."
+    when_to_use: "Use Kochava when you want a publicly posted monthly floor price
+      and need a path from free to enterprise with broader omnichannel
+      measurement. It is the strongest fit if your blocker is knowing the
+      minimum monthly commitment for richer partner integrations and cost
+      aggregation."
+    tradeoffs: "Kochava gives more concrete monthly starting prices than Adjust and
+      clearer packaging thresholds for partner coverage and fraud controls. The
+      tradeoff is that important fraud workflow features such as Fraud Console
+      and custom fraud prevention are not in the lower paid tier."
+    cautions: "As of 2026-03-19, Kochava mixes pricing metrics by tier: Free and
+      Foundation are described in conversions per month, while Enterprise is
+      described in MAU per month. Free only covers self-attributing networks for
+      paid media attribution, and Foundation is the tier that unlocks all
+      integrated partners and media cost aggregation."
+    links:
+      - "https://www.kochava.com/get-started/"
+      - "https://www.kochava.com/product/free-app-analytics/"
+      - "https://support.kochava.com/articles/campaign-management/851-traffic-v\
+        erifier/"
+      - "https://www.kochava.com/skadnetwork-solutions/"
+tags:
+  - "mobile"
+  - "mmp"
+  - "attribution"
+  - "pricing"
+  - "skan"
+aliases:
+  - "adjust singular kochava pricing"
+  - "mmp pricing 2026"
+  - "mobile attribution pricing fraud skan"
+related_cards:
+  - "mobile/app-analytics-appsflyer-vs-firebase-vs-mixpanel-2026"
+  - mobile/branch-activation-vs-engagement-vs-performance-pricing-2026
+  - mobile/appsflyer-extended-platform-conversion-billing-february-2026
+  - mobile/tenjin-vs-airbridge-vs-appmetrica-attribution-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/adjust
+      name: Adjust
+    - type: vendor
+      id: vendor/singular
+      name: Singular
+    - type: vendor
+      id: vendor/kochava
+      name: Kochava
+    - type: protocol
+      id: protocol/skadnetwork
+      name: SKAdNetwork
+      standard: SKAdNetwork
+    - type: runtime
+      id: runtime/ios
+      name: iOS
+      category: mobile_os
+    - type: package
+      id: package/adjust/core
+      name: Core
+      category: pricing_tier
+    - type: package
+      id: package/adjust/enterprise
+      name: Enterprise
+      category: pricing_tier
+    - type: capability
+      id: capability/adjust/fraud-prevention-suite
+      name: Fraud Prevention Suite
+      category: fraud_prevention
+    - type: package
+      id: package/kochava/foundation
+      name: Foundation
+      category: pricing_tier
+    - type: capability
+      id: capability/kochava/media-cost-aggregation
+      name: media cost aggregation
+      category: analytics
+    - type: capability
+      id: capability/kochava/integrated-partners
+      name: all integrated partners
+      category: integration
+  edges:
+    - type: requires_version
+      from: protocol/skadnetwork
+      to: runtime/ios
+      version: 14+
+    - type: locks_via
+      from: capability/adjust/fraud-prevention-suite
+      to: package/adjust/core
+      mode: paid_add_on
+    - type: locks_via
+      from: capability/adjust/fraud-prevention-suite
+      to: package/adjust/enterprise
+      mode: paid_add_on
+    - type: locks_via
+      from: capability/kochava/media-cost-aggregation
+      to: package/kochava/foundation
+    - type: locks_via
+      from: capability/kochava/integrated-partners
+      to: package/kochava/foundation

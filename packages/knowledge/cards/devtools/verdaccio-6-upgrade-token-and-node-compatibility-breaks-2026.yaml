@@ -1,0 +1,153 @@
+id: "devtools/verdaccio-6-upgrade-token-and-node-compatibility-breaks-2026"
+title: "Verdaccio 6 Upgrade: Token and Node Compatibility Breaks in 2026"
+problem: "Decide whether to upgrade your private npm registry now as Verdaccio 6
+  changes auth and runtime assumptions used by older CI environments."
+context:
+  - "nodejs"
+  - "npm"
+  - "ci-cd"
+  - "private-registry"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Upgrade to Verdaccio 6 after standardizing on Node.js 18+ and non-web
+      auth flows"
+    summary: "Verdaccio's official installation docs for the 6.x line require
+      Node.js \"v18 or higher\" and show a 6.0.0 startup example; as of
+      2026-03-27, that makes Node 16-era registry hosts and maintenance jobs an
+      immediate blocker. Official npm setup docs also say npm 9+ splits `login`
+      and `adduser`, defaults to web login, and that web login is not supported
+      for Verdaccio, so automation must avoid that path or force
+      `--auth-type=legacy`. Verdaccio's configuration docs still default API
+      tokens to a legacy AES-based signature, while JWT is optional if you want
+      expiration behavior. This path fits teams that can update the registry
+      host runtime and CI auth conventions in one pass."
+    when_to_use: "Use this when you can require Node 18+ everywhere that actually
+      runs Verdaccio and your CI can move away from interactive or web-based npm
+      auth assumptions. It is the cleaner long-term choice if you also want to
+      adopt JWT-based API tokens instead of relying on legacy non-expiring
+      signatures."
+    tradeoffs: "You get onto the supported major line and remove the need to
+      preserve older host runtimes, but you may break old admin scripts, Docker
+      images, or CI jobs that still expect Node 16 or npm login behavior from
+      older CLIs."
+    cautions: "Do not treat the upgrade as only a server package bump. If your
+      automation uses `npm login` on npm 9+ without `--auth-type=legacy`, or if
+      you still publish to npmjs.org with pre-2025 classic tokens, those
+      workflows can still fail after the Verdaccio upgrade."
+    links:
+      - "https://www.verdaccio.org/docs/installation/"
+      - "https://www.verdaccio.org/docs/setup-npm/"
+      - "https://www.verdaccio.org/docs/configuration/"
+      - "https://github.blog/changelog/2025-11-05-npm-security-update-classic-t\
+        oken-creation-disabled-and-granular-token-changes/"
+  - name: "Stay on Verdaccio 5.31.x temporarily and harden token compatibility first"
+    summary: "As of 2026-03-27, Verdaccio's configuration docs state that Verdaccio
+      5.x on Node.js 22 or higher will fail to start if the `.verdaccio-db`
+      secret is still 64 characters long. The same docs say
+      `security.api.migrateToSecureLegacySignature` is available since v5.31.0
+      to rotate that secret to 32 characters automatically, but rotating it
+      invalidates previously generated tokens. Verdaccio also documents that JWT
+      is optional and that legacy API token signing remains enabled by default,
+      so a hardened 5.31.x deployment can be used as a short bridge while you
+      update CI and registry auth flows. This option minimizes change if your
+      actual blocker is old automation rather than missing 6.x features."
+    when_to_use: "Use this when older CI images, scripts, or plugins still depend on
+      pre-Node-18 assumptions and you need a controlled migration window. It is
+      the safer choice if the main operational risk is token invalidation or
+      auth-flow breakage rather than staying on the previous major version for a
+      bit longer."
+    tradeoffs: "This avoids a rushed major upgrade and gives you time to rotate
+      secrets deliberately, but it prolongs reliance on legacy token behavior
+      and keeps a second migration still ahead of you."
+    cautions: "Secret migration is not transparent: Verdaccio docs explicitly warn
+      that updating the secret invalidates previously generated tokens. Also, if
+      your pipelines still use npm classic tokens for npmjs.org publishing, that
+      cutoff already happened on November 19, 2025, so holding on Verdaccio 5
+      does not preserve those external workflows."
+    links:
+      - "https://www.verdaccio.org/docs/configuration/"
+      - "https://www.verdaccio.org/docs/setup-npm/"
+      - "https://github.blog/changelog/2025-11-05-npm-security-update-classic-t\
+        oken-creation-disabled-and-granular-token-changes/"
+tags:
+  - "devtools"
+  - "verdaccio"
+  - "npm"
+  - "nodejs"
+  - "ci-cd"
+aliases:
+  - "verdaccio 6 node 18 requirement"
+  - "verdaccio npm 9 login legacy auth"
+  - "verdaccio token secret 64 characters node 22"
+related_cards:
+  - "devtools/npm-classic-token-removal-and-90-day-max-2026"
+  - "deployment/node-upgrade-lts-breakage"
+  - "security/npm-trusted-publishing-vs-granular-tokens-after-classic-token-rev\
+    ocation"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: package
+      id: package/verdaccio-6
+      name: Verdaccio 6
+    - type: runtime
+      id: runtime/nodejs-18
+      name: Node.js 18
+    - type: package
+      id: package/npm-9
+      name: npm 9
+    - type: package
+      id: package/verdaccio-5-31
+      name: Verdaccio 5.31.x
+    - type: runtime
+      id: runtime/nodejs-22
+      name: Node.js 22
+    - type: protocol
+      id: protocol/jwt
+      name: JWT
+    - type: data_format
+      id: format/legacy-aes-signature
+      name: legacy AES-based signature
+  edges:
+    - type: requires_version
+      from: package/verdaccio-6
+      to: runtime/nodejs-18
+      version: ">=18"
+      evidence: Verdaccio's official installation docs for the 6.x line require
+        Node.js "v18 or higher".
+    - type: breaking_change_in
+      from: package/npm-9
+      to: package/verdaccio-6
+      change: npm 9+ defaults to web login, which is not supported for Verdaccio;
+        automation must avoid that path or force --auth-type=legacy.
+      evidence: Official npm setup docs also say npm 9+ splits `login` and `adduser`,
+        defaults to web login, and that web login is not supported for
+        Verdaccio.
+    - type: breaking_change_in
+      from: runtime/nodejs-22
+      to: package/verdaccio-5-31
+      change: Verdaccio 5.x fails to start if the .verdaccio-db secret is still 64
+        characters long.
+      evidence: Verdaccio's configuration docs state that Verdaccio 5.x on Node.js 22
+        or higher will fail to start if the `.verdaccio-db` secret is still 64
+        characters long.
+    - type: locks_via
+      from: package/verdaccio-5-31
+      to: format/legacy-aes-signature
+      detail: Legacy API token signing remains enabled by default on a hardened 5.31.x
+        bridge deployment.
+      evidence: Verdaccio also documents that JWT is optional and that legacy API
+        token signing remains enabled by default.
+    - type: locks_via
+      from: package/verdaccio-6
+      to: protocol/jwt
+      detail: JWT-based API tokens are an optional adoption path if expiration
+        behavior is desired.
+      evidence: JWT is optional if you want expiration behavior.

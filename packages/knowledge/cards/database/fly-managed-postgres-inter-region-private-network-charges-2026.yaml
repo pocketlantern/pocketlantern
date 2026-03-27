@@ -1,0 +1,141 @@
+id: "database/fly-managed-postgres-inter-region-private-network-charges-2026"
+title: "Fly Managed Postgres Inter-Region Private Network Charges Starting
+  February 2026"
+problem: "Revisit Fly regional placement and app/database topology now that
+  Managed Postgres inter-region private network traffic started billing in
+  February 2026."
+context:
+  - "fly.io"
+  - "postgresql"
+  - "networking"
+  - "multi-region"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+candidates:
+  - name: "Co-locate app compute with the Managed Postgres cluster in one region"
+    summary: "As of 2026-03-19, Fly Managed Postgres charges monthly plan fees of
+      $38.00, $72.00, $282.00, $962.00, or $1,922.00 depending on plan, plus
+      $0.28 per provisioned GB-month of storage. Fly documents that all plans
+      include high availability, backups, and connection pooling, and the
+      service includes the default Postgres 16 distribution plus `pgvector` and
+      optional `PostGIS`. Fly also documents that starting in February 2026,
+      inter-region Managed Postgres private network traffic is billed at the
+      same rate as Machine private network transfer, while traffic within the
+      same region is not charged. Keeping the app tier and database in the same
+      Fly region is the cleanest way to avoid the new per-GB database traffic
+      charge while staying on Fly Managed Postgres."
+    when_to_use: "Best for cost-sensitive and low-ops deployments where the write
+      path can stay regional and the team wants to avoid new network line items.
+      The decisive factor is that same-region app-to-database traffic avoids the
+      February 2026 charge entirely."
+    tradeoffs: "Simplifies billing and removes cross-region database transfer costs,
+      but it centralizes latency around the database region and may reduce the
+      value of placing app Machines close to distant users."
+    cautions: "As of 2026-03-19, Fly Managed Postgres is only available in specific
+      regions, so your target placement options are constrained by Fly's MPG
+      region list. Fly also warns that deleting an app does not delete its
+      Managed Postgres cluster, so cleanup mistakes can still leave database
+      charges running."
+    links:
+      - "https://fly.io/docs/mpg/"
+      - "https://fly.io/docs/about/pricing/#data-transfer-pricing"
+      - "https://fly.io/mpg"
+  - name: "Keep a multi-region app topology and explicitly budget cross-region
+      database traffic"
+    summary: "As of 2026-03-19, Fly has already started billing Managed Postgres
+      inter-region private network usage, and Fly's December 2025 announcement
+      states the first charges appeared on invoices issued at the start of March
+      2026. Fly's pricing docs show granular private cross-region transfer rates
+      of $0.006 per GB for North America and Europe, $0.015 per GB for Asia
+      Pacific, Oceania, and South America, and $0.050 per GB for Africa and
+      India. Fly also states that organizations created after July 18, 2024 are
+      automatically on granular bandwidth pricing, while older organizations can
+      opt in but cannot switch back. If an older organization stays on
+      non-granular billing, Fly bills private cross-region traffic at the public
+      internet egress rate instead."
+    when_to_use: "Best for real-time or globally distributed apps where regional app
+      placement still matters more than eliminating cross-region database
+      chatter. The decisive factor is whether the latency benefit of regional
+      app Machines justifies a recurring per-GB charge between the app tier and
+      the database region."
+    tradeoffs: "Preserves regional app placement and user proximity, but database
+      traffic now has an explicit cost and billing model details can materially
+      change the rate. Cost predictability is worse than a single-region
+      topology if the application performs frequent cross-region reads or
+      writes."
+    cautions: "Check whether the organization is already on granular bandwidth
+      pricing before estimating costs, because older non-granular orgs can see
+      higher effective rates and the switch to granular is one-way. Fly's
+      invoice breakdown is by region and traffic type, so teams should verify
+      actual March 2026 onward invoices rather than assuming pre-February
+      behavior still applies."
+    links:
+      - "https://fly.io/docs/about/pricing/#data-transfer-pricing"
+      - "https://community.fly.io/t/we-are-going-to-start-charging-for-mpg-inte\
+        r-region-private-network-usage-from-febuary-2026/26561"
+      - "https://fly.io/docs/about/billing/"
+tags:
+  - "database"
+  - "fly.io"
+  - "postgres"
+  - "pricing"
+  - "networking"
+aliases:
+  - "fly managed postgres inter-region pricing"
+  - "fly mpg private network charges february 2026"
+  - "fly cross-region postgres traffic billing"
+related_cards:
+  - "runtime/fly-managed-postgres-inter-region-charges-feb-2026"
+  - "web/fly-io-granular-bandwidth-vs-legacy-egress-pricing-2026"
+  - database/planetscale-private-connections-flat-rate-feb-2026
+  - database/cockroachdb-cloud-usage-billing-renewal-model-2026
+  - deployment/flyio-granular-bandwidth-pricing-vs-legacy-transfer-rates-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/fly-io
+      name: fly.io
+    - type: capability
+      id: capability/fly-managed-postgres
+      name: Fly Managed Postgres
+    - type: engine
+      id: engine/postgresql-16
+      name: Postgres 16
+      standard: PostgreSQL 16
+    - type: package
+      id: package/pgvector
+      name: pgvector
+    - type: package
+      id: package/postgis
+      name: PostGIS
+    - type: capability
+      id: capability/fly-managed-postgres-inter-region-private-network-billing
+      name: Managed Postgres inter-region private network billing
+  edges:
+    - type: requires_version
+      from: capability/fly-managed-postgres
+      to: engine/postgresql-16
+      version: "16"
+      evidence: the service includes the default Postgres 16 distribution
+    - type: breaking_change_in
+      from: capability/fly-managed-postgres-inter-region-private-network-billing
+      to: capability/fly-managed-postgres
+      date: 2026-02-01
+      evidence: starting in February 2026, inter-region Managed Postgres private
+        network traffic is billed
+    - type: locks_via
+      from: capability/fly-managed-postgres
+      to: package/pgvector
+      evidence: the service includes ... `pgvector`
+    - type: locks_via
+      from: capability/fly-managed-postgres
+      to: package/postgis
+      condition: optional
+      evidence: the service includes ... optional `PostGIS`

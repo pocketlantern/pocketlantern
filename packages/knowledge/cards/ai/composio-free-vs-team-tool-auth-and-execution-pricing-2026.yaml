@@ -1,0 +1,207 @@
+id: "ai/composio-free-vs-team-tool-auth-and-execution-pricing-2026"
+title: "Composio Free vs Paid Tool Auth and Execution Pricing 2026"
+problem: "Agent platform teams need a current answer on when Composio’s free
+  usage is enough and when paid tiers become necessary for production connector
+  count, auth handling, or execution volume."
+context:
+  - "ai-agents"
+  - "tool-integrations"
+  - "oauth"
+  - "agent-execution"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on Totally Free"
+    summary: "As of 2026-03-27, Composio lists the Totally Free plan at \"$0 /
+      month\" with 20K tool calls per month, 1K premium tool calls, 1K connected
+      accounts, 14 days of log retention, Bring Your Own Credentials, and Custom
+      Tool Builder access capped at 3 apps. Rate limits shown on the pricing
+      page are 100 tool calls per minute, 1,000 premium tool calls per hour, and
+      1,000 infra operations per minute. This fits early development and
+      low-volume internal workflows."
+    when_to_use: "Use this when you are cost-sensitive, still validating product
+      demand, and can stay within 20K monthly executions and about 1K
+      authenticated connected accounts. The decisive factor is that free already
+      includes BYOC and basic custom tooling, so you do not need paid tiers just
+      to prove connector fit."
+    tradeoffs: "No monthly platform cost and no credit card requirement are strong
+      advantages. The tradeoff is hard ceilings on monthly tool calls, premium
+      tool calls, connected accounts, app count in the Custom Tool Builder, log
+      retention, and execution rate."
+    cautions: "Do not treat the free tier as production-ready if you expect bursty
+      traffic, premium-tool-heavy agents, or a growing pool of end-user linked
+      accounts. The official pricing page says free has no usage-based overage
+      path, so once you hit the included caps you need a plan change rather than
+      just paying incremental usage."
+    links:
+      - "https://composio.dev/pricing"
+      - "https://docs.composio.dev"
+  - name: "Upgrade to Ridiculously Cheap"
+    summary: "As of 2026-03-27, Composio lists Ridiculously Cheap at \"$29 / month\"
+      with 200K tool calls per month, 5K premium tool calls, 30K connected
+      accounts, 30 days of log retention, unlimited projects, unlimited team
+      members, unlimited Custom Tool Builder apps, and Bring Your Own
+      Credentials. Paid-tier rate limits shown by Composio are 5,000 tool calls
+      per minute, 10,000 premium tool calls per hour, and 10,000 infra
+      operations per minute. This is the first self-serve paid tier for
+      production usage."
+    when_to_use: "Use this when free limits are the blocker but enterprise controls
+      are not yet required. The decisive factor is usually one of these
+      thresholds: you need more than 20K monthly tool calls, more than 1K
+      connected accounts, more than 1K premium tool calls, more than 3
+      custom-tool apps, or materially higher execution throughput while still
+      staying within roughly 200K monthly tool calls, 30K connected accounts, 5K
+      premium tool calls, and 30-day retention."
+    tradeoffs: "It is the cheapest path to production-style usage and includes
+      overage pricing instead of a hard stop. The tradeoff is that premium tool
+      calls and connected accounts can add cost quickly, so low base price does
+      not mean low total spend at scale."
+    cautions: "Model the account-count economics before rollout if each end user or
+      workspace will authorize tools through Composio. Also separate standard
+      tool-call growth from premium-tool growth, because the premium overage
+      rate is materially higher than ordinary tool-call overage."
+    links:
+      - "https://composio.dev/pricing"
+      - "https://docs.composio.dev"
+  - name: "Move to Serious Business"
+    summary: "As of 2026-03-27, Composio lists Serious Business at \"$229 / month\"
+      with 2M tool calls per month, 50K premium tool calls, 100K connected
+      accounts, 90 days of log retention, unlimited projects, unlimited team
+      members, and unlimited Custom Tool Builder apps. The pricing page shows
+      Slack support separately as available on $1K+/month spend. This is the
+      higher self-serve tier for teams that have outgrown the $29 plan."
+    when_to_use: "Use this when the $29 tier is too small but you still want a
+      self-serve plan. The concrete threshold is that you expect to exceed any
+      of these Ridiculously Cheap limits: 200K monthly tool calls, 30K connected
+      accounts, 5K premium tool calls, or 30 days of log retention. It also fits
+      when lower overage rates and higher included volume matter more than the
+      jump from $29 to $229."
+    tradeoffs: "You get much larger included volume, cheaper overage rates than the
+      $29 tier, longer retention, and stronger support. The tradeoff is that
+      Composio becomes a real infrastructure line item."
+    cautions: "If your requirement is RBAC, auditability, or formal compliance
+      posture, verify the exact feature mapping in official docs before assuming
+      the self-serve paid tier is enough."
+    links:
+      - "https://composio.dev/pricing"
+      - "https://docs.composio.dev"
+  - name: "Negotiate Enterprise"
+    summary: "As of 2026-03-27, Composio lists Enterprise as custom quote with
+      custom user accounts, dedicated SLA and SOC-2, custom API volume, and VPC
+      or on-prem options. This is the procurement path for teams whose blocker
+      is security, deployment, or contractual support rather than a standard
+      self-serve limit."
+    when_to_use: "Use this when the deciding factor is not just exceeding 2M monthly
+      tool calls, 100K connected accounts, or 50K premium tool calls, but
+      needing enterprise-only capabilities such as dedicated SLA and SOC-2,
+      custom user accounts, custom API volume, or VPC/on-prem deployment. Choose
+      it when procurement, compliance, or deployment requirements force a sales
+      process."
+    tradeoffs: "You get custom capacity, deployment flexibility, and contractual
+      support. The tradeoff is that pricing is not self-serve and usually
+      requires a longer sales and security review cycle."
+    cautions: "As of 2026-03-27, the public pricing page explicitly states custom
+      user accounts, dedicated SLA and SOC-2, custom API volume, and VPC or
+      on-prem deployment. Confirm the final feature package in the enterprise
+      agreement instead of assuming every advanced control is included by
+      default."
+    links:
+      - "https://composio.dev/pricing"
+      - "https://docs.composio.dev"
+      - "https://trust.composio.dev"
+tags:
+  - "ai"
+  - "composio"
+  - "pricing"
+  - "tool-auth"
+  - "agent-platform"
+aliases:
+  - "composio free plan limits"
+  - "composio team pricing"
+  - "composio connected accounts pricing"
+  - "composio pricing 2026"
+  - "composio free vs team"
+  - "composio paid plan limits"
+  - "composio connector pricing"
+  - "composio auth pricing"
+  - "composio execution limits"
+  - "composio connected accounts"
+  - "composio team plan cost"
+  - "composio free tier connectors"
+  - "composio tool auth costs"
+
+  - "composio free plan limits"
+  - "composio team pricing"
+  - "composio connected accounts pricing"
+related_cards:
+  - "backend/nango-pricing-after-2026-managed-auth-and-sync-packaging"
+  - "auth/google-microsoft-github-oauth-policy-drift"
+  - "ai/mcp-server-hosting-and-distribution-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/composio
+      name: Composio
+    - type: capability
+      id: capability/oauth
+      name: OAuth
+    - type: capability
+      id: capability/agent-execution
+      name: Agent execution
+    - type: capability
+      id: capability/tool-integrations
+      name: Tool integrations
+    - type: package
+      id: package/composio-totally-free
+      name: Composio Totally Free
+    - type: package
+      id: package/composio-ridiculously-cheap
+      name: Composio Ridiculously Cheap
+    - type: package
+      id: package/composio-serious-business
+      name: Composio Serious Business
+    - type: package
+      id: package/composio-enterprise
+      name: Composio Enterprise
+  edges:
+    - type: requires_version
+      from: capability/oauth
+      to: package/composio-totally-free
+      feature: Bring Your Own Credentials
+      evidence: Totally Free includes Bring Your Own Credentials.
+    - type: requires_version
+      from: capability/agent-execution
+      to: package/composio-ridiculously-cheap
+      feature: first self-serve paid tier for production usage
+      evidence: Ridiculously Cheap is described as the first self-serve paid tier for
+        production usage.
+    - type: requires_version
+      from: capability/agent-execution
+      to: package/composio-serious-business
+      feature: higher self-serve tier
+      evidence: Serious Business is the higher self-serve tier for teams that have
+        outgrown the $29 plan.
+    - type: requires_version
+      from: capability/tool-integrations
+      to: package/composio-enterprise
+      feature: VPC or on-prem options
+      evidence: Enterprise includes custom API volume and VPC or on-prem options.
+    - type: locks_via
+      from: capability/oauth
+      to: vendor/composio
+      mechanism: connected accounts
+      evidence: The card warns to model account-count economics if each end user or
+        workspace will authorize tools through Composio.
+    - type: locks_via
+      from: capability/agent-execution
+      to: vendor/composio
+      mechanism: tool-call and premium-tool-call limits
+      evidence: Plan selection is driven by Composio monthly tool-call,
+        premium-tool-call, and rate-limit ceilings.

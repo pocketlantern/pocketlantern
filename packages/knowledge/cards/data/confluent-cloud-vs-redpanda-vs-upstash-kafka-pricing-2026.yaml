@@ -121,6 +121,8 @@ related_cards:
   - "backend/message-queue"
   - data/risingwave-basic-vs-pro-vs-self-managed-rwu-pricing-2026
   - data/confluent-freight-vs-enterprise-private-networking-after-pni-2026
+  - data/warpstream-vs-confluent-brokerless-kafka-pricing-2026
+  - data/aiven-for-apache-kafka-startup-vs-business-2026
 tier: "core"
 status: "active"
 updated: "2026-03-19"

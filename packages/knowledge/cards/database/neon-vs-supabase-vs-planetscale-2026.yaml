@@ -89,6 +89,9 @@ related_cards:
   - database/planetscale-single-node-vs-ha-clusters-2026
   - database/supabase-compute-add-on-vs-plan-upgrade-2026
   - database/turso-free-vs-paid-plan-limits-2026
+  - cloud/planetscale-private-connections-vs-public-egress-feb-2026
+  - database/cockroachdb-basic-vs-standard-vs-advanced-2026
+  - database/planetscale-no-free-plan-after-hobby-deprecation-2026
 tier: "core"
 status: active
 updated: 2026-03-15

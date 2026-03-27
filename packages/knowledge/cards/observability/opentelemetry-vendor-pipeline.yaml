@@ -1,0 +1,235 @@
+id: observability/opentelemetry-vendor-pipeline
+title: OpenTelemetry Pipeline vs Vendor-Native SDKs
+problem: Choose between a vendor-neutral OpenTelemetry pipeline and
+  vendor-native instrumentation given current SDK maturity, sampling controls,
+  trace-log correlation, egress cost, and migration risk.
+context:
+  - observability
+  - tracing
+  - logging
+  - telemetry
+  - distributed-systems
+constraints:
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - microservices
+  - compliance
+candidates:
+  - name: Upstream OpenTelemetry SDKs + Collector + OTLP
+    summary: Use upstream OpenTelemetry APIs/SDKs in services and route telemetry
+      through an OpenTelemetry Collector over OTLP. This is the strongest
+      portability option when migration risk matters, but as of 2026-03-14 the
+      maturity is still uneven by language and Collector components still have
+      mixed stability.
+    when_to_use: Best for enterprise + microservices + compliance where you want
+      vendor-neutral instrumentation, policy control before data leaves your
+      network, and the option to change backends later with minimal app-code
+      rewrite. Also a strong fit for high-scale + cost-sensitive teams that want
+      collector-side batching, filtering, redaction, and tail/probabilistic
+      sampling before vendor billing starts.
+    tradeoffs: Lowest lock-in and best long-term migration posture. The Collector
+      gives you retries, batching, encryption, filtering, and sophisticated
+      sampling, but you now own pipeline design, scaling, and language-specific
+      gaps such as OpenTelemetry logs being stable in .NET, beta in Go, and
+      still in development in JavaScript.
+    cautions: "Do not treat all OTel components as equally mature: the Collector is
+      explicitly mixed-status, the tail-sampling processor is still beta, and
+      experimental semantic conventions can still introduce breaking changes
+      even when a language SDK is otherwise stable. If trace-log correlation is
+      a must-have, verify Logs support for each runtime before standardizing."
+    links:
+      - https://opentelemetry.io/docs/collector/
+      - https://opentelemetry.io/docs/collector/components/processor/
+      - https://opentelemetry.io/docs/concepts/sampling/
+      - https://opentelemetry.io/docs/languages/
+      - https://opentelemetry.io/docs/languages/dotnet/
+      - https://opentelemetry.io/docs/languages/go/
+      - https://opentelemetry.io/docs/languages/js/
+      - https://opentelemetry.io/docs/migration/
+  - name: Vendor-Native SDKs or APM Agents
+    summary: Use the observability vendor's own SDKs or agents end to end for
+      instrumentation, ingest, correlation, and sampling. This is usually the
+      fastest route to mature auto-instrumentation and polished trace-log
+      workflows; pricing and policy tradeoffs must be modeled explicitly as of
+      2026-03-14.
+    when_to_use: Best for low-ops + small-team or enterprise + real-time
+      environments where one vendor is already the platform standard and faster
+      rollout matters more than portability. Choose this when you want
+      backend-aware sampling and turnkey correlation more than you want backend
+      optionality; for example, Datadog exposes granular ingestion rules and
+      automatic trace/log correlation, while New Relic offers adaptive and
+      tail-based options tied to its platform.
+    tradeoffs: "Best operator experience and usually the strongest out-of-the-box
+      correlation, dashboards, and support. Highest lock-in: later migration
+      often means redoing instrumentation choices, vendor tags, sampling rules,
+      alerts, and data-shaping assumptions."
+    cautions: Budgeting can dominate the decision. As of 2026-03-14, Datadog's
+      pricing page lists Observability Pipelines at $0.095-$0.12/GB ingested,
+      APM at $31-$36 per host/month, APM ingestion at $0.10/GB, indexed spans
+      from $1.27 per 1M spans, and log forwarding to custom destinations at
+      $0.25/GB outbound; New Relic's usage plan lists Data at $0.40/GB, Data
+      Plus at $0.60/GB, and an EU data-center add-on at $0.05/GB. Also verify
+      where sampling happens, because in-agent, collector, and backend sampling
+      can interact in surprising ways.
+    links:
+      - https://www.datadoghq.com/pricing/list/
+      - https://docs.datadoghq.com/tracing/trace_collection/library_config/
+      - https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/
+      - https://docs.newrelic.com/docs/licenses/license-information/usage-plans/new-relic-usage-plan/
+      - https://docs.newrelic.com/docs/distributed-tracing/concepts/how-new-relic-distributed-tracing-works/
+  - name: "Hybrid: OpenTelemetry APIs with Vendor Bridge or Vendor OTel Distribution"
+    summary: Instrument to OpenTelemetry APIs or OTLP, but run through a
+      vendor-supported bridge or distribution for the current backend. This is
+      the practical middle path when you want lower migration risk than pure
+      vendor-native SDKs without giving up the rollout tooling and
+      backend-specific features a vendor can provide; as of 2026-03-14 Datadog
+      recommends DDOT Collector for Datadog backends, and New Relic ships
+      OpenTelemetry API support in major agents.
+    when_to_use: "Best for enterprise + microservices or monorepo + small-team
+      environments doing a staged migration: keep app code close to OTel
+      conventions, but rely on the vendor for support, packaging, and some
+      backend-specific optimizations. It is especially useful when you expect a
+      possible backend change later but cannot afford a full upstream-OTel
+      rollout right now."
+    tradeoffs: "More portable than fully native vendor SDKs and easier to adopt than
+      a pure upstream OTel platform. Still not fully neutral: the deployment
+      path, compatibility matrix, and some advanced capabilities remain
+      vendor-shaped."
+    cautions: Read the language-specific limitations closely. New Relic's
+      OpenTelemetry API support is disabled by default, requires minimum agent
+      versions, supports trace-ratio alignment in mixed environments, and in
+      Node.js does not automatically enable OpenTelemetry instrumentations.
+      Datadog's DDOT approach keeps OpenTelemetry pipelines but still pulls you
+      toward Datadog agent features and Datadog-specific operational patterns.
+    links:
+      - https://docs.datadoghq.com/opentelemetry/setup/
+      - https://docs.newrelic.com/docs/apm/agents/manage-apm-agents/opentelemetry-api-support/
+      - https://docs.newrelic.com/docs/distributed-tracing/concepts/how-new-relic-distributed-tracing-works/
+tags:
+  - observability
+  - opentelemetry
+  - otlp
+  - collector
+  - tracing
+  - logging
+  - sampling
+  - datadog
+  - new-relic
+aliases:
+  - otel pipeline
+  - otlp vs vendor agent
+  - opentelemetry vs datadog sdk
+  - opentelemetry vs new relic agent
+  - vendor-native apm
+  - telemetry pipeline
+  - ddot collector
+related_cards:
+  - infra/monitoring-observability
+  - observability/datadog-vs-grafana-cloud-vs-new-relic
+  - observability/log-retention-vs-trace-sampling
+  - security/waf-bot-protection-vendor-selection
+  - observability/error-monitoring-sentry-vs-platform-native
+  - observability/incident-alert-routing-strategy
+  - observability/grafana-agent-vs-alloy-vs-upstream-otel-collector-after-agent-eol
+  - observability/otel-logs-vs-fluent-bit-vs-vector-after-logs-stabilization
+  - observability/sentry-vs-logrocket-vs-datadog-error-tracking-pricing-2026
+  - observability/honeycomb-vs-new-relic-usage-pricing-thresholds-2026
+  - observability/honeycomb-free-vs-pro-event-pricing-2026
+  - observability/elasticsearch-vs-grafana-loki-vs-axiom-log-pricing-2026
+  - observability/honeycomb-vs-datadog-otel-cost-curves-2026
+  - web/treblle-free-vs-starter-vs-team-api-request-limits-2026
+  - observability/splunk-observability-standard-vs-enterprise-overage-risk-2026
+  - data/mongodb-atlas-search-tracking-removal-feb-2026
+  - observability/helicone-self-hosted-vs-hosted-after-mintlify-acquisition-2026
+  - observability/openobserve-cloud-paygo-vs-enterprise-after-june-2025-pricing-policy-2026
+  - observability/coralogix-vs-logzio-otel-ingest-pricing-2026
+  - observability/dash0-vs-hyperdx-vs-honeycomb-otel-pricing-2026
+  - observability/betterstack-metrics-billing-change-from-data-points-to-gb-2026
+  - observability/promtail-to-alloy-before-march-2-2026-eol
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-12
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: protocol
+      id: protocol/opentelemetry
+      name: OpenTelemetry
+      standard: vendor-neutral telemetry standard
+    - type: protocol
+      id: protocol/otlp
+      name: OTLP
+      standard: OpenTelemetry Protocol
+    - type: engine
+      id: engine/opentelemetry-collector
+      name: OpenTelemetry Collector
+    - type: capability
+      id: capability/tail-sampling-processor
+      name: tail-sampling processor
+    - type: capability
+      id: capability/experimental-semantic-conventions
+      name: experimental semantic conventions
+    - type: runtime
+      id: runtime/dotnet
+      name: .NET
+    - type: runtime
+      id: runtime/go
+      name: Go
+    - type: runtime
+      id: runtime/javascript
+      name: JavaScript
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: vendor
+      id: vendor/datadog
+      name: Datadog
+    - type: vendor
+      id: vendor/new-relic
+      name: New Relic
+    - type: engine
+      id: engine/ddot-collector
+      name: DDOT Collector
+    - type: capability
+      id: capability/new-relic-opentelemetry-api-support
+      name: New Relic OpenTelemetry API support
+    - type: capability
+      id: capability/vendor-native-sdks-apm-agents
+      name: Vendor-native SDKs or APM agents
+    - type: capability
+      id: capability/datadog-agent-features
+      name: Datadog agent features
+    - type: capability
+      id: capability/datadog-specific-operational-patterns
+      name: Datadog-specific operational patterns
+  edges:
+    - type: breaking_change_in
+      from: capability/experimental-semantic-conventions
+      to: protocol/opentelemetry
+      note: Experimental semantic conventions can still introduce breaking changes
+        even when a language SDK is otherwise stable.
+    - type: breaking_change_in
+      from: capability/tail-sampling-processor
+      to: engine/opentelemetry-collector
+      note: The tail-sampling processor is still beta in the Collector.
+    - type: requires_version
+      from: capability/new-relic-opentelemetry-api-support
+      to: vendor/new-relic
+      requirement: disabled by default and requires minimum agent versions
+    - type: requires_version
+      from: capability/new-relic-opentelemetry-api-support
+      to: runtime/nodejs
+      requirement: does not automatically enable OpenTelemetry instrumentations in Node.js
+    - type: locks_via
+      from: capability/vendor-native-sdks-apm-agents
+      to: vendor/datadog
+      note: Vendor-native instrumentation increases lock-in through vendor-shaped
+        instrumentation, sampling, alerts, and data-shaping assumptions.
+    - type: locks_via
+      from: engine/ddot-collector
+      to: vendor/datadog
+      note: DDOT keeps OpenTelemetry pipelines but still pulls deployments toward
+        Datadog agent features and Datadog-specific operational patterns.

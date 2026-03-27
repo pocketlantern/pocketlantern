@@ -1,0 +1,134 @@
+id: "testing/wdio-v9-upgrade-after-node-version-floor-and-api-breaks-2026"
+title: "WebdriverIO v9 Upgrade After Node Version Floor and API Breaks 2026"
+problem: "Plan whether to upgrade or freeze WebdriverIO after v9 changed runtime
+  requirements and test API behavior in ways that can break CI pipelines."
+context:
+  - "testing"
+  - "webdriverio"
+  - "nodejs"
+  - "ci"
+constraints:
+  - "small-team"
+  - "monorepo"
+candidates:
+  - name: "Upgrade to WebdriverIO v9 and raise the Node floor first"
+    summary: "As of 2026-03-27, WebdriverIO v9 is the stable release on the official
+      versions page. The v9 release notes state that v9 no longer supports
+      Node.js v16 and below, and the project recommends Node.js v20. The same
+      release introduced blocker-level API and behavior changes: element
+      metadata access now goes through `getElement` or `getElements`,
+      `XXXContaining` matchers were removed in favor of asymmetric matchers,
+      `isDisplayedViewport` was removed in favor of `isDisplayed({
+      withinViewport: true })`, and the old JSON Wire Protocol commands and
+      `devtools` packages were removed or replaced. It also switched TypeScript
+      runtime compilation from `ts-node` to `tsx`, which can affect test
+      bootstrapping in CI."
+    when_to_use: "Use this when you can upgrade CI images and local dev to a
+      supported Node release before touching test code. The decisive factor is
+      whether you can absorb both the runtime floor change and the test-suite
+      refactors in one migration window."
+    tradeoffs: "You move back onto the current stable line and avoid staying on an
+      unsupported major, but the upgrade is not just a package bump because it
+      can break helpers, custom matchers, and legacy browser-driver
+      integrations."
+    cautions: "Expect silent behavior changes as well as compile-time breaks. v9 now
+      automatically suppresses dialogs unless you register a listener, and it
+      automatically waits for elements to become interactable on direct actions
+      like `click` and `setValue`, so timing-sensitive tests can behave
+      differently even after they compile."
+    links:
+      - "https://webdriver.io/blog/2024/08/15/webdriverio-v9-release/"
+      - "https://webdriver.io/versions"
+  - name: "Freeze on WebdriverIO v8 temporarily and isolate the upgrade work"
+    summary: "WebdriverIO v8 is listed on the official versions page as LTS only
+      until August 2025. As of 2026-03-27, this has already occurred, so
+      freezing on v8 means intentionally staying on an older major that is no
+      longer in its stated LTS window. This can still be the lower-risk
+      short-term choice if your CI or self-hosted runners are pinned to Node 16
+      or if your suite depends on removed v9 APIs such as direct element
+      metadata access, `XXXContaining` matchers, `isDisplayedViewport`, JSON
+      Wire Protocol commands, or `@wdio/devtools-service`. The differentiator is
+      operational stability today versus taking on an unsupported dependency
+      posture."
+    when_to_use: "Use this when CI continuity matters more than framework currency
+      and you cannot yet lift Node or refactor the suite safely. The decisive
+      factor is whether the immediate outage risk from a forced v9 migration is
+      higher than the governance risk of running past v8's published support
+      window."
+    tradeoffs: "You avoid near-term pipeline breakage and can stage the migration
+      behind a dedicated branch or runner-image project, but you remain on an
+      older major whose official LTS window has already ended."
+    cautions: "Do not treat a freeze as a steady-state plan. Because the official
+      versions page shows v8 LTS ended in August 2025, the safer interpretation
+      as of 2026-03-27 is 'short-term containment only' while you schedule a
+      Node upgrade and a codemod-style pass over WDIO-specific APIs."
+    links:
+      - "https://webdriver.io/versions"
+      - "https://webdriver.io/blog/2024/08/15/webdriverio-v9-release/"
+tags:
+  - "testing"
+  - "webdriverio"
+  - "nodejs"
+  - "ci"
+aliases:
+  - "wdio v9 upgrade"
+  - "webdriverio node 16 support ended"
+  - "webdriverio v8 vs v9 migration"
+related_cards:
+  - "deployment/node-upgrade-lts-breakage"
+  - "testing/jest-30-upgrade-after-node-18-drop-2026"
+  - "_archived/testing-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: package
+      id: package/webdriverio-v9
+      name: WebdriverIO v9
+    - type: package
+      id: package/webdriverio-v8
+      name: WebdriverIO v8
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+    - type: protocol
+      id: protocol/json-wire-protocol
+      name: JSON Wire Protocol
+    - type: package
+      id: package/ts-node
+      name: ts-node
+    - type: package
+      id: package/tsx
+      name: tsx
+    - type: package
+      id: package/wdio-devtools-service
+      name: "@wdio/devtools-service"
+  edges:
+    - type: requires_version
+      from: package/webdriverio-v9
+      to: runtime/nodejs-20
+      basis: recommended by the v9 release notes
+    - type: breaking_change_in
+      from: protocol/json-wire-protocol
+      to: package/webdriverio-v9
+      change: old JSON Wire Protocol commands were removed
+    - type: breaking_change_in
+      from: package/ts-node
+      to: package/webdriverio-v9
+      change: TypeScript runtime compilation switched away from ts-node
+    - type: locks_via
+      from: package/webdriverio-v9
+      to: package/tsx
+      change: TypeScript runtime compilation switched to tsx
+    - type: breaking_change_in
+      from: package/wdio-devtools-service
+      to: package/webdriverio-v9
+      change: devtools packages were removed or replaced
+    - type: eol_date
+      from: package/webdriverio-v8
+      to: null
+      date: 2025-08
+      status: LTS ended in August 2025

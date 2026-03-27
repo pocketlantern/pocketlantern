@@ -1,0 +1,170 @@
+id: "analytics/logrocket-ai-and-session-replay-packaging-2026"
+title: "LogRocket AI and Session Replay Packaging in 2026"
+problem: "Teams evaluating LogRocket need a current decision card on how AI
+  features, session volume, and retention are packaged across plans in 2026,
+  because these plan details drive both cost and incident-debugging coverage."
+context:
+  [
+    "analytics",
+    "session-replay",
+    "frontend-observability",
+    "ai-assisted-debugging"
+  ]
+constraints: [ "cost-sensitive", "enterprise", "small-team" ]
+candidates:
+  - name: "LogRocket Team"
+    summary: "As of 2026-03-18, LogRocket Team starts at \"$69 / month\" with
+      examples on the pricing page of \"10k sessions/mo: $69\" and \"25k
+      sessions/mo: $139\". The plan packages pixel-perfect session replay and
+      JavaScript error reporting on a monthly commitment with a 14-day trial.
+      The compare-plans table shows Team at \"5-10\" seats, \"10k-50k/month\"
+      sessions, and data retention that \"starts at 1 month\". AI packaging is
+      the main omission: the pricing page does not list Team as including \"AI
+      Features & MCP,\" while Conditional Recording is sold as an add-on."
+    when_to_use: "Use this when the buying constraint is small-team plus
+      cost-sensitive and the main need is replay plus frontend error
+      reproduction rather than AI-assisted triage. It is the lowest paid entry
+      point if one month of baseline retention is acceptable and monthly billing
+      flexibility matters more than deeper analytics or Galileo workflows."
+    tradeoffs: "Lowest paid starting price and monthly term, but weaker packaging
+      for AI features, retention depth, and advanced volume control."
+    cautions: "Do not assume Team includes Galileo AI, Ask Galileo, or MCP usage
+      because the official pricing page only explicitly packages AI on
+      Professional and Enterprise. Retention is described as starting at one
+      month rather than a fixed longer default, so longer incident lookback may
+      require an upgrade or add-on."
+    links:
+      - "https://logrocket.com/pricing"
+      - "https://logrocket.com/products/conditional-recording"
+      - "https://docs.logrocket.com/docs/your-plans-page"
+  - name: "LogRocket Professional"
+    summary: "As of 2026-03-18, LogRocket Professional starts at \"$295 / month\"
+      and is sold on an annual commitment, billed monthly or annually. This is
+      the first pricing tier that explicitly packages \"AI Features & MCP\" and
+      product analytics on the public pricing page. The compare-plans table
+      lists Professional with custom seats, \"Any volume\" sessions, custom data
+      retention, and \"200/mo included\" for API and MCP. LogRocket docs also
+      state that Galileo Highlights and Extended Session Retention are available
+      only for \"Pro and Enterprise\" SaaS plans, which is the documentation
+      label corresponding to the AI-capable paid tier on the pricing page."
+    when_to_use: "Use this when you need AI-assisted issue discovery,
+      natural-language analysis, or MCP access in addition to session replay,
+      and you can accept an annual commercial commitment. It is the practical
+      default when incident-debugging coverage depends on AI workflows and
+      longer-lived watched-session retention rather than just raw replay
+      capture."
+    tradeoffs: "Adds Galileo AI, product analytics, MCP/API allowance, and Pro-only
+      retention features, but moves you into annual procurement and sales-led
+      packaging for exact volume and retention terms."
+    cautions: "The official docs use the term \"Pro\" while the pricing page uses
+      \"Professional,\" so confirm plan naming and entitlement mapping during
+      procurement. Exact pricing for higher session volumes, custom retention,
+      and any usage beyond the included 200 monthly API/MCP allowance is not
+      published on the public page."
+    links:
+      - "https://logrocket.com/pricing"
+      - "https://logrocket.com/products/galileo-ai"
+      - "https://docs.logrocket.com/docs/ask-galileo"
+      - "https://docs.logrocket.com/docs/extended-session-retention"
+  - name: "LogRocket Enterprise"
+    summary: "As of 2026-03-18, LogRocket Enterprise is custom-priced on an annual
+      term. The pricing page packages Enterprise with unlimited seats, custom
+      session volume, custom data retention, self-hosted availability, and a
+      free pilot. The same compare-plans table shows Enterprise also includes
+      \"200/mo\" API and MCP allowance, and LogRocket markets Conditional
+      Recording directly to customers handling \"1M+ sessions/mo\" to retain
+      only important sessions. This is the tier aimed at organizations that need
+      to shape replay capture economics, retention policy, and deployment model
+      rather than just buy a larger seat bundle."
+    when_to_use: "Use this when the constraint set is enterprise plus compliance or
+      very high session volume, especially if retention and storage policy need
+      to be negotiated instead of accepted as defaults. It is the decisive
+      choice when self-hosting, custom legal terms, or selective capture at
+      scale are procurement blockers."
+    tradeoffs: "Most flexible for governance, volume, and deployment, but pricing is
+      opaque and requires a sales process and annual commitment."
+    cautions: "If your main need is only AI features, Enterprise may be more than
+      necessary because Professional already exposes AI Features and MCP on the
+      public matrix. Public docs do not publish Enterprise overage economics or
+      exact retention schedules, so budget modeling still requires direct
+      confirmation."
+    links:
+      - "https://logrocket.com/pricing"
+      - "https://logrocket.com/products/conditional-recording"
+      - "https://docs.logrocket.com/docs/logrocket-galileo-ai-privacy-faq"
+      - "https://docs.logrocket.com/docs/your-plans-page"
+tags: [ "analytics", "logrocket", "session-replay", "pricing", "ai" ]
+aliases:
+  - "logrocket pricing 2026"
+  - "logrocket galileo ai plans"
+  - "logrocket session replay retention plans"
+  - "logrocket plans 2026"
+  - "logrocket pricing plans"
+  - "logrocket replay limits"
+  - "logrocket retention pricing"
+  - "logrocket galileo pricing"
+  - "logrocket ai pricing"
+  - "galileo ai logrocket"
+  - "session replay pricing"
+  - "log rocket pricing"
+  - "logrocket plan comparison"
+related_cards:
+  - analytics/fullstory-pricing-and-retention-tradeoffs-2026
+  - observability/sentry-vs-logrocket-vs-datadog-error-tracking-pricing-2026
+  - ai/ai-feature-cost-governance
+  - analytics/sentry-session-replay-pricing-vs-full-replay-stack-2026
+  - design/miro-ai-credits-and-plan-entitlements-2026
+  - analytics/pendo-vs-userpilot-vs-appcues-seat-pricing-2026
+  - analytics/microsoft-clarity-limits-and-sampling-behavior-2026
+  - mobile/instabug-vs-embrace-vs-bugsnag-mobile-observability-pricing-2026
+  - analytics/fullstory-vs-lucky-orange-vs-mouseflow-session-replay-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/logrocket
+      name: LogRocket
+    - type: package
+      id: package/logrocket-team
+      name: LogRocket Team
+      category: plan
+    - type: package
+      id: package/logrocket-professional
+      name: LogRocket Professional
+      category: plan
+    - type: package
+      id: package/logrocket-enterprise
+      name: LogRocket Enterprise
+      category: plan
+    - type: capability
+      id: capability/ai-features-mcp
+      name: AI Features & MCP
+      category: ai
+    - type: capability
+      id: capability/extended-session-retention
+      name: Extended Session Retention
+      category: retention
+    - type: capability
+      id: capability/galileo-highlights
+      name: Galileo Highlights
+      category: ai
+  edges:
+    - type: requires_version
+      from: capability/ai-features-mcp
+      to: package/logrocket-professional
+    - type: requires_version
+      from: capability/extended-session-retention
+      to: package/logrocket-professional
+    - type: requires_version
+      from: capability/extended-session-retention
+      to: package/logrocket-enterprise
+    - type: requires_version
+      from: capability/galileo-highlights
+      to: package/logrocket-professional
+    - type: requires_version
+      from: capability/galileo-highlights
+      to: package/logrocket-enterprise

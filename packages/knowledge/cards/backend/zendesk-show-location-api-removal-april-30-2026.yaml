@@ -1,0 +1,188 @@
+id: "backend/zendesk-show-location-api-removal-april-30-2026"
+title: "Zendesk Show Location API Deprecation Starting April 30, 2026"
+problem: "Teams using Zendesk app location APIs need a migration decision before
+  the Show Location API deprecation starts on April 30, 2026 and existing
+  sidebar or modal flows become migration risks."
+context:
+  - "zendesk"
+  - "zendesk-apps-framework"
+  - "support-apps"
+  - "ticketing-api"
+constraints:
+  - "enterprise"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Minimal migration: replace Show Location calls with List Locations plus
+      local ID-to-name mapping"
+    summary: "Zendesk's January 30, 2026 changelog says `GET
+      /api/v2/apps/locations/{app_location_id}` is deprecated starting April 30,
+      2026. The App Locations API still documents `GET /api/v2/apps/locations`,
+      and its example response includes both `id` and `name`, so you can replace
+      one-by-one lookups with a local map. Best for a fast, low-diff migration
+      when Show Location was only used to translate location IDs."
+    when_to_use: "Use this when your app architecture is otherwise sound and the
+      removal only breaks an admin or bootstrap lookup path. Choose it when you
+      want the fastest fix with the smallest code diff and you can tolerate
+      maintaining a local cache or startup fetch of the locations list."
+    tradeoffs: "Fastest migration and least UX change, but it preserves your
+      existing location-coupled design. You also still depend on the account's
+      available locations list and must handle stale caches or missing IDs
+      yourself."
+    cautions: "Do not assume Show Location will remain available after April 30,
+      2026. If your flow also depends on transient sidebar lifecycle behavior,
+      swapping the endpoint alone will not fix those runtime issues."
+    links:
+      - "https://developer.zendesk.com/api-reference/changelog/changelog/"
+      - "https://developer.zendesk.com/api-reference/ticketing/apps/app_locatio\
+        ns/"
+  - name: "Keep ticket/sidebar UX, but launch modals through manifest-declared
+      locations and `instances.create`"
+    summary: "Zendesk Support apps document permanent location names such as
+      `ticket_sidebar`, `user_sidebar`, and `modal`, and the Core Apps API
+      documents creating modals with `instances.create` and `location:
+      \"modal\"`. This keeps the existing sidebar-centered workflow while moving
+      modal behavior onto supported manifest-declared locations instead of
+      per-ID location resolution."
+    when_to_use: "Use this when agents should keep working from ticket or profile
+      sidebars and only need occasional focused dialogs. Choose it when you want
+      to preserve the existing sidebar workflow while moving modal behavior onto
+      the supported Apps framework primitives."
+    tradeoffs: "Keeps agent workflow familiar and aligned with Zendesk's documented
+      Support locations. The tradeoff is stricter manifest design, plus extra
+      signed-URL requirements if your modal is server-rendered."
+    cautions: "For server-side modals, Zendesk's docs state that all other declared
+      Support locations must also be server-side and `signedUrls` must be
+      enabled. If your modal depends on ad hoc dynamic location resolution,
+      refactor that logic before the endpoint removal."
+    links:
+      - "https://developer.zendesk.com/api-reference/apps/apps-support-api/intr\
+        oduction/"
+      - "https://developer.zendesk.com/api-reference/apps/apps-support-api/moda\
+        l/"
+      - "https://developer.zendesk.com/documentation/apps/getting-started/setti\
+        ng-up-new-apps/"
+  - name: "Re-architect around permanent locations: `background` plus `top_bar` or
+      `nav_bar`"
+    summary: "Zendesk documents `background` as an always-running location and
+      `top_bar` and `nav_bar` as durable entry points with pane and preload
+      support. The Core Apps API also documents `instance.created` for
+      coordinating transient locations from a permanent one. This is the
+      strongest long-term option when the Show Location deprecation exposes a
+      deeper dependency on ephemeral sidebars."
+    when_to_use: "Use this when your app coordinates work across tickets, needs
+      durable state, or already struggles with sidebar lifecycle timing. Choose
+      it when reliability matters more than preserving the exact old UI entry
+      point."
+    tradeoffs: "Most robust against transient location issues and better for
+      cross-ticket or global workflows. The downside is a larger UX and code
+      migration, and agents may need to adopt a new top-bar or nav-bar launch
+      pattern."
+    cautions: "Top bar and nav bar panes are only inserted into the DOM when first
+      opened unless you explicitly preload them, and Zendesk recommends doing
+      background tasks directly from `background` in most cases. If your current
+      app relies on ticket-only objects, verify which data remains accessible
+      after moving orchestration to a permanent location."
+    links:
+      - "https://developer.zendesk.com/api-reference/apps/apps-support-api/back\
+        ground/"
+      - "https://developer.zendesk.com/api-reference/apps/apps-support-api/top_\
+        bar/"
+      - "https://developer.zendesk.com/api-reference/apps/apps-support-api/nav_\
+        bar/"
+      - "https://developer.zendesk.com/api-reference/apps/apps-core-api/core_ap\
+        i/"
+tags:
+  - "backend"
+  - "zendesk"
+  - "api-deprecation"
+  - "apps-framework"
+aliases:
+  - "zendesk show location api deprecation"
+  - "zendesk app locations april 2026"
+  - "zendesk modal migration apps framework"
+  - "zendesk showlocation api"
+  - "zendesk show location removal"
+  - "zendesk app location deprecation"
+  - "zendesk apps framework modal"
+  - "zendesk sidebar api removal"
+  - "zendesk location api sunset"
+  - "zendesk show loc api"
+  - "zendesk app locations deprecated"
+  - "zendesk modal api migration"
+  - "zendesk location api april 2026"
+
+  - "zendesk show location api deprecation"
+  - "zendesk app locations april 2026"
+  - "zendesk modal migration apps framework"
+related_cards:
+  - "_archived/migration-strategy"
+  - "web/slack-classic-apps-migration-before-november-16-2026"
+  - mobile/zendesk-unity-sdk-4-font-package-split-2026
+tier: "core"
+status: "active"
+updated: "2026-03-21"
+review_by: "2026-06-19"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/zendesk
+      name: Zendesk
+    - type: framework
+      id: framework/zendesk-apps-framework
+      name: Zendesk Apps Framework
+    - type: capability
+      id: capability/show-location-api
+      name: Show Location API
+    - type: capability
+      id: capability/list-locations-api
+      name: List Locations API
+    - type: capability
+      id: capability/instances-create
+      name: instances.create
+    - type: capability
+      id: capability/background-location
+      name: background location
+    - type: capability
+      id: capability/top-bar-location
+      name: top_bar location
+    - type: capability
+      id: capability/nav-bar-location
+      name: nav_bar location
+  edges:
+    - type: eol_date
+      from: capability/show-location-api
+      to: null
+      date: 2026-04-30
+      label: deprecated starting
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: framework/zendesk-apps-framework
+      date: 2026-04-30
+      label: deprecation affects apps using location APIs
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: capability/list-locations-api
+      date: 2026-04-30
+      label: replace Show Location calls with List Locations
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: capability/instances-create
+      date: 2026-04-30
+      label: migrate modal behavior to supported locations and instances.create
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: capability/background-location
+      date: 2026-04-30
+      label: re-architect around permanent locations
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: capability/top-bar-location
+      date: 2026-04-30
+      label: re-architect around permanent locations
+    - type: breaking_change_in
+      from: capability/show-location-api
+      to: capability/nav-bar-location
+      date: 2026-04-30
+      label: re-architect around permanent locations

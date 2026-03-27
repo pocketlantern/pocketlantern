@@ -1,0 +1,202 @@
+id: "auth/supertokens-managed-vs-self-hosted-license-and-maus-2026"
+title: "SuperTokens Managed vs Self-Hosted License and MAU Economics 2026"
+problem: "Teams considering SuperTokens need to decide whether the managed
+  service or self-hosted path is cheaper once current MAU-based pricing,
+  enterprise support, and feature gating are factored in."
+context:
+  - "authentication"
+  - "identity"
+  - "saas"
+  - "self-hosting"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "SuperTokens Managed Service"
+    summary: "As of 2026-03-27, SuperTokens Cloud is priced at \"$0.02 / MAU\" for
+      the base managed service and is \"Free under 5K MAUs\" on the official
+      pricing calculator. The managed option includes SuperTokens-run
+      infrastructure, and the pricing page explicitly calls out \"High
+      reliability Infrastructure\" as managed-service-only. Paid add-ons shown
+      on the official pricing page include MFA at \"$0.01 / MAU\" with a \"$100
+      / month\" minimum, Account Linking at \"$0.005 / MAU\" with a \"$100 /
+      month\" minimum, and dashboard users beyond the first three at \"$20 /
+      user / month\". Enterprise-style items including multi-tenancy and
+      organisational support, unified login across multiple domains, M2M auth,
+      uptime SLAs, attack protection, and implementation assistance are not
+      fully self-serve priced and require contacting sales."
+    when_to_use: "Use this when \"low-ops\" matters more than maximizing control,
+      especially if you are below 5,000 MAUs or want SuperTokens to handle
+      scaling, reliability, and updates. It is the cleaner choice when the
+      vendor fee for managed auth is acceptable and your blocker is operational
+      overhead rather than infrastructure ownership."
+    tradeoffs: "The main upside is low operational burden and a transparent base MAU
+      rate. The downside is that some advanced capabilities are still add-ons or
+      sales-led, so your effective cost can move above the simple \"$0.02 /
+      MAU\" headline."
+    cautions: "Do not budget from the base MAU number alone. MFA, account linking,
+      extra dashboard seats, and sales-gated enterprise features can materially
+      change total cost, and official docs say large-volume discounts require
+      contacting SuperTokens if you have more than 10K MAUs or more than 5
+      organisations as customers."
+    links:
+      - "https://supertokens.com/pricing"
+      - "https://supertokens.com/docs"
+  - name: "SuperTokens Self-Hosted"
+    summary: "As of 2026-03-27, SuperTokens states on its official pricing page that
+      \"Self hosting the open source features is free without any limits\" and
+      that in self-hosted deployments you can use the open-source features \"for
+      free at any scale\". The FAQ on the same page says the same features are
+      available in managed and self-hosted modes, but self-hosted users pay only
+      for the paid features listed in \"Scale\" while running everything inside
+      their own infrastructure. The paid feature list shown for self-hosted
+      includes MFA at \"$0.01 / MAU\" with a \"$100 / month\" minimum, Account
+      Linking at \"$0.005 / MAU\" with a \"$100 / month\" minimum, and dashboard
+      users beyond the first three at \"$20 / user / month\". Pricing for
+      multi-tenancy and organisational support is not transparently published on
+      the page, and several enterprise items still route to sales."
+    when_to_use: "Use this when control, data locality, or compliance requirements
+      make self-hosting valuable and your team can absorb the operational work.
+      It is usually the cheaper vendor-bill path only if your required feature
+      set stays close to the free open-source core or your own infrastructure
+      cost is already sunk."
+    tradeoffs: "The upside is free-at-scale access to the open-source core and full
+      infrastructure control. The downside is that paid add-ons still introduce
+      MAU-based charges, and you inherit hosting, upgrades, reliability, and
+      incident handling."
+    cautions: "Do not assume self-hosted means zero commercial dependency. The
+      official pricing page shows that some capabilities remain paid or
+      sales-led even when self-hosted, and professional support is offered
+      separately with contact-sales packaging rather than transparent public
+      pricing."
+    links:
+      - "https://supertokens.com/pricing"
+      - "https://supertokens.com/docs"
+tags:
+  - "auth"
+  - "supertokens"
+  - "pricing"
+  - "self-hosted"
+  - "managed-service"
+aliases:
+  - "supertokens pricing"
+  - "supertokens self hosted vs cloud"
+  - "supertokens mau pricing"
+  - "supertokens cloud pricing"
+  - "supertokens managed pricing"
+  - "supertokens enterprise pricing"
+  - "supertokens pricing 2026"
+  - "supertokens mau cost"
+  - "supertokens monthly active users"
+  - "supertokens license cost"
+  - "supertokens self host pricing"
+  - "supertoken pricing"
+
+  - "supertokens pricing"
+  - "supertokens self hosted vs cloud"
+  - "supertokens mau pricing"
+related_cards:
+  - "auth/ory-vs-supertokens-vs-fusionauth-pricing-self-host-vs-hosted-2026"
+  - "auth/kinde-vs-logto-vs-supertokens-b2b-auth-pricing-2026"
+  - "auth/auth-provider-migration-and-lock-in-2026"
+  - payment/keygen-cloud-vs-self-hosted-license-api-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/supertokens
+      name: SuperTokens
+    - type: capability
+      id: capability/authentication
+      name: Authentication
+    - type: capability
+      id: capability/mfa
+      name: MFA
+    - type: capability
+      id: capability/account-linking
+      name: Account Linking
+    - type: capability
+      id: capability/multi-tenancy
+      name: Multi-tenancy
+    - type: capability
+      id: capability/organisational-support
+      name: Organisational Support
+    - type: capability
+      id: capability/unified-login-multiple-domains
+      name: Unified login across multiple domains
+    - type: capability
+      id: capability/m2m-auth
+      name: M2M auth
+    - type: capability
+      id: capability/uptime-slas
+      name: Uptime SLAs
+    - type: capability
+      id: capability/attack-protection
+      name: Attack protection
+    - type: capability
+      id: capability/implementation-assistance
+      name: Implementation assistance
+    - type: capability
+      id: capability/high-reliability-infrastructure
+      name: High reliability Infrastructure
+  edges:
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/mfa
+      mechanism: paid add-on in managed and self-hosted pricing
+      evidence: MFA is listed at $0.01 / MAU with a $100 / month minimum.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/account-linking
+      mechanism: paid add-on in managed and self-hosted pricing
+      evidence: Account Linking is listed at $0.005 / MAU with a $100 / month minimum.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/multi-tenancy
+      mechanism: sales-led enterprise pricing
+      evidence: Multi-tenancy pricing is not transparently published and requires
+        contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/organisational-support
+      mechanism: sales-led enterprise pricing
+      evidence: Organisational support pricing is not transparently published and
+        requires contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/unified-login-multiple-domains
+      mechanism: sales-led enterprise feature
+      evidence: Unified login across multiple domains is listed as requiring
+        contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/m2m-auth
+      mechanism: sales-led enterprise feature
+      evidence: M2M auth is listed as requiring contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/uptime-slas
+      mechanism: sales-led enterprise feature
+      evidence: Uptime SLAs are listed as requiring contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/attack-protection
+      mechanism: sales-led enterprise feature
+      evidence: Attack protection is listed as requiring contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/implementation-assistance
+      mechanism: sales-led enterprise feature
+      evidence: Implementation assistance is listed as requiring contacting sales.
+    - type: locks_via
+      from: vendor/supertokens
+      to: capability/high-reliability-infrastructure
+      mechanism: managed-service-only feature
+      evidence: The pricing page explicitly calls out High reliability Infrastructure
+        as managed-service-only.

@@ -1,0 +1,181 @@
+id: "security/teleport-community-vs-enterprise-license-and-access-policy-2026"
+title: "Teleport Community vs Enterprise License and Access Policy Tradeoffs 2026"
+problem: "Infra teams deciding on Teleport need a current boundary between
+  open-source and paid features so they do not discover audit, SSO, or
+  access-policy gaps too late."
+context:
+  - "infrastructure-access"
+  - "pam"
+  - "sso"
+  - "audit-logging"
+  - "zero-trust"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Teleport Community Edition"
+    summary: "Teleport Community Edition is the self-hosted tier for smaller
+      organizations, and as of 2026-03-26 it is available free of charge only to
+      companies with fewer than 100 employees and less than US $10 million in
+      revenue. Teleport's official feature matrix says Community Edition
+      binaries are commercial with restrictions, while the source code on GitHub
+      is distributed under AGPL-3.0. As of 2026-03-26, Community Edition can
+      still download all supported releases, including the current v18.x line
+      and stable v17.x line, but it does not include enterprise SSO providers
+      such as OIDC, SAML, Okta, Microsoft Entra ID, or Google Workspace beyond
+      GitHub SSO. It keeps core access, per-session MFA, audit data export to
+      SIEMs, and basic JIT access requests, but the community JIT flow is
+      limited to requesting roles through the CLI."
+    when_to_use: "Use this when you are a small team with cost-sensitive constraints
+      and can tolerate local user management plus GitHub-only SSO. It is the
+      better fit when your blocker is secure access itself, not identity
+      governance automation, directory sync, device trust, or compliance
+      workflow integration."
+    tradeoffs: "Lowest direct licensing cost and still includes core zero-trust
+      access, audit logging, and self-hosting flexibility. The tradeoff is that
+      identity and policy governance boundaries arrive quickly: no SCIM
+      provisioning, no automated approvals, no access reviews, no device trust,
+      no session and identity locks, no access monitoring, and no Entra or Okta
+      import workflows."
+    cautions: "The main late-discovery risk is assuming Community Edition covers
+      enterprise identity policy needs because audit data exists there. As of
+      2026-03-26, audit export is available in Community Edition, but the
+      governance controls most teams expect around SSO, lifecycle automation,
+      review workflows, and richer access policy enforcement remain
+      enterprise-only."
+    links:
+      - "https://goteleport.com/pricing/"
+      - "https://goteleport.com/docs/feature-matrix/"
+      - "https://goteleport.com/docs/ver/19.x/upcoming-releases/"
+  - name: "Teleport Enterprise Edition"
+    summary: "Teleport Enterprise Edition is the commercial tier for companies of
+      all sizes, and as of 2026-03-26 Teleport prices it through custom quotes
+      rather than a public self-serve rate card. Official pricing is usage-based
+      around Monthly Active Users, Machine/Workload Identities, and Teleport
+      Protected Resources, and Teleport states that self-hosted deployment and
+      multi-region high availability each have minimum contract value
+      requirements. Enterprise is where Teleport puts the identity-governance
+      and access-policy features that usually determine whether it can replace
+      legacy PAM or satisfy audit and compliance requirements. As of 2026-03-26,
+      enterprise adds SAML and OIDC SSO, Okta and Microsoft Entra integration,
+      SCIM provisioning, automated access approvals, access lists and reviews,
+      device trust, access monitoring and response, and enterprise-only identity
+      security features."
+    when_to_use: "Use this when you need enterprise SSO, joiner-mover-leaver
+      automation, approval workflows, or compliance evidence tied to access
+      policy rather than just raw access logs. It is the decisive choice when
+      the team cannot accept GitHub-only SSO, CLI-only role requests, or manual
+      access-review processes."
+    tradeoffs: "It closes the major governance and policy gaps and supports both
+      cloud and self-hosted enterprise deployments, including FIPS binaries for
+      self-hosted FedRAMP use cases. The tradeoff is commercial procurement,
+      custom pricing, and contract minimums for some deployment modes."
+    cautions: "Budgeting can slip if a team assumes pricing is just per-user,
+      because Teleport licenses different products against MAUs, MWIs, and TPRs.
+      Migration timing also matters: as of 2026-03-26, v18.x is the current
+      major release and v17.x reaches end of support in August 2026, so new
+      enterprise rollouts should avoid planning around a long-lived v17
+      baseline."
+    links:
+      - "https://goteleport.com/pricing/"
+      - "https://website.goteleport.com/_uploads/Teleport_Pricing_Guide_Rev_Feb\
+        _28th_e465dc5e16.pdf"
+      - "https://goteleport.com/docs/feature-matrix/"
+      - "https://goteleport.com/docs/ver/19.x/upcoming-releases/"
+tags:
+  - "security"
+  - "teleport"
+  - "pam"
+  - "sso"
+  - "access-policy"
+aliases:
+  - "teleport community vs enterprise"
+  - "teleport license limits"
+  - "teleport sso and audit feature matrix"
+related_cards:
+  - "auth/rbac-vs-abac-vs-rebac"
+  - "auth/sso-for-b2b-saas"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/teleport
+      name: Teleport
+    - type: package
+      id: package/teleport-community-edition
+      name: Teleport Community Edition
+      vendor: vendor/teleport
+    - type: package
+      id: package/teleport-enterprise-edition
+      name: Teleport Enterprise Edition
+      vendor: vendor/teleport
+    - type: package
+      id: package/teleport-v17
+      name: Teleport v17.x
+      vendor: vendor/teleport
+    - type: package
+      id: package/teleport-v18
+      name: Teleport v18.x
+      vendor: vendor/teleport
+    - type: protocol
+      id: protocol/oidc
+      name: OIDC
+    - type: protocol
+      id: protocol/saml
+      name: SAML
+    - type: vendor
+      id: vendor/okta
+      name: Okta
+    - type: vendor
+      id: vendor/microsoft-entra-id
+      name: Microsoft Entra ID
+    - type: vendor
+      id: vendor/google-workspace
+      name: Google Workspace
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: capability
+      id: capability/audit-logging
+      name: Audit Logging
+    - type: capability
+      id: capability/access-policy
+      name: Access Policy
+  edges:
+    - type: eol_date
+      from: package/teleport-v17
+      to: null
+      date: 2026-08
+      note: v17.x reaches end of support in August 2026
+    - type: requires_version
+      from: protocol/oidc
+      to: package/teleport-enterprise-edition
+      feature: SSO
+    - type: requires_version
+      from: protocol/saml
+      to: package/teleport-enterprise-edition
+      feature: SSO
+    - type: requires_version
+      from: vendor/okta
+      to: package/teleport-enterprise-edition
+      feature: SSO integration
+    - type: requires_version
+      from: vendor/microsoft-entra-id
+      to: package/teleport-enterprise-edition
+      feature: SSO integration
+    - type: requires_version
+      from: vendor/google-workspace
+      to: package/teleport-enterprise-edition
+      feature: SSO integration
+    - type: requires_version
+      from: vendor/github
+      to: package/teleport-community-edition
+      feature: SSO

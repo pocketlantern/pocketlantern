@@ -1,0 +1,177 @@
+id: "web/transloadit-vs-cloudconvert-vs-filestack-file-processing-pricing-2026"
+title: "Transloadit vs CloudConvert vs Filestack File Processing Pricing 2026"
+problem: "Choose a file processing backend when per-conversion, bandwidth, and
+  workflow pricing changed recently and can dominate upload feature costs."
+context:
+  - "file-uploads"
+  - "media-processing"
+  - "documents"
+  - "serverless"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Transloadit"
+    summary: "As of 2026-03-19, Transloadit prices by processed bytes rather than
+      minutes, and it counts both input and output file size toward usage. The
+      official pricing page shows a free Community plan with 5 GB per month, a
+      $9 per month Hobbyist plan with 5 GB, a $69 per month Startup plan with 40
+      GB and $1.80 per overage GB, a $139 per month Small Business plan with 100
+      GB and $1.50 per overage GB, and a $349 per month Medium Business plan
+      with 300 GB and $1.20 per overage GB. Its robot pricing page also shows
+      discounted operations by byte count, including S3 export at 10 percent of
+      bytes, Cloudflare R2 export at 15 percent, and CDN delivery at 5 percent,
+      while some AI and OCR features have per-page or per-minute minimum
+      charges. The main differentiator is the detailed per-robot billing model,
+      which makes workflow cost modeling possible before you commit."
+    when_to_use: "Use this when you need multi-step upload pipelines, predictable
+      byte-based accounting, and enough control to optimize cost by robot
+      choice. It is the strongest fit when exports, thumbnails, OCR, and storage
+      handoff are all in one workflow and you want to reason about cost per step
+      instead of buying a generic conversion credit pool."
+    tradeoffs: "Strong transparency and broad workflow coverage are the upside. The
+      downside is that total cost can be non-obvious unless you model both input
+      and output bytes plus robot-specific minimum charges."
+    cautions: "As of 2026-03-19, the free Community plan is still free forever at 5
+      GB per month, but since May 24, 2024, free-tier output is watermarked. Do
+      not estimate cost from source file size alone because Transloadit bills on
+      combined input and output size, and some robots add their own minimum
+      charge."
+    links:
+      - "https://transloadit.com/pricing/"
+      - "https://transloadit.com/docs/robots/pricing/"
+      - "https://transloadit.com/docs/transcoding/pricing/"
+  - name: "CloudConvert"
+    summary: "As of 2026-03-19, CloudConvert uses conversion credits rather than
+      bandwidth or storage quotas, and the official pricing page says all paid
+      plans include bandwidth, high-priority processing, and unlimited file
+      size, processing time, and concurrent tasks subject to fair-use limits.
+      The free tier allows up to 10 conversions per day. Packages are one-time
+      purchases that do not expire, while subscriptions renew monthly, do not
+      roll over unused credits, and are advertised as up to 50 percent cheaper
+      than packages. Credit consumption is based on conversion time plus a base
+      credit floor by type, with official examples of 1 base credit for general
+      conversions, 2 for Office to PDF and iWork to PDF, and 4 for PDF to
+      Office."
+    when_to_use: "Use this when your workload is mostly discrete conversions and you
+      want bandwidth bundled into the service instead of managing separate
+      delivery or egress math. It is the better fit for bursty or occasional
+      jobs because package credits do not expire, and for teams that want a
+      simpler conversion-only API without building a larger upload workflow."
+    tradeoffs: "The pricing model is simple for pure conversion workloads and avoids
+      separate bandwidth line items. The tradeoff is that cost predictability
+      depends on conversion duration and conversion type, so CPU-heavy or
+      premium conversions can consume credits faster than expected."
+    cautions: "The official pricing page renders exact package and subscription
+      prices dynamically, so verify the current per-credit price in the
+      calculator before budgeting. As of 2026-03-19, changing a subscription
+      causes remaining subscription credits to expire, and unused monthly
+      subscription credits do not roll over."
+    links:
+      - "https://cloudconvert.com/pricing"
+      - "https://cloudconvert.com/api/v2"
+  - name: "Filestack"
+    summary: "As of 2026-03-19, Filestack uses plan bundles plus explicit overage
+      pricing across bandwidth, uploads, transformations, storage, and
+      workflows. The official pricing page shows Start at $69 per month with 75
+      GB bandwidth, 20,000 uploads, 50,000 transformations, and 50 GB storage;
+      Grow at $199 per month with 200 GB bandwidth, 50,000 uploads, 150,000
+      transformations, and 150 GB storage; and Scale at $379 per month with 400
+      GB bandwidth, 125,000 uploads, 300,000 transformations, and 350 GB
+      storage. Overages are published separately at $0.20, $0.15, and $0.10 per
+      GB of bandwidth for Start, Grow, and Scale; $0.006, $0.005, and $0.004 per
+      upload; $0.0025, $0.002, and $0.00125 per transformation; and $0.50,
+      $0.375, and $0.25 per GB of storage. Workflows are priced separately at
+      $0.02, $0.0175, and $0.015 per execution on Start, Grow, and Scale."
+    when_to_use: "Use this when you need an all-in-one upload platform with picker
+      UI, CDN delivery, mobile SDKs, document previews, and optional low-code
+      workflows. It is the better fit when product teams value integrated upload
+      UX and delivery features enough to accept multiple cost meters."
+    tradeoffs: "Feature breadth is high, and the published overage schedule is
+      unusually explicit. The downside is that you can get billed on several
+      axes at once, so bandwidth, transforms, storage, and workflow executions
+      can compound faster than a simpler single-metric service."
+    cautions: "As of 2026-03-19, bandwidth is only counted when a file is viewed or
+      downloaded, not when it is uploaded, so delivery patterns matter more than
+      ingest volume. As of 2026-03-19, Video Conversions are only included on
+      Grow and Scale, and the pricing page states that the Video Conversion
+      add-on also affects plan transformation usage."
+    links:
+      - "https://www.filestack.com/pricing/"
+      - "https://www.filestack.com/products/workflows/"
+      - "https://www.filestack.com/products/transformations/"
+tags:
+  - "web"
+  - "file-processing"
+  - "pricing"
+  - "uploads"
+aliases:
+  - "transloadit vs cloudconvert vs filestack pricing"
+  - "file processing backend pricing 2026"
+  - "upload conversion workflow cost comparison"
+related_cards:
+  - "serverless/file-upload-strategy-on-serverless"
+  - "web/imgix-vs-imagekit-vs-uploadcare-image-cdn-pricing-2026"
+  - "database/object-storage-s3-vs-r2-vs-gcs"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/transloadit
+      name: Transloadit
+    - type: vendor
+      id: vendor/cloudconvert
+      name: CloudConvert
+    - type: vendor
+      id: vendor/filestack
+      name: Filestack
+    - type: capability
+      id: capability/processed-bytes-billing
+      name: Processed-bytes billing
+      category: pricing_model
+    - type: capability
+      id: capability/conversion-credits
+      name: Conversion credits
+      category: pricing_model
+    - type: capability
+      id: capability/plan-bundles-overages
+      name: Plan bundles with overages
+      category: pricing_model
+    - type: capability
+      id: capability/free-tier-output-watermarked
+      name: Free-tier output watermarked
+      category: plan_change
+    - type: capability
+      id: capability/video-conversions-grow-scale
+      name: Video Conversions only included on Grow and Scale
+      category: plan_limit
+  edges:
+    - type: locks_via
+      from: vendor/transloadit
+      to: capability/processed-bytes-billing
+      basis: prices by processed bytes rather than minutes; counts both input and
+        output file size toward usage
+    - type: locks_via
+      from: vendor/cloudconvert
+      to: capability/conversion-credits
+      basis: uses conversion credits rather than bandwidth or storage quotas
+    - type: locks_via
+      from: vendor/filestack
+      to: capability/plan-bundles-overages
+      basis: uses plan bundles plus explicit overage pricing across bandwidth,
+        uploads, transformations, storage, and workflows
+    - type: breaking_change_in
+      from: vendor/transloadit
+      to: capability/free-tier-output-watermarked
+      date: 2024-05-24
+      basis: since May 24, 2024, free-tier output is watermarked
+    - type: breaking_change_in
+      from: vendor/filestack
+      to: capability/video-conversions-grow-scale
+      date: 2026-03-19
+      basis: as of 2026-03-19, Video Conversions are only included on Grow and Scale

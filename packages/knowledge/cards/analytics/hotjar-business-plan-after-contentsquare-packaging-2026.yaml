@@ -1,0 +1,175 @@
+id: "analytics/hotjar-business-plan-after-contentsquare-packaging-2026"
+title: "Hotjar Plan Packaging After Contentsquare Changes in 2026"
+problem: "Teams considering Hotjar need to know whether recent packaging, quota,
+  or product-bundling changes altered the cost and capability boundary versus
+  other analytics tools."
+context:
+  - "analytics"
+  - "product-analytics"
+  - "session-replay"
+  - "voice-of-customer"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Hotjar via Contentsquare plans"
+    summary: "As of 2026-03-18, Hotjar is no longer positioned as a standalone
+      Hotjar plan family for new evaluation; Contentsquare states that, as of
+      2025-07-01, Hotjar merged into the Contentsquare Group and the plan
+      structure is now \"Free, Growth, Pro, Enterprise.\" Contentsquare says the
+      combined suite now spans Experience Analytics, Voice of Customer, and
+      Product Analytics, so the packaging boundary moved from classic Hotjar
+      behavior tools toward a broader bundled platform. For existing Hotjar
+      accounts, official migration guidance says current accounts,
+      installations, and integrations continue to work and there are no
+      immediate functionality changes. The blocker is that official public
+      pricing for these new tiers is not clearly exposed in the accessible
+      pricing pages, so teams should check official docs or sales for exact 2026
+      commercial terms."
+    when_to_use: "Use this when you want Hotjar-style heatmaps, recordings, surveys,
+      and user research in a broader Contentsquare platform, especially if you
+      may later want product analytics in the same vendor stack. The decisive
+      factor is bundling: if your team values qualitative UX tooling plus a path
+      into broader experience analytics more than transparent self-serve
+      pricing, this remains the closest fit."
+    tradeoffs: "Strength is the combined Experience Analytics plus Voice of Customer
+      plus Product Analytics story under one vendor. Weakness is lower public
+      pricing transparency than self-serve analytics vendors, which makes fast
+      cost comparison harder for cost-sensitive teams."
+    cautions: "As of 2026-03-18, the major packaging change has already occurred.
+      Billing moved to Contentsquare entities on 2025-07-01, and official
+      guidance says Hotjar functionality is unchanged immediately, but legal and
+      tax handling changed for some customers; existing North America billing
+      uses W-9 rather than prior W-8BEN handling."
+    links:
+      - "https://support.contentsquare.com/hc/en-us/articles/37271913608721-Hot\
+        jar-is-now-part-of-Contentsquare-Plans-and-Pricing"
+      - "https://help.hotjar.com/hc/en-us/articles/36819964438545-Hotjar-is-mer\
+        ging-into-Contentsquare-Billing-and-Legal-changes"
+      - "https://contentsquare.com/pricing/"
+  - name: "Mixpanel Growth"
+    summary: "As of 2026-03-18, Mixpanel keeps a transparent self-serve event-based
+      model. Its pricing page says the Free plan is capped at 1M monthly events
+      and includes 10K monthly session replays, while Growth starts at \"$0\"
+      with the first 1M monthly events free and then \"$0.28 per 1K events
+      after,\" plus 20K monthly session replays free and customizable up to
+      500K. Enterprise is sales-led with unlimited monthly events. Compared with
+      Hotjar-after-Contentsquare, Mixpanel is a clearer fit when the primary job
+      is product analytics with predictable self-serve usage pricing."
+    when_to_use: "Use this when product analytics is the core need and you want a
+      public, usage-based price curve instead of a broader bundled experience
+      platform. The decisive factor is pricing clarity: teams can model event
+      volume and replay allowances directly from the public page."
+    tradeoffs: "Pro is strong product analytics depth with transparent self-serve
+      pricing and included session replay. Con is that it is still fundamentally
+      event-priced, so costs can rise with scale even if your qualitative
+      research needs stay modest."
+    cautions: "Mixpanel notes that some customers may still be on legacy pricing. If
+      your comparison depends on large replay volume or very high event volume,
+      confirm the current replay customization and enterprise terms in official
+      docs."
+    links:
+      - "https://mixpanel.com/pricing/"
+      - "https://docs.mixpanel.com/docs/session-replay"
+  - name: "Amplitude Plus"
+    summary: "As of 2026-03-18, Amplitude's public pricing shows Starter as free
+      with \"10K MTUs, up to 10M events\" and includes Session Replay, feature
+      flags, and Web Experimentation. Plus starts at \"$49/mo\" paid annually,
+      includes up to 300K MTUs or 25M events, and the pricing calculator shows
+      \"$0.049 per MTU\" at the low end of the annual calculator. Growth and
+      Enterprise are custom-priced. Compared with Hotjar-after-Contentsquare,
+      Amplitude is stronger when the buying center wants product analytics,
+      experimentation, and audience tooling with a clear self-serve entry
+      point."
+    when_to_use: "Use this when you need product analytics first and want
+      experimentation or feature-flag adjacency without immediately moving to a
+      sales-led enterprise bundle. The decisive factor is whether MTU-based
+      pricing and analytics depth fit your growth model better than Hotjar's
+      qualitative-tool heritage."
+    tradeoffs: "Pro is a broad analytics platform with transparent starter tiers and
+      bundled experimentation-related capabilities. Con is that pricing scales
+      on MTUs or higher-tier contracts rather than staying tightly scoped to
+      qualitative UX research use cases."
+    cautions: "Amplitude's calculator mixes plan minimums and MTU pricing, so buyers
+      should validate their expected MTU and event shape before comparing
+      headline prices. Growth and Enterprise require sales contact, so the
+      self-serve boundary ends earlier than the Starter and Plus pages imply."
+    links:
+      - "https://amplitude.com/pricing"
+      - "https://amplitude.com/session-replay"
+tags:
+  - "analytics"
+  - "hotjar"
+  - "contentsquare"
+  - "pricing"
+  - "session-replay"
+aliases:
+  - "hotjar pricing after contentsquare"
+  - "hotjar contentsquare plans 2026"
+  - "hotjar business plan change"
+  - "hotjar business plan 2026"
+  - "hotjar pricing 2026"
+  - "hotjar plans contentsquare"
+  - "hotjar packaging changes"
+  - "hotjar quota changes"
+  - "hotjar bundled pricing"
+  - "hotjar session replay pricing"
+  - "contentsquare hotjar pricing"
+  - "hotjar biz plan"
+  - "hotjar plan limits"
+related_cards:
+  - "analytics/product-analytics-posthog-vs-amplitude-vs-mixpanel-2026"
+  - analytics/fullstory-pricing-and-retention-tradeoffs-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/hotjar
+      name: Hotjar
+    - type: vendor
+      id: vendor/contentsquare
+      name: Contentsquare
+    - type: capability
+      id: capability/experience-analytics
+      name: Experience Analytics
+    - type: capability
+      id: capability/voice-of-customer
+      name: Voice of Customer
+    - type: capability
+      id: capability/product-analytics
+      name: Product Analytics
+  edges:
+    - type: breaking_change_in
+      from: vendor/hotjar
+      to: vendor/contentsquare
+      date: 2025-07-01
+      scope: plans_and_pricing
+      summary: Hotjar merged into the Contentsquare Group and moved from standalone
+        Hotjar plan positioning to Contentsquare plan structure with Free,
+        Growth, Pro, and Enterprise tiers.
+    - type: breaking_change_in
+      from: vendor/hotjar
+      to: capability/experience-analytics
+      date: 2025-07-01
+      scope: packaging
+      summary: Contentsquare says the combined suite now spans Experience Analytics,
+        shifting the packaging boundary beyond classic Hotjar behavior tools.
+    - type: breaking_change_in
+      from: vendor/hotjar
+      to: capability/voice-of-customer
+      date: 2025-07-01
+      scope: packaging
+      summary: Contentsquare says the combined suite now spans Voice of Customer,
+        shifting the packaging boundary beyond classic Hotjar behavior tools.
+    - type: breaking_change_in
+      from: vendor/hotjar
+      to: capability/product-analytics
+      date: 2025-07-01
+      scope: packaging
+      summary: Contentsquare says the combined suite now spans Product Analytics,
+        shifting the packaging boundary beyond classic Hotjar behavior tools.

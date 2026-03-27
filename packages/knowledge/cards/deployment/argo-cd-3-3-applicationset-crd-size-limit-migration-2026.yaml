@@ -1,0 +1,164 @@
+id: "deployment/argo-cd-3-3-applicationset-crd-size-limit-migration-2026"
+title: "Argo CD 3.3 ApplicationSet CRD Size-Limit Migration"
+problem: "Teams planning Argo CD 3.3 upgrades need to know whether client-side
+  apply will fail on oversized ApplicationSet CRDs and what migration path is
+  required for self-managed or self-hosting Argo CD installs."
+context:
+  - "kubernetes"
+  - "argo-cd"
+  - "gitops"
+  - "helm"
+  - "kustomize"
+constraints:
+  - "enterprise"
+  - "low-ops"
+  - "microservices"
+candidates:
+  - name: "Self-managed Argo CD Application with Server-Side Apply"
+    summary: "As of 2026-03-27, Argo CD's official 3.2 to 3.3 upgrade guide says the
+      ApplicationSet CRD exceeds the Kubernetes client-side apply annotation
+      limit, so prior self-management upgrade methods can fail with a
+      metadata.annotations size error. For Argo CD instances that manage
+      themselves through an Argo CD Application, the required migration is to
+      enable \"ServerSideApply=true\" in the Application sync options. This is
+      the documented self-managed path because server-side apply avoids the
+      oversized last-applied annotation."
+    when_to_use: "Use this when Argo CD manages its own installation from Git and
+      you want the upgrade to remain GitOps-driven. It fits installations
+      reconciled by an Argo CD Application rather than by separate Helm CLI or
+      kubectl steps."
+    tradeoffs: "Keeps self-management intact and matches Argo CD's documented model,
+      but it changes how Argo CD reconciles its own control plane. You need
+      Application-level sync-option changes in Git and must rely on Argo CD's
+      sync behavior to complete the migration, which can be slower to
+      troubleshoot than a one-off admin-run upgrade command."
+    cautions: "If you upgraded earlier to 3.3.0 or 3.3.1 and temporarily set
+      \"ClientSideApplyMigration=false\" to work around migration errors, Argo
+      CD says to remove that setting after upgrading to 3.3.2 because leaving it
+      disabled increases future field-manager conflict risk."
+    links:
+      - "https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/3.2\
+        -3.3/"
+      - "https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-s\
+        etup/"
+      - "https://argo-cd.readthedocs.io/en/latest/user-guide/sync-options/"
+  - name: "Manual Kustomize or plain-manifest upgrade with kubectl Server-Side Apply"
+    summary: "As of 2026-03-27, Argo CD documents that manual upgrades using plain
+      manifests or Kustomize overlays must switch to \"kubectl apply
+      --server-side --force-conflicts\" for 3.3 because the oversized
+      ApplicationSet CRD can break client-side apply. \"--force-conflicts\" is
+      required for ownership transfer in this migration path."
+    when_to_use: "Use this when your Argo CD control plane is installed outside Argo
+      CD itself and you upgrade with raw manifests, Kustomize overlays, or
+      scripted kubectl steps. It is the direct documented fix for manifest-based
+      installs blocked by the 3.3 CRD size change."
+    tradeoffs: "Works with existing manifest-based deployment pipelines and directly
+      addresses the upgrade failure, but it adds operator-run procedural steps
+      and kubectl flag discipline to the upgrade process. It is also less
+      GitOps-native than the self-managed Application path and depends more on
+      admin access, script updates, and careful rollout execution in each
+      environment."
+    cautions: "Do not keep using client-side \"kubectl apply\" for this upgrade
+      path. Argo CD specifically warns that manifest-defined fields such as
+      \"affinity\", \"env\", or \"probes\" may be overwritten during forced
+      conflict resolution, while unspecified fields like resource requests or
+      tolerations are preserved."
+    links:
+      - "https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/3.2\
+        -3.3/"
+      - "https://argo-cd.readthedocs.io/en/release-3.3/"
+      - "https://argo-cd.readthedocs.io/en/latest/getting_started/"
+  - name: "Helm-based upgrade without client-side apply migration"
+    summary: "As of 2026-03-27, Argo CD's 3.2 to 3.3 upgrade guide says users
+      upgrading with \"helm upgrade\" are not impacted by the ApplicationSet CRD
+      client-side apply size issue because Helm does not create the oversized
+      last-applied annotation. Teams still need to review chart and values
+      changes, but not this specific SSA migration blocker."
+    when_to_use: "Use this when your Argo CD control plane is managed by Helm rather
+      than by an Argo CD Application or direct kubectl manifest applies. It
+      avoids this specific CRD annotation-size migration issue."
+    tradeoffs: "Avoids the 3.3 CRD client-side apply failure mode, but shifts
+      operational complexity into Helm release management and chart-value
+      control. It also does not help if your downstream Argo CD Applications
+      separately need SSA behavior for other oversized resources."
+    cautions: "This exemption only covers the Helm CLI upgrade path itself. If parts
+      of your estate also use Argo CD self-management or raw kubectl apply
+      flows, those paths still need the documented SSA migration."
+    links:
+      - "https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/3.2\
+        -3.3/"
+      - "https://argo-cd.readthedocs.io/en/release-3.3/"
+tags:
+  - "deployment"
+  - "argo-cd"
+  - "kubernetes"
+  - "gitops"
+  - "migration"
+aliases:
+  - "argo cd 3.3 applicationset crd size limit"
+  - "argo cd server-side apply upgrade"
+  - "argo cd 3.3 self-managed migration"
+related_cards:
+  - "_archived/ci-cd-pipeline"
+  - "_archived/migration-strategy"
+  - "infra/container-orchestration"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-28
+  nodes:
+    - type: package
+      id: package/argo-cd-3-2
+      name: Argo CD 3.2
+    - type: package
+      id: package/argo-cd-3-3
+      name: Argo CD 3.3
+    - type: package
+      id: package/argo-cd-3-3-0
+      name: Argo CD 3.3.0
+    - type: package
+      id: package/argo-cd-3-3-1
+      name: Argo CD 3.3.1
+    - type: package
+      id: package/argo-cd-3-3-2
+      name: Argo CD 3.3.2
+    - type: capability
+      id: capability/server-side-apply
+      name: Server-Side Apply
+    - type: capability
+      id: capability/client-side-apply
+      name: Client-Side Apply
+    - type: capability
+      id: capability/clientsideapplymigration-false
+      name: ClientSideApplyMigration=false
+    - type: package
+      id: package/kubectl
+      name: kubectl
+    - type: package
+      id: package/helm
+      name: Helm
+  edges:
+    - type: breaking_change_in
+      from: capability/client-side-apply
+      to: package/argo-cd-3-3
+      note: The 3.2 to 3.3 upgrade guide says the ApplicationSet CRD exceeds the
+        Kubernetes client-side apply annotation limit, so prior client-side
+        apply methods can fail.
+    - type: requires_version
+      from: capability/server-side-apply
+      to: package/argo-cd-3-3
+      note: For self-managed Argo CD instances reconciled by an Argo CD Application,
+        enabling ServerSideApply=true is the documented migration path for 3.3
+        upgrades.
+    - type: requires_version
+      from: capability/server-side-apply
+      to: package/kubectl
+      note: Manual manifest or Kustomize-based upgrades must switch to kubectl apply
+        --server-side --force-conflicts for Argo CD 3.3.
+    - type: requires_version
+      from: capability/clientsideapplymigration-false
+      to: package/argo-cd-3-3-2
+      note: If this setting was temporarily used on 3.3.0 or 3.3.1, Argo CD says to
+        remove it after upgrading to 3.3.2.

@@ -1,0 +1,121 @@
+id: "data/xata-standard-vs-enterprise-byoc-pricing-2026"
+title: "Xata Standard vs Enterprise BYOC Pricing 2026"
+problem: "Teams considering Xata need to choose between hosted Standard at
+  hourly compute plus storage pricing and Enterprise BYOC starting at \"$999 /
+  month\", especially where data residency and cloud-account ownership matter."
+context:
+  - "postgres"
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "compliance"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "low-ops"
+  - "compliance"
+candidates:
+  - name: "Xata Standard"
+    summary: "Xata Standard is Xata-hosted Postgres for teams that want self-serve
+      adoption and usage-based pricing instead of an enterprise contract. As of
+      2026-03-27, Standard starts at \"$0.012 / hour + storage,\" includes a
+      14-day trial with $100 credit, and bundles features such as Copy-on-Write
+      branches, scale-to-zero compute, advanced observability, data
+      anonymization or masking, and standard support."
+    when_to_use: "Use Standard when low-ops and predictable self-serve adoption
+      matter more than cloud-account ownership. It fits teams that are
+      comfortable running production on Xata's hosted platform and want
+      branchable Postgres with granular hourly scaling instead of negotiating an
+      enterprise deployment."
+    tradeoffs: "Lowest entry price and fastest start, but data and infrastructure
+      stay on Xata-hosted platform rather than your own cloud account. Storage
+      and compute are separate meters, so large always-on production workloads
+      can grow beyond the headline starting price."
+    cautions: "Do not budget from the \"$0.012 / hour\" entry point alone because
+      production clones, active branch hours, and storage are billed separately.
+      The lower-cost General Purpose storage tier is not generally available on
+      the pricing page as of 2026-03-27 and is explicitly marked \"Coming
+      Soon.\""
+    links:
+      - "https://xata.io/pricing"
+      - "https://xata.io/pricing/calculators"
+  - name: "Xata Enterprise BYOC"
+    summary: "Xata Enterprise BYOC is the Xata tier for deploying the data plane in
+      your own cloud account. As of 2026-03-27, the pricing page lists
+      Enterprise as starting at \"$999 / month\" with BYOC, white-label support
+      for platform providers, flexible pricing, a dedicated solution architect,
+      and priority support. Xata's BYOC page says the data plane runs in your
+      own AWS, Azure, or GCP account while Xata continues to manage operations
+      such as monitoring, backups, upgrades, and high availability."
+    when_to_use: "Use Enterprise BYOC when compliance, data residency, cloud-account
+      ownership, or negotiated infrastructure pricing are the decisive factors.
+      It is the current Xata option when you need Xata-managed Postgres but
+      cannot keep the data plane in Xata's hosted environment."
+    tradeoffs: "Strongest governance and infrastructure control, plus the ability to
+      pay cloud costs directly to your provider, but it moves you into
+      enterprise contracting and custom pricing. The visible starting price is
+      only the Xata platform entry point and does not replace your direct cloud
+      infrastructure spend."
+    cautions: "Treat \"$999 / month\" as a starting platform price, not total cost
+      of ownership, because BYOC also shifts compute and infrastructure charges
+      to your cloud bill. If you need exact node counts, topology minimums, or
+      cloud-specific deployment constraints, check official docs or sales
+      guidance because those details are not fully enumerated on the public
+      pricing page."
+    links:
+      - "https://xata.io/pricing"
+      - "https://xata.io/byoc"
+tags:
+  - "data"
+  - "xata"
+  - "postgres"
+  - "pricing"
+  - "byoc"
+aliases:
+  - "xata standard pricing"
+  - "xata enterprise byoc pricing"
+  - "xata hosted vs byoc"
+related_cards:
+  - "database/planetscale-scaler-pro-vs-managed-byoc-pricing-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - data/xata-scale-to-zero-branches-vs-dedicated-instance-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-28
+  nodes:
+    - type: vendor
+      id: vendor/xata
+      name: Xata
+    - type: protocol
+      id: protocol/postgres
+      name: Postgres
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: vendor
+      id: vendor/azure
+      name: Azure
+    - type: vendor
+      id: vendor/gcp
+      name: GCP
+  edges:
+    - type: locks_via
+      from: vendor/xata
+      to: protocol/postgres
+      evidence: Both Xata Standard and Xata Enterprise BYOC are described as
+        Xata-hosted or Xata-managed Postgres.
+    - type: locks_via
+      from: vendor/xata
+      to: vendor/aws
+      evidence: Xata's BYOC page says the data plane runs in your own AWS account.
+    - type: locks_via
+      from: vendor/xata
+      to: vendor/azure
+      evidence: Xata's BYOC page says the data plane runs in your own Azure account.
+    - type: locks_via
+      from: vendor/xata
+      to: vendor/gcp
+      evidence: Xata's BYOC page says the data plane runs in your own GCP account.

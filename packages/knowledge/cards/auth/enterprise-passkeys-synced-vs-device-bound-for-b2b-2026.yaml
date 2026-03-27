@@ -145,6 +145,8 @@ related_cards:
   - "auth/passkeys-vs-passwords-plus-2fa"
   - "auth/sso-for-b2b-saas"
   - "auth/clerk-vs-auth0-vs-cognito-2026"
+  - auth/keycloak-26-self-host-vs-cloud-control-plane-2026
+  - auth/duo-free-vs-essentials-vs-advantage-vs-premier-2026
 status: "active"
 tier: "core"
 updated: "2026-03-15"

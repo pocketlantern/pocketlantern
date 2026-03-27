@@ -1,0 +1,196 @@
+id: infra/github-actions-self-hosted-runner-minimum-version-enforcement-2026
+title: GitHub Actions Self-Hosted Runner Upgrade Policy After Version Enforcement
+problem: Decide whether to keep self-hosted runners, move more jobs to hosted
+  runners, or automate image refreshes after GitHub introduced hard minimum
+  runner version enforcement that can block registration and eventually job
+  routing.
+context:
+  - infra
+  - ci-cd
+  - github-actions
+  - runners
+  - self-hosted-runners
+  - actions-runner-controller
+  - runner-images
+  - billing
+constraints:
+  - cost-sensitive
+  - low-ops
+  - enterprise
+  - small-team
+  - compliance
+  - monorepo
+  - microservices
+  - high-scale
+candidates:
+  - name: Keep self-hosted runners, but automate image refreshes and ephemeral
+      re-registration
+    summary: As of 2026-03-15, GitHub says that starting March 16, 2026 it blocks
+      configuration and registration of self-hosted runners older than v2.329.0,
+      and separately says runners that miss software updates for more than 30
+      days can stop receiving jobs. The Actions Runner releases page currently
+      shows v2.331.0 and notes a progressive release policy, so the workable
+      self-hosted pattern is automated image rebuilds or redeploys that install
+      a current runner before `./config.sh`.
+    when_to_use: Best for enterprise + compliance + high-scale or monorepo +
+      microservices teams where jobs need private network access, custom
+      hardware, local services, or full control of the machine image and you
+      already have Kubernetes or VM automation. As of 2026-03-15, choose this
+      only if you can rebuild images, roll runners, and refresh registration
+      flows on a schedule instead of treating runners as long-lived pets.
+    tradeoffs: You keep the flexibility and cost model of self-hosted runners, and
+      GitHub documents self-hosted usage as free with GitHub Actions, but you
+      now need a real fleet-management path for runner binaries, base OS
+      patching, access policies, and cleanup. Ephemeral or just-in-time
+      registration reduces drift, while ARC runner scale sets can scale to zero
+      and back up automatically.
+    cautions: GitHub says self-hosted runners should almost never be used for public
+      repositories, and even private or internal repos with fork-based pull
+      requests need care because untrusted workflow code can compromise the
+      runner environment. If you disable auto-updates, GitHub requires updates
+      within 30 days of a new runner release; GitHub also documents self-hosted
+      limits such as 1,500 runner registrations per 5 minutes per repository,
+      organization, or enterprise, 10,000 runners per runner group, 5-day job
+      execution time, and 24-hour queue time. For ARC-based ephemeral fleets,
+      GitHub tells you to collect and retain logs from the controller,
+      listeners, and ephemeral runners.
+    links:
+      - https://github.blog/changelog/2026-02-05-github-actions-self-hosted-runner-minimum-version-enforcement-extended/
+      - https://docs.github.com/en/actions/concepts/runners/self-hosted-runners
+      - https://docs.github.com/es/enterprise-cloud@latest/actions/reference/runners/self-hosted-runners
+      - https://docs.github.com/en/enterprise-cloud@latest/actions/tutorials/use-actions-runner-controller/deploy-runner-scale-sets
+      - https://docs.github.com/en/enterprise-cloud@latest/actions/reference/limits
+      - https://github.com/actions/runner/releases
+  - name: Move most workflows to standard GitHub-hosted runners and keep self-hosted
+      only for exceptions
+    summary: As of 2026-03-15, standard GitHub-hosted runners give you a fresh
+      GitHub-managed VM or container for each job, standard hosted usage is free
+      and unlimited on public repositories, and private repositories use
+      included minutes first and then per-minute billing. GitHub's pricing page
+      currently lists Linux 2-core x64 at $0.006 per minute, Linux 2-core arm64
+      at $0.005 per minute, Windows 2-core at $0.010 per minute, and macOS at
+      $0.062 per minute.
+    when_to_use: Best for small-team + low-ops + cost-sensitive or enterprise +
+      compliance teams where only a narrow slice of workflows truly needs
+      private network access, custom hardware, or privileged local tooling. Use
+      this when you want untrusted pull requests, test matrices, and routine
+      build jobs off the self-hosted fleet, while keeping self-hosted only for
+      deployment, signing, or internal-resource jobs.
+    tradeoffs: This removes most runner-version enforcement and patching work from
+      your side and gives you cleaner isolation for untrusted jobs. The tradeoff
+      is ongoing GitHub-hosted compute spend for private repositories, less
+      control over the machine image, and no direct access to your internal
+      network unless you redesign the workflow or keep an exception path.
+    cautions: GitHub documents that hosted runner IP ranges are too large and change
+      often enough that they are not recommended as allowlists for internal
+      resources. If allowlisting, private networking, or static egress is a hard
+      requirement, GitHub points you toward larger runners with static IP ranges
+      or self-hosted runners instead.
+    links:
+      - https://docs.github.com/en/billing/concepts/product-billing/github-actions
+      - https://docs.github.com/en/billing/reference/actions-runner-pricing
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+      - https://docs.github.com/en/actions/reference/security/secure-use
+  - name: Replace part of the self-hosted fleet with GitHub-hosted larger runners
+      and custom images
+    summary: As of 2026-03-15, GitHub documents larger runners for Team and
+      Enterprise Cloud plans with static IPs, Azure private networking,
+      autoscaling, and custom images, while custom images are billed at the same
+      per-minute rates as the larger runner that uses them. GitHub also says
+      larger runners are always billed per minute and do not consume included
+      minutes.
+    when_to_use: Best for enterprise + low-ops + compliance or monorepo +
+      microservices teams where standard hosted runners are too limited but you
+      still want GitHub-managed compute instead of owning a self-hosted fleet.
+      This is the middle ground when version enforcement made self-hosted image
+      maintenance painful, but you still need firewall allowlists, prewarmed
+      toolchains, or bigger managed machines.
+    tradeoffs: You get managed runners with more CPU, RAM, disk, runner grouping,
+      autoscaling, and custom images, while avoiding most self-hosted OS and
+      runner-binary lifecycle work. The tradeoff is explicit per-minute spend,
+      Team or Enterprise plan requirements, and some feature gaps that vary by
+      platform.
+    cautions: As of 2026-03-15, custom images are in public preview and GitHub
+      recommends generating them on a weekly schedule so dependencies and
+      security patches stay current. Larger runners are always billed per
+      minute, and GitHub documents that macOS larger runners still do not
+      support Azure private networking or static IP assignment.
+    links:
+      - https://docs.github.com/en/actions/concepts/runners/larger-runners
+      - https://docs.github.com/en/actions/reference/runners/larger-runners
+      - https://docs.github.com/en/actions/how-tos/manage-runners/larger-runners/use-custom-images
+      - https://docs.github.com/en/billing/reference/actions-runner-pricing
+tags:
+  - infra
+  - github-actions
+  - github
+  - ci-cd
+  - runners
+  - self-hosted-runners
+  - actions-runner-controller
+  - runner-images
+  - pricing
+  - policy
+aliases:
+  - github actions self-hosted runner minimum version
+  - github actions runner v2.329.0
+  - github actions self-hosted runner registration blocked
+  - github actions runner update policy 30 days
+  - github actions ARC runner scale sets
+  - github actions move from self-hosted to hosted
+related_cards:
+  - infra/github-actions-hosted-vs-larger-vs-self-hosted-runner-economics-2026
+  - infra/github-actions-macos-intel-vs-arm64-runner-migration-after-image-retirements-2026
+  - devtools/github-actions-node24-migration-after-node20-deprecation-2026
+  - devtools/github-actions-ubuntu-24-and-windows-2025-runner-image-migrations
+  - devtools/github-actions-cache-v2-migration-before-march-2025-retirement
+  - mobile/ios-ci-cd-platform-xcode-cloud-vs-github-actions-vs-codemagic-2026
+  - devtools/github-actions-hosted-vs-self-hosted-runner-pricing-2026
+  - devtools/github-actions-runner-v23290-deadline-2026
+  - devtools/dependabot-comment-commands-vs-native-pr-actions-after-january-27-2026
+  - deployment/github-actions-runner-minimum-version-before-2026-03-16
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-01
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/github-actions
+      name: GitHub Actions
+      category: ci-cd
+    - type: package
+      id: package/actions-runner-2.329
+      name: Actions Runner v2.329.0
+      version: 2.329.0
+    - type: capability
+      id: capability/self-hosted-runner
+      name: Self-Hosted Runner
+  edges:
+    - type: requires_version
+      from: vendor/github-actions
+      to: package/actions-runner-2.329
+      min_version: v2.329.0
+      reason: Starting March 16, 2026 GitHub blocks configuration and registration of
+        self-hosted runners older than v2.329.0
+    - type: breaking_change_in
+      from: vendor/github-actions
+      to: null
+      change: Self-hosted runners that miss software updates for more than 30 days can
+        stop receiving jobs
+      migration_path: Automate image rebuilds or redeploys that install current runner
+        before ./config.sh; use ephemeral or JIT registration
+    - type: breaking_change_in
+      from: capability/self-hosted-runner
+      to: null
+      change: "Limits: 1,500 runner registrations per 5 min, 10,000 runners per group,
+        5-day job execution, 24-hour queue time"
+      migration_path: Use ARC runner scale sets for ephemeral fleets that scale to zero
+    - type: locks_via
+      from: vendor/github-actions
+      to: capability/self-hosted-runner
+      surface: Self-hosted runners require ongoing version enforcement compliance;
+        GitHub recommends only with private repos; auto-update or 30-day manual
+        update cycle mandatory
+      severity: medium

@@ -1,0 +1,186 @@
+id: "data/singlestore-helios-shared-vs-standard-vs-enterprise-2026"
+title: "SingleStore Helios Shared vs Standard vs Enterprise Pricing 2026"
+problem: "Choose the right SingleStore deployment tier after 2026 price points,
+  minimums, and feature gates changed the economics for real-time analytics
+  workloads."
+context:
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "real-time-analytics"
+  - "managed-database"
+constraints:
+  - "real-time"
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+candidates:
+  - name: "Shared"
+    summary: "As of 2026-03-26, SingleStore Helios Shared is the free entry tier for
+      evaluation, development, POCs, and non-production testing. The pricing
+      page lists \"1 Free Workspace\" and the docs say Shared workspaces do not
+      consume credits. SingleStore docs also describe Shared Edition as \"Public
+      Preview\" and explicitly say it is not for production applications. It
+      includes a shared workspace, SQL and programmability features, monitoring,
+      and self-support."
+    when_to_use: "Use this when you are cost-sensitive, need low-ops evaluation, and
+      can accept non-production limits. The decisive factor is that it is free
+      and credit-free, but it is not an acceptable production tier."
+    tradeoffs: "Lowest cost and fastest way to try SingleStore. The tradeoff is
+      shared compute, preview status, self-support, and no production
+      positioning or SLA language on the tier card."
+    cautions: "As of 2026-03-26, Shared is still documented as Public Preview and
+      the signup docs say it is not for production applications. If you need
+      dedicated compute, SLA-backed production, larger limits, or private
+      networking and recovery controls, move to Standard or Enterprise."
+    links:
+      - "https://www.singlestore.com/pricing/"
+      - "https://docs.singlestore.com/cloud/developer-resources/try-singlestore\
+        -helios-for-free/sign-up-to-try-singlestore-helios/"
+      - "https://docs.singlestore.com/cloud/getting-started-with-singlestore-he\
+        lios/about-singlestore-helios/singlestore-helios-editions/"
+  - name: "Standard"
+    summary: "As of 2026-03-26, managed SingleStore Helios Standard starts at
+      \"$0.99/hr\" on the pricing page, while Standard BYOC is quote-based with
+      \"Contact us for pricing.\" Standard is the general-purpose production
+      tier and includes read replicas, database branching, 30-day monitoring,
+      and a 99.9% SLA for 1 AZ or 99.99% for 2 AZ. The cloud pricing page shows
+      storage billed separately at \"$0.023\" to \"$0.040\" per average GB per
+      month by storage tier, and notes data ingress is not charged by
+      SingleStore. Trial users are offered free credits for Standard, and the
+      pricing card currently advertises \"$600 in free credits.\""
+    when_to_use: "Use this for real production workloads when you need dedicated
+      compute, low-ops managed service, and better economics than Enterprise.
+      The decisive factor is that Standard is the lowest published production
+      tier with SLA, read replicas, and branching."
+    tradeoffs: "It is the cheapest published production option and can be enough for
+      most general real-time analytics deployments. The tradeoff is that
+      advanced recovery, audit, SCIM, and CMEK are Enterprise-gated, and BYOC
+      pricing is not self-serve."
+    cautions: "Do not assume Standard includes the full enterprise security and DR
+      set. As of 2026-03-26, Smart DR, audit logging, SCIM, and CMEK are listed
+      as Enterprise additions, and BYOC Standard requires a sales quote."
+    links:
+      - "https://www.singlestore.com/pricing/"
+      - "https://www.singlestore.com/cloud-pricing/"
+      - "https://docs.singlestore.com/cloud/getting-started-with-singlestore-he\
+        lios/about-singlestore-helios/singlestore-helios-editions/"
+  - name: "Enterprise"
+    summary: "As of 2026-03-26, managed SingleStore Helios Enterprise starts at
+      \"$1.49/hr\" on the pricing page. SingleStore positions it for
+      customer-facing or mission-critical workloads and lists Online PITR, Smart
+      DR, Audit Logging, SCIM with Okta, and CMEK as Enterprise features on top
+      of Standard. The Helios editions docs further clarify that Enterprise PITR
+      supports restoration to any point in time down to the microsecond with
+      configurable retention periods. Enterprise uses the same managed Helios
+      model across AWS, Azure, and GCP, but the pricing page still tells buyers
+      to contact sales for more accurate pricing and volume discounts."
+    when_to_use: "Use this when you need enterprise security, compliance, or
+      regional disaster recovery and the workload cannot tolerate Standard's
+      feature gates. The decisive factor is whether microsecond PITR, Smart DR,
+      auditability, SCIM, or CMEK are hard requirements."
+    tradeoffs: "You get the strongest recovery and security posture in the Helios
+      lineup. The tradeoff is higher published entry pricing and likely a
+      sales-led buying process for accurate cost and discounting."
+    cautions: "Enterprise is not just a support upgrade; it is where the major
+      recovery and security controls are gated. If your compliance review
+      requires audit logs, SCIM, or customer-managed keys, Standard will not
+      match the documented feature set as of 2026-03-26."
+    links:
+      - "https://www.singlestore.com/pricing/"
+      - "https://docs.singlestore.com/cloud/getting-started-with-singlestore-he\
+        lios/about-singlestore-helios/singlestore-helios-editions/"
+      - "https://www.singlestore.com/cloud-pricing/"
+tags:
+  - "data"
+  - "singlestore"
+  - "pricing"
+  - "database"
+  - "real-time-analytics"
+aliases:
+  - "singlestore helios shared vs standard vs enterprise"
+  - "singlestore pricing 2026"
+  - "singlestore enterprise features pricing"
+related_cards:
+  - "data/snowflake-standard-vs-enterprise-vs-business-critical-pricing-2026"
+  - "data/clickhouse-cloud-paygo-vs-committed-contract-aws-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/singlestore
+      name: SingleStore
+    - type: package
+      id: package/singlestore-helios-shared
+      name: SingleStore Helios Shared
+    - type: package
+      id: package/singlestore-helios-standard
+      name: SingleStore Helios Standard
+    - type: package
+      id: package/singlestore-helios-enterprise
+      name: SingleStore Helios Enterprise
+    - type: capability
+      id: capability/read-replicas
+      name: Read replicas
+    - type: capability
+      id: capability/database-branching
+      name: Database branching
+    - type: capability
+      id: capability/monitoring-30-day
+      name: 30-day monitoring
+    - type: capability
+      id: capability/sla-99-9
+      name: 99.9% SLA
+    - type: capability
+      id: capability/sla-99-99
+      name: 99.99% SLA
+    - type: capability
+      id: capability/online-pitr
+      name: Online PITR
+    - type: capability
+      id: capability/smart-dr
+      name: Smart DR
+    - type: capability
+      id: capability/audit-logging
+      name: Audit Logging
+    - type: capability
+      id: capability/scim
+      name: SCIM
+    - type: capability
+      id: capability/cmek
+      name: CMEK
+  edges:
+    - type: locks_via
+      from: capability/read-replicas
+      to: package/singlestore-helios-standard
+    - type: locks_via
+      from: capability/database-branching
+      to: package/singlestore-helios-standard
+    - type: locks_via
+      from: capability/monitoring-30-day
+      to: package/singlestore-helios-standard
+    - type: locks_via
+      from: capability/sla-99-9
+      to: package/singlestore-helios-standard
+    - type: locks_via
+      from: capability/sla-99-99
+      to: package/singlestore-helios-standard
+    - type: locks_via
+      from: capability/online-pitr
+      to: package/singlestore-helios-enterprise
+    - type: locks_via
+      from: capability/smart-dr
+      to: package/singlestore-helios-enterprise
+    - type: locks_via
+      from: capability/audit-logging
+      to: package/singlestore-helios-enterprise
+    - type: locks_via
+      from: capability/scim
+      to: package/singlestore-helios-enterprise
+    - type: locks_via
+      from: capability/cmek
+      to: package/singlestore-helios-enterprise

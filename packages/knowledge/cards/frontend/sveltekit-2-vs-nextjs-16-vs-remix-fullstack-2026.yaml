@@ -165,6 +165,7 @@ related_cards:
   - serverless/nextjs-platform-lockin
   - frontend/auth-in-frontend-routing-model
   - frontend/static-site-generation-astro-5-vs-nextjs-16-vs-remix-3-2026
+  - frontend/svelte-5-runes-vs-legacy-mode-adoption-2026
 status: active
 tier: core
 updated: 2026-03-16

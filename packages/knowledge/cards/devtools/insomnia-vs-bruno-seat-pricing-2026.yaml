@@ -1,0 +1,159 @@
+id: "devtools/insomnia-vs-bruno-seat-pricing-2026"
+title: "Insomnia vs Bruno Seat Pricing 2026"
+problem: "As of 2026-03-27, API teams replacing Postman need a current vendor
+  comparison between Insomnia’s $12 and $45 per-user tiers and Bruno’s $6 and
+  $11 tiers, including Git workflows, local-first behavior, and enterprise
+  controls."
+context:
+  - "api-client"
+  - "postman-migration"
+  - "git"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+candidates:
+  - name: "Insomnia"
+    summary: "Insomnia is a multi-protocol API client and collaboration platform
+      with local, Git, and cloud storage modes. As of 2026-03-27, Insomnia Pro
+      is \"$12\" per user per month and Enterprise is \"$45\" per user per
+      month, while the free Essentials tier already includes unlimited Git Sync
+      projects for up to 3 users and unlimited cloud/local projects. Pro adds
+      unlimited users, unlimited organizations, Git Sync for all users, and
+      RBAC. Enterprise adds SSO and SCIM, storage policy enforcement for
+      local/git/cloud, domain capture and invite control, native vault
+      integrations, and unlimited mock server requests."
+    when_to_use: "Use this when teams want one product that supports both
+      local-first work and optional vendor-hosted collaboration. It is the
+      stronger fit for enterprise or compliance-heavy organizations that need
+      centralized identity, storage policy enforcement, and invite-domain
+      governance."
+    tradeoffs: "Broader collaboration and governance features than Bruno, but the
+      paid seat cost is higher. Its workflow can be cloud-backed or Git-backed,
+      which is flexible, but that also means more product surface area than
+      teams wanting a strict local-only model."
+    cautions: "As of 2026-03-27, the \"$45\" Enterprise tier is self-serve only up
+      to 50 users; larger teams must contact sales. Storage-mandate controls are
+      Enterprise-only, so Pro does not give admins the same policy enforcement
+      over where projects live."
+    links:
+      - "https://insomnia.rest/pricing"
+      - "https://insomnia.rest/features/local-vault"
+      - "https://insomnia.rest/"
+  - name: "Bruno"
+    summary: "Bruno is a Git-native, local-first API client that stores collections
+      as plain text files on disk and does not sync app data to any vendor
+      cloud. As of 2026-03-27, Bruno Pro is \"$6\" per user per month billed
+      annually and Ultimate is \"$11\" per user per month billed annually. Pro
+      adds native Git integration, unlimited workspaces, Git UI actions such as
+      clone, pull, commit, push, branching, and merge-conflict resolution, plus
+      a 48-hour support SLA. Ultimate adds SSO, SCIM, audit logs, unlimited
+      license admins, dedicated account management, and PO/invoicing support."
+    when_to_use: "Use this when the decisive requirement is local-first operation
+      with Git as the source of truth and minimal vendor data exposure. It is
+      the stronger fit for cost-sensitive teams already comfortable using repo
+      permissions, reviews, and existing Git controls as the collaboration
+      layer."
+    tradeoffs: "Seat pricing is materially lower than Insomnia, and Git workflow
+      support is deeper and more opinionated. The tradeoff is that Bruno is not
+      a cloud collaboration platform, so teams wanting built-in sync, hosted org
+      spaces, or real-time vendor-managed collaboration will need process and
+      Git discipline instead."
+    cautions: "As of 2026-03-27, the verified Bruno prices are annual-billing
+      prices; check official docs if you need monthly billing terms. Bruno
+      explicitly has no cloud sync and no vendor-hosted workspace/account model
+      for storing or sharing app data, but Ultimate does add identity and
+      licensing features such as SSO, SCIM, and license-admin controls."
+    links:
+      - "https://www.usebruno.com/pricing"
+      - "https://www.usebruno.com/"
+tags:
+  - "devtools"
+  - "api-client"
+  - "postman"
+  - "insomnia"
+  - "bruno"
+  - "pricing"
+aliases:
+  - "insomnia vs bruno pricing"
+  - "postman replacement insomnia bruno"
+  - "bruno ultimate vs insomnia enterprise"
+related_cards:
+  - "devtools/bruno-open-source-vs-pro-vs-ultimate-pricing-2026"
+  - "devtools/insomnia-essentials-vs-pro-vs-enterprise-mock-request-pricing-2026"
+  - "devtools/postman-free-plan-team-limit-march-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/insomnia
+      name: Insomnia
+    - type: vendor
+      id: vendor/bruno
+      name: Bruno
+    - type: package
+      id: package/insomnia-pro
+      name: Insomnia Pro
+    - type: package
+      id: package/insomnia-enterprise
+      name: Insomnia Enterprise
+    - type: package
+      id: package/bruno-pro
+      name: Bruno Pro
+    - type: package
+      id: package/bruno-ultimate
+      name: Bruno Ultimate
+    - type: capability
+      id: capability/git-sync
+      name: Git Sync
+    - type: capability
+      id: capability/rbac
+      name: RBAC
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: capability
+      id: capability/scim
+      name: SCIM
+    - type: capability
+      id: capability/storage-policy-enforcement
+      name: Storage policy enforcement
+    - type: capability
+      id: capability/audit-logs
+      name: Audit logs
+    - type: capability
+      id: capability/git-ui-actions
+      name: Git UI actions
+  edges:
+    - type: locks_via
+      from: capability/rbac
+      to: package/insomnia-pro
+    - type: locks_via
+      from: capability/git-sync
+      to: package/insomnia-pro
+    - type: locks_via
+      from: capability/sso
+      to: package/insomnia-enterprise
+    - type: locks_via
+      from: capability/scim
+      to: package/insomnia-enterprise
+    - type: locks_via
+      from: capability/storage-policy-enforcement
+      to: package/insomnia-enterprise
+    - type: locks_via
+      from: capability/git-ui-actions
+      to: package/bruno-pro
+    - type: locks_via
+      from: capability/sso
+      to: package/bruno-ultimate
+    - type: locks_via
+      from: capability/scim
+      to: package/bruno-ultimate
+    - type: locks_via
+      from: capability/audit-logs
+      to: package/bruno-ultimate

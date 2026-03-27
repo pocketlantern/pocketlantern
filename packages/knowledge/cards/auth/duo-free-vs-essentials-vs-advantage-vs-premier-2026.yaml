@@ -1,0 +1,217 @@
+id: "auth/duo-free-vs-essentials-vs-advantage-vs-premier-2026"
+title: "Duo Free vs Essentials vs Advantage vs Premier Pricing and Policy
+  Boundaries 2026"
+problem: "Teams choosing MFA and device trust need a current decision card for
+  when Duo's free tier is enough versus when policy controls, SSO, or device
+  health push them into paid plans."
+context:
+  - "auth"
+  - "mfa"
+  - "sso"
+  - "device-trust"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Duo Free"
+    summary: "As of 2026-03-27, Duo Free is $0 per user/month for 1 to 10 users. The
+      official pricing page positions it for small businesses and includes
+      strong MFA, seamless integrations, and the free authenticator app. Duo
+      Free can secure as many cloud and on-premises applications as needed at no
+      extra cost, but it does not include Duo Directory, SSO, Trusted Endpoints,
+      or device health policy features. This is the lowest-friction option when
+      the decision is strictly about basic MFA coverage."
+    when_to_use: "Use this when you are a small team with 10 or fewer users and only
+      need baseline MFA across apps. Move off Free as soon as you need SSO,
+      phishing-resistant MFA and passwordless features, or any managed-device
+      policy boundary."
+    tradeoffs: "Lowest cost and broad app coverage, but limited to 10 users and
+      lacks the policy and device trust controls that usually matter once access
+      governance becomes formal."
+    cautions: "Do not assume Free is a stepping stone for device trust. Trusted
+      Endpoints starts on paid plans, so any requirement to verify managed
+      devices before access is an immediate upgrade trigger."
+    links:
+      - "https://duo.com/editions-and-pricing"
+      - "https://duo.com/editions-and-pricing/duo-free"
+  - name: "Duo Essentials"
+    summary: "As of 2026-03-27, Duo Essentials is $3 per user/month. It adds Duo
+      Directory, phishing-resistant MFA, complete passwordless authentication,
+      single sign-on, Trusted Endpoints, and unlimited applications. Duo's
+      Device API documentation states Trusted Endpoints is part of Essentials
+      and above, making Essentials the first paid tier where managed-device
+      gating becomes available. This is the main boundary where Duo shifts from
+      basic MFA into entry-level IAM and device trust."
+    when_to_use: "Use this when Free is no longer enough because you need more than
+      10 users, SSO, or a policy that checks whether a device is registered or
+      managed before allowing access. It is the cost floor for teams that need
+      basic device trust without full device posture enforcement."
+    tradeoffs: "Strong value for SSO plus Trusted Endpoints at a low entry price,
+      but it does not include the higher-end identity analytics, risk-based
+      authentication, or the device health checks listed on Advantage."
+    cautions: "Trusted Endpoints is not the same as full device health enforcement.
+      Duo's policy guide also notes that certificate-based Trusted Endpoint
+      verification will reach end-of-life in a future release, so migration
+      planning matters if you rely on certificate-based trust."
+    links:
+      - "https://duo.com/editions-and-pricing"
+      - "https://duo.com/docs/deviceapi"
+      - "https://duo.com/assets/pdf/Duo-Policy-Guide.pdf"
+  - name: "Duo Advantage"
+    summary: "As of 2026-03-27, Duo Advantage is $6 per user/month. It includes
+      everything in Essentials plus Cisco Identity Intelligence, Duo Passport,
+      session theft protection, device health checks, and risk-based
+      authentication. This is the tier where Duo adds dynamic threat detection
+      and endpoint posture signals rather than just managed-device status. For
+      many teams, Advantage is the point where the buying decision changes from
+      'MFA plus SSO' to adaptive access and stronger session and device
+      controls."
+    when_to_use: "Use this when Essentials is insufficient because access decisions
+      must consider device security posture, risk signals, or session theft
+      defenses. It is the practical upgrade when security policy needs to react
+      to health and risk instead of only checking whether a device is known."
+    tradeoffs: "Better security depth than Essentials, especially for posture and
+      risk-aware access, but it doubles the Essentials price and still does not
+      include Premier-only remote access and endpoint security agent
+      verification."
+    cautions: "As of 2026-03-27, Duo Trust Monitor is already unavailable to new
+      Advantage and Premier subscriptions and trials if they started on or after
+      2025-09-29. Duo says Cisco Identity Intelligence is the replacement, and
+      Trust Monitor UI removal is scheduled for 2026-07-27 with API
+      end-of-support on 2027-01-31."
+    links:
+      - "https://duo.com/editions-and-pricing"
+      - "https://duo.com/docs/advantage-overview"
+      - "https://duo.com/editions-and-pricing/duo-advantage"
+  - name: "Duo Premier"
+    summary: "As of 2026-03-27, Duo Premier is $9 per user/month. It includes
+      everything in Advantage plus VPN-less remote access to private resources
+      through Duo Network Gateway and complete device trust with endpoint
+      protection check. Duo's pricing and policy docs show that Security Agent
+      Verification and endpoint security agent policy are Premier-only
+      capabilities. Premier is the tier for teams that want Duo to extend from
+      authentication controls into zero-trust remote access and stricter
+      endpoint protection enforcement."
+    when_to_use: "Use this when Advantage still leaves a gap because you need
+      VPN-less private-resource access or must require a supported endpoint
+      security agent before access. It is the right boundary when device trust
+      must include endpoint protection presence, not just posture checks."
+    tradeoffs: "Most complete Zero Trust package in Duo, but highest per-user price
+      and likely overkill if your requirement stops at SSO, Trusted Endpoints,
+      or basic device health."
+    cautions: "If your only new need is managed-device checks, Premier is usually
+      unnecessary because Trusted Endpoints starts at Essentials and device
+      health starts at Advantage. Upgrade to Premier specifically for Duo
+      Network Gateway or endpoint security agent verification."
+    links:
+      - "https://duo.com/editions-and-pricing"
+      - "https://duo.com/editions-and-pricing/duo-premier"
+      - "https://duo.com/assets/pdf/Duo-Policy-Guide.pdf"
+tags:
+  - "auth"
+  - "duo"
+  - "mfa"
+  - "sso"
+  - "pricing"
+aliases:
+  - "duo free vs essentials vs advantage vs premier"
+  - "duo trusted endpoints pricing"
+  - "duo device health plan comparison"
+  - "duo plan comparison"
+  - "duo editions pricing"
+  - "duo mfa pricing tiers"
+  - "duo sso plan pricing"
+  - "duo device health pricing"
+  - "duo free vs paid"
+  - "duo essentials vs advantage"
+  - "duo advantage vs premier"
+  - "cisco duo pricing tiers"
+  - "duo trusted endpts pricing"
+
+  - "duo free vs essentials vs advantage vs premier"
+  - "duo trusted endpoints pricing"
+  - "duo device health plan comparison"
+related_cards:
+  - "auth/sso-for-b2b-saas"
+  - "auth/passkeys-vs-passwords-plus-2fa"
+  - "auth/enterprise-passkeys-synced-vs-device-bound-for-b2b-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/duo
+      name: Duo
+    - type: package
+      id: package/duo-free
+      name: Duo Free
+    - type: package
+      id: package/duo-essentials
+      name: Duo Essentials
+    - type: package
+      id: package/duo-advantage
+      name: Duo Advantage
+    - type: package
+      id: package/duo-premier
+      name: Duo Premier
+    - type: capability
+      id: capability/mfa
+      name: MFA
+    - type: capability
+      id: capability/sso
+      name: Single Sign-On
+    - type: capability
+      id: capability/trusted-endpoints
+      name: Trusted Endpoints
+    - type: capability
+      id: capability/device-health-checks
+      name: Device Health Checks
+    - type: capability
+      id: capability/endpoint-security-agent-verification
+      name: Endpoint Security Agent Verification
+    - type: capability
+      id: capability/duo-network-gateway
+      name: Duo Network Gateway
+    - type: capability
+      id: capability/cisco-identity-intelligence
+      name: Cisco Identity Intelligence
+    - type: capability
+      id: capability/duo-trust-monitor
+      name: Duo Trust Monitor
+    - type: protocol
+      id: protocol/trust-monitor-api
+      name: Trust Monitor API
+  edges:
+    - type: requires_version
+      from: capability/sso
+      to: package/duo-essentials
+    - type: requires_version
+      from: capability/trusted-endpoints
+      to: package/duo-essentials
+    - type: requires_version
+      from: capability/device-health-checks
+      to: package/duo-advantage
+    - type: requires_version
+      from: capability/cisco-identity-intelligence
+      to: package/duo-advantage
+    - type: requires_version
+      from: capability/duo-network-gateway
+      to: package/duo-premier
+    - type: requires_version
+      from: capability/endpoint-security-agent-verification
+      to: package/duo-premier
+    - type: eol_date
+      from: capability/duo-trust-monitor
+      to: null
+      date: 2026-07-27
+      scope: UI removal
+    - type: eol_date
+      from: protocol/trust-monitor-api
+      to: null
+      date: 2027-01-31
+      scope: API end-of-support

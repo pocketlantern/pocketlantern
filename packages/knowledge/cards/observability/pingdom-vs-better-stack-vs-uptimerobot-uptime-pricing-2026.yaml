@@ -1,0 +1,177 @@
+id: "observability/pingdom-vs-better-stack-vs-uptimerobot-uptime-pricing-2026"
+title: "Pingdom vs Better Stack vs UptimeRobot Uptime Pricing 2026"
+problem: "Choose external monitoring when check frequency, incident workflow
+  packaging, and on-call tie-ins changed enough to affect total monitoring
+  spend."
+context:
+  - "observability"
+  - "uptime-monitoring"
+  - "incident-management"
+  - "status-pages"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Better Stack"
+    summary: "Better Stack packages uptime monitoring together with incident
+      management, on-call, and status pages. As of 2026-03-19, the pricing page
+      shows responder licenses at \"$29\" per month annually or \"$34\" monthly,
+      with a single responder included to use uptime, incident management,
+      on-call, monitoring, and status pages; unlimited team members are \"$0\"
+      per member. Uptime monitoring includes 10 monitors, then additional 50
+      monitors cost \"$21\" per month annually or \"$25\" monthly. The uptime
+      SKU also includes up to 30-second checks, unlimited SMS, unlimited phone
+      call alerts, and multi-step incident verification."
+    when_to_use: "Use this when you want one vendor for external checks plus on-call
+      escalation and incident workflow, especially for a small team that would
+      otherwise buy a separate paging product. It is the strongest fit when
+      total spend depends more on bundled incident operations than on bare
+      monitor count."
+    tradeoffs: "Strongest integrated packaging and generous alerting, but pricing is
+      responder-based and status-page customization or call-routing add-ons can
+      increase spend."
+    cautions: "Budget beyond the headline responder price if you need extra public
+      status pages, white-label status pages, password-protected status pages,
+      Slack or Teams workflow upgrades, or call routing."
+    links:
+      - "https://betterstack.com/pricing"
+      - "https://betterstack.com/uptime"
+  - name: "UptimeRobot"
+    summary: "UptimeRobot remains the low-cost uptime-first option with separate
+      collaboration limits and metered voice or SMS. As of 2026-03-19, the
+      pricing page shows Free with 50 monitors at 5-minute intervals, Solo
+      starting at \"$84\" per year, Team at \"$348\" per year, and Enterprise
+      starting at \"$648\" per year. Team includes 100 monitors with 60-second
+      checks, full-featured status pages, 3 notify seats, and 3 login seats;
+      Enterprise starts at 200 monitors with 30-second checks and 5 notify plus
+      5 login seats. SMS and voice call credits are sold separately as one-time
+      purchases and do not renew with the plan."
+    when_to_use: "Use this when monitor count and basic uptime coverage matter more
+      than built-in on-call workflow, and you want a cheaper entry point than an
+      all-in-one incident platform. It is the better fit for cost-sensitive
+      teams that can rely on integrations instead of bundled paging and incident
+      response tooling."
+    tradeoffs: "Lower base pricing and a useful free tier, but alert economics
+      change once you need repeated voice or SMS notifications, more seats, or
+      faster enterprise-tier checks."
+    cautions: "Do not assume alerting is all-inclusive: SMS and voice credits are
+      one-time purchases, confirmation SMS also consume credits, and
+      collaboration is gated by notify and login seat limits."
+    links:
+      - "https://uptimerobot.com/pricing"
+      - "https://help.uptimerobot.com/en/"
+  - name: "Pingdom"
+    summary: "Pingdom is still positioned as a synthetic monitoring and RUM product
+      rather than a bundled on-call platform. As of 2026-03-19, the public
+      pricing pages show a subscription calculator, a 14-day free trial, and an
+      enterprise quote path, but the static crawled pricing pages did not expose
+      current numeric monthly prices; check official docs for current numbers.
+      The synthetic monitoring packaging publicly emphasizes uptime, page speed,
+      and transaction checks, with email and SMS alerting, maintenance windows,
+      public status pages, and unlimited users. This keeps Pingdom viable for
+      teams that mainly want classic synthetic checks and can source incident
+      workflow elsewhere."
+    when_to_use: "Use this when you specifically want Pingdom's synthetic monitoring
+      or RUM model and you already have separate incident routing, paging, or
+      observability tooling. It is the safer choice when uptime checks are only
+      one component in a broader SolarWinds-centered stack."
+    tradeoffs: "Mature synthetic monitoring and unlimited-user packaging are
+      appealing, but current public price transparency is weaker than Better
+      Stack or UptimeRobot and incident workflow is not bundled the same way."
+    cautions: "For 2026 budgeting, verify the live calculator or sales quote before
+      committing, because the public static crawl did not expose current numeric
+      plan prices even though the site still exposes packaging structure and
+      enterprise quote flow."
+    links:
+      - "https://www.pingdom.com/pricing/"
+      - "https://www.pingdom.com/synthetic-pricing/"
+tags:
+  - "observability"
+  - "uptime-monitoring"
+  - "pricing"
+  - "incident-management"
+aliases:
+  - "pingdom pricing 2026"
+  - "better stack vs uptimerobot pricing"
+  - "uptime monitoring on-call pricing 2026"
+related_cards:
+  - "observability/incident-alert-routing-strategy"
+  - "infra/monitoring-observability"
+  - "observability/datadog-vs-grafana-cloud-vs-new-relic"
+  - observability/checkly-vs-catchpoint-vs-pingdom-synthetic-pricing-2026
+  - testing/checkly-vs-pingdom-synthetic-pricing-2026
+  - observability/betterstack-vs-pulsetic-uptime-and-alerting-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/better-stack
+      name: Better Stack
+    - type: vendor
+      id: vendor/uptimerobot
+      name: UptimeRobot
+    - type: vendor
+      id: vendor/pingdom
+      name: Pingdom
+    - type: capability
+      id: capability/better-stack-incident-management
+      name: incident management
+      category: incident-management
+    - type: capability
+      id: capability/better-stack-on-call
+      name: on-call
+      category: incident-management
+    - type: capability
+      id: capability/better-stack-status-pages
+      name: status pages
+      category: status-pages
+    - type: package
+      id: package/better-stack-responder-license
+      name: responder license
+      category: pricing-unit
+    - type: capability
+      id: capability/uptimerobot-collaboration
+      name: collaboration
+      category: team-access
+    - type: package
+      id: package/uptimerobot-notify-seats
+      name: notify seats
+      category: seat-limit
+    - type: package
+      id: package/uptimerobot-login-seats
+      name: login seats
+      category: seat-limit
+  edges:
+    - type: locks_via
+      from: capability/better-stack-incident-management
+      to: package/better-stack-responder-license
+      vendor: vendor/better-stack
+      evidence: pricing is responder-based, with a single responder included to use
+        uptime, incident management, on-call, monitoring, and status pages
+    - type: locks_via
+      from: capability/better-stack-on-call
+      to: package/better-stack-responder-license
+      vendor: vendor/better-stack
+      evidence: pricing is responder-based, with a single responder included to use
+        uptime, incident management, on-call, monitoring, and status pages
+    - type: locks_via
+      from: capability/better-stack-status-pages
+      to: package/better-stack-responder-license
+      vendor: vendor/better-stack
+      evidence: pricing is responder-based, with a single responder included to use
+        uptime, incident management, on-call, monitoring, and status pages
+    - type: locks_via
+      from: capability/uptimerobot-collaboration
+      to: package/uptimerobot-notify-seats
+      vendor: vendor/uptimerobot
+      evidence: collaboration is gated by notify and login seat limits
+    - type: locks_via
+      from: capability/uptimerobot-collaboration
+      to: package/uptimerobot-login-seats
+      vendor: vendor/uptimerobot
+      evidence: collaboration is gated by notify and login seat limits

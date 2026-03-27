@@ -14,13 +14,13 @@ constraints:
   - "enterprise"
 candidates:
   - name: "Jira Product Discovery Free"
-    summary: 'Jira Product Discovery Free is the lowest-cost entry point if you only
+    summary: "Jira Product Discovery Free is the lowest-cost entry point if you only
       need a small core team authoring the roadmap. As of 2026-03-18, Atlassian
-      lists it at "$0" with a hard limit of "3 creators" per site, unlimited
+      lists it at \"$0\" with a hard limit of \"3 creators\" per site, unlimited
       contributors, 2 GB of storage, and Community support. Core ideation,
       prioritization, comments, votes, and Jira integration are included, so
       many teams can validate the workflow before paying. This is the cheapest
-      fit when most collaborators only need to comment, vote, or view.'
+      fit when most collaborators only need to comment, vote, or view."
     when_to_use: "Use this when you are cost-sensitive and can keep true authorship
       to three people or fewer across product and design. It is the right
       default if designers, engineers, and stakeholders mainly need contributor
@@ -40,14 +40,14 @@ candidates:
       - "https://support.atlassian.com/jira-cloud-administration/docs/explore-j\
         ira-cloud-plans/"
   - name: "Jira Product Discovery Standard"
-    summary: 'Jira Product Discovery Standard is the main paid option for an
+    summary: "Jira Product Discovery Standard is the main paid option for an
       individual product team. As of 2026-03-18, Atlassian lists Standard at
-      "$10 per creator / month" with unlimited creators, unlimited
+      \"$10 per creator / month\" with unlimited creators, unlimited
       contributors, 250 GB storage, business-hours support, published views, and
       higher limits than Free. Atlassian bills only creators, while contributors
       stay free with an Atlassian account. This makes Standard economical when
       many stakeholders need input but only a bounded group of PMs and designers
-      need authoring permissions.'
+      need authoring permissions."
     when_to_use: "Use this when Free is blocked by the 3-creator cap but you still
       want a low-cost rollout for one product team. It is the best fit for
       cost-sensitive product and design collaboration when you need shared
@@ -69,16 +69,16 @@ candidates:
       - "https://support.atlassian.com/jira-product-discovery/kb/updates-regard\
         ing-your-jira-product-discovery-subscription/"
   - name: "Jira Product Discovery Premium"
-    summary: 'Jira Product Discovery Premium targets multi-team product
+    summary: "Jira Product Discovery Premium targets multi-team product
       organizations rather than a single team rollout. As of 2026-03-18,
-      Atlassian lists Premium at "$25 per creator / month" with unlimited
+      Atlassian lists Premium at \"$25 per creator / month\" with unlimited
       creators, unlimited contributors, unlimited storage, 24/7 Premium support,
       and a 99.9% SLA. Premium adds the main scale and control features missing
       from Standard, including aggregated roadmaps, hierarchies, granular view
       restrictions, admin insights, sandbox, release tracks, IP allowlisting,
       custom domains, and Atlassian Intelligence. The pricing jump is
       substantial, so affordability depends on whether those organization-wide
-      controls replace separate admin or reporting work.'
+      controls replace separate admin or reporting work."
     when_to_use: "Use this when multiple product teams need a consolidated roadmap
       layer, stronger governance, and enterprise-style controls. It is the fit
       when the blocker is visibility and control at scale rather than basic

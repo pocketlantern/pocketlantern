@@ -1,0 +1,150 @@
+id: "database/planetscale-single-node-vs-ha-clusters-2026"
+title: "PlanetScale single-node vs HA cluster pricing in 2026"
+problem: "Choose when PlanetScale Postgres single-node pricing is still the
+  right cost floor and when HA cluster pricing becomes justified for production
+  workloads as of 2026-03-20."
+context:
+  - "planetscale"
+  - "postgres"
+  - "managed-database"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "PlanetScale Postgres single node on network-attached storage"
+    summary: "PlanetScale Postgres single node is a non-HA option with one primary
+      and no replicas. As of 2026-03-20, it starts at $5/month for PS-5, is
+      available only for Postgres, only on network-attached storage, and can
+      later be switched to HA."
+    when_to_use: "Use this when the main requirement is the lowest possible fixed
+      monthly spend and the workload can tolerate a single non-HA primary. The
+      concrete cost breakpoint is that PS-5 single node is $5/month while PS-5
+      HA is $15/month, so single node remains the cheapest option until replicas
+      and multi-AZ failover are worth the extra monthly floor."
+    tradeoffs: "Lowest entry price and simplest path into PlanetScale Postgres, but
+      there are no replicas and no automatic failover."
+    cautions: "Single node is not available for Metal. For PlanetScale Vitess,
+      single node is not available at all, so this option does not apply to
+      MySQL-compatible deployments."
+    links:
+      - "https://planetscale.com/docs/postgres/cluster-configuration/single-node"
+      - "https://planetscale.com/docs/postgres/pricing"
+      - "https://planetscale.com/changelog/single-node"
+  - name: "PlanetScale Postgres HA on network-attached storage"
+    summary: "This is PlanetScale Postgres with 1 primary and 2 replicas across 3
+      availability zones. As of 2026-03-20, PS-5 HA starts at $15/month and
+      PS-10 HA starts at $30/month on ARM or $39/month on x86, with storage
+      billed separately for network-attached clusters."
+    when_to_use: "Use this when HA is required, the team wants the lowest HA monthly
+      floor, and storage or I/O demands do not yet justify Metal. The practical
+      breakpoint is the jump from $5 single node to $15 PS-5 HA: choose this
+      once replicas and multi-AZ failover are mandatory, but stay here instead
+      of Metal while network-attached storage performance and separate storage
+      billing are still acceptable."
+    tradeoffs: "Cheaper HA entry point than Metal and still fully managed, but total
+      cost can rise with replicated storage, regional egress, and AWS storage
+      tuning above baseline."
+    cautions: "Each HA production branch provisions a separate production cluster,
+      so additional production branches multiply cost. PlanetScale allows
+      switching from single node to HA and switching back to single node removes
+      existing replicas."
+    links:
+      - "https://planetscale.com/pricing"
+      - "https://planetscale.com/docs/postgres/pricing"
+      - "https://planetscale.com/docs/planetscale-plans"
+  - name: "PlanetScale Postgres HA on Metal"
+    summary: "PlanetScale Metal is the HA-only Postgres option with locally attached
+      NVMe storage. As of 2026-03-20, it starts at $50/month, includes storage
+      in the instance price, and is positioned for workloads where NVMe-backed
+      performance is the deciding factor over the lower HA floor of
+      network-attached storage."
+    when_to_use: "Use this when HA is already mandatory and the next blocker is
+      storage or I/O performance rather than minimum monthly spend. It becomes
+      the better fit once fixed NVMe-backed sizing is more attractive than
+      network-attached storage with separate storage billing and tuning."
+    tradeoffs: "Best performance and more predictable storage-inclusive pricing, but
+      a much higher starting cost than HA on network-attached storage."
+    cautions: "Single-node Metal is not available. Metal requires choosing both
+      compute and storage when you create the database, so it is not the right
+      starting point if your only goal is the cheapest HA floor."
+    links:
+      - "https://planetscale.com/pricing"
+      - "https://planetscale.com/docs/postgres/pricing"
+      - "https://planetscale.com/changelog/50-dollar-metal"
+tags:
+  - "database"
+  - "planetscale"
+  - "postgres"
+  - "pricing"
+aliases:
+  - "planetscale single node pricing"
+  - "planetscale ha pricing"
+  - "planetscale postgres single node vs ha"
+  - "planetscale postgres pricing 2026"
+  - "planetscale ha cluster cost"
+  - "planetscale single node cost"
+  - "planetscale prod cluster pricing"
+  - "planetscale postgres ha price"
+  - "planetscale single-node vs ha"
+  - "pscale postgres pricing"
+  - "planetscale pg pricing"
+  - "planetscale ha vs single node"
+
+  - "planetscale single node pricing"
+  - "planetscale ha pricing"
+  - "planetscale postgres single node vs ha"
+related_cards:
+  - "database/neon-vs-supabase-vs-planetscale-2026"
+  - "database/planetscale-private-connections-flat-rate-feb-2026"
+  - cloud/planetscale-private-connections-vs-public-egress-feb-2026
+  - database/planetscale-no-free-plan-after-hobby-deprecation-2026
+  - database/planetscale-scaler-pro-vs-managed-byoc-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: protocol
+      id: protocol/postgres
+      name: Postgres
+      standard: PostgreSQL
+    - type: engine
+      id: engine/network-attached-storage
+      name: network-attached storage
+      category: storage
+    - type: engine
+      id: engine/planetscale-metal
+      name: PlanetScale Metal
+      category: storage
+    - type: capability
+      id: capability/planetscale-postgres-single-node
+      name: PlanetScale Postgres single node
+      category: database_topology
+    - type: capability
+      id: capability/planetscale-postgres-ha
+      name: PlanetScale Postgres HA
+      category: database_topology
+  edges:
+    - type: requires_version
+      from: capability/planetscale-postgres-single-node
+      to: protocol/postgres
+      requirement: only available for Postgres
+    - type: locks_via
+      from: capability/planetscale-postgres-single-node
+      to: engine/network-attached-storage
+      constraint: only on network-attached storage
+    - type: requires_version
+      from: capability/planetscale-postgres-ha
+      to: protocol/postgres
+      requirement: PlanetScale Postgres HA
+    - type: locks_via
+      from: capability/planetscale-postgres-ha
+      to: engine/network-attached-storage
+      constraint: HA on network-attached storage
+    - type: requires_version
+      from: engine/planetscale-metal
+      to: protocol/postgres
+      requirement: PlanetScale Metal is the HA-only Postgres option

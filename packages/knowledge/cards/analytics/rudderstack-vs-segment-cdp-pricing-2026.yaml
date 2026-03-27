@@ -1,0 +1,151 @@
+id: "analytics/rudderstack-vs-segment-cdp-pricing-2026"
+title: "RudderStack Cloud vs Open Source vs Segment Pricing 2026"
+problem: "Choose a customer data pipeline based on current event pricing,
+  warehouse routing costs, and when self-host or hybrid deployment changes the
+  economics."
+context:
+  - "analytics"
+  - "customer-data-platform"
+  - "data-warehouse"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+  - "real-time"
+candidates:
+  - name: "RudderStack Cloud"
+    summary: "As of 2026-03-20, RudderStack Cloud publishes event-based pricing
+      instead of MTU pricing. The Free plan includes 250,000 monthly events for
+      $0, and Starter starts at $220/month for 1 million monthly events, with
+      listed tiers up to 10 million monthly events. The pricing page includes
+      warehouse destinations and Reverse ETL in the bundle, with 1 Reverse ETL
+      source on Free and Starter and unlimited sources on Growth and Enterprise.
+      This makes the cost curve easier to model when traffic is high but
+      individual users generate many low-value events."
+    when_to_use: "Use this when you are cost-sensitive, warehouse-first, and want a
+      published price schedule without going straight to a sales process. It is
+      the stronger default when event volume is the main driver and you want
+      warehouse routing included earlier in the plan structure."
+    tradeoffs: "Clear self-serve pricing and warehouse-first positioning are
+      advantages. The tradeoff is that advanced deployment and governance
+      features move upmarket, and some limits differ materially between Free or
+      Starter and Growth or Enterprise."
+    cautions: "As of 2026-03-20, RudderStack documents gating around Reverse ETL
+      sources, transformations, VPC deployment, and SSO. Do not assume Cloud
+      Free or Starter matches Enterprise on deployment or governance."
+    links:
+      - "https://www.rudderstack.com/pricing/"
+      - "https://www.rudderstack.com/docs/get-started/rudderstack-open-source/c\
+        loud-vs-open-source/"
+      - "https://www.rudderstack.com/docs/get-started/rudderstack-open-source/"
+  - name: "RudderStack Open Source with hosted control plane when needed"
+    summary: "As of 2026-03-20, RudderStack documents open source as a standalone
+      deployment dependent on PostgreSQL, split into a data plane and a control
+      plane. The docs also note that some capabilities for open-source users are
+      available only through the RudderStack-hosted control plane, including
+      live events, event metrics, and transformations. This changes the
+      economics from published SaaS event pricing to self-managed infrastructure
+      and operations."
+    when_to_use: "Use this when compliance, data control, or long-run volume makes
+      self-managed infrastructure preferable to SaaS metering. It is the right
+      choice when you can operate PostgreSQL and accept that some features still
+      rely on RudderStack-hosted control-plane services."
+    tradeoffs: "You gain deployment control and can avoid committing to cloud
+      event-meter pricing. You lose simplicity, and you must account for
+      operational ownership plus documented feature gaps versus Cloud and
+      Enterprise."
+    cautions: "Do not treat open source as a drop-in equivalent to RudderStack
+      Cloud. As of 2026-03-20, the docs note hosted-control-plane requirements
+      for some open-source features and reserve VPC deployment, SSO, and some
+      governance features for Enterprise."
+    links:
+      - "https://www.rudderstack.com/docs/get-started/rudderstack-open-source/"
+      - "https://www.rudderstack.com/docs/get-started/rudderstack-open-source/c\
+        loud-vs-open-source/"
+      - "https://www.rudderstack.com/pricing/"
+  - name: "Twilio Segment Connections"
+    summary: "As of 2026-03-20, Twilio Segment publishes self-serve pricing for
+      Connections. Connections Free includes 1,000 visitors per month for $0,
+      and Team starts at $120/month with 10,000 visitors per month and 1,000,000
+      Reverse ETL records. Additional 1,000 monthly tracked users are billed at
+      +$12 from 10K to 25K, +$11 from 25K to 100K, and +$10 above 100K. This
+      makes low-scale hosted pipeline economics visible, but billing remains
+      MTU-based."
+    when_to_use: "Use this when you want a mature hosted SaaS pipeline, low
+      operational overhead, and your projected monthly tracked users stay
+      modest. It is strongest when low-ops matters more than warehouse-first
+      control and when you can tolerate MTU-based billing."
+    tradeoffs: "Segment offers a simple hosted path and includes 1,000,000 Reverse
+      ETL records in Team. The tradeoff is that pricing exposure is tied to
+      monthly tracked users."
+    cautions: "As of 2026-03-20, Protocols is an add-on on Connections Business and
+      CDP plans. If you expect higher MTU growth or need enterprise controls, do
+      not budget only from the $120 Team entry point."
+    links:
+      - "https://segment.com/pricing/"
+      - "https://www.twilio.com/en-us/products/connections/pricing"
+      - "https://www.twilio.com/en-us/pricing/customer-data"
+tags:
+  - "analytics"
+  - "cdp"
+  - "pricing"
+  - "segment"
+  - "rudderstack"
+aliases:
+  - "segment vs rudderstack pricing"
+  - "customer data pipeline pricing 2026"
+  - "segment mtu vs rudderstack event pricing"
+related_cards:
+  - "analytics/statsig-cloud-vs-warehouse-native-pricing-2026"
+  - "analytics/aptabase-cloud-vs-self-hosted-data-residency-and-pricing-2026"
+  - "data/data-pipeline-orchestration-dbt-cloud-vs-fivetran-vs-airbyte-2026"
+  - analytics/snowplow-bdp-vs-posthog-data-warehouse-cost-2026
+  - analytics/june-vs-hockeystack-vs-commons-room-b2b-usage-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/rudderstack
+      name: RudderStack
+    - type: vendor
+      id: vendor/twilio
+      name: Twilio
+    - type: capability
+      id: capability/protocols
+      name: Protocols
+    - type: capability
+      id: capability/vpc-deployment
+      name: VPC deployment
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: package
+      id: package/connections-business
+      name: Connections Business
+    - type: package
+      id: package/cdp-plan
+      name: CDP plan
+    - type: package
+      id: package/rudderstack-cloud-enterprise
+      name: RudderStack Cloud Enterprise
+  edges:
+    - type: requires_version
+      from: capability/protocols
+      to: package/connections-business
+      note: Protocols is an add-on on Connections Business plans.
+    - type: requires_version
+      from: capability/protocols
+      to: package/cdp-plan
+      note: Protocols is an add-on on CDP plans.
+    - type: requires_version
+      from: capability/vpc-deployment
+      to: package/rudderstack-cloud-enterprise
+      note: RudderStack reserves VPC deployment for Enterprise.
+    - type: requires_version
+      from: capability/sso
+      to: package/rudderstack-cloud-enterprise
+      note: RudderStack reserves SSO for Enterprise.

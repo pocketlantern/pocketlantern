@@ -184,6 +184,12 @@ related_cards:
   - "ai/ai-feature-cost-governance"
   - runtime/modal-starter-vs-team-2026
   - ai/deepgram-stt-vs-assemblyai-pricing-2026
+  - ai/mistral-voxtral-realtime-vs-batch-transcription-2026
+  - ai/hugging-face-inference-endpoints-vs-inference-providers-2026
+  - ai/elevenlabs-scribe-v2-realtime-vs-batch-pricing-january-2026
+  - ai/deepgram-voice-agent-vs-stt-plus-tts-pricing-2026
+  - ai/together-real-time-vs-batch-api-after-february-2026
+  - ai/groq-realtime-vs-batch-after-50-percent-discount-2026
 status: "active"
 tier: "core"
 updated: "2026-03-16"

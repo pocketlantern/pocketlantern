@@ -1,0 +1,180 @@
+id: "runtime/railway-replica-cap-vs-custom-2026"
+title: "Railway’s 6-Replica Cap vs Higher-Tier Custom Capacity in 2026"
+problem: "Decide when Railway’s documented six-replica cap becomes an
+  architectural blocker and whether to upgrade plans or redesign deployment
+  topology."
+context:
+  - "railway"
+  - "paas"
+  - "container-hosting"
+  - "horizontal-scaling"
+constraints:
+  - "high-scale"
+  - "cost-sensitive"
+  - "small-team"
+  - "real-time"
+candidates:
+  - name: "Stay on Hobby and redesign around the six-replica ceiling"
+    summary: "As of 2026-03-19, Railway Hobby costs $5/month and includes $5 of
+      usage, with a documented maximum of 6 replicas per service. Railway states
+      that plan maximums include replica multiplication, so scaling replicas
+      consumes the published plan limits. Railway also documents that replicas
+      cannot be used with volumes, and its public load balancing is random with
+      no sticky-session support. Hobby is viable only if you can stay within
+      those limits by consolidating services, keeping routing stateless, or
+      moving stateful components off Railway volumes."
+    when_to_use: "Use this when you are cost-sensitive, can keep each service at 6
+      replicas or fewer, and your bottleneck is topology rather than raw
+      platform capacity. The decisive factor is whether a redesign can remove
+      the need for more than 6 replicas without introducing stateful session
+      affinity or volume-backed horizontal scaling."
+    tradeoffs: "Lowest subscription cost and no plan migration, but you are
+      accepting a hard per-service replica ceiling and Railway load-balancing
+      constraints."
+    cautions: "A volume-backed service cannot scale with replicas on Railway, so
+      databases, file-backed workers, or stateful app nodes are a topology
+      blocker before price is. Railway also does not support sticky sessions, so
+      session-bound web architectures will need external session storage."
+    links:
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/deployments/scaling"
+      - "https://docs.railway.com/volumes/reference"
+  - name: "Upgrade to Pro for the documented 42-replica tier"
+    summary: "As of 2026-03-19, Railway Pro costs $20/month and raises the
+      documented per-service maximum to 42 replicas, 1 TB RAM, and 1,000 vCPU,
+      while keeping usage-based billing for RAM, CPU, egress, and volume
+      storage. Those published limits still apply across your scaled deployment,
+      so more replicas increase total resource consumption rather than bypassing
+      plan ceilings. Railway also documents multi-region replicas, and Pro is
+      the required base plan for committed-spend tiers. This is the
+      straightforward path when the six-replica cap is the blocker but your
+      target shape still fits inside Railway’s standard higher-tier limits."
+    when_to_use: "Use this when the system is otherwise compatible with Railway’s
+      scaling model and you need more than 6 but not more than 42 replicas on a
+      service. The decisive factor is whether raising the cap solves the issue
+      without needing sticky sessions, replica-plus-volume support, or custom
+      infrastructure controls."
+    tradeoffs: "Very low upgrade friction and much higher documented scaling
+      headroom, but you still remain inside Railway’s standard shared-platform
+      model and usage-based cost curve."
+    cautions: "Committed-spend features are available only from a Pro workspace, but
+      Railway’s docs do not state that committed spend alone raises the
+      published 42-replica Pro cap. If the workload needs more replicas and also
+      uses attached volumes, the architectural conflict remains because Railway
+      documents that replicas cannot be used with volumes."
+    links:
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/deployments/scaling"
+      - "https://docs.railway.com/pricing/committed-spend"
+  - name: "Move to Enterprise or negotiate custom capacity only when standard caps
+      are the blocker"
+    summary: "As of 2026-03-19, Railway documents Enterprise pricing as custom and
+      publishes a standard maximum of 50 replicas, 2.4 TB RAM, and 2,400 vCPU
+      per service. Railway also documents committed-spend tiers on top of Pro at
+      $1,000, $2,000, $5,000, and $10,000 per month, with higher tiers adding
+      SSO, RBAC, Railway-owned cloud regions, dedicated instances, and
+      bring-your-own-cloud. The docs verify custom infrastructure options, but
+      they do not publish a replica cap above the Enterprise 50-replica figure.
+      Enterprise or committed spend is therefore justified for compliance,
+      support, dedicated infrastructure, or near-cap scaling pressure, not as a
+      documented path to unlimited replicas."
+    when_to_use: "Use this when you are already near Pro’s 42-replica ceiling, need
+      enterprise controls, or need dedicated instances or BYOC for isolation and
+      compliance. The decisive factor is whether your blocker is custom
+      infrastructure and governance, because the public docs do not verify a
+      higher-than-50 replica limit."
+    tradeoffs: "Unlocks support, compliance, and infrastructure customization, but
+      cost rises sharply and the public documentation stops short of promising
+      replica counts above Enterprise’s published cap."
+    cautions: "Do not assume committed spend automatically increases replica limits;
+      Railway’s docs only publish the feature bundles and note that these tiers
+      are accessed from Pro. If your design needs more than 50 replicas on one
+      service, check official docs and confirm directly with Railway before
+      committing to a plan change."
+    links:
+      - "https://docs.railway.com/pricing/plans"
+      - "https://docs.railway.com/pricing/committed-spend"
+      - "https://docs.railway.com/guides/troubleshooting-slow-deployments"
+tags:
+  - "runtime"
+  - "railway"
+  - "scaling"
+  - "pricing"
+aliases:
+  - "railway 6 replica limit"
+  - "railway hobby vs pro replicas"
+  - "railway enterprise replica cap"
+related_cards:
+  - "runtime/railway-trial-vs-hobby-vs-team-2026"
+  - "infra/app-hosting-platform-flyio-vs-railway-vs-render-vs-heroku-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - deployment/railway-free-vs-hobby-vs-pro-usage-minimums-2026
+  - cloud/railway-hobby-vs-pro-usage-commit-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: vendor
+      id: vendor/railway
+      name: Railway
+    - type: runtime
+      id: runtime/railway-hobby
+      name: Railway Hobby
+      category: plan
+    - type: runtime
+      id: runtime/railway-pro
+      name: Railway Pro
+      category: plan
+    - type: runtime
+      id: runtime/railway-enterprise
+      name: Railway Enterprise
+      category: plan
+    - type: capability
+      id: capability/service-replicas-6
+      name: 6 replicas per service
+      category: scaling-limit
+    - type: capability
+      id: capability/service-replicas-42
+      name: 42 replicas per service
+      category: scaling-limit
+    - type: capability
+      id: capability/service-replicas-50
+      name: 50 replicas per service
+      category: scaling-limit
+    - type: capability
+      id: capability/committed-spend
+      name: Committed spend tiers
+      category: pricing-feature
+    - type: capability
+      id: capability/volumes
+      name: Volumes
+      category: storage
+    - type: capability
+      id: capability/replicas
+      name: Replicas
+      category: horizontal-scaling
+  edges:
+    - type: requires_version
+      from: capability/service-replicas-6
+      to: runtime/railway-hobby
+      requirement: Railway Hobby has a documented maximum of 6 replicas per service.
+    - type: requires_version
+      from: capability/service-replicas-42
+      to: runtime/railway-pro
+      requirement: Railway Pro raises the documented per-service maximum to 42 replicas.
+    - type: requires_version
+      from: capability/service-replicas-50
+      to: runtime/railway-enterprise
+      requirement: Railway publishes a standard maximum of 50 replicas per service for
+        Enterprise.
+    - type: requires_version
+      from: capability/committed-spend
+      to: runtime/railway-pro
+      requirement: Pro is the required base plan for committed-spend tiers.
+    - type: locks_via
+      from: capability/replicas
+      to: capability/volumes
+      constraint: Railway documents that replicas cannot be used with volumes.

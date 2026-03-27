@@ -119,6 +119,8 @@ related_cards:
   - infra/feature-flag-platform-launchdarkly-vs-statsig-vs-growthbook-2026
   - devtools/circleci-rerun-limit-january-2026-pipeline-design
   - game/unreal-launch-everywhere-with-epic-3-5-vs-5-percent-royalty-2026
+  - mobile/shorebird-free-vs-pro-vs-business-pricing-2026
+tier: foundational
 updated: 2026-03-15
 sidecar_hard_facts:
   extracted: 2026-03-15

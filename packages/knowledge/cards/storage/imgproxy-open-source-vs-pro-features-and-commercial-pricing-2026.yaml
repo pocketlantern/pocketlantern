@@ -1,0 +1,240 @@
+id: "storage/imgproxy-open-source-vs-pro-features-and-commercial-pricing-2026"
+title: "imgproxy Open Source vs Pro Features and Commercial Pricing 2026"
+problem: "Decide whether to stay on OSS imgproxy or pay for Pro as feature
+  gating and commercial support matter more for high-volume image pipelines in
+  2026."
+context:
+  - "image-processing"
+  - "cdn"
+  - "object-storage"
+  - "s3"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "enterprise"
+candidates:
+  - name: "Stay on OSS imgproxy"
+    summary: "As of 2026-03-27, imgproxy OSS remains MIT-licensed and the project
+      FAQ says it is free to use and modify with no licensing cost beyond your
+      own infrastructure. The official GitHub repo shows the latest OSS release
+      as v3.31.1 on 2026-03-17. OSS already covers the core self-hosted image
+      proxy use case, including URL signing, source URL encryption, source
+      restrictions, standard resizing and format conversion, and storage
+      backends such as S3, GCS, Azure Blob, and Swift. The main reason to stay
+      is that the core pipeline remains open source while the paid gate is
+      around advanced processing, optimization, and support."
+    when_to_use: "Use this when you are cost-sensitive plus comfortable owning
+      operations and support internally. It is the better choice when your
+      pipeline only needs the verified OSS feature set and you do not need paid
+      support, dynamic watermarks, video or PDF previews, AI crop, or advanced
+      compression."
+    tradeoffs: "No vendor license fee and full control over deployment, but you give
+      up Pro-only features and priority support. You also keep responsibility
+      for hardening, troubleshooting, and upgrade testing in-house."
+    cautions: "As of 2026-03-27, the official features page says \"imgproxy v4 is
+      around the corner,\" so teams pinning OSS should watch release notes and
+      migration guidance before a major-version upgrade. If you need an exact
+      current feature matrix by option, check the official features page because
+      Pro gating is explicit there."
+    links:
+      - "https://github.com/imgproxy/imgproxy"
+      - "https://docs.imgproxy.net/"
+      - "https://imgproxy.net/faq/"
+      - "https://imgproxy.net/features/"
+  - name: "Upgrade to imgproxy Pro"
+    summary: "As of 2026-03-27, imgproxy Pro starts at \"$49/mo\" or \"$499/yr\" for
+      up to 16 workers, with larger deployments listed as \"price on request\"
+      and a 14-day free trial on the official pricing page. The FAQ states you
+      pay for Pro-only features, hardened and production-proven releases, and
+      priority technical support from the creators. Verified Pro-only examples
+      on the official features page include dynamic per-request watermarks, text
+      watermarks, GIF-to-MP4 conversion, PDF and video thumbnail generation,
+      PSD/PSB thumbnails, advanced JPEG optimizations, advanced WebP compression
+      options, object-oriented AI crop, object blurring, autoquality, automatic
+      best-format selection, and observability integrations such as
+      OpenTelemetry, Datadog, New Relic, and CloudWatch. The core differentiator
+      is not hosting but feature gating and direct commercial support for
+      production image stacks."
+    when_to_use: "Use this when you are high-scale plus enterprise and blocker-level
+      needs now include Pro-gated media features or vendor-backed support. It
+      becomes the decisive choice when queue capacity can be reasoned about in
+      workers and the cost of missing advanced optimization, preview generation,
+      or support exceeds the subscription."
+    tradeoffs: "You get advanced features and priority support with pricing that
+      scales by worker count, but you add recurring license cost and commercial
+      dependency. At higher concurrency, pricing moves to custom quote territory
+      rather than a transparent self-serve ladder."
+    cautions: "The pricing model is worker-based, and the official docs say the
+      default worker count is two per CPU core, so cost planning should be tied
+      to actual concurrency and instance sizing rather than request volume
+      alone. As of 2026-03-27, the site also advertises early access for
+      \"imgproxy Pro v4,\" so confirm upgrade timing and migration notes before
+      standardizing on a new major version."
+    links:
+      - "https://imgproxy.net/pricing/"
+      - "https://imgproxy.net/faq/"
+      - "https://imgproxy.net/features/"
+      - "https://docs.imgproxy.net/"
+tags:
+  - "storage"
+  - "imgproxy"
+  - "image-processing"
+  - "pricing"
+aliases:
+  - "imgproxy oss vs pro"
+  - "imgproxy pro pricing"
+  - "imgproxy commercial license"
+  - "imgproxy worker pricing"
+related_cards:
+  - "storage/cloudinary-vs-uploadcare-vs-imagekit-pricing-2026"
+  - "web/imgix-vs-imagekit-vs-uploadcare-image-cdn-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/imgproxy
+      name: imgproxy
+    - type: package
+      id: package/imgproxy-oss
+      name: imgproxy OSS
+      vendor: vendor/imgproxy
+      license: MIT
+    - type: package
+      id: package/imgproxy-pro
+      name: imgproxy Pro
+      vendor: vendor/imgproxy
+    - type: package
+      id: package/imgproxy-v4
+      name: imgproxy v4
+      vendor: vendor/imgproxy
+    - type: package
+      id: package/imgproxy-pro-v4
+      name: imgproxy Pro v4
+      vendor: vendor/imgproxy
+    - type: capability
+      id: capability/dynamic-watermarks
+      name: Dynamic per-request watermarks
+    - type: capability
+      id: capability/text-watermarks
+      name: Text watermarks
+    - type: capability
+      id: capability/gif-to-mp4
+      name: GIF-to-MP4 conversion
+    - type: capability
+      id: capability/pdf-video-thumbnails
+      name: PDF and video thumbnail generation
+    - type: capability
+      id: capability/psd-psb-thumbnails
+      name: PSD/PSB thumbnails
+    - type: capability
+      id: capability/advanced-jpeg-optimizations
+      name: Advanced JPEG optimizations
+    - type: capability
+      id: capability/advanced-webp-compression
+      name: Advanced WebP compression options
+    - type: capability
+      id: capability/ai-crop
+      name: Object-oriented AI crop
+    - type: capability
+      id: capability/object-blurring
+      name: Object blurring
+    - type: capability
+      id: capability/autoquality
+      name: Autoquality
+    - type: capability
+      id: capability/automatic-best-format-selection
+      name: Automatic best-format selection
+    - type: capability
+      id: capability/opentelemetry
+      name: OpenTelemetry integration
+    - type: capability
+      id: capability/datadog
+      name: Datadog integration
+    - type: capability
+      id: capability/new-relic
+      name: New Relic integration
+    - type: capability
+      id: capability/cloudwatch
+      name: CloudWatch integration
+    - type: capability
+      id: capability/priority-support
+      name: Priority technical support
+  edges:
+    - type: locks_via
+      from: capability/dynamic-watermarks
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/text-watermarks
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/gif-to-mp4
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/pdf-video-thumbnails
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/psd-psb-thumbnails
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/advanced-jpeg-optimizations
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/advanced-webp-compression
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/ai-crop
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/object-blurring
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/autoquality
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/automatic-best-format-selection
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/opentelemetry
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/datadog
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/new-relic
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/cloudwatch
+      to: package/imgproxy-pro
+      note: Verified Pro-only example on the official features page
+    - type: locks_via
+      from: capability/priority-support
+      to: package/imgproxy-pro
+      note: The FAQ states you pay for priority technical support from the creators
+    - type: breaking_change_in
+      from: package/imgproxy-oss
+      to: package/imgproxy-v4
+      note: The card cautions teams to watch release notes and migration guidance
+        before a major-version upgrade
+    - type: breaking_change_in
+      from: package/imgproxy-pro
+      to: package/imgproxy-pro-v4
+      note: The card says to confirm upgrade timing and migration notes before
+        standardizing on the new major version

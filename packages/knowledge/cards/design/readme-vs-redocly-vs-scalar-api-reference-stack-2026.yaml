@@ -1,0 +1,182 @@
+id: "design/readme-vs-redocly-vs-scalar-api-reference-stack-2026"
+title: "ReadMe vs Redocly vs Scalar API Reference Stack Pricing 2026"
+problem: "Choose an API reference platform when seat minimums, AI search, MCP
+  support, and hosted-vs-open deployment options now create different cost and
+  lock-in profiles."
+context:
+  - "api-docs"
+  - "openapi"
+  - "developer-portal"
+  - "ai-tooling"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "ReadMe"
+    summary: "ReadMe is a hosted documentation and developer hub platform with
+      interactive API reference, guides, versioning, and built-in AI features.
+      As of 2026-03-27, its pricing page shows Free at $0/month, Startup at
+      $79/month billed annually, Business at $349/month billed annually, and
+      Enterprise at $3,000+/month billed annually. The same pricing page lists
+      \"MCP Server\" and \"LLMs.txt\" in the Free tier, while Enterprise adds
+      AI-specific controls such as Ask AI API Access and Private AI Context.
+      ReadMe also published project MCP server support in February 2026, so MCP
+      is a first-class product direction rather than an add-on buried in
+      enterprise-only packaging."
+    when_to_use: "Use ReadMe when you want the fastest path to hosted docs plus
+      built-in AI discoverability and MCP without a per-seat minimum shaping the
+      initial deal. It is the strongest fit when AI-facing docs are part of the
+      product surface and you want that available from the start."
+    tradeoffs: "Strong AI and MCP story, but pricing steps up sharply from Startup
+      to Business and then to Enterprise. Official pricing in this pass centers
+      on hosted SaaS plans rather than an open deployment model."
+    cautions: "As of 2026-03-27, the pricing page also shows an \"AI Booster Pack\"
+      at $150/month, so AI-heavy usage can become a separate budget line. If
+      self-hosting or full deployment portability is mandatory, check official
+      docs before committing because that was not verified in this pass."
+    links:
+      - "https://readme.com/pricing"
+      - "https://docs.readme.com/main/docs/plans-and-pricing"
+      - "https://docs.readme.com/main/docs/mcp-servers"
+      - "https://readme.com/blog/api-documentation-mcp-server-readme"
+  - name: "Redocly"
+    summary: "Redocly sells hosted API reference and portal tooling on a per-seat
+      model, while also keeping Redoc as an open-source tool. As of 2026-03-27,
+      the pricing page shows Pro at $10 per seat per month billed monthly and
+      Enterprise at $24 per seat per month billed monthly; Pro includes 1
+      project and 100 pages, while Enterprise includes 500 pages. The Enterprise
+      tier explicitly lists AI search, Typesense search, analytics, and MCP
+      Servers, which makes MCP and AI search enterprise-gated rather than
+      baseline capabilities. Redocly's Redoc product page also states \"Open
+      source forever, more polished as SaaS,\" which gives it a hybrid
+      hosted-plus-open-source positioning."
+    when_to_use: "Use Redocly when you want a polished hosted reference product but
+      also want an official open-source escape hatch through Redoc. It fits
+      teams that care about OpenAPI fidelity and may accept paying for
+      enterprise-only AI search and MCP rather than needing them on day one."
+    tradeoffs: "Lower visible per-seat entry price than many enterprise docs
+      platforms, and the Redoc open-source line reduces hard lock-in risk. The
+      tradeoff is that the most current AI-search and MCP capabilities are gated
+      to Enterprise, not Pro."
+    cautions: "Per-seat pricing can expand faster than project-based pricing once
+      docs ownership broadens across engineering, product, and support. If AI
+      search or MCP is a blocker, treat Pro as insufficient as of 2026-03-27."
+    links:
+      - "https://redocly.com/pricing"
+      - "https://redocly.com/reference"
+      - "https://redocly.com/redoc"
+  - name: "Scalar"
+    summary: "Scalar combines hosted API docs, SDKs, governance, and an API client,
+      while also maintaining an open-source API reference stack. As of
+      2026-03-27, the pricing page shows Free at $0, Pro at $72 per month with a
+      3-seat minimum plus member, usage, and service fees, and Enterprise as
+      custom pricing. Its public GitHub repository describes Scalar as an
+      open-source API platform and shows the API reference can be embedded from
+      a single HTML file via the published package. That makes Scalar the
+      clearest option here when open deployment and self-hosting flexibility
+      matter more than turnkey hosted AI features."
+    when_to_use: "Use Scalar when deployment control and open-source portability
+      matter more than bundled hosted AI features. It is the best fit for
+      cost-sensitive teams that can self-serve and want to avoid committing
+      their reference layer entirely to a closed SaaS."
+    tradeoffs: "Best portability and lowest lock-in profile of the three, but the
+      hosted Pro tier starts with a hard 3-seat minimum and additional fee
+      language. Official pricing/docs checked in this pass did not surface a
+      clear MCP product claim comparable to ReadMe or Redocly Enterprise."
+    cautions: "As of 2026-03-27, Scalar's pricing page explicitly warns of member,
+      usage, and service fees beyond the headline Pro price, so do not budget
+      only from the $72 figure. If MCP support is a decision blocker, check
+      official docs before choosing Scalar because that detail was not verified
+      in this pass."
+    links:
+      - "https://scalar.com/pricing"
+      - "https://github.com/scalar/scalar"
+      - "https://scalar.com"
+tags:
+  - "design"
+  - "api-docs"
+  - "openapi"
+  - "pricing"
+  - "mcp"
+aliases:
+  - "readme vs redocly vs scalar"
+  - "api reference platform pricing 2026"
+  - "api docs mcp ai search comparison"
+related_cards:
+  - "devtools/readme-startup-vs-business-vs-ai-booster-pack-2026"
+  - "devtools/redocly-pro-vs-enterprise-seat-and-usage-pricing-2026"
+  - "ai/mcp-server-hosting-and-distribution-2026"
+  - devtools/scalar-agent-message-vs-token-pricing-2026
+  - analytics/mintlify-vs-readme-ai-doc-assistant-cost-2026
+  - search/redocly-typesense-search-vs-built-in-docs-search-seat-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/readme
+      name: ReadMe
+    - type: vendor
+      id: vendor/redocly
+      name: Redocly
+    - type: vendor
+      id: vendor/scalar
+      name: Scalar
+    - type: capability
+      id: capability/mcp-server
+      name: MCP Server
+    - type: capability
+      id: capability/ai-search
+      name: AI search
+    - type: capability
+      id: capability/ask-ai-api-access
+      name: Ask AI API Access
+    - type: capability
+      id: capability/private-ai-context
+      name: Private AI Context
+    - type: package
+      id: package/readme-free
+      name: ReadMe Free
+    - type: package
+      id: package/readme-enterprise
+      name: ReadMe Enterprise
+    - type: package
+      id: package/redocly-pro
+      name: Redocly Pro
+    - type: package
+      id: package/redocly-enterprise
+      name: Redocly Enterprise
+    - type: package
+      id: package/scalar-pro
+      name: Scalar Pro
+  edges:
+    - type: requires_version
+      from: capability/mcp-server
+      to: package/readme-free
+      note: ReadMe pricing lists MCP Server in the Free tier.
+    - type: requires_version
+      from: capability/ask-ai-api-access
+      to: package/readme-enterprise
+      note: ReadMe Enterprise adds Ask AI API Access.
+    - type: requires_version
+      from: capability/private-ai-context
+      to: package/readme-enterprise
+      note: ReadMe Enterprise adds Private AI Context.
+    - type: requires_version
+      from: capability/ai-search
+      to: package/redocly-enterprise
+      note: Redocly Enterprise explicitly lists AI search; Pro is described as
+        insufficient if AI search is a blocker.
+    - type: requires_version
+      from: capability/mcp-server
+      to: package/redocly-enterprise
+      note: Redocly Enterprise explicitly lists MCP Servers; Pro is described as
+        insufficient if MCP is a blocker.
+    - type: locks_via
+      from: vendor/scalar
+      to: package/scalar-pro
+      note: Scalar Pro has a hard 3-seat minimum plus member, usage, and service fees.

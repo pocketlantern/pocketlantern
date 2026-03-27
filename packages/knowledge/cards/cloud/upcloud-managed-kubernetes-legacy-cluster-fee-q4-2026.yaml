@@ -1,0 +1,173 @@
+id: "cloud/upcloud-managed-kubernetes-legacy-cluster-fee-q4-2026"
+title: "UpCloud Managed Kubernetes Legacy Cluster Fee Starting Q4 2026"
+problem: "Teams running older UpCloud Kubernetes clusters need to decide whether
+  to migrate before the legacy cluster fee lands or accept higher steady-state
+  platform cost."
+context:
+  - "cloud"
+  - "upcloud"
+  - "kubernetes"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+candidates:
+  - name: "Migrate legacy UKS clusters to Kubernetes 1.30 or newer before Q4 2026"
+    summary: "As of 2026-03-27, UpCloud gives full SLA coverage and regular security
+      patching only for Kubernetes 1.30 through 1.34, while 1.26 through 1.29
+      are marked legacy and EOL. UpCloud says remaining legacy clusters may
+      incur a Legacy Infrastructure Maintenance surcharge starting in Q4 2026,
+      but the official docs do not publish the surcharge amount. UpCloud also
+      states that clusters on 1.30+ support automated in-place upgrades, which
+      is the main architectural break from legacy clusters. Control plane
+      pricing remains the standard UKS rate: Development is free for clusters up
+      to 30 nodes without HA, and Production is 60 EUR per month for clusters up
+      to 120 nodes with HA; worker nodes are billed separately at normal Cloud
+      Server rates."
+    when_to_use: "Use this when you are cost-sensitive and want to avoid an
+      undefined surcharge plus the operational risk of running outside SLA and
+      patch coverage. It is the default path if the cluster is still on 1.29 or
+      below and you expect to keep using UKS into late 2026."
+    tradeoffs: "You avoid the upcoming legacy fee and return to supported upgrades,
+      but you must perform a cluster-to-cluster migration if you are on 1.29 or
+      below."
+    cautions: "UpCloud's migration guide says 1.29-and-below clusters require
+      migration to a fresh 1.30+ cluster using Velero and Object Storage. The
+      guide also warns that restores only go to higher Kubernetes versions,
+      workloads must not depend on APIs removed in 1.30, and load balancer
+      annotations should be stripped so UKS recreates load balancers in the
+      target cluster."
+    links:
+      - "https://upcloud.com/docs/products/managed-kubernetes/supported-version\
+        s/"
+      - "https://upcloud.com/docs/guides/migration-uks-velero/"
+      - "https://upcloud.com/docs/products/managed-kubernetes/billing/"
+      - "https://upcloud.com/pricing/"
+  - name: "Keep the legacy cluster temporarily and budget for the Q4 2026 surcharge"
+    summary: "As of 2026-03-27, UpCloud still keeps Kubernetes 1.26 through 1.29
+      clusters available on a best-effort basis to allow migration, but these
+      versions are outside SLA and no new security patches or bug fixes will be
+      released. UpCloud explicitly says a Legacy Infrastructure Maintenance
+      surcharge is expected to begin for remaining legacy clusters in Q4 2026.
+      The official documentation does not publish the surcharge amount, so
+      budget impact must be treated as unknown until UpCloud posts pricing or
+      confirms it directly. This option mainly buys time if migration cannot
+      happen immediately."
+    when_to_use: "Use this only when migration is blocked by application
+      compatibility, staffing, or change-freeze constraints and you need a short
+      extension window. The decisive factor is whether delaying migration is
+      worth paying an unpublished surcharge while remaining on best-effort
+      support."
+    tradeoffs: "Least immediate engineering work, but you stay on unsupported
+      versions with unclear future cost and no path back to automated in-place
+      upgrades until you migrate."
+    cautions: "This is not a stable steady-state choice. As of 2026-03-27, the
+      legacy fee has not started yet, but the decision window is open now
+      because the affected versions are already EOL and unsupported under the
+      SLA."
+    links:
+      - "https://upcloud.com/docs/products/managed-kubernetes/supported-version\
+        s/"
+      - "https://upcloud.com/docs/products/managed-kubernetes/billing/"
+      - "https://upcloud.com/pricing/"
+tags:
+  - "cloud"
+  - "upcloud"
+  - "kubernetes"
+  - "pricing"
+aliases:
+  - "upcloud kubernetes legacy fee"
+  - "upcloud managed kubernetes 1.30 migration"
+  - "upcloud uks q4 2026 surcharge"
+  - "upcloud legacy cluster fee"
+  - "upcloud kubernetes surcharge"
+  - "uks legacy fee"
+  - "upcloud k8s legacy cost"
+  - "upcloud kubernetes 1.30 fee"
+  - "upcloud cluster migration fee"
+  - "upcloud managed k8s fee"
+  - "upcloud kubernetes extra charge"
+  - "upcloud uks legacy surcharge"
+  - "upcloud kuberenetes fee"
+
+  - "upcloud kubernetes legacy fee"
+  - "upcloud managed kubernetes 1.30 migration"
+  - "upcloud uks q4 2026 surcharge"
+related_cards:
+  - "_archived/migration-strategy"
+  - "infra/container-orchestration"
+  - "infra/kubernetes-vs-managed-serverless-cost-tradeoff-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/upcloud
+      name: UpCloud
+    - type: capability
+      id: capability/managed-kubernetes
+      name: Managed Kubernetes
+    - type: capability
+      id: capability/automated-in-place-upgrades
+      name: Automated in-place upgrades
+    - type: runtime
+      id: runtime/kubernetes-1-26
+      name: Kubernetes 1.26
+    - type: runtime
+      id: runtime/kubernetes-1-27
+      name: Kubernetes 1.27
+    - type: runtime
+      id: runtime/kubernetes-1-28
+      name: Kubernetes 1.28
+    - type: runtime
+      id: runtime/kubernetes-1-29
+      name: Kubernetes 1.29
+    - type: runtime
+      id: runtime/kubernetes-1-30
+      name: Kubernetes 1.30
+    - type: runtime
+      id: runtime/kubernetes-1-34
+      name: Kubernetes 1.34
+  edges:
+    - type: requires_version
+      from: capability/automated-in-place-upgrades
+      to: runtime/kubernetes-1-30
+      version_range: 1.30+
+    - type: requires_version
+      from: capability/managed-kubernetes
+      to: runtime/kubernetes-1-30
+      version_range: 1.30 - 1.34
+      note: Full SLA coverage and regular security patching are stated for Kubernetes
+        1.30 through 1.34.
+    - type: eol_date
+      from: runtime/kubernetes-1-26
+      to: null
+      status: eol
+      as_of: 2026-03-27
+    - type: eol_date
+      from: runtime/kubernetes-1-27
+      to: null
+      status: eol
+      as_of: 2026-03-27
+    - type: eol_date
+      from: runtime/kubernetes-1-28
+      to: null
+      status: eol
+      as_of: 2026-03-27
+    - type: eol_date
+      from: runtime/kubernetes-1-29
+      to: null
+      status: eol
+      as_of: 2026-03-27
+    - type: breaking_change_in
+      from: capability/managed-kubernetes
+      to: runtime/kubernetes-1-30
+      note: 1.30+ adds automated in-place upgrades; 1.29 and below require
+        cluster-to-cluster migration.
+    - type: locks_via
+      from: vendor/upcloud
+      to: capability/managed-kubernetes
+      mechanism: Legacy Infrastructure Maintenance surcharge expected starting in Q4
+        2026 for remaining legacy clusters

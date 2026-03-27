@@ -1,0 +1,166 @@
+id: "serverless/cloudflare-workers-free-tier-100k-requests-per-day-limit-2026"
+title: "Cloudflare Workers Free Tier 100K Requests/Day and 10ms CPU Limit"
+problem: "Workers free plan caps at 100K requests/day and 10ms CPU time per
+  invocation. Paid plan ($5/month minimum) raises the per-invocation CPU default
+  to 30 seconds (configurable up to 5 minutes) and adds 10M requests/month.
+  Teams hitting the free tier ceiling must decide whether to upgrade to Workers
+  Paid or reconsider their edge architecture."
+context:
+  - "serverless"
+  - "edge-functions"
+  - "cloudflare"
+  - "cdn"
+constraints:
+  - "serverless"
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Cloudflare Workers Free Plan"
+    summary: "The Workers Free plan provides 100,000 requests/day and 10ms CPU time
+      per invocation at no cost, as of 2026-03-18. Worker bundle size is capped
+      at 3 MB compressed, with 50 subrequests per request, 100 Workers per
+      account, and 5 Cron Triggers per account. The decisive differentiator is
+      the 10ms CPU hard cap — it cannot be configured higher and rules out any
+      workload involving JSON parsing of large payloads, cryptographic
+      operations, or multi-step data transformation."
+    when_to_use: "Best for serverless + small-team projects where traffic stays well
+      under 100K daily requests and logic is genuinely thin — a simple header
+      injection, geolocation redirect, or static asset rewrite. The single most
+      decisive factor is whether 10ms of CPU time is sufficient; anything
+      involving database calls, auth token validation, or non-trivial payload
+      processing will exceed the cap."
+    tradeoffs: "Pros: zero cost, no credit card required, instant global deploy,
+      Workers KV reads (100K/day), D1 row reads (5M/day), and Durable Objects
+      requests (100K/day) all included. Cons: 10ms CPU per invocation is a hard
+      ceiling with no configuration path; 100K requests/day resets daily with no
+      grace period or overflow billing; 3 MB compressed bundle limits dependency
+      inclusion; 50 subrequests per request caps fan-out patterns; 5 Cron
+      Triggers per account."
+    cautions: "The 10ms limit is CPU time, not wall-clock time — network I/O via
+      fetch() does not count, but JSON.parse() on a moderate payload or a
+      synchronous crypto operation can exhaust the budget instantly. When the
+      100K daily request cap is hit, Workers return HTTP 429 for the remainder
+      of the calendar day with no burst allowance or paid overflow option on the
+      free plan."
+    links:
+      - "https://developers.cloudflare.com/workers/platform/pricing/"
+      - "https://developers.cloudflare.com/workers/platform/limits/"
+  - name: "Cloudflare Workers Paid Plan"
+    summary: "The Workers Paid plan starts at $5/month minimum and includes 10
+      million requests/month and 30 million CPU milliseconds/month, with
+      overages at $0.30/million requests and $0.02/million CPU milliseconds, as
+      of 2026-03-18. CPU time per invocation defaults to 30 seconds and is
+      configurable up to 5 minutes per request, removing the free-tier 10ms
+      bottleneck entirely. The decisive differentiator is the 3,000× increase in
+      per-invocation CPU budget, enabling real-world workloads including
+      database queries, auth flows, and data transformation."
+    when_to_use: "Best for serverless + high-scale or cost-sensitive production
+      workloads where any single invocation performs non-trivial computation,
+      traffic regularly bursts above 100K requests/day, or the Worker bundle
+      exceeds 3 MB compressed. The single most decisive factor is CPU budget per
+      request — if any invocation requires more than 10ms of CPU, the paid plan
+      is the only Cloudflare Workers path forward."
+    tradeoffs: "Pros: 30-second default CPU per invocation (configurable to 5
+      minutes), 10M requests/month included, 10 MB compressed bundle limit, 500
+      Workers per account, 10,000 subrequests per request, 250 Cron Triggers per
+      account, no daily request ceiling. Cons: $5/month minimum even for
+      low-traffic production workloads; CPU millisecond overage at $0.02/million
+      can accumulate rapidly for compute-heavy Workers; subrequests beyond 1,000
+      require enabling the higher limit explicitly."
+    cautions: "Monthly CPU millisecond billing is account-wide — a single
+      compute-heavy Worker can exhaust the 30M included CPU ms allowance before
+      request volume alone would suggest it, leading to unexpected overage
+      charges. Both free and paid tiers share a 128 MB memory per isolate limit
+      and 16 KB URL size limit that cannot be configured higher regardless of
+      plan."
+    links:
+      - "https://developers.cloudflare.com/workers/platform/pricing/"
+      - "https://developers.cloudflare.com/workers/platform/limits/"
+tags:
+  - "serverless"
+  - "cloudflare"
+  - "cloudflare-workers"
+  - "edge-functions"
+  - "pricing"
+  - "free-tier"
+  - "limits"
+  - "cost"
+aliases:
+  - "cloudflare workers pricing"
+  - "cloudflare workers free plan limits"
+  - "cloudflare workers 100k requests"
+  - "workers free tier cpu limit"
+  - "cloudflare workers paid plan"
+  - "cloudflare workers upgrade"
+  - "cloudflare workers 10ms cpu"
+  - "cloudflare workers request limit per day"
+  - "workers free vs paid"
+  - "cloudflare edge function limits"
+related_cards:
+  - "auth/jwt-vs-session"
+  - "runtime/java-11-lts-eol-september-2026"
+  - web/cloudflare-pages-to-workers-migration-after-file-limit-and-static-asset-changes-2026
+  - web/cloudflare-workers-free-vs-paid-after-durable-object-storage-billing-2026
+  - web/cloudflare-browser-rendering-free-vs-paid-limits-march-2026
+  - storage/cloudflare-durable-objects-sqlite-storage-billing-after-2026-01-07
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-12-31"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/cloudflare-workers-free-plan
+      name: Cloudflare Workers Free Plan
+    - type: framework
+      id: framework/cloudflare-workers-paid-plan
+      name: Cloudflare Workers Paid Plan
+    - type: capability
+      id: capability/workers-free-100k-requests-day
+      name: 100K requests/day limit
+      category: request_limit
+    - type: capability
+      id: capability/workers-free-10ms-cpu-invocation
+      name: 10ms CPU time per invocation
+      category: cpu_limit
+    - type: capability
+      id: capability/workers-paid-30s-default-cpu
+      name: 30 seconds default CPU time per invocation
+      category: cpu_limit
+    - type: capability
+      id: capability/workers-paid-5min-max-cpu
+      name: 5 minutes maximum configurable CPU time per invocation
+      category: cpu_limit
+    - type: capability
+      id: capability/workers-paid-10m-requests-month
+      name: 10 million requests/month included
+      category: request_limit
+  edges:
+    - type: locks_via
+      from: framework/cloudflare-workers-free-plan
+      to: capability/workers-free-100k-requests-day
+      value: 100K requests/day
+      as_of: 2026-03-18
+    - type: locks_via
+      from: framework/cloudflare-workers-free-plan
+      to: capability/workers-free-10ms-cpu-invocation
+      value: 10ms CPU time per invocation
+      as_of: 2026-03-18
+    - type: locks_via
+      from: framework/cloudflare-workers-paid-plan
+      to: capability/workers-paid-30s-default-cpu
+      value: 30 seconds default CPU time per invocation
+      as_of: 2026-03-18
+    - type: locks_via
+      from: framework/cloudflare-workers-paid-plan
+      to: capability/workers-paid-5min-max-cpu
+      value: configurable up to 5 minutes per request
+      as_of: 2026-03-18
+    - type: locks_via
+      from: framework/cloudflare-workers-paid-plan
+      to: capability/workers-paid-10m-requests-month
+      value: 10 million requests/month included
+      as_of: 2026-03-18

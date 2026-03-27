@@ -1,0 +1,248 @@
+id: mobile/firebase-apple-sdk-swift-6-toolchain-xcode-16-2-requirement-2025
+title: Firebase Apple SDK Swift 6 Toolchain and Xcode 16.2 Requirement in 2025-2026
+problem: iOS teams using Firebase need to know which Firebase Apple SDK versions
+  require the Swift 6.0 toolchain and Xcode 16.2+, and decide whether to adopt
+  Firebase 12.x immediately, pin to Firebase 11.x as a short-term hold, or stage
+  the Swift 6 language mode migration separately from the toolchain upgrade. The
+  answer drives CI image selection, CocoaPods/SPM dependency pins, App Store
+  submission readiness, and whether iOS 13/14 minimum deployment targets can be
+  preserved.
+context:
+  - mobile
+  - ios
+  - firebase
+  - swift
+  - xcode
+  - cocoapods
+  - spm
+  - ci
+  - migration
+  - toolchain
+constraints:
+  - small-team
+  - enterprise
+  - low-ops
+  - cost-sensitive
+  - compliance
+candidates:
+  - name: Adopt Firebase 12.x now with Xcode 16.2 and Swift 6 toolchain, keep app
+      targets in Swift 5 language mode
+    summary: "As of 2026-03-16, Firebase 12.0.0 (released July 15, 2025) is the
+      current major release and requires the Swift 6.0 toolchain included in
+      Xcode 16.2+. Critically, the Swift 6.0 toolchain requirement means Xcode
+      16.2 must be used to build, but it does not force Swift 6 language mode in
+      your own targets: app and framework targets can remain at SWIFT_VERSION =
+      5 in build settings, so strict concurrency checking is not applied to your
+      own code unless you opt in."
+    when_to_use: Best for small-team + low-ops or enterprise + compliance teams
+      where the priority is staying on a supported Firebase release line and
+      receiving security patches and new features, while deferring the Swift 6
+      language-mode concurrency audit to a later sprint. Choose this when your
+      CI images can be updated to macOS with Xcode 16.2+, your iOS minimum
+      deployment target is already 15.0 or you can raise it, and your Podfile or
+      Package.swift does not pin to deprecated Swift extension pods such as
+      FirebaseFirestoreSwift.
+    tradeoffs: "This is the forward path: you align with Firebase's supported major,
+      satisfy the Apple App Store requirement for Xcode 16+ that has been
+      mandatory for all submissions since April 24, 2025, and you are not forced
+      into Swift 6 strict concurrency in your own codebase. The cost is
+      absorbing all Firebase 12.0.0 breaking changes at once: minimum iOS raised
+      to 15.0 (from 13.0 in 11.x), deprecated Swift extension SDKs removed
+      (FirebaseFirestoreSwift, and equivalents for Analytics, Database, Remote
+      Config, and In-App Messaging), FirebaseDynamicLinks pod removed, and Zip
+      and Carthage distributions of Google Mobile Ads SDK discontinued.
+      CocoaPods projects must also be on CocoaPods 1.12.0 or higher."
+    cautions: "Do not conflate the Swift 6 toolchain requirement with enabling Swift
+      6 language mode. Setting SWIFT_VERSION = 5 per target keeps your own code
+      clear of strict concurrency errors even when building with Xcode 16.2.
+      However, some Firebase APIs have incomplete Sendable conformance as of
+      early 2026, including DataSnapshot in FirebaseDatabase and
+      ListenerRegistration in Firestore; if you later enable Swift 6 language
+      mode, those boundaries will surface errors in your own closure and async
+      code referencing those types. CI images must be moved to a macOS runner
+      that ships Xcode 16.2 or later: on GitHub Actions, macOS-15 hosted runners
+      include Xcode 16.x. Audit import statements for any
+      FirebaseFirestoreSwift, FirebaseAnalyticsSwift, FirebaseDatabaseSwift,
+      FirebaseRemoteConfigSwift, or FirebaseInAppMessagingSwift imports before
+      updating, and replace them with the equivalent main-module import (e.g.,
+      import FirebaseFirestore replaces import FirebaseFirestoreSwift)."
+    links:
+      - https://firebase.google.com/support/release-notes/ios
+      - https://firebase.google.com/docs/ios/setup
+      - https://firebase.google.com/docs/ios/swift-migration
+      - https://developer.apple.com/news/upcoming-requirements/
+      - https://github.com/firebase/firebase-ios-sdk/releases
+  - name: Pin to the latest Firebase 11.x minor as a short-term hold while auditing
+      12.x breaking changes
+    summary: As of 2026-03-16, Firebase 11.12.0 (released April 21, 2025)
+      established Xcode 16.2 as the minimum for the 11.x line and is the last
+      major line before the 12.0.0 breaking changes. Teams who cannot yet raise
+      their minimum iOS deployment target above 14 or who need time to remove
+      deprecated Swift extension SDK imports can pin to the latest 11.x minor
+      while preparing the migration.
+    when_to_use: Best for cost-sensitive + small-team or enterprise teams where the
+      app still ships iOS 13 or iOS 14 support, or where the codebase has
+      widespread use of deprecated extension pods such as FirebaseFirestoreSwift
+      that require a dedicated cleanup sprint. Also appropriate for teams whose
+      third-party plugins or cross-platform frameworks (React Native Firebase,
+      FlutterFire) have not yet published 12.x-compatible releases. Use this as
+      a bounded hold, not a long-term position, and define an explicit upgrade
+      backlog before pinning.
+    tradeoffs: "Pinning to 11.x avoids the Firebase 12.0.0 breaking changes cluster:
+      iOS minimum stays at 13.0, Swift extension SDKs remain available, and
+      FirebaseDynamicLinks is not yet removed. The cost is that the 11.x line
+      will not receive new features and will eventually lose security backports.
+      You also still require Xcode 16.2 because Firebase 11.12.0 already
+      mandates it, so CI images must be updated regardless. The Apple App Store
+      requirement to build with Xcode 16 and the iOS 18 SDK has been mandatory
+      since April 24, 2025, so this path does not defer the Xcode upgrade at
+      all."
+    cautions: "Verify that pinning is syntactically safe in your package manager. In
+      Swift Package Manager, use an exact version or up-to-next-minor range
+      (e.g., from: '11.12.0', .upToNextMinor(from: '11.12.0')) to prevent
+      automatic resolution to 12.x. In CocoaPods, pin with a pessimistic
+      operator or an explicit version in the Podfile. The 11.x hold does not
+      help if your blocker is Xcode 16.2: 11.12.0 is the release that introduced
+      that requirement. If you are using Firebase Dynamic Links, note that
+      FirebaseDynamicLinks is removed in 12.0.0 but was also on a shutdown
+      track: the Firebase Dynamic Links service itself was shut down on August
+      25, 2025."
+    links:
+      - https://firebase.google.com/support/release-notes/ios
+      - https://firebase.google.com/docs/ios/swift-migration
+      - https://developer.apple.com/news/upcoming-requirements/
+      - https://github.com/firebase/firebase-ios-sdk/releases
+  - name: Adopt Firebase 12.x with a staged Swift 6 language mode migration per
+      target
+    summary: "As of 2026-03-16, Firebase 12.0.0 requires the Swift 6.0 toolchain
+      (Xcode 16.2+) but does not enforce Swift 6 language mode in consuming
+      targets. Teams that want to complete the full migration and future-proof
+      concurrency boundaries can stage the language-mode adoption per target:
+      upgrade Xcode and Firebase first, then incrementally enable Swift 6 mode
+      per module using the recommended approach of turning on strict concurrency
+      as warnings before promoting to errors."
+    when_to_use: Best for enterprise + compliance teams or enterprise + monorepo
+      teams with a multi-module architecture where some modules already have
+      strong actor isolation or Sendable discipline and can absorb Swift 6
+      language mode early, while other modules need more time. Choose this when
+      product timelines allow a parallel migration track alongside Firebase 12.x
+      adoption, and when the engineering team has already audited which Firebase
+      APIs surface Sendable gaps in their usage patterns.
+    tradeoffs: "This is the most future-proof path: you remove the toolchain gap,
+      absorb Firebase 12.x breaking changes, and pay down the concurrency
+      migration debt in a structured way rather than deferring it indefinitely.
+      The cost is higher coordination overhead: you must manage per-target
+      SWIFT_VERSION settings, use @preconcurrency imports or nonisolated
+      annotations to silence upstream-library Sendable gaps temporarily, and
+      track which Firebase APIs have incomplete conformance. Known Firebase gaps
+      as of early 2026 include DataSnapshot in FirebaseDatabase and
+      ListenerRegistration in Firestore."
+    cautions: Enable Swift 6 language mode per target incrementally using
+      SWIFT_VERSION = 6 in build settings or a swift(6.0) tools version in
+      Package.swift. Start with leaf modules that do not import Firebase
+      directly, then work inward toward targets that call Firebase APIs. Use
+      @preconcurrency import FirebaseFirestore or similar annotations to
+      suppress errors from Firebase types that are not yet Sendable, and track
+      open Sendable conformance issues against the firebase-ios-sdk GitHub
+      repository to know when to remove those annotations. Do not enable strict
+      concurrency in an app target that uses Firestore listeners or database
+      transaction callbacks without first confirming the Firebase release you
+      are using has resolved those conformance gaps. The next Apple deadline
+      requiring Xcode 26 takes effect April 28, 2026, so teams have a bounded
+      window before another forced toolchain upgrade.
+    links:
+      - https://firebase.google.com/support/release-notes/ios
+      - https://firebase.google.com/docs/ios/setup
+      - https://firebase.google.com/docs/ios/swift-migration
+      - https://developer.apple.com/news/upcoming-requirements/
+      - https://github.com/firebase/firebase-ios-sdk/releases
+tags:
+  - mobile
+  - ios
+  - firebase
+  - swift
+  - xcode
+  - swift-6
+  - toolchain
+  - cocoapods
+  - spm
+  - migration
+  - ci
+  - breaking-changes
+  - upgrade
+aliases:
+  - firebase ios sdk swift 6 requirement
+  - firebase apple sdk xcode 16.2 minimum
+  - firebase 12.0.0 swift 6 toolchain
+  - firebase 11.12.0 xcode 16.2
+  - firebase ios sdk ios 15 minimum
+  - firebasefirestore swift extension sdk removed
+  - firebase swift 6 language mode migration
+  - firebase cocoapods swift 6 build failure
+  - firebase spm swift 6 toolchain
+related_cards:
+  - mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-links-vs-branch-2026
+  - mobile/ios-ci-cd-platform-xcode-cloud-vs-github-actions-vs-codemagic-2026
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-08-10
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/firebase
+      name: Firebase
+    - type: package
+      id: package/firebase-apple-sdk-11.12.0
+      name: Firebase Apple SDK 11.12.0
+      vendor: vendor/firebase
+    - type: package
+      id: package/firebase-apple-sdk-12.0.0
+      name: Firebase Apple SDK 12.0.0
+      vendor: vendor/firebase
+    - type: runtime
+      id: runtime/swift-6.0-toolchain
+      name: Swift 6.0 toolchain
+      standard: Swift 6.0
+    - type: engine
+      id: engine/xcode-16.2
+      name: Xcode 16.2
+      category: build_toolchain
+    - type: package
+      id: package/cocoapods-1.12.0
+      name: CocoaPods 1.12.0
+      vendor: null
+    - type: capability
+      id: capability/firebase-dynamic-links-service
+      name: Firebase Dynamic Links service
+      category: service
+    - type: package
+      id: package/firebasedynamiclinks-pod
+      name: FirebaseDynamicLinks pod
+      vendor: vendor/firebase
+  edges:
+    - type: requires_version
+      from: package/firebase-apple-sdk-12.0.0
+      to: runtime/swift-6.0-toolchain
+      requirement: requires
+    - type: requires_version
+      from: package/firebase-apple-sdk-12.0.0
+      to: engine/xcode-16.2
+      requirement: requires_or_later
+    - type: requires_version
+      from: package/firebase-apple-sdk-12.0.0
+      to: package/cocoapods-1.12.0
+      requirement: minimum_for_cocoapods_projects
+    - type: requires_version
+      from: package/firebase-apple-sdk-11.12.0
+      to: engine/xcode-16.2
+      requirement: minimum
+    - type: breaking_change_in
+      from: package/firebasedynamiclinks-pod
+      to: package/firebase-apple-sdk-12.0.0
+      change: removed
+    - type: eol_date
+      from: capability/firebase-dynamic-links-service
+      to: null
+      date: 2025-08-25

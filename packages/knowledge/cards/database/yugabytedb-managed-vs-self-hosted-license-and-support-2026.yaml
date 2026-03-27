@@ -1,0 +1,177 @@
+id: "database/yugabytedb-managed-vs-self-hosted-license-and-support-2026"
+title: "YugabyteDB Managed vs Self-Hosted License and Support 2026"
+problem: "Decide whether to adopt YugabyteDB managed service or self-host now
+  that support boundaries, feature packaging, and enterprise licensing matter
+  more than raw benchmark claims."
+context:
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "kubernetes"
+  - "postgres"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+  - "cost-sensitive"
+  - "high-scale"
+candidates:
+  - name: "YugabyteDB Aeon managed service"
+    summary: "YugabyteDB Aeon is Yugabyte's fully managed DBaaS on AWS, Azure, and
+      GCP. As of 2026-03-20, Aeon pricing starts at \"$125 / vCPU / month\" for
+      Standard and \"$167 / vCPU / month\" for Professional; Enterprise pricing
+      is contact-sales, and storage plus transfer are billed separately.
+      Yugabyte states the same pricing model applies across Aeon deployment
+      options, including BYOC, with billing by the minute under pay-as-you-go or
+      by committed vCPU under subscription. The official pricing and product
+      pages position Aeon as the low-ops path with managed upgrades, automatic
+      backups, and 365x24x7 support."
+    when_to_use: "Use this when \"low-ops\" plus \"enterprise\" or \"compliance\"
+      matters more than infrastructure control. The decisive factor is that
+      Yugabyte owns upgrades and day-2 operations while keeping the product
+      packaging consistent across fully managed and BYOC deployments."
+    tradeoffs: "Fastest path to production and clearest vendor support boundary, but
+      it is the highest direct software spend and Enterprise-tier features still
+      move you into contact-sales pricing."
+    cautions: "As of 2026-03-20, self-service migration from Sandbox to Dedicated is
+      not supported, so trial-to-production handoff may need vendor help.
+      Sandbox clusters are free but limited to one node, 10GB, and a preview
+      release, so they are not a production baseline."
+    links:
+      - "https://www.yugabyte.com/pricing/"
+      - "https://docs.yugabyte.com/stable/faq/yugabytedb-managed-faq/"
+      - "https://www.yugabyte.com/compare-products/"
+  - name: "Self-host YugabyteDB OSS directly"
+    summary: "YugabyteDB itself is Apache 2.0 licensed, and Yugabyte states that as
+      of early 2025 all previously commercial enterprise features are available
+      in the open source project, with no separate Community versus Enterprise
+      database editions. As of 2026-03-20, the latest listed LTS release series
+      is \"v2025.2\", released on 2025-12-11 with maintenance support through
+      2027-12-11 and EOL on 2028-06-11. This removes the old database-feature
+      licensing blocker, but your team still owns provisioning, upgrades,
+      backups, observability, and incident response. The database software is
+      free, but the operational burden is yours."
+    when_to_use: "Use this when \"cost-sensitive\" and infrastructure control matter
+      more than vendor-operated convenience, and your team can run a distributed
+      SQL system safely. The decisive factor is that the database feature
+      boundary is now open source, so the remaining decision is mainly ops
+      ownership versus managed support."
+    tradeoffs: "No database license fee and no feature gating inside the core
+      database, but you lose managed upgrades, unified billing, and the cleanest
+      escalation path during incidents."
+    cautions: "As of 2026-03-20, release support windows matter: \"v2024.1\" reached
+      EOL on 2026-03-07, and \"v2.20\" reaches EOL on 2026-05-13. Do not treat
+      old 2.x series builds as a safe long-term default when newer 2024.x and
+      2025.x series are the supported lines."
+    links:
+      - "https://www.yugabyte.com/latest-release/"
+      - "https://docs.yugabyte.com/stable/releases/ybdb-releases/"
+      - "https://github.com/yugabyte/yugabyte-db"
+  - name: "Self-host with YugabyteDB Anywhere"
+    summary: "YugabyteDB Anywhere is Yugabyte's self-managed control plane for
+      running YugabyteDB in your own cloud, data center, or Kubernetes
+      environment. Official comparison pages describe it as \"managed by you
+      with Yugabyte orchestration software,\" the middle ground between Aeon and
+      pure OSS. As of 2026-03-20, YugabyteDB Anywhere uses the same current
+      release train naming as YugabyteDB, with \"v2025.2\" as the latest listed
+      LTS series, but Anywhere can only deploy equivalent or earlier YugabyteDB
+      versions than the Anywhere instance itself. As of 2026-03-20, public list
+      pricing for Anywhere is not shown on the official pricing page, so check
+      official sales docs."
+    when_to_use: "Use this when you need private-cloud or on-prem placement and want
+      a vendor control plane without handing runtime custody fully to Yugabyte.
+      The decisive factor is whether your compliance or network boundary forces
+      self-hosting but you still want structured orchestration and lifecycle
+      tooling."
+    tradeoffs: "Stronger operational tooling than pure OSS self-hosting, but still
+      not low-ops in the same way as Aeon because infrastructure and platform
+      operations remain your responsibility."
+    cautions: "As of 2026-03-20, YugabyteDB Anywhere support for Replicated
+      installation has already ended; new installs must use YBA Installer, and
+      older Replicated installs need migration. If you want a newer YugabyteDB
+      version, you may need to upgrade YugabyteDB Anywhere first because it
+      cannot deploy newer database versions than itself."
+    links:
+      - "https://docs.yugabyte.com/stable/releases/yba-releases/"
+      - "https://www.yugabyte.com/compare-products/"
+      - "https://www.yugabyte.com/pricing/"
+tags:
+  - "database"
+  - "yugabytedb"
+  - "postgres"
+  - "distributed-sql"
+  - "licensing"
+  - "support"
+aliases:
+  - "yugabytedb aeon vs self hosted"
+  - "yugabytedb licensing 2026"
+  - "yugabytedb anywhere vs oss"
+  - "yugabyte managed pricing"
+  - "yugabytedb enterprise license"
+  - "yugabytedb cloud vs anywhere"
+  - "yugabyte aeon pricing"
+  - "yugabyte self managed support"
+  - "yugabytedb commercial features"
+  - "yugabyte community vs enterprise"
+  - "yugabite db license"
+  - "ysql managed vs self hosted"
+
+  - "yugabytedb aeon vs self hosted"
+  - "yugabytedb licensing 2026"
+  - "yugabytedb anywhere vs oss"
+related_cards:
+  - "database/cockroachdb-cloud-usage-billing-renewal-model-2026"
+  - "_archived/elasticsearch-agpl-vs-elv2-vs-sspl-adoption-after-relicensing-20\
+    26"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/yugabytedb-anywhere
+      name: YugabyteDB Anywhere
+      category: self_managed_control_plane
+    - type: package
+      id: package/yugabytedb-v2025.2
+      name: YugabyteDB v2025.2
+      category: release_series
+    - type: package
+      id: package/yugabytedb-v2024.1
+      name: YugabyteDB v2024.1
+      category: release_series
+    - type: package
+      id: package/yugabytedb-v2.20
+      name: YugabyteDB v2.20
+      category: release_series
+    - type: package
+      id: package/yba-installer
+      name: YBA Installer
+      category: installer
+    - type: package
+      id: package/replicated-installation
+      name: Replicated installation
+      category: installation_method
+  edges:
+    - type: eol_date
+      from: package/yugabytedb-v2025.2
+      to: null
+      date: 2028-06-11
+    - type: eol_date
+      from: package/yugabytedb-v2024.1
+      to: null
+      date: 2026-03-07
+    - type: eol_date
+      from: package/yugabytedb-v2.20
+      to: null
+      date: 2026-05-13
+    - type: locks_via
+      from: package/yugabytedb-anywhere
+      to: package/yba-installer
+      scope: new_installs_must_use
+    - type: breaking_change_in
+      from: package/replicated-installation
+      to: package/yugabytedb-anywhere
+      change: support_ended_and_migration_needed

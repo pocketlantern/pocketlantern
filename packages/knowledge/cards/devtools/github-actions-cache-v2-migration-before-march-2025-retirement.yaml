@@ -1,0 +1,194 @@
+id: "devtools/github-actions-cache-v2-migration-before-march-2025-retirement"
+title: "GitHub Actions Cache v2 Migration Before March 2025 Retirement"
+problem: "Repositories using older versions of `actions/cache` need a precise
+  migration path for GitHub's cache backend cutover, including the February 1,
+  2025 architecture move, the March 1, 2025 retirement of deprecated action and
+  package versions, and the workflow failures that follow if repos or hidden
+  cache integrations are not upgraded."
+context:
+  - "devtools"
+  - "ci-cd"
+  - "github-actions"
+  - "actions-cache"
+  - "actions-toolkit"
+  - "self-hosted-runners"
+  - "github-enterprise-server"
+  - "workflow-migration"
+constraints:
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+  - "monorepo"
+  - "microservices"
+  - "compliance"
+candidates:
+  - name: "Upgrade workflow steps to `actions/cache@v4` or pinned `v4.2.0`"
+    summary: "Best default workflow migration for GitHub.com repos that were still
+      on deprecated cache action releases. As of 2026-03-15, GitHub's dependency
+      caching docs still show `actions/cache@v4`, and the official
+      `actions/cache` README says `v4` integrates with the rewritten cache
+      service v2 APIs; GitHub's retirement notices explicitly recommended `v3`
+      or `v4` before February 1, 2025 and recommended `v4.2.0` for pinned SHAs."
+    when_to_use: "Best for low-ops + small-team or enterprise + compliance repos
+      where the cache call is directly visible in workflow YAML and you want the
+      shortest retirement-safe path off `actions/cache` v1 or v2. Use this when
+      standard dependency caching is enough and you want the most directly
+      documented migration target as of 2026-03-15."
+    tradeoffs: "This is the least disruptive workflow-level fix because GitHub
+      described the cache-service migration as backward compatible and the docs
+      examples still align with `v4`. The tradeoff is that the current README
+      also exposes `v5`, so `v4` is the safer retirement fix but not the newest
+      action major."
+    cautions: "GitHub announced that Actions cache storage moved to the new
+      architecture on February 1, 2025, deprecated `actions/cache` v1-v2, and
+      fully retired the deprecated action line on March 1, 2025. GitHub also
+      said workflows pinned to retired versions or SHAs would fail after March
+      1, 2025, and scheduled brownouts on February 4, February 11, and February
+      18, 2025 to surface breakage earlier."
+    links:
+      - "https://github.com/actions/cache"
+      - "https://docs.github.com/actions/concepts/workflows-and-actions/depende\
+        ncy-caching"
+      - "https://github.blog/changelog/2024-09-16-notice-of-upcoming-deprecatio\
+        ns-and-changes-in-github-actions-services/"
+      - "https://github.blog/changelog/2024-12-05-notice-of-upcoming-releases-a\
+        nd-breaking-changes-for-github-actions/"
+  - name: "Use `actions/cache@v3.4.0` as the compatibility bridge"
+    summary: "Use this when you need the new cache service without jumping straight
+      to newer action majors. As of 2026-03-15, the official `actions/cache`
+      README says `v3` also integrates with the cache service v2 APIs, added
+      support for caching in GHES 3.5+, and GitHub explicitly recommended `v3`
+      or `v4` before the February 1, 2025 cutover; for pinned SHAs it
+      recommended `v3.4.0`."
+    when_to_use: "Best for enterprise + compliance or monorepo + small-team repos
+      where conservative action-major changes matter, GHES 3.5+ support is
+      relevant, or a repo needed the retirement-safe cache backend migration
+      before taking a later upgrade to newer runtimes. Use this when direct YAML
+      migration is possible but `v4` or `v5` rollout timing is awkward."
+    tradeoffs: "You clear the 2025 retirement path with a smaller action jump and
+      retain the v2 backend integration. The tradeoff is that this is a bridge
+      release, not the latest line, so you still owe a later upgrade if you want
+      the currently maintained `v5` major."
+    cautions: "Do not generalize the GitHub.com shutdown behavior to every GHES
+      deployment. GitHub's September and December 2024 retirement notices said
+      the failure behavior for deprecated cache action and package versions did
+      not affect existing GitHub Enterprise Server customers, even though `v3`
+      itself added GHES 3.5+ cache support."
+    links:
+      - "https://github.com/actions/cache"
+      - "https://github.blog/changelog/2024-09-16-notice-of-upcoming-deprecatio\
+        ns-and-changes-in-github-actions-services/"
+      - "https://github.blog/changelog/2024-12-05-notice-of-upcoming-releases-a\
+        nd-breaking-changes-for-github-actions/"
+  - name: "Upgrade custom actions or third-party cache clients to `@actions/cache`
+      `4.0.0+` or the vendor's cache-service-v2 release"
+    summary: "Needed when a repository no longer references deprecated
+      `actions/cache` directly but still reaches the old cache service through
+      an internal action, a toolkit-based action, or another product. As of
+      2026-03-15, GitHub's official toolkit migration notice says
+      `@actions/cache` had to move to `4.0.0` or higher for the new cache
+      service, and GitHub's March 20, 2025 brownout notice says third-party
+      actions and products could still be hitting the old service after the
+      first retirement window."
+    when_to_use: "Best for enterprise + monorepo or microservices + compliance
+      estates where cache behavior is abstracted behind internal JavaScript
+      actions, setup actions, Docker BuildKit cache integrations, or other
+      third-party tooling. Use this when a repo still shows cache brownout
+      failures even after replacing obvious `actions/cache@v1` or `@v2`
+      references."
+    tradeoffs: "This closes the hidden migration path that a workflow-only audit can
+      miss, but it usually requires coordinated releases across internal actions
+      or external vendor dependencies. Operationally, this is more complex than
+      a single YAML edit."
+    cautions: "GitHub said versions of `@actions/cache` prior to `4.0.0` were
+      closing down, and the March 20, 2025 notice said workflows may still hit
+      the old service if they use third-party cache integrations, use a runner
+      older than `2.320.1`, or manually change cache-related environment
+      variables such as `ACTIONS_CACHE_URL`, `ACTIONS_RESULTS_URL`,
+      `ACTIONS_RUNTIME_TOKEN`, or `ACTIONS_CACHE_SERVICE_V2`. Separately, the
+      `actions/cache` README says self-hosted runners should be updated to
+      `2.231.0` or newer for compatibility with the new cache service, and `v5`
+      itself requires runner `2.327.1`."
+    links:
+      - "https://github.com/actions/toolkit/discussions/1890"
+      - "https://github.blog/changelog/2025-03-20-notification-of-upcoming-brea\
+        king-changes-in-github-actions/"
+      - "https://github.com/actions/cache"
+tags:
+  - "devtools"
+  - "github-actions"
+  - "github"
+  - "actions-cache"
+  - "actions-toolkit"
+  - "cache"
+  - "ci-cd"
+  - "self-hosted-runners"
+  - "ghes"
+  - "migration"
+  - "policy"
+aliases:
+  - "github actions cache v2 migration"
+  - "actions/cache v1 deprecation"
+  - "actions/cache v2 retirement"
+  - "actions/cache march 1 2025"
+  - "github cache backend migration"
+  - "@actions/cache 4.0.0"
+  - "github actions cache brownout february 2025"
+related_cards:
+  - "infra/github-actions-self-hosted-runner-minimum-version-enforcement-2026"
+  - "infra/github-actions-hosted-vs-larger-vs-self-hosted-runner-economics-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-07-13"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: engine
+      id: engine/github-actions-cache-service-v2
+      name: GitHub Actions cache service v2
+    - type: package
+      id: package/actions-cache-v1-v2
+      name: actions/cache
+      version_range: v1-v2
+    - type: package
+      id: package/actions-cache-v3
+      name: actions/cache
+      version: v3
+    - type: package
+      id: package/actions-cache-v5
+      name: actions/cache
+      version: v5
+    - type: package
+      id: package/actions-toolkit-cache
+      name: "@actions/cache"
+    - type: runtime
+      id: runtime/github-actions-runner
+      name: GitHub Actions runner
+    - type: framework
+      id: framework/github-enterprise-server
+      name: GitHub Enterprise Server
+  edges:
+    - type: eol_date
+      from: package/actions-cache-v1-v2
+      to: null
+      date: 2025-03-01
+    - type: requires_version
+      from: package/actions-toolkit-cache
+      to: engine/github-actions-cache-service-v2
+      version: ">=4.0.0"
+    - type: requires_version
+      from: package/actions-cache-v5
+      to: runtime/github-actions-runner
+      version: ">=2.327.1"
+    - type: requires_version
+      from: engine/github-actions-cache-service-v2
+      to: runtime/github-actions-runner
+      version: ">=2.231.0"
+    - type: requires_version
+      from: package/actions-cache-v3
+      to: framework/github-enterprise-server
+      version: ">=3.5"

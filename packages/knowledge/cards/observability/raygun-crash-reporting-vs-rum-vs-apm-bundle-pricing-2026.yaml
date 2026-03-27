@@ -1,0 +1,201 @@
+id: "observability/raygun-crash-reporting-vs-rum-vs-apm-bundle-pricing-2026"
+title: "Raygun Crash Reporting vs RUM vs APM Bundle Pricing 2026"
+problem: "Choose the smallest Raygun package that still covers your stack now
+  that its error, real-user monitoring, and APM products create separate bundle
+  tradeoffs in 2026."
+context:
+  - "observability"
+  - "frontend"
+  - "backend"
+  - "mobile"
+  - "nodejs"
+  - "dotnet"
+  - "ruby"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Buy only Crash Reporting Basic and use the included bonus events for
+      light RUM/APM"
+    summary: "As of 2026-03-21, Raygun Crash Reporting Basic costs \"$40\" per month
+      on annual billing or \"$60\" on monthly billing for \"100,000\" errors per
+      month. Overflow is billed at \"$0.001\" per error instance, and each Crash
+      Reporting plan also includes free cross-product usage: Basic includes
+      \"5,000\" APM traces and \"5,000\" Real User Monitoring sessions. This is
+      the lowest paid entry point if your primary problem is application errors
+      and you only need occasional front-end or trace correlation. Crash
+      Reporting plans retain error data for \"180 days\" on Basic, Team, and
+      Business."
+    when_to_use: "Use this when your core need is error tracking across web,
+      backend, or mobile, and the included \"5,000\" RUM sessions plus \"5,000\"
+      APM traces are enough for spot checks rather than full observability. It
+      is the decisive minimum if you do not need full RUM quotas, full APM
+      quotas, or Team-level workflow features."
+    tradeoffs: "Lowest base price and broadest immediate fit for error-first teams.
+      The downside is that it leaves you without full-fidelity user-session
+      analysis or backend tracing depth, so once either of those becomes a
+      day-to-day need you typically have to add another paid product."
+    cautions: "Raygun automatically bills overflow as on-demand unless you manage
+      quota, and Usage Capping is only available as an add-on on Team, Business,
+      or Enterprise plans. If you need Jira, GitHub, PagerDuty, webhooks,
+      inbound filters, or richer workflow integrations, those are Team-level
+      features rather than Basic."
+    links:
+      - "https://raygun.com/pricing"
+      - "https://raygun.com/documentation/accounts-billing/billing/"
+  - name: "Buy only Real User Monitoring Basic and use the included bonus events for
+      light crash/APM correlation"
+    summary: "As of 2026-03-21, Raygun Real User Monitoring Basic costs \"$80\" per
+      month on annual billing or \"$120\" on monthly billing for \"100,000\"
+      sessions per month. A session is user activity within a half-hour block,
+      with a new session starting after \"30 minutes\" of inactivity, and
+      overflow is billed at \"$0.002\" per session. RUM covers web, hybrid, and
+      mobile applications, includes Core Web Vitals and page-level diagnostics,
+      and Basic also includes \"5,000\" free Crash Reporting errors plus
+      \"5,000\" free APM traces. This is the smallest package if front-end or
+      mobile experience is your main concern."
+    when_to_use: "Use this when UX performance, Core Web Vitals, and real-user
+      session analysis are the primary requirement, while errors and traces are
+      secondary. It is the decisive minimum when you need a real RUM quota now,
+      not just the small bonus-session allotment bundled into other products."
+    tradeoffs: "You get proper user-session visibility and cross-product correlation
+      hooks, including Crash-Free Users when paired with Crash Reporting data.
+      The tradeoff is a higher base cost than Crash Reporting and event math
+      that depends on Raygun's session definition, which can make usage climb
+      faster than page-view counts."
+    cautions: "Basic does not include Team-only workflow features, and Core Web
+      Vitals alerting appears at Team rather than Basic. If you need hard spend
+      caps, Usage Capping is available only on Team, Business, or Enterprise
+      plans."
+    links:
+      - "https://raygun.com/pricing"
+      - "https://raygun.com/documentation/accounts-billing/billing/"
+      - "https://raygun.com/documentation/product-guides/real-user-monitoring/"
+  - name: "Buy only APM Basic and use the included bonus events for light crash/RUM
+      correlation"
+    summary: "As of 2026-03-21, Raygun APM Basic costs \"$80\" per month on annual
+      billing or \"$120\" on monthly billing for \"100,000\" traces per month.
+      Overflow is billed at \"$0.002\" per trace, and Raygun defines a trace as
+      a profiling trace of a given request. The APM product page highlights
+      support for \".NET\", \"Ruby\", and \"Node.js\", and APM Basic also
+      includes \"5,000\" free Crash Reporting errors plus \"5,000\" free RUM
+      sessions. This is the smallest package if your main blocker is backend
+      request tracing on those supported runtimes."
+    when_to_use: "Use this when server-side performance is the primary need and your
+      stack matches the APM coverage Raygun publicly highlights. It is the
+      decisive minimum when flame charts and request traces matter more than
+      full error or front-end monitoring quotas."
+    tradeoffs: "You get a real tracing quota and code-level performance diagnostics
+      without paying for the other two products up front. The downside is that
+      APM is the most runtime-constrained choice here, so teams with unsupported
+      or mixed backends may still need another tool or product path even before
+      considering broader observability coverage."
+    cautions: "Do not assume APM covers every backend runtime; Raygun's APM product
+      page explicitly highlights only \".NET\", \"Ruby\", and \"Node.js\", so
+      check official docs before committing for Java, Go, or Python-heavy
+      stacks. If you need source-control and third-party workflow integrations,
+      those are Team-tier features."
+    links:
+      - "https://raygun.com/pricing"
+      - "https://raygun.com/documentation/accounts-billing/billing/"
+      - "https://raygun.com/platform/apm"
+  - name: "Combine Basic plans only for the products you truly need"
+    summary: "As of 2026-03-21, Raygun prices the Basic tiers separately by product:
+      Crash Reporting is \"$40\" annual or \"$60\" monthly for \"100,000\"
+      errors, while RUM and APM are each \"$80\" annual or \"$120\" monthly for
+      \"100,000\" sessions or traces. A cost-sensitive team can buy exactly two
+      Basics for \"$120\" per month annualized for Crash plus RUM, or Crash plus
+      APM, and all three Basics total \"$200\" per month annualized; the
+      monthly-billed equivalents are \"$180\" and \"$300\". Raygun also states
+      that bonus events accumulate on multi-product subscriptions, so adding
+      products increases the free cross-product allowance. This is the cleanest
+      choice when one product's bonus usage is too small, but Team-level
+      workflow features are still unnecessary."
+    when_to_use: "Use this when you know you need full quotas in two or three Raygun
+      products, but you still want the smallest bill and can live without
+      Team-only integrations, inbound filters, and Usage Capping. It is the
+      decisive middle ground between under-buying with bonus events and
+      over-buying a higher tier purely for workflow features."
+    tradeoffs: "You get the exact product mix you need and avoid paying for unused
+      volume in a category you do not care about. The tradeoff is operational
+      complexity because each product has its own event type, quota, and
+      on-demand rate."
+    cautions: "Raygun's pricing is not a single shared observability pool; errors,
+      sessions, and traces are billed separately. If your spend must be
+      hard-capped, or if you need Jira, GitHub, PagerDuty, or webhooks as
+      first-class workflow tools, compare the affected product's Team plan
+      before stacking more Basic subscriptions."
+    links:
+      - "https://raygun.com/pricing"
+      - "https://raygun.com/documentation/accounts-billing/billing/"
+tags:
+  - "observability"
+  - "raygun"
+  - "pricing"
+  - "crash-reporting"
+  - "rum"
+  - "apm"
+aliases:
+  - "raygun pricing 2026"
+  - "raygun crash reporting vs rum vs apm pricing"
+  - "raygun bundle pricing"
+related_cards:
+  - "observability/raygun-vs-bugsnag-vs-rollbar-error-monitoring-pricing-2026"
+  - "observability/sentry-errors-vs-replays-vs-logs-billing-2026"
+  - "observability/synthetic-monitoring-vs-rum"
+tier: "core"
+status: "active"
+updated: "2026-03-21"
+review_by: "2026-06-19"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/raygun
+      name: Raygun
+    - type: capability
+      id: capability/crash-reporting
+      name: Crash Reporting
+    - type: capability
+      id: capability/real-user-monitoring
+      name: Real User Monitoring
+    - type: capability
+      id: capability/apm
+      name: APM
+    - type: runtime
+      id: runtime/nodejs
+      name: Node.js
+    - type: runtime
+      id: runtime/dotnet
+      name: .NET
+    - type: runtime
+      id: runtime/ruby
+      name: Ruby
+  edges:
+    - type: locks_via
+      from: capability/crash-reporting
+      to: vendor/raygun
+      note: Raygun sells Crash Reporting as a separate product with its own Basic plan
+        and pricing.
+    - type: locks_via
+      from: capability/real-user-monitoring
+      to: vendor/raygun
+      note: Raygun sells Real User Monitoring as a separate product with its own Basic
+        plan and pricing.
+    - type: locks_via
+      from: capability/apm
+      to: vendor/raygun
+      note: Raygun sells APM as a separate product with its own Basic plan and
+        pricing.
+    - type: requires_version
+      from: capability/apm
+      to: runtime/nodejs
+      note: Raygun's APM product page explicitly highlights Node.js support.
+    - type: requires_version
+      from: capability/apm
+      to: runtime/dotnet
+      note: Raygun's APM product page explicitly highlights .NET support.
+    - type: requires_version
+      from: capability/apm
+      to: runtime/ruby
+      note: Raygun's APM product page explicitly highlights Ruby support.

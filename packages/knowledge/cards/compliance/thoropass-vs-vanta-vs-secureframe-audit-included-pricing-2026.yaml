@@ -15,15 +15,15 @@ constraints:
   - "enterprise"
 candidates:
   - name: "Thoropass"
-    summary: 'As of 2026-03-19, Thoropass does not publish a list price, but its
+    summary: "As of 2026-03-19, Thoropass does not publish a list price, but its
       official site says pricing depends on audit scope, frameworks needed, and
       environment complexity. Thoropass explicitly states that most customers
-      save "25-50%" versus traditional audit firms while getting both the
+      save \"25-50%\" versus traditional audit firms while getting both the
       platform and audit services included. Its current positioning is an
       integrated model: Thoropass says it is both the platform and the auditor,
       and it highlights single-audit-cycle support across shared controls for
       SOC 2, ISO 27001, PCI, and HITRUST. This is the clearest official
-      audit-included option of the three.'
+      audit-included option of the three."
     when_to_use: "Use when you want one vendor accountable for readiness plus the
       actual audit, especially for small-team plus cost-sensitive buying where
       handoff risk matters more than feature-by-feature platform packaging. It
@@ -44,15 +44,15 @@ candidates:
       - "https://www.thoropass.com/frameworks/soc-2/"
       - "https://www.thoropass.com/frameworks/iso-27001/"
   - name: "Vanta"
-    summary: 'As of 2026-03-19, Vanta''s official pricing page is package-based but
+    summary: "As of 2026-03-19, Vanta's official pricing page is package-based but
       does not publish dollar pricing; it says to request a demo for
       personalized pricing. The current plans shown are Essentials, Plus,
       Professional, and Enterprise. Vanta publicly states Essentials includes
-      "one compliance framework," and its pricing/partner pages emphasize an
+      \"one compliance framework,\" and its pricing/partner pages emphasize an
       auditor directory, access to expert partners for additional compliance
       services, and the ability to bring your own auditor. Inference from those
       official pages: buyers should budget audit and assessor fees separately
-      unless a sales quote explicitly bundles them.'
+      unless a sales quote explicitly bundles them."
     when_to_use: "Use when you want a platform-first compliance program with broad
       framework coverage, partner flexibility, and room to scale into risk and
       trust workflows beyond the first framework. It is the better fit when your
@@ -72,15 +72,15 @@ candidates:
       - "https://www.vanta.com/partners/find-a-partner?filters=Auditor+Partner"
       - "https://www.vanta.com/all-categories/compliance-frameworks"
   - name: "Secureframe"
-    summary: 'As of 2026-03-19, Secureframe''s official pricing page also requires a
+    summary: "As of 2026-03-19, Secureframe's official pricing page also requires a
       quote and does not publish dollar pricing. The current package names shown
       are Fundamentals, Complete, and Defense. Its pricing table publicly shows
-      "1" compliance framework in both Fundamentals and Complete, and it
+      \"1\" compliance framework in both Fundamentals and Complete, and it
       includes access to the Secureframe Audit Partner Network rather than
-      stating that an audit is bundled. Secureframe''s audit partner page
+      stating that an audit is bundled. Secureframe's audit partner page
       separately describes outside audit firms joining its partner program, so
       buyers should treat assessor cost as separate unless the quote says
-      otherwise.'
+      otherwise."
     when_to_use: "Use when you want a platform-first option and expect to choose
       among partner auditors rather than commit to an integrated auditor from
       day one. It is strongest when you want a simpler initial package and are

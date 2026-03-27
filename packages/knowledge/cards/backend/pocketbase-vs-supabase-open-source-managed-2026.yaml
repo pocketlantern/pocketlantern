@@ -81,6 +81,8 @@ related_cards:
   - design/penpot-self-hosted-vs-cloud-license-and-support-2026
   - game/heroic-cloud-managed-nakama-vs-self-hosted-2026
   - database/turso-free-vs-paid-plan-limits-2026
+  - backend/appwrite-free-vs-pro-vs-scale-after-ga-pricing-2026
+  - backend/appwrite-cloud-vs-self-hosted-after-pro-price-rise-2026
 status: "active"
 tier: "core"
 updated: "2026-03-16"

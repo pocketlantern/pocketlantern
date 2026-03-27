@@ -128,6 +128,8 @@ related_cards:
   - serverless/python-3-11-eol-and-3-13-adoption-aws-lambda-2026
   - web/imgix-vs-imagekit-vs-uploadcare-image-cdn-pricing-2026
   - web/transloadit-vs-cloudconvert-vs-filestack-file-processing-pricing-2026
+  - storage/cloudinary-vs-uploadcare-vs-imagekit-pricing-2026
+tier: core
 updated: 2026-03-15
 review_by: 2026-08-10
 sidecar_hard_facts:

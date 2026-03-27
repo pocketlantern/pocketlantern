@@ -1,0 +1,230 @@
+id: cloud/azure-container-registry-connected-registry-billing-rollout-2026
+title: Azure Container Registry Connected Registry Billing Rollout Decision
+problem: Decide whether Azure Container Registry connected registries still make
+  economic sense for edge or disconnected deployments after Microsoft introduced
+  per-connected-registry billing, versus using geo-replication, artifact cache,
+  or image-import patterns.
+context:
+  - cloud
+  - azure
+  - azure-container-registry
+  - acr
+  - connected-registry
+  - edge
+  - disconnected-deployments
+  - container-images
+  - billing
+constraints:
+  - cost-sensitive
+  - enterprise
+  - compliance
+  - low-ops
+  - high-scale
+  - microservices
+  - real-time
+candidates:
+  - name: Connected registry on Premium ACR
+    summary: As of 2026-03-15, connected registry is still the only first-party
+      Azure Container Registry feature explicitly built for on-premises or
+      remote replicas that keep artifacts close to edge workloads and can
+      synchronize on a schedule or during intermittent connectivity. It now has
+      dedicated monthly per-connected-registry billing starting on August 1,
+      2025, and it is available only on the Premium SKU, so it makes economic
+      sense mainly when each site genuinely needs local pulls during outages or
+      a local read-write registry flow.
+    when_to_use: Best for enterprise + compliance or microservices + real-time
+      deployments where sites can be intermittently connected or disconnected,
+      must keep pulling images locally during WAN loss, and benefit from
+      synchronizing only selected repositories or using a defined sync window.
+      As of 2026-03-15, choose this when offline resilience is the hard
+      requirement and you can justify both Premium ACR and per-site
+      connected-registry charges instead of treating every edge location as just
+      another always-online region.
+    tradeoffs: "This gives you a local replica designed for edge use, with ReadOnly
+      and ReadWrite modes, repository subset sync, scheduled sync windows, and
+      token-scoped client access. The tradeoff is that the cost model now stacks
+      multiple items: Premium parent registry, normal storage and networking
+      charges, and separate monthly billing for each connected registry;
+      operationally, you also need the dedicated data endpoint enabled and must
+      manage sync tokens and client tokens."
+    cautions: "Microsoft documents several current limits and gaps: only Premium
+      supports connected registry; each container registry is limited to 50
+      connected registries; each connected registry is limited to 50 clients;
+      connected registry is coupled to the home-region data endpoint and does
+      not automatically migrate with geo-replication; resource logs are not
+      supported; deleting a connected registry requires manual on-premises
+      cleanup; and sync windows for occasionally connected scenarios are limited
+      to between 1 hour and 7 days. Check the official pricing page for the
+      current regional price as of 2026-03-15."
+    links:
+      - https://learn.microsoft.com/en-us/azure/container-registry/intro-connected-registry
+      - https://learn.microsoft.com/en-us/azure/container-registry/quickstart-create-connected-registry
+      - https://azure.microsoft.com/en-us/pricing/details/container-registry/
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus
+  - name: Premium ACR geo-replication
+    summary: As of 2026-03-15, geo-replication is the better managed default when
+      your problem is multi-region Azure delivery rather than disconnected edge.
+      Microsoft documents one global endpoint, automatic syncing to
+      geo-replicas, and a single registry configuration across regions, which
+      usually beats connected registry economically when targets stay online to
+      Azure and do not need an on-premises replica.
+    when_to_use: Best for high-scale + low-ops or enterprise + compliance
+      environments where workloads run in multiple Azure regions with reliable
+      connectivity, you want one registry identity and endpoint, and local edge
+      autonomy is not required. Use this instead of connected registry when the
+      winning constraint combination is managed multi-region distribution plus
+      centralized operations, not offline operation at edge sites, as of
+      2026-03-15.
+    tradeoffs: You manage one Premium registry and Azure automatically syncs pushed
+      content and metadata to replicas in other regions. The tradeoff is that
+      geo-replication is still a Premium feature with per-replicated-region
+      pricing, and it is not an on-premises or disconnected solution; Microsoft
+      also documents eventual consistency, so newly pushed content can take time
+      to appear in every replica.
+    cautions: Do not treat geo-replication as a drop-in replacement for connected
+      registry if the site must keep serving pulls during cloud disconnection or
+      must run a local registry endpoint on-premises. Microsoft explicitly
+      positions geo-replication as regional Azure replication, and the
+      connected-registry documentation also notes that connected registry is
+      coupled to the registry home-region data endpoint and does not
+      automatically migrate with geo-replication. Check the official pricing
+      page for current Premium and replication pricing as of 2026-03-15.
+    links:
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-geo-replication
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus
+      - https://azure.microsoft.com/en-us/pricing/details/container-registry/
+  - name: Artifact cache in ACR
+    summary: As of 2026-03-15, artifact cache is the better economic choice when the
+      real problem is faster or more reliable pulls from upstream registries,
+      not distributing your own images to offline edge sites. Microsoft
+      documents that artifact cache is available in Basic, Standard, and Premium
+      tiers, supports both public and private upstream repositories, and can
+      reduce pull-limit pressure by serving pulls through ACR.
+    when_to_use: Best for cost-sensitive + low-ops or small-team + compliance setups
+      where workloads remain connected to Azure, image demand mostly comes from
+      Docker Hub, GitHub Container Registry, Quay, or other supported upstreams,
+      and you want caching rather than a full edge replica. Prefer this as of
+      2026-03-15 when connected-registry billing would be overkill because the
+      site does not need offline operation, local push-back, or
+      repository-subset synchronization to an on-premises registry.
+    tradeoffs: Artifact cache can run on lower-cost ACR tiers and uses the normal
+      managed ACR surface instead of a separate connected-registry resource per
+      site. The tradeoff is that it is still an Azure-hosted cache, not a
+      disconnected local registry, and Microsoft documents that caching happens
+      only after an image pull completes.
+    cautions: "Microsoft documents important limitations: artifact cache does not
+      automatically pull new tags when a new tag appears, it only caches after
+      at least one pull completes, and it supports a maximum of 1,000 cache
+      rules. Supported upstream registries are limited to the documented list,
+      so validate upstream compatibility before treating it as a universal
+      replacement."
+    links:
+      - https://learn.microsoft.com/en-us/azure/container-registry/artifact-cache-overview
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus
+      - https://azure.microsoft.com/en-us/pricing/details/container-registry/
+  - name: Separate ACRs with image import driven by release pipelines
+    summary: As of 2026-03-15, using separate registries and copying curated images
+      with ACR import is usually the lowest-complexity alternative when you only
+      have a small number of destinations and do not need continuous edge
+      synchronization. Microsoft documents that ACR import can copy container
+      images and OCI artifacts between registries, subscriptions, and tenants
+      without requiring a local Docker installation.
+    when_to_use: Best for cost-sensitive + small-team or enterprise + compliance
+      situations where targets remain Azure-reachable, the image set is
+      deliberately promoted on release boundaries, and you can accept
+      CI/CD-managed copying instead of maintaining continuously synchronized
+      connected registries. Use this when a few destination registries are
+      enough and the constraint combination is curated promotion plus lower
+      recurring control-plane spend, not offline edge autonomy, as of
+      2026-03-15.
+    tradeoffs: This avoids paying for a connected-registry resource at every site
+      and stays within standard ACR workflows. The tradeoff is more pipeline
+      design and release orchestration, no local on-premises registry endpoint
+      during outages, and no automatic continuous synchronization model like
+      connected registry or geo-replication.
+    cautions: Microsoft documents that imported images are limited to a maximum of
+      50 manifests, importing from an external registry requires RFC 7233
+      support, and import to or from a network-restricted registry requires
+      trusted-services bypass to be enabled. This pattern is a poor fit for
+      truly disconnected edge because it still assumes cloud-reachable
+      registries and release-time copying rather than local autonomous serving.
+    links:
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-import-images
+      - https://learn.microsoft.com/en-us/azure/container-registry/container-registry-skus
+      - https://azure.microsoft.com/en-us/pricing/details/container-registry/
+tags:
+  - cloud
+  - azure
+  - azure-container-registry
+  - acr
+  - connected-registry
+  - pricing
+  - billing
+  - edge
+  - disconnected-deployments
+  - geo-replication
+  - artifact-cache
+  - container-images
+aliases:
+  - azure connected registry pricing
+  - acr connected registry billing
+  - azure container registry edge replication
+  - acr connected registry vs geo replication
+  - acr connected registry vs artifact cache
+  - azure container registry disconnected edge
+  - acr import vs connected registry
+related_cards:
+  - infra/container-orchestration
+  - infra/container-registry-pricing-ecr-vs-docker-hub-vs-artifact-registry-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-22
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/connected-registry
+      name: Connected registry
+      category: edge/disconnected replica
+    - type: capability
+      id: capability/geo-replication
+      name: Geo-replication
+      category: multi-region replication
+    - type: capability
+      id: capability/artifact-cache
+      name: Artifact cache
+      category: registry cache
+    - type: package
+      id: package/acr-premium-sku
+      name: Premium ACR
+      category: sku
+    - type: package
+      id: package/acr-standard-sku
+      name: Standard ACR
+      category: sku
+    - type: package
+      id: package/acr-basic-sku
+      name: Basic ACR
+      category: sku
+  edges:
+    - type: requires_version
+      from: capability/connected-registry
+      to: package/acr-premium-sku
+      note: Connected registry is available only on the Premium SKU.
+    - type: requires_version
+      from: capability/geo-replication
+      to: package/acr-premium-sku
+      note: Geo-replication is a Premium feature.
+    - type: requires_version
+      from: capability/artifact-cache
+      to: package/acr-basic-sku
+      note: Artifact cache is available in Basic, Standard, and Premium tiers.
+    - type: requires_version
+      from: capability/artifact-cache
+      to: package/acr-standard-sku
+      note: Artifact cache is available in Basic, Standard, and Premium tiers.
+    - type: requires_version
+      from: capability/artifact-cache
+      to: package/acr-premium-sku
+      note: Artifact cache is available in Basic, Standard, and Premium tiers.

@@ -1,0 +1,134 @@
+id: "data/google-maps-subscriptions-vs-paygo-after-march-1-2025"
+title: "Google Maps Subscriptions vs Pay-as-You-Go After March 1, 2025"
+problem: "Choose whether to stay on Google Maps Platform pay-as-you-go or move
+  to the newer fixed-fee subscription plans after the March 1, 2025 pricing,
+  credit, and legacy-service changes."
+context:
+  - "google-cloud"
+  - "google-maps-platform"
+  - "api-billing"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Stay on pay-as-you-go"
+    summary: "Google Maps Platform pay-as-you-go remains the default usage-based
+      model. As of 2026-03-27, the March 1, 2025 changes have already occurred:
+      the old \"$200 monthly recurring credit\" was replaced by per-SKU free
+      monthly usage caps, and most Core Services SKUs now get automatic volume
+      discounts that scale to 5,000,000+ monthly billable events. Pay-as-you-go
+      has no up-front fee or termination charge, aggregates usage across
+      projects on the same billing account, and bills over the free cap by SKU
+      and usage tier. This is the simplest option if your usage is bursty,
+      spread across many SKUs, or you do not want fixed monthly commitments."
+    when_to_use: "Use this when usage is unpredictable, seasonal, or low enough that
+      the new free usage caps and automatic tier discounts likely beat a flat
+      subscription fee. It is also the safer choice if you depend on SKUs not
+      covered by a subscription plan, because uncovered usage would still be
+      billed separately anyway."
+    tradeoffs: "Maximum flexibility and no subscription management overhead, but
+      less cost predictability and fewer savings if your workload fits neatly
+      inside a subscription tier every month."
+    cautions: "As of 2026-03-27, legacy Places API, Directions API, and Distance
+      Matrix API transitions have already begun: they cannot be newly enabled
+      after March 1, 2025, and legacy services only get automatic volume
+      discounts through the 100,000+ tier. If you stay on pay-as-you-go and
+      still use legacy services, migration pressure remains."
+    links:
+      - "https://developers.google.com/maps/billing-and-pricing/pay-as-you-go"
+      - "https://developers.google.com/maps/billing-and-pricing/march-2025"
+      - "https://developers.google.com/maps/billing-and-pricing/faq"
+  - name: "Adopt a Maps subscription plan"
+    summary: "Google Maps subscriptions add a fixed monthly fee in exchange for a
+      pooled monthly usage allowance across included SKUs. As of 2026-03-27,
+      Google lists three plans: Starter at \"$100\" for \"50,000\" combined
+      calls per month, Essentials at \"$275\" for \"100,000\" combined calls,
+      and Pro at \"$1,200\" for \"250,000\" combined calls. Included usage is
+      tracked against the plan, overages are billed at standard pay-as-you-go
+      rates without service interruption, and plan charges are prorated when you
+      start, switch, or cancel mid-cycle. This is the best fit when your bill is
+      dominated by covered SKUs and monthly demand is consistently inside or
+      just above a tier."
+    when_to_use: "Use this when you want tighter monthly cost predictability and
+      your production traffic is concentrated in subscription-covered Maps,
+      Routes, Places, or Environment SKUs. Pick the lowest tier that comfortably
+      covers normal monthly usage, because excess usage falls back to standard
+      pay-as-you-go pricing."
+    tradeoffs: "Better budgetability and possible savings for steady workloads, but
+      you take on fixed monthly spend and still pay pay-as-you-go for overages
+      or any SKU not included in the plan."
+    cautions: "Existing month-to-date usage before signup is still billed as
+      pay-as-you-go, and downgrades can be blocked until the next billing cycle
+      if current usage already exceeds the lower plan's cap. No-cost SKUs such
+      as Maps SDK and Embed do not count toward the monthly usage limit, and
+      legacy Places API, Directions API, and Distance Matrix API are included
+      only with caveats while Google recommends migration to newer services."
+    links:
+      - "https://developers.google.com/maps/billing-and-pricing/subscriptions"
+      - "https://developers.google.com/maps/billing-and-pricing/pay-as-you-go"
+      - "https://developers.google.com/maps/billing-and-pricing/march-2025"
+      - "https://developers.google.com/maps/billing-and-pricing/faq"
+tags:
+  - "data"
+  - "google-maps"
+  - "pricing"
+  - "billing"
+aliases:
+  - "google maps subscription pricing vs payg"
+  - "google maps march 2025 billing change"
+  - "google maps free usage caps vs 200 credit"
+related_cards:
+  - "web/google-maps-platform-essentials-pro-enterprise-pricing-migration-2026"
+  - "web/google-maps-legacy-places-directions-distance-matrix-migration-2026"
+  - "web/google-maps-subscriptions-vs-pay-as-you-go-after-march-2025-billing-ch\
+    ange"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: capability
+      id: capability/api-billing
+      name: API billing
+    - type: package
+      id: package/google-maps-platform-pay-as-you-go
+      name: Google Maps Platform pay-as-you-go
+    - type: package
+      id: package/google-maps-platform-subscriptions
+      name: Google Maps subscription plans
+    - type: package
+      id: package/google-maps-platform-legacy-places-api
+      name: Legacy Places API
+    - type: package
+      id: package/google-maps-platform-directions-api
+      name: Directions API
+    - type: package
+      id: package/google-maps-platform-distance-matrix-api
+      name: Distance Matrix API
+  edges:
+    - type: breaking_change_in
+      from: vendor/google
+      to: capability/api-billing
+      date: 2025-03-01
+      name: Google Maps Platform pricing, credit, and legacy-service changes
+    - type: eol_date
+      from: package/google-maps-platform-legacy-places-api
+      to: null
+      date: 2025-03-01
+      name: Cannot be newly enabled after this date
+    - type: eol_date
+      from: package/google-maps-platform-directions-api
+      to: null
+      date: 2025-03-01
+      name: Cannot be newly enabled after this date
+    - type: eol_date
+      from: package/google-maps-platform-distance-matrix-api
+      to: null
+      date: 2025-03-01
+      name: Cannot be newly enabled after this date

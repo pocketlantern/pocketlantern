@@ -1,0 +1,246 @@
+id: "ai/openai-o1-vs-gpt4o-reasoning-cost-benefit-2026"
+title: "OpenAI Reasoning Models vs GPT-4o: When Reasoning Justifies Cost (2026)"
+problem: "Teams integrating OpenAI APIs must decide when to pay the premium for
+  reasoning models (o3, o3-mini, o4-mini) over GPT-4o for complex
+  tasks—balancing multi-step accuracy gains against higher output costs,
+  invisible reasoning-token billing, and 20+-second first-token latency. As of
+  2026-03-16, o1-preview was shut down July 28, 2025 and o1-mini was shut down
+  October 27, 2025; the active reasoning tiers are o3, o3-mini, o4-mini, and the
+  still-live but superseded o1."
+context:
+  - "ai"
+  - "openai"
+  - "llm"
+  - "model-selection"
+  - "reasoning"
+  - "cost-management"
+  - "production"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "enterprise"
+  - "small-team"
+  - "real-time"
+  - "compliance"
+candidates:
+  - name: "GPT-4o (standard general-purpose path)"
+    summary: "As of 2026-03-16, GPT-4o is priced at $2.50 per 1M input tokens and
+      $10.00 per 1M output tokens, with prompt caching at $1.25 per 1M cached
+      input tokens and a 128k-token context window. It supports text, images,
+      audio output, and function calling with sub-second time-to-first-token in
+      standard configurations."
+    when_to_use: "Best for real-time + high-scale or cost-sensitive + small-team
+      products where low latency and multimodal support matter more than deep
+      chain-of-thought reasoning. The decisive factor is whether your task is
+      conversational, ambiguous, or requires native audio output—GPT-4o handles
+      these where o-series reasoning models do not."
+    tradeoffs: "GPT-4o delivers fast, reliable responses for a broad class of tasks
+      at roughly one-quarter the per-output-token cost of o3, and it is the only
+      current OpenAI text model with native audio generation. The tradeoff is
+      weaker performance on multi-step formal reasoning, competitive math, and
+      complex code planning where o3 outperforms it by 15–25 percentage points
+      on published benchmarks."
+    cautions: "The `chatgpt-4o-latest` alias was retired February 17, 2026 and now
+      redirects to gpt-5.1-chat-latest—any production code pinning that alias
+      should be audited immediately. GPT-4o does not use reasoning tokens, but
+      long chain-of-thought prompts injected via system instructions still
+      inflate output token costs without the structured accuracy gains of
+      o-series reasoning models."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations/"
+      - "https://pricepertoken.com/pricing-page/provider/openai"
+      - "https://artificialanalysis.ai/models/o1-mini"
+
+  - name: "o3-mini or o4-mini (efficient reasoning tier)"
+    summary: "As of 2026-03-16, o3-mini is priced at $0.55 per 1M input tokens and
+      $2.20 per 1M output tokens ($0.55/M cached); o4-mini is $1.10 per 1M input
+      and $4.40 per 1M output ($0.275/M cached). Both have a 200k-token context
+      window. o3-mini supports low/medium/high reasoning_effort settings to
+      trade depth against latency and cost; o4-mini adds vision input support.
+      OpenAI retired o1-mini on October 27, 2025 and lists o4-mini as its
+      recommended replacement."
+    when_to_use: "Best for cost-sensitive + high-scale or small-team workloads where
+      STEM tasks—math, code review, structured extraction—require reasoning
+      accuracy beyond GPT-4o but per-request cost caps prevent use of o3. The
+      decisive factor is whether your tasks are domain-specific STEM reasoning
+      where you can tolerate multi-second latency and want per-call control over
+      reasoning depth via reasoning_effort."
+    tradeoffs: "At $0.55/M input, o3-mini is 78% cheaper than GPT-4o per input token
+      and 96% cheaper than o1, while published benchmarks report it matches o1
+      performance on math, coding, and science at medium reasoning effort. The
+      tradeoff is that internal reasoning tokens—invisible chain-of-thought
+      steps billed as output tokens—can inflate actual per-call cost
+      significantly above the visible response token count."
+    cautions: "o1-mini was shut down October 27, 2025 and is no longer callable—any
+      code referencing the `o1-mini` model ID will receive an API error and must
+      migrate to o4-mini. Monitor actual token usage rather than estimating from
+      visible response length, because reasoning tokens are billed as output
+      tokens but are not returned in the API response body. Setting
+      reasoning_effort to high on simple queries can multiply per-call cost
+      several times without a commensurate accuracy gain."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations/"
+      - "https://pricepertoken.com/pricing-page/provider/openai"
+      - "https://www.helicone.ai/blog/openai-o3"
+
+  - name: "o3 (maximum reasoning, current generation)"
+    summary: "As of 2026-03-16, o3 is priced at $2.00 per 1M input tokens and $8.00
+      per 1M output tokens ($0.50/M cached), with a 200k-token context window.
+      On verified benchmarks, o3 scores 91.6% on AIME 2024 vs o1's 74.3%, 71.7%
+      on SWE-bench Verified vs o1's 48.9%, and 87.7% on GPQA Diamond. o3
+      supersedes o1 on every published major reasoning benchmark while costing
+      87% less per input token."
+    when_to_use: "Best for enterprise + compliance or high-scale teams where task
+      failure cost is high and the workload involves multi-step formal
+      reasoning—PhD-level science, competitive programming, complex code
+      planning, or long-horizon agent pipelines. The decisive factor is whether
+      a 15–25 percentage-point accuracy gain on hard STEM tasks is
+      mission-critical and your system can absorb multi-second to
+      tens-of-seconds first-token latency."
+    tradeoffs: "o3 delivers materially better accuracy than o1 at 87% lower input
+      cost ($2.00 vs $15.00 per 1M tokens), making it the strongest reasoning
+      option for new builds. The tradeoff is that reasoning tokens are billed as
+      output tokens but not surfaced in API responses, so actual per-call cost
+      scales with task complexity and reasoning depth rather than visible output
+      length alone."
+    cautions: "Do not deploy o3 for real-time or streaming-first applications
+      expecting sub-second time-to-first-token—o-series models have first-token
+      latency measured in seconds to tens of seconds by design. o1 is still
+      callable in the API as of 2026-03-16 but has no benchmark advantage over
+      o3 at any price point; greenfield systems should route to o3, not o1,
+      unless a specific vendor or platform constraint requires o1."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations/"
+      - "https://pricepertoken.com/pricing-page/provider/openai"
+      - "https://pricepertoken.com/pricing-page/model/openai-o1"
+      - "https://www.helicone.ai/blog/openai-o3"
+
+  - name: "o1 (legacy premium reasoning, still active)"
+    summary: "As of 2026-03-16, o1 is still callable in the OpenAI API and does not
+      appear on the official deprecations page. It is priced at $15.00 per 1M
+      input tokens and $60.00 per 1M output tokens ($7.50/M cached), with a
+      200k-token context window and a verified median first-token latency of
+      21.69 seconds. o1-preview was shut down July 28, 2025; o1-mini was shut
+      down October 27, 2025."
+    when_to_use: "Consider o1 only when existing production systems are already
+      pinned to it and the migration cost to o3 exceeds the near-term savings
+      from switching. There is no verified greenfield scenario where o1
+      outperforms o3—o3 scores higher on AIME, SWE-bench, and GPQA Diamond at
+      87% lower input cost as of 2026-03-16."
+    tradeoffs: "o1 is fully supported with vision, tools, and prompt caching, and it
+      has a longer production track record than o3. The fundamental tradeoff is
+      that o3 outperforms o1 on every major published reasoning benchmark while
+      costing $13 less per 1M input tokens and $52 less per 1M output tokens,
+      leaving no verified accuracy or capability reason to prefer o1 for new
+      workloads."
+    cautions: "OpenAI has not published a retirement date for o1 as of 2026-03-16,
+      but o1-preview was retired with limited lead time—monitor the official
+      deprecations page and pin a dated o1 snapshot if you rely on this model to
+      avoid silent alias retargeting. Any runtime calls to `o1-preview` or
+      `o1-mini` will fail with an API error as both have been shut down."
+    links:
+      - "https://developers.openai.com/api/docs/deprecations/"
+      - "https://pricepertoken.com/pricing-page/model/openai-o1"
+      - "https://pricepertoken.com/pricing-page/provider/openai"
+      - "https://www.helicone.ai/blog/openai-o3"
+tags:
+  - "ai"
+  - "openai"
+  - "o1"
+  - "o3"
+  - "o3-mini"
+  - "o4-mini"
+  - "gpt-4o"
+  - "reasoning-models"
+  - "llm"
+  - "pricing"
+  - "model-selection"
+  - "cost-optimization"
+aliases:
+  - "openai o1 vs gpt-4o"
+  - "reasoning model cost benefit"
+  - "when to use o1"
+  - "o3 vs gpt-4o"
+  - "o3-mini vs o1"
+  - "o4-mini vs o1-mini replacement"
+  - "openai reasoning models pricing 2026"
+  - "openai thinking models"
+  - "o1 mini deprecated"
+  - "o1 preview deprecated"
+related_cards:
+  - "ai/openai-model-alias-vs-dated-model-pinning-after-retargeting-2026"
+  - "backend/ai-sdk-selection"
+  - "ai/rag-architecture-choices"
+  - "ai/gemini-api-free-vs-paid-tier-quota-and-pricing-2026"
+  - "ai/openai-responses-api-migration-before-assistants-shutdown-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-06-22"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/openai
+      name: OpenAI
+    - type: engine
+      id: engine/gpt-4o
+      name: GPT-4o
+      category: general-purpose model
+    - type: engine
+      id: engine/chatgpt-4o-latest
+      name: chatgpt-4o-latest
+      category: model alias
+    - type: engine
+      id: engine/gpt-5.1-chat-latest
+      name: gpt-5.1-chat-latest
+      category: model alias
+    - type: engine
+      id: engine/o1
+      name: o1
+      category: reasoning model
+    - type: engine
+      id: engine/o1-preview
+      name: o1-preview
+      category: reasoning model
+    - type: engine
+      id: engine/o1-mini
+      name: o1-mini
+      category: reasoning model
+    - type: engine
+      id: engine/o3
+      name: o3
+      category: reasoning model
+    - type: engine
+      id: engine/o3-mini
+      name: o3-mini
+      category: reasoning model
+    - type: engine
+      id: engine/o4-mini
+      name: o4-mini
+      category: reasoning model
+  edges:
+    - type: eol_date
+      from: engine/o1-preview
+      to: null
+      date: 2025-07-28
+    - type: eol_date
+      from: engine/o1-mini
+      to: null
+      date: 2025-10-27
+    - type: eol_date
+      from: engine/chatgpt-4o-latest
+      to: null
+      date: 2026-02-17
+    - type: breaking_change_in
+      from: engine/chatgpt-4o-latest
+      to: engine/gpt-5.1-chat-latest
+      change: redirects_to
+    - type: breaking_change_in
+      from: engine/o1-mini
+      to: engine/o4-mini
+      change: recommended_replacement
+    - type: breaking_change_in
+      from: engine/o3
+      to: engine/o1
+      change: supersedes

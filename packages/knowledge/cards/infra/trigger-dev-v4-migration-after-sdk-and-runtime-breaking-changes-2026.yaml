@@ -14,17 +14,17 @@ constraints:
   - "enterprise"
 candidates:
   - name: "Migrate to Trigger.dev v4 now on Cloud"
-    summary: 'As of 2026-03-19, Trigger.dev says v4 is stable, fully supported, and
+    summary: "As of 2026-03-19, Trigger.dev says v4 is stable, fully supported, and
       recommended for all users, while v3 is being retired. New v3 deploys will
       stop working on 2026-04-01, and v3 will be fully shut down on 2026-07-01.
       The v4 migration requires updating `@trigger.dev/*` packages to `4.x`,
       moving imports from `@trigger.dev/sdk/v3` to `@trigger.dev/sdk`, and
       adapting breaking changes such as predeclared queues, lifecycle hook
       signatures, batch retrieval, and some `ctx` fields. Current Cloud pricing
-      as of 2026-03-19 starts at Free `"$0/month"` with `"$5 free monthly
-      usage"`, Hobby `"$10/month"` with `"$10 monthly usage included"`, and
-      Pro `"$50/month"` with `"$50 monthly usage included"`, plus
-      `"$0.000025"` per run and per-second compute charges.'
+      as of 2026-03-19 starts at Free `\"$0/month\"` with `\"$5 free monthly
+      usage\"`, Hobby `\"$10/month\"` with `\"$10 monthly usage included\"`, and
+      Pro `\"$50/month\"` with `\"$50 monthly usage included\"`, plus
+      `\"$0.000025\"` per run and per-second compute charges."
     when_to_use: "Use this when you are low-ops and need Trigger.dev Cloud to remain
       a supported part of production after April 2026. The decisive factor is
       the hard retirement schedule: if you need ongoing new deploys, staying on

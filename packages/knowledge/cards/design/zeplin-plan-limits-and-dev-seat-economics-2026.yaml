@@ -144,6 +144,7 @@ related_cards:
   - "design/figma-dev-seats-vs-full-seats-after-dev-mode-pricing-2026"
   - "design/webflow-workspace-vs-site-plan-billing-after-pricing-rework-2025"
   - "design/jira-product-discovery-pricing-per-creator-2026"
+  - design/figma-seat-model-after-march-2025
 tier: "core"
 status: "active"
 updated: "2026-03-19"

@@ -1,0 +1,136 @@
+id: "data/campaign-manager-360-api-version-sunset-2026"
+title: "Campaign Manager 360 API Version Sunset Planning for 2026"
+problem: "Plan how far ahead to upgrade CM360 integrations so reporting and
+  trafficking automations do not fail when current versions hit their 2026
+  sunsets."
+context:
+  - "google-marketing-platform"
+  - "campaign-manager-360"
+  - "api-versioning"
+  - "reporting-automation"
+  - "trafficking-automation"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "small-team"
+candidates:
+  - name: "Immediate remediation: standardize all CM360 API traffic on v5 now"
+    summary: "As of 2026-03-20, Campaign Manager 360 API v4 had a deprecation date
+      of 2025-09-02 and a sunset date of 2026-02-26, while v5 shows no announced
+      deprecation or sunset date in the official schedule. Google states that
+      sunset versions begin rejecting requests, and the docs now explicitly say
+      v4 has already reached its scheduled sunset date and integrations should
+      migrate to v5 immediately. For direct REST callers, the verified migration
+      step is to change request paths from \"/dfareporting/v4/...\" to
+      \"/dfareporting/v5/...\". Google does not publish separate API pricing on
+      the pages reviewed as of 2026-03-20; check official docs."
+    when_to_use: "Use this when any reporting or trafficking automation still
+      references v4, because the failure window has already arrived as of
+      2026-03-20. This is the default choice for teams that need the fastest
+      path back to supported operation."
+    tradeoffs: "Fastest way to restore support and maximize time before the next
+      upgrade, but it still requires code review for version-specific removals
+      and validation changes."
+    cautions: "Do not assume the upgrade is a pure endpoint swap. In v5 release
+      notes, Google removed \"reports.patch\", removed several report and
+      creative fields, and added validation changes such as requiring
+      \"campaigns.euPoliticalAdsDeclaration\" in v5 and requiring
+      \"floodlightActivities.conversionCategory\" when attribution is enabled."
+    links:
+      - "https://developers.google.com/doubleclick-advertisers/deprecation"
+      - "https://developers.google.com/doubleclick-advertisers/guides/migration"
+      - "https://developers.google.com/doubleclick-advertisers/rest/v5"
+      - "https://developers.google.com/doubleclick-advertisers/rel_notes"
+  - name: "Controlled v5 migration with regression checks for reporting and
+      trafficking differences"
+    summary: "As of 2026-03-20, Google recommends migrating to the most recent
+      version shown in the schedule to maximize time between upgrades, which is
+      v5 in the official CM360 schedule. The migration guide says new versions
+      are designed to be backward compatible when possible, but teams must
+      review release notes for every version crossed because \"Sunsets\" and
+      \"Known issues\" can require code changes. Verified v5 differences include
+      new Dynamic Profiles and Dynamic Feeds services, added fields such as
+      \"conversionCategory\" and TV-related fields, and v5-specific requirements
+      around \"euPoliticalAdsDeclaration\" on campaigns. This option treats the
+      upgrade as an application change rather than only a transport change."
+    when_to_use: "Use this when automations create or update campaigns, floodlight
+      activities, creatives, or reports and a silent behavior change would be
+      costly. It is the safer choice for enterprise workflows where reporting
+      parity and trafficking validation matter more than immediate cutover
+      speed."
+    tradeoffs: "Lower regression risk and better auditability, but it takes more
+      engineering time than a direct endpoint/library bump."
+    cautions: "Test report creation and update code specifically because v5 removed
+      \"reports.patch\" and removed report fields including
+      \"crossDimensionReachCriteria\" and \"enableAllDimensionCombinations\".
+      Also verify campaign write paths for the required v5 political ads
+      declaration field and floodlight write paths for the new conversion
+      category requirement."
+    links:
+      - "https://developers.google.com/doubleclick-advertisers/guides/migration"
+      - "https://developers.google.com/doubleclick-advertisers/rel_notes"
+      - "https://developers.google.com/doubleclick-advertisers/deprecation"
+tags:
+  - "data"
+  - "campaign-manager-360"
+  - "google-marketing-platform"
+  - "api"
+  - "deprecation"
+aliases:
+  - "cm360 api sunset 2026"
+  - "dfareporting v4 sunset"
+  - "campaign manager 360 v5 migration"
+related_cards:
+  - "backend/api-versioning"
+  - "_archived/migration-strategy"
+  - "data/google-ads-api-v20-sunset-june-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: protocol
+      id: protocol/campaign-manager-360-api-v4
+      name: Campaign Manager 360 API v4
+      vendor: vendor/google
+    - type: protocol
+      id: protocol/campaign-manager-360-api-v5
+      name: Campaign Manager 360 API v5
+      vendor: vendor/google
+    - type: capability
+      id: capability/reporting-automation
+      name: reporting automation
+    - type: capability
+      id: capability/trafficking-automation
+      name: trafficking automation
+  edges:
+    - type: eol_date
+      from: protocol/campaign-manager-360-api-v4
+      to: null
+      date: 2026-02-26
+      deprecation_date: 2025-09-02
+    - type: requires_version
+      from: capability/reporting-automation
+      to: protocol/campaign-manager-360-api-v5
+      why: v4 has already reached its scheduled sunset date and integrations should
+        migrate to v5 immediately
+    - type: requires_version
+      from: capability/trafficking-automation
+      to: protocol/campaign-manager-360-api-v5
+      why: v4 has already reached its scheduled sunset date and integrations should
+        migrate to v5 immediately
+    - type: breaking_change_in
+      from: protocol/campaign-manager-360-api-v4
+      to: protocol/campaign-manager-360-api-v5
+      details:
+        - v5 removed reports.patch
+        - v5 removed report fields including crossDimensionReachCriteria and
+          enableAllDimensionCombinations
+        - v5 requires campaigns.euPoliticalAdsDeclaration
+        - v5 requires floodlightActivities.conversionCategory when attribution
+          is enabled

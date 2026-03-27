@@ -14,14 +14,14 @@ constraints:
   - "small-team"
 candidates:
   - name: "Stay on Percy Free"
-    summary: 'As of 2026-03-19, BrowserStack Percy Free is priced at "$0 / month"
-      and includes "5,000 free monthly screenshots," unlimited users, and
-      unlimited projects. BrowserStack''s pricing page shows free-tier build
-      history is limited to 30 days, while the feature list states "1 month
-      build history." Percy counts usage by rendered screenshots, where each
+    summary: "As of 2026-03-19, BrowserStack Percy Free is priced at \"$0 / month\"
+      and includes \"5,000 free monthly screenshots,\" unlimited users, and
+      unlimited projects. BrowserStack's pricing page shows free-tier build
+      history is limited to 30 days, while the feature list states \"1 month
+      build history.\" Percy counts usage by rendered screenshots, where each
       browser and responsive width permutation consumes screenshots. This is the
       lowest-cost option if current CI volume stays comfortably below the 5,000
-      screenshot cap.'
+      screenshot cap."
     when_to_use: "Use this when you are cost-sensitive, web-only, and your normal
       monthly CI volume has enough headroom under 5,000 screenshots. It is the
       right default if short retention is acceptable and you want to avoid any
@@ -41,14 +41,14 @@ candidates:
       - "https://www.browserstack.com/support/faq/plans-pricing/plans/what-is-i\
         ncluded-in-percys-plans/"
   - name: "Upgrade to Percy Desktop"
-    summary: 'As of 2026-03-19, BrowserStack lists Percy Desktop at "$199 / month"
+    summary: "As of 2026-03-19, BrowserStack lists Percy Desktop at \"$199 / month\"
       billed annually, with selectable capacity starting at 10,000 screenshots
       per month and higher options including 25,000 screenshots per month or
       custom screenshots via sales. The pricing comparison shows paid Percy
-      build history at 12 months instead of the free plan''s 30 days.
+      build history at 12 months instead of the free plan's 30 days.
       BrowserStack docs also state that screenshot usage beyond the plan
       allocation is treated as overage. This is the primary paid option for
-      teams doing desktop-browser visual regression only.'
+      teams doing desktop-browser visual regression only."
     when_to_use: "Use this when you need more than 5,000 screenshots per month or
       need 12-month build history, but do not need mobile-browser coverage. It
       is the cleanest step-up for web teams whose CI cost is driven by Percy
@@ -67,15 +67,15 @@ candidates:
       - "https://www.browserstack.com/support/faq/plans-pricing/usage-plans-pri\
         cing/is-percys-usage-limited/"
   - name: "Upgrade to Percy Desktop & Mobile"
-    summary: 'As of 2026-03-19, BrowserStack lists Percy Desktop & Mobile at "$599
-      / month" billed annually, with 25,000 screenshots per month as the listed
+    summary: "As of 2026-03-19, BrowserStack lists Percy Desktop & Mobile at \"$599
+      / month\" billed annually, with 25,000 screenshots per month as the listed
       starting capacity and custom screenshot volumes through sales.
-      BrowserStack describes this tier as "AI-powered visual comparison for
-      desktop & mobile browsers" and notes that it adds real mobile devices and
+      BrowserStack describes this tier as \"AI-powered visual comparison for
+      desktop & mobile browsers\" and notes that it adds real mobile devices and
       mobile browsers beyond the Desktop plan. The pricing comparison also shows
       12 months of build history on paid plans. This is the paid tier for teams
       that need mobile-browser visual coverage as part of the same Percy
-      program.'
+      program."
     when_to_use: "Use this when mobile-browser rendering is part of your release
       risk and you expect enough screenshot volume that the free tier is
       operationally too small. It is the better fit than Desktop when device
@@ -84,11 +84,11 @@ candidates:
       cap, but at materially higher fixed cost than Desktop. It can be wasteful
       for teams that only validate desktop layouts or whose mobile needs are
       narrow."
-    cautions: 'The larger screenshot pool does not remove overage risk; BrowserStack
+    cautions: "The larger screenshot pool does not remove overage risk; BrowserStack
       still treats paid-plan usage above included screenshots as overage.
       Validate that you truly need mobile-browser visual testing before
-      absorbing the jump from "$199 / month" to "$599 / month" billed
-      annually.'
+      absorbing the jump from \"$199 / month\" to \"$599 / month\" billed
+      annually."
     links:
       - "https://www.browserstack.com/pricing"
       - "https://www.browserstack.com/docs/percy/overview/plans-and-billing"

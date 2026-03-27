@@ -1,0 +1,153 @@
+id: "search/typesense-self-host-vs-cloud-after-720-hour-free-tier"
+title: "Typesense Self-Host vs Cloud After the 720-Hour One-Time Free Tier"
+problem: "Decide whether to keep search self-hosted or move to Typesense Cloud
+  once the one-time 720-hour and 10 GB free allowance expires, given Cloud uses
+  dedicated hourly billing plus bandwidth and optional support plans."
+context:
+  - "search"
+  - "typesense"
+  - "self-hosting"
+  - "managed-cloud"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Keep Typesense self-hosted"
+    summary: "Typesense is open source and can be self-hosted for free, while the
+      official support comparison page lists self-hosted cost as free. As of
+      2026-03-27, the latest documented server version is 30.1 in the official
+      docs. Self-hosting keeps full API access without Cloud runtime or
+      bandwidth billing. The trade is that the official comparison page
+      positions infrastructure management, autoscaling, dashboard, team access,
+      RBAC, SSO, Search Delivery Network, and SOC 2 as Cloud-side capabilities
+      rather than self-hosted defaults."
+    when_to_use: "Use this when you are strongly cost-sensitive and already have
+      reliable ops for backups, upgrades, monitoring, and HA outside Typesense
+      Cloud. It is the better default if your search workload is steady, you do
+      not need Cloud-only management features, and you want to avoid fixed
+      hourly charges on idle clusters."
+    tradeoffs: "Lowest vendor bill and maximum deployment control, but more
+      operational ownership. You avoid Cloud cluster fees, bandwidth metering,
+      and support-plan charges, but your team absorbs infrastructure and
+      incident management."
+    cautions: "The official support page shows community-style support for
+      self-hosted, while prioritized SLAs and consultative support are attached
+      to Typesense Cloud plans. If you later need Cloud-only features like
+      Search Delivery Network, autoscaling, shared team access, RBAC, SSO, or
+      SOC 2 documentation, self-hosting does not give you those by default."
+    links:
+      - "https://typesense.org/docs/latest/"
+      - "https://typesense.org/support/"
+      - "https://typesense.org/docs/guide/migrating-from-algolia.html"
+  - name: "Move to Typesense Cloud after the free tier"
+    summary: "As of 2026-03-27, Typesense Cloud gives each account a one-time free
+      allowance of the first 720 hours and 10 GB of bandwidth on select
+      configurations; it does not reset monthly. After that, running clusters
+      begin accruing charges. Official billing states Cloud uses three
+      components: a fixed per-hour cluster fee, per-GB outgoing bandwidth, and
+      optional monthly prioritized support plans. The official support page says
+      cluster costs start at 22 dollars per month, and support plans are Free,
+      Developer at 160 dollars every 28 days, Business at 400 dollars every 28
+      days, and Enterprise at 700 dollars every 28 days."
+    when_to_use: "Use this when low-ops matters more than minimizing the vendor
+      bill, especially for production search where you want dedicated managed
+      infrastructure and formal support paths. It is the better choice if your
+      team values managed HA-oriented support, version selection in the control
+      plane, and Cloud-only features over raw hosting cost."
+    tradeoffs: "You get dedicated managed clusters, built-in infrastructure
+      management, and optional faster support SLAs, but you pay even when the
+      cluster is idle because the hourly fee applies whenever the cluster is
+      running. Bandwidth is also metered separately, so total cost is not just
+      the base cluster rate."
+    cautions: "Outgoing bandwidth is charged per node, and the help docs say HA
+      replication, configuration changes, and baseline cluster overhead all
+      contribute to bandwidth usage. The billing docs also state that the fixed
+      hourly cluster fee is incurred regardless of whether the cluster is
+      receiving traffic. If you need SOC 2 reports, HIPAA BAA, vendor forms, or
+      custom contracts, the support-plan page ties some of those to higher
+      support tiers and minimum one-year support terms."
+    links:
+      - "https://cloud-help.typesense.org/article/how-does-the-free-tier-work"
+      - "https://cloud-help.typesense.org/article/billing-process"
+      - "https://cloud-help.typesense.org/article/how-is-bandwidth-usage-calcul\
+        ated"
+      - "https://cloud.typesense.org/support-plans"
+tags:
+  - "search"
+  - "typesense"
+  - "pricing"
+  - "self-hosting"
+  - "managed-cloud"
+aliases:
+  - "typesense cloud free tier"
+  - "typesense self hosted vs cloud"
+  - "typesense 720 hour free tier"
+related_cards:
+  - "data/algolia-vs-meilisearch-cloud-vs-typesense-cloud-search-pricing-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - search/typesense-cloud-free-support-vs-prioritized-support-2026
+  - search/addsearch-vs-sitesearch360-vs-expertrec-site-search-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/typesense
+      name: Typesense
+    - type: package
+      id: package/typesense-cloud
+      name: Typesense Cloud
+    - type: package
+      id: package/typesense-server-30-1
+      name: Typesense Server 30.1
+    - type: capability
+      id: capability/search-delivery-network
+      name: Search Delivery Network
+    - type: capability
+      id: capability/autoscaling
+      name: Autoscaling
+    - type: capability
+      id: capability/rbac
+      name: RBAC
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: capability
+      id: capability/soc-2-documentation
+      name: SOC 2 documentation
+  edges:
+    - type: requires_version
+      from: package/typesense-cloud
+      to: package/typesense-server-30-1
+      note: The card states that as of 2026-03-27, the latest documented server
+        version is 30.1 and that Cloud offers version selection in the control
+        plane.
+    - type: locks_via
+      from: package/typesense-cloud
+      to: capability/search-delivery-network
+      note: The card explicitly describes Search Delivery Network as a Cloud-only
+        feature.
+    - type: locks_via
+      from: package/typesense-cloud
+      to: capability/autoscaling
+      note: The card explicitly describes autoscaling as a Cloud-side capability
+        rather than a self-hosted default.
+    - type: locks_via
+      from: package/typesense-cloud
+      to: capability/rbac
+      note: The card explicitly describes RBAC as a Cloud-side capability rather than
+        a self-hosted default.
+    - type: locks_via
+      from: package/typesense-cloud
+      to: capability/sso
+      note: The card explicitly describes SSO as a Cloud-side capability rather than a
+        self-hosted default.
+    - type: locks_via
+      from: package/typesense-cloud
+      to: capability/soc-2-documentation
+      note: The card explicitly ties SOC 2-related documentation to Cloud/higher
+        support tiers.

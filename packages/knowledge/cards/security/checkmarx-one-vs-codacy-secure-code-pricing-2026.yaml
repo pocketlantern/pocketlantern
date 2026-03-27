@@ -1,0 +1,151 @@
+id: "security/checkmarx-one-vs-codacy-secure-code-pricing-2026"
+title: "Checkmarx One vs Codacy Secure Code Pricing and Seat Packaging 2026"
+problem: "Engineering leaders choosing an AppSec stack need current
+  developer-seat and scan-volume economics instead of stale enterprise pricing
+  assumptions."
+context:
+  - "appsec"
+  - "sast"
+  - "sca"
+  - "ci-cd"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Checkmarx One"
+    summary: "As of 2026-03-26, Checkmarx One does not publish list pricing and
+      routes buyers to a custom quote. Its current packaging page lists five
+      package paths: Start with SAST, Start with SSCS, Essentials, Professional,
+      and Enterprise, with multiple paid add-ons such as API Security, IaC
+      Security, Developer Assist, Secrets Detection, and Codebashing.
+      Checkmarx's published license terms define a \"Contributing Developer\" as
+      someone who made one or more commits to a private scanned repository in
+      the last 90 days, counted by unique git email address. The major packaging
+      lever is scan concurrency: under license terms version 2024.02, Start for
+      SAST includes 1 concurrent scan per 20 contributing developer licenses,
+      while all other Checkmarx One packages include 1 concurrent scan per 1
+      contributing developer license."
+    when_to_use: "Use this when you need a broad enterprise AppSec suite and are
+      willing to buy through sales rather than optimize from a self-serve rate
+      card. The decisive factor is whether bundled modules and concurrency
+      rights matter more than transparent per-seat pricing."
+    tradeoffs: "Broadest official package menu across SAST, SCA, API, DAST,
+      container, IaC, secrets, and training, but no public dollar pricing means
+      budget modeling requires vendor quotes. License economics can also hinge
+      on concurrency rather than only named-seat count."
+    cautions: "The non-obvious blocker is concurrent scan entitlement. If you buy
+      the Start for SAST package, the published ratio is much tighter than the
+      rest of the portfolio, so PR-gate throughput can become a purchasing issue
+      rather than only a technical tuning issue."
+    links:
+      - "https://checkmarx.com/packaging/"
+      - "https://checkmarx.com/legal/checkmarx-one-license-types-and-restrictio\
+        ns-v202402/"
+      - "https://docs.checkmarx.com/"
+  - name: "Codacy Secure Code"
+    summary: "As of 2026-03-26, Codacy publishes self-serve seat pricing on its
+      pricing page. The Team plan starts at \"$18\" per developer per month
+      billed yearly or \"$21\" per developer per month billed monthly, and is
+      positioned for teams up to 30 developers and up to 100 private
+      repositories. Codacy states seats are required for every Git contributor
+      who commits code changes to a private repository added to Codacy. Business
+      pricing is custom for organizations with more than 30 contributors or more
+      than 100 private projects, and the Business package adds unlimited private
+      projects, daily SCA and malicious-package rescans, SBOM exports, DAST,
+      audit logs, and priority scan queueing."
+    when_to_use: "Use this when you want predictable seat-based pricing and a
+      cloud-hosted code security workflow without building CI scanning
+      infrastructure. The decisive factor is whether the published Team rate and
+      repo caps fit your org before you cross into custom Business packaging."
+    tradeoffs: "Much easier to budget at smaller scale because the entry rate card
+      is public and seat counting is explicit. The tradeoff is that larger teams
+      quickly move to custom pricing, and some higher-end capabilities are
+      reserved for Business."
+    cautions: "Codacy says it supports only GitHub Cloud, Bitbucket Cloud, and
+      GitLab Cloud. As of 2026-03-26, it does not support on-prem Git
+      deployments and says Azure Repos is not yet supported, which can block
+      regulated or hybrid environments."
+    links:
+      - "https://www.codacy.com/pricing"
+      - "https://docs.codacy.com/"
+      - "https://security.codacy.com"
+tags:
+  - "security"
+  - "appsec"
+  - "pricing"
+  - "sast"
+  - "sca"
+aliases:
+  - "checkmarx pricing 2026"
+  - "codacy seat pricing 2026"
+  - "checkmarx one vs codacy secure code"
+related_cards:
+  - "security/code-scanning-vendor-cost-sonarqube-vs-github-advanced-security-v\
+    s-snyk-2026"
+  - "security/snyk-team-vs-enterprise-seat-pricing-2026"
+  - "security/dependency-scanning-sast-sca-boundary"
+  - devtools/codacy-free-vs-paid-ai-code-review-packaging-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/checkmarx
+      name: Checkmarx
+    - type: vendor
+      id: vendor/codacy
+      name: Codacy
+    - type: package
+      id: package/checkmarx-one-start-for-sast
+      name: Start for SAST
+    - type: package
+      id: package/checkmarx-one-start-with-sscs
+      name: Start with SSCS
+    - type: package
+      id: package/checkmarx-one-essentials
+      name: Essentials
+    - type: package
+      id: package/checkmarx-one-professional
+      name: Professional
+    - type: package
+      id: package/checkmarx-one-enterprise
+      name: Enterprise
+    - type: package
+      id: package/codacy-team
+      name: Team
+    - type: package
+      id: package/codacy-business
+      name: Business
+    - type: package
+      id: package/checkmarx-one-license-terms-v2024-02
+      name: Checkmarx One license terms v2024.02
+  edges:
+    - type: requires_version
+      from: package/checkmarx-one-start-for-sast
+      to: package/checkmarx-one-license-terms-v2024-02
+      context: Scan concurrency for Start for SAST is stated under license terms
+        version 2024.02.
+    - type: requires_version
+      from: package/checkmarx-one-start-with-sscs
+      to: package/checkmarx-one-license-terms-v2024-02
+      context: Published concurrency entitlements are described under license terms
+        version 2024.02.
+    - type: requires_version
+      from: package/checkmarx-one-essentials
+      to: package/checkmarx-one-license-terms-v2024-02
+      context: Published concurrency entitlements are described under license terms
+        version 2024.02.
+    - type: requires_version
+      from: package/checkmarx-one-professional
+      to: package/checkmarx-one-license-terms-v2024-02
+      context: Published concurrency entitlements are described under license terms
+        version 2024.02.
+    - type: requires_version
+      from: package/checkmarx-one-enterprise
+      to: package/checkmarx-one-license-terms-v2024-02
+      context: Published concurrency entitlements are described under license terms
+        version 2024.02.

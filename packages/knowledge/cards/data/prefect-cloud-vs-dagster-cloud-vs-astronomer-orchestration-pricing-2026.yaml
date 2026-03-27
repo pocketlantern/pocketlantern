@@ -1,0 +1,203 @@
+id: "data/prefect-cloud-vs-dagster-cloud-vs-astronomer-orchestration-pricing-2026"
+title: "Prefect Cloud vs Dagster Cloud vs Astronomer Orchestration Pricing 2026"
+problem: "Pick a managed orchestration platform when task pricing, serverless
+  runner packaging, and hybrid deployment options have changed in the last
+  year."
+context:
+  - "data-orchestration"
+  - "python"
+  - "airflow"
+  - "serverless"
+  - "hybrid-cloud"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+candidates:
+  - name: "Prefect Cloud"
+    summary: "Prefect Cloud is a managed orchestration control plane with multiple
+      execution models. As of 2026-03-19, public pricing is primarily seat-based
+      instead of per-run: Hobby is free with 500 minutes of Prefect Serverless,
+      Starter is \"$100 /mo\" with 75 hours of Prefect Serverless, Team is
+      \"$100 / user / month\" with 225 hours, and higher tiers are custom.
+      Prefect also keeps a strong hybrid story: workers poll the cloud API from
+      your environment with no inbound connection requirement, and its v3 docs
+      emphasize work pools, push work pools, and managed work pools rather than
+      the older agent model. The main differentiator is that you can keep
+      execution in your own cloud or use Prefect-managed/serverless paths while
+      paying mostly for seats plus included serverless credits."
+    when_to_use: "Use this when you want low-ops orchestration with predictable
+      seat-based pricing and the option to keep runtime inside your own cloud
+      account. It is the strongest fit if you want to avoid always-on scheduler
+      costs and you are willing to adopt Prefect v3 work-pool deployment
+      patterns."
+    tradeoffs: "Seat-based packaging can be simpler than task-metered billing, and
+      push or managed work pools reduce runner overhead. The tradeoff is that
+      migration from older Prefect deployment patterns is not drop-in, and
+      higher-governance features move to custom plans."
+    cautions: "As of 2026-03-19, Prefect's migration docs say workers are not a
+      drop-in replacement for agents used in \"prefect>2.0,<3.0\". Push work
+      pools can auto-provision cloud resources, but that setup may create IAM
+      users, policies, registries, clusters, and networking in your cloud
+      account. Verify whether you need \"managed work pools\" on Prefect
+      infrastructure, \"push work pools\" in your cloud, or worker-polling
+      hybrid execution before migrating."
+    links:
+      - "https://www.prefect.io/pricing"
+      - "https://www.prefect.io/prefect/cloud"
+      - "https://docs.prefect.io/v3/how-to-guides/deployment_infra/serverless"
+      - "https://docs.prefect.io/v3/how-to-guides/migrate/upgrade-agents-to-wor\
+        kers"
+  - name: "Dagster+"
+    summary: "Dagster+ is Dagster Labs' managed orchestration platform on top of the
+      open source Dagster engine. As of 2026-03-19, public pricing combines
+      subscription plus usage: Solo is \"$10\" per month with 7.5k credits,
+      Starter is \"$100\" per month with 30k credits, serverless compute is
+      \"$0.005 per compute minute\", and overage is \"$0.03/credit\"; enterprise
+      pricing is custom. Dagster+ is offered in both Serverless and Hybrid
+      forms, with the managed control plane in both cases. The main
+      differentiator is Dagster's asset-centric model plus a very explicit split
+      between credit-metered orchestration events and separately billed
+      serverless compute."
+    when_to_use: "Use this when your team already wants Dagster's asset-based model
+      and can reason about credits, materializations, and ops as the main cost
+      driver. It is the better fit if you want a managed control plane but need
+      a documented path to move specific workloads from serverless to hybrid
+      execution."
+    tradeoffs: "The platform offers a clear managed control plane and both
+      serverless and hybrid deployment choices. The tradeoff is that cost is
+      less intuitive than flat seat pricing because you need to budget for
+      monthly credits, compute-minute charges, and possible credit overages
+      together."
+    cautions: "As of 2026-03-19, Dagster docs say Serverless is best for
+      orchestration and light compute, while Hybrid is recommended if you need
+      substantial compute, large in-memory datasets, multi-node distribution, or
+      do not want Dagster Labs as a data processor. Serverless currently has
+      hard limits including 100 GB bandwidth per day, 4500 step-minutes per day,
+      4 vCPU and 16 GB RAM per run, and all Serverless jobs run in the United
+      States unless you use the documented EU path. There is also an official
+      migration guide from Dagster+ Serverless to Hybrid, which is a signal that
+      packaging choice can become a migration task later."
+    links:
+      - "https://dagster.io/pricing"
+      - "https://docs.dagster.io/deployment/dagster-plus"
+      - "https://docs.dagster.io/deployment/dagster-plus/serverless"
+      - "https://docs.dagster.io/deployment/dagster-plus/hybrid"
+  - name: "Astronomer Astro"
+    summary: "Astronomer Astro is a fully managed Apache Airflow platform with
+      usage-based pricing built around clusters, always-on deployments, and
+      workers. As of 2026-03-19, Developer deployments start at \"$0.35/hr\",
+      Team starts at \"$0.42/hr\", dedicated clusters start at \"$2.40/hr\" on
+      Team and above, and worker compute starts at \"$0.13/hr\" while actively
+      running; networking costs are passed through from the cloud provider.
+      Astronomer also announced in 2025 that Team can be purchased pay-as-you-go
+      monthly, not only through larger annual contracts. The key differentiator
+      is staying in the Airflow ecosystem while offloading platform operations,
+      with optional dedicated clusters and a private-cloud offering."
+    when_to_use: "Use this when Airflow compatibility is the decisive requirement
+      and you are comfortable with always-on environment pricing for schedulers,
+      webservers, and triggerers. It fits teams that need managed Airflow
+      operations, dedicated networking options, and a clean path to
+      private-cloud or remote-execution enterprise setups."
+    tradeoffs: "Astro keeps worker billing elastic because worker compute scales to
+      zero, but deployments themselves run continuously and therefore create a
+      fixed hourly floor. That makes it more familiar for Airflow teams, but
+      often less attractive for sporadic workloads than platforms that charge
+      mainly for seats or event credits."
+    cautions: "As of 2026-03-19, Astro pricing explicitly states that deployments
+      run continuously 24/7, so 'scale to zero' applies to workers, not the full
+      Airflow environment. Dedicated clusters, private connectivity, and some
+      governance features sit on higher tiers, and networking charges are passed
+      through from AWS, GCP, or Azure. If you need air-gapped or in-environment
+      deployment, the official path is Astro Private Cloud rather than the
+      standard shared-cluster SaaS plans."
+    links:
+      - "https://www.astronomer.io/pricing/"
+      - "https://www.astronomer.io/blog/introducing-new-flexible-billing-option\
+        s-for-astro/"
+      - "https://www.astronomer.io/pricing/compare/"
+tags:
+  - "data"
+  - "orchestration"
+  - "pricing"
+  - "prefect"
+  - "dagster"
+  - "astronomer"
+aliases:
+  - "prefect vs dagster vs astronomer pricing"
+  - "managed orchestration pricing 2026"
+  - "dagster plus vs prefect cloud vs astro"
+related_cards:
+  - "backend/background-job-processing"
+  - "infra/container-orchestration"
+  - "data/data-pipeline-orchestration-dbt-cloud-vs-fivetran-vs-airbyte-2026"
+  - data/kestra-cloud-vs-self-hosted-pay-as-you-scale-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/prefect-cloud
+      name: Prefect Cloud
+    - type: package
+      id: package/prefect-v2-to-v3-range
+      name: prefect>2.0,<3.0
+      version_range: prefect>2.0,<3.0
+    - type: capability
+      id: capability/prefect-agents
+      name: Prefect agents
+    - type: capability
+      id: capability/prefect-workers
+      name: Prefect workers
+    - type: capability
+      id: capability/prefect-work-pools
+      name: Prefect v3 work-pool deployment patterns
+    - type: framework
+      id: framework/dagster-plus
+      name: Dagster+
+    - type: capability
+      id: capability/dagster-serverless
+      name: Dagster+ Serverless
+    - type: capability
+      id: capability/dagster-hybrid
+      name: Dagster+ Hybrid
+    - type: framework
+      id: framework/astronomer-astro
+      name: Astronomer Astro
+    - type: framework
+      id: framework/apache-airflow
+      name: Apache Airflow
+    - type: capability
+      id: capability/astro-private-cloud
+      name: Astro Private Cloud
+  edges:
+    - type: requires_version
+      from: capability/prefect-agents
+      to: package/prefect-v2-to-v3-range
+      note: Agents are described as used in prefect>2.0,<3.0.
+    - type: breaking_change_in
+      from: capability/prefect-workers
+      to: package/prefect-v2-to-v3-range
+      note: Workers are not a drop-in replacement for agents used in prefect>2.0,<3.0.
+    - type: breaking_change_in
+      from: framework/prefect-cloud
+      to: capability/prefect-work-pools
+      note: Prefect v3 emphasizes work pools, push work pools, and managed work pools
+        rather than the older agent model.
+    - type: breaking_change_in
+      from: capability/dagster-serverless
+      to: capability/dagster-hybrid
+      note: The card states there is an official migration guide from Dagster+
+        Serverless to Hybrid.
+    - type: locks_via
+      from: framework/astronomer-astro
+      to: framework/apache-airflow
+      note: Astronomer Astro is a fully managed Apache Airflow platform.
+    - type: locks_via
+      from: framework/astronomer-astro
+      to: capability/astro-private-cloud
+      note: If air-gapped or in-environment deployment is needed, the official path is
+        Astro Private Cloud.

@@ -130,6 +130,9 @@ related_cards:
   - cloud/reserved-instances-vs-spot-vs-savings-plans-optimization-2026
   - web/fastly-packaged-cdn-vs-legacy-online-pricing-2026
   - web/fastly-compute-vs-akamai-edgeworkers-vs-lambda-edge-pricing-2026
+  - storage/tigris-global-vs-single-region-object-storage-pricing-2026
+  - web/gcore-vs-cdn77-cdn-pricing-2026
+  - video/red5-cloud-pay-as-you-grow-vs-growth-after-august-6-2025-2026
 status: active
 tier: core
 updated: 2026-03-15

@@ -1,0 +1,175 @@
+id: "deployment/coolify-vs-dokploy-vs-northflank-paas-pricing-2026"
+title: "Coolify vs Dokploy vs Northflank PaaS Pricing as of 2026-03"
+problem: "Choose between self-hosted and managed PaaS options when per-server
+  fees, managed-cloud markups, and included platform features diverge sharply."
+context:
+  - "paas"
+  - "docker"
+  - "kubernetes"
+  - "aws"
+  - "gcp"
+  - "azure"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Coolify"
+    summary: "Coolify is a bring-your-own-server PaaS with a free self-hosted option
+      and a managed control plane. As of 2026-03-20, self-hosted is listed as
+      \"Free Forever\" with full feature access, while Coolify Cloud costs
+      \"$5/month\" base for up to 2 connected servers plus \"$3/month\" for each
+      additional server. The key pricing distinction is that Coolify Cloud does
+      not include workload infrastructure: your apps still run on servers you
+      provide, while the Coolify control plane runs on Coolify-managed
+      infrastructure. The pricing page also states Cloud and self-hosted share
+      the same feature set, so the paid difference is mainly operational
+      overhead and managed control-plane hosting."
+    when_to_use: "Use this when you want the lowest platform bill and are
+      comfortable supplying and operating your own servers. It is the strongest
+      fit for cost-sensitive teams that want a Heroku-like control plane without
+      paying per-container usage rates."
+    tradeoffs: "Lowest recurring platform fee if you already own servers, and
+      self-hosted has no feature gating on the pricing page. The tradeoff is
+      that you still own infrastructure, Docker host hygiene, and most
+      operational risk; Coolify Cloud removes control-plane hosting work, not
+      the need to run servers."
+    cautions: "As of 2026-03-20, Coolify Cloud pricing is per connected server, not
+      per app, but you still pay your cloud provider separately for those
+      servers. The pricing page does not indicate Cloud-only workload features,
+      so do not assume the managed plan includes compute, databases, or
+      enterprise support beyond what is explicitly listed."
+    links:
+      - "https://coolify.io/pricing/"
+      - "https://coolify.io/docs/get-started/introduction"
+      - "https://next.coolify.io/docs/get-started/cloud"
+  - name: "Dokploy"
+    summary: "Dokploy prices its hosted offering primarily by server count. As of
+      2026-03-20, the Hobby plan is \"$4.50/mo per server\" with 1 server
+      included, and the Startup plan starts at \"$15/mo\" with 3 servers
+      included and additional servers at \"$4.50/mo\". Startup adds unlimited
+      users and environments, unlimited backups and scheduled jobs, plus basic
+      RBAC and 2FA. Enterprise supports both \"Cloud\" and \"Self Hosted\"
+      modes, but the public pricing page pushes that tier to contact sales
+      rather than listing a self-serve self-hosted price."
+    when_to_use: "Use this when you want predictable per-server billing and your
+      team structure maps cleanly to Hobby or Startup limits. It is the better
+      fit when you need more built-in team features than Coolify Cloud exposes
+      publicly, but still want a simple server-based pricing model."
+    tradeoffs: "Per-server pricing is easy to estimate, and Startup includes
+      meaningful team features at a low entry price. The downside is that public
+      pricing does not expose a free self-hosted tier or a published enterprise
+      self-hosted price, so larger or compliance-heavy teams may hit a sales-led
+      path quickly."
+    cautions: "As of 2026-03-20, the public pricing page separates Enterprise into
+      Cloud and Self Hosted but does not publish a numeric self-hosted
+      enterprise price. If self-hosted licensing terms or enterprise support are
+      a blocker, check official docs or sales before committing architecture
+      around Dokploy."
+    links:
+      - "https://dokploy.com/pricing"
+      - "https://docs.dokploy.com"
+  - name: "Northflank"
+    summary: "Northflank is a usage-billed PaaS that can run on Northflank-managed
+      infrastructure or in your own AWS, GCP, or Azure account. As of
+      2026-03-20, its public pricing lists managed-cloud compute at \"$0.01667 /
+      vCPU / hour\" and \"$0.00833 / GB / hour\", plus \"$0.06 / GB\" network
+      egress, \"$0.15 / GB / month\" disk, \"$0.08 / GB / month\" builds and
+      backups, and \"$0.20 / GB\" logs and metrics with the first 10 GB/month
+      included. It also offers a free Sandbox tier with 2 free services, 1 free
+      database, and 2 free cron jobs, and a pay-as-you-go tier with no
+      seat-based pricing and per-second billing. The important policy difference
+      is that BYOC is not free platform software: Northflank's billing docs say
+      BYOC still incurs a flat fee per cluster, vCPU, and GB of memory deployed
+      through the platform."
+    when_to_use: "Use this when you want a more fully managed platform with built-in
+      CI/CD, preview environments, databases, and scaling, and you accept
+      metered billing. It is the strongest fit for teams that value platform
+      breadth and optional BYOC without operating the full control plane
+      themselves."
+    tradeoffs: "Northflank is the most feature-complete of the three from the public
+      pricing pages, and it supports both managed cloud and BYOC in one
+      platform. The tradeoff is more complex billing than server-count
+      platforms, and BYOC does not eliminate Northflank platform charges."
+    cautions: "As of 2026-03-20, Northflank publicly confirms that BYOC has flat
+      platform fees for clusters, vCPU, and memory, but the exact BYOC rate
+      details were not verified from the public pages opened here; check
+      official docs and the pricing calculator before modeling costs. Do not
+      assume BYOC means paying only your cloud provider bill."
+    links:
+      - "https://northflank.com/pricing"
+      - "https://northflank.com/docs/v1/application/billing/pricing-on-northfla\
+        nk"
+      - "https://northflank.com/features/managed-cloud"
+tags:
+  - "deployment"
+  - "paas"
+  - "pricing"
+  - "coolify"
+  - "dokploy"
+  - "northflank"
+aliases:
+  - "coolify vs dokploy pricing"
+  - "northflank byoc pricing"
+  - "self-hosted paas vs managed paas pricing"
+related_cards:
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - "infra/kubernetes-vs-managed-serverless-cost-tradeoff-2026"
+  - "deployment/preview-environments-cost-governance"
+  - cloud/northflank-network-pricing-cut-december-2025-impact-2026
+  - deployment/coolify-self-hosted-free-vs-cloud-per-server-pricing-2026
+  - deployment/dokploy-license-change-apache-2-and-source-available-enterprise-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/coolify
+      name: Coolify
+    - type: vendor
+      id: vendor/dokploy
+      name: Dokploy
+    - type: vendor
+      id: vendor/northflank
+      name: Northflank
+    - type: capability
+      id: capability/byoc
+      name: Bring Your Own Cloud
+      category: deployment_model
+    - type: capability
+      id: capability/managed-control-plane
+      name: Managed control plane
+      category: operations
+    - type: capability
+      id: capability/server-based-pricing
+      name: Server-based pricing
+      category: pricing
+    - type: capability
+      id: capability/usage-based-pricing
+      name: Usage-based pricing
+      category: pricing
+  edges:
+    - type: locks_via
+      from: vendor/coolify
+      to: capability/managed-control-plane
+      mechanism: Coolify Cloud is paid managed control-plane hosting while workloads
+        still run on servers you provide.
+    - type: locks_via
+      from: vendor/dokploy
+      to: capability/server-based-pricing
+      mechanism: Hosted pricing is primarily based on server count, with per-server
+        pricing and included server limits by plan.
+    - type: locks_via
+      from: vendor/northflank
+      to: capability/byoc
+      mechanism: BYOC still incurs Northflank platform fees per cluster, vCPU, and GB
+        of memory deployed through the platform.
+    - type: locks_via
+      from: vendor/northflank
+      to: capability/usage-based-pricing
+      mechanism: Public pricing is metered by resource usage including vCPU, memory,
+        egress, disk, builds, backups, logs, and metrics.

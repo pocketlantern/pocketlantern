@@ -1,0 +1,153 @@
+id: "web/grafbase-free-trial-vs-production-graphql-gateway-pricing-2026"
+title: "Grafbase Free Trial vs Production GraphQL Gateway Pricing 2026"
+problem: "Teams evaluating a managed GraphQL gateway need to know when
+  Grafbase’s trial or starter posture stops being viable and what the current
+  production pricing or enterprise gating implies for launch plans."
+context:
+  - "graphql"
+  - "graphql-federation"
+  - "api-gateway"
+  - "self-hosting"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "low-ops"
+  - "compliance"
+candidates:
+  - name: "Grafbase Open Source Free Gateway"
+    summary: "As of 2026-03-27, Grafbase lists an \"Open Source Free\" option on its
+      pricing page. The official pricing page says this includes a
+      high-performance Rust gateway, an open-source license, no feature gating,
+      and community support. Grafbase’s official blog states the gateway is free
+      and licensed under the Mozilla Public License Version 2.0. This is the
+      only publicly posted no-cost production posture with explicit packaging
+      details."
+    when_to_use: "Use this when you want the Grafbase gateway itself without
+      entering a sales process and you can operate it yourself. The decisive
+      factor is that Grafbase publicly exposes a free open-source gateway, but
+      support is community-only."
+    tradeoffs: "Lowest direct software cost and no published feature gating on the
+      gateway itself, but you do not get published SLA or dedicated support."
+    cautions: "Do not confuse the free gateway with Grafbase’s time-limited trial of
+      the broader platform. If your launch requires contractual support, uptime
+      commitments, or vendor-managed success/support, the pricing page routes
+      that to Enterprise."
+    links:
+      - "https://grafbase.com/pricing"
+      - "https://grafbase.com/blog/introducing-grafbase-gateway-webassembly-hoo\
+        ks"
+      - "https://grafbase.com/docs/gateway/installation"
+  - name: "Grafbase 60-Day Free Trial"
+    summary: "As of 2026-03-27, Grafbase advertises \"Try for free for 60 days, no
+      credit card required\" on both its homepage and pricing page. The pricing
+      FAQ states that after the 60-day trial, you will be invited to contact
+      sales to discuss the right plan and continue with Grafbase. That makes the
+      trial an evaluation path, not a permanently published starter plan. For
+      launch planning, the blocker is that the public site does not show a
+      self-serve paid production tier after trial expiry."
+    when_to_use: "Use this when you need a short evaluation window for Grafbase’s
+      managed or platform experience and you are prepared to decide quickly. The
+      decisive factor is that the official trial has a fixed 60-day limit and
+      explicitly ends in a sales handoff."
+    tradeoffs: "Fastest way to evaluate without a card, but it does not provide a
+      transparent self-serve production price path."
+    cautions: "Do not assume the trial converts into a posted monthly starter plan.
+      As of 2026-03-27, Grafbase’s own FAQ says continuation after trial
+      requires contacting sales."
+    links:
+      - "https://grafbase.com/"
+      - "https://grafbase.com/pricing"
+  - name: "Grafbase Enterprise Custom Pricing"
+    summary: "As of 2026-03-27, Grafbase’s only publicly posted paid production
+      packaging is \"Enterprise\" with custom pricing. The pricing page lists
+      fully self-hostable deployment, roadmap influence, a dedicated customer
+      success team, Slack Connect, 24/7/365 enterprise support, and up to 99.99%
+      SLA. Grafbase also markets cloud, hybrid, and fully air-gapped on-prem
+      operation, plus enterprise security and compliance positioning. The
+      practical implication is that supported production adoption is sales-led
+      rather than self-serve."
+    when_to_use: "Use this when production launch needs vendor commitments,
+      enterprise support, or regulated-environment deployment options. The
+      decisive factor is that Grafbase publicly packages supported production
+      under custom-priced Enterprise rather than a posted standard paid tier."
+    tradeoffs: "Strongest support and deployment flexibility, but budget approval
+      and procurement depend on a sales cycle because no public price is
+      posted."
+    cautions: "If your launch plan depends on a fixed public list price, Grafbase
+      does not publish one for supported production on the pricing page as of
+      2026-03-27. Teams with tight procurement timelines should treat sales
+      engagement as a gating task, not a later optimization."
+    links:
+      - "https://grafbase.com/pricing"
+      - "https://grafbase.com/"
+      - "https://grafbase.com/docs/gateway/installation"
+tags:
+  - "web"
+  - "grafbase"
+  - "graphql"
+  - "gateway"
+  - "pricing"
+aliases:
+  - "grafbase pricing"
+  - "grafbase free trial"
+  - "grafbase enterprise pricing"
+  - "grafbase graphql gateway pricing"
+related_cards:
+  - "backend/graphql-subscriptions-infrastructure-cost-2026"
+  - "infra/production-readiness"
+  - "_archived/rest-vs-graphql-vs-grpc"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/grafbase
+      name: Grafbase
+    - type: package
+      id: package/grafbase-open-source-free-gateway
+      name: Grafbase Open Source Free Gateway
+    - type: package
+      id: package/grafbase-60-day-free-trial
+      name: Grafbase 60-Day Free Trial
+    - type: package
+      id: package/grafbase-enterprise-custom-pricing
+      name: Grafbase Enterprise Custom Pricing
+    - type: capability
+      id: capability/community-support
+      name: Community support
+    - type: capability
+      id: capability/dedicated-support
+      name: Dedicated customer success and enterprise support
+    - type: capability
+      id: capability/sla
+      name: Up to 99.99% SLA
+    - type: capability
+      id: capability/self-hosting
+      name: Fully self-hostable deployment
+    - type: capability
+      id: capability/compliance
+      name: Enterprise security and compliance positioning
+  edges:
+    - type: locks_via
+      from: capability/community-support
+      to: package/grafbase-open-source-free-gateway
+    - type: eol_date
+      from: package/grafbase-60-day-free-trial
+      to: null
+      date: 2026-05-26
+      basis: Advertised as a 60-day trial as of 2026-03-27
+    - type: locks_via
+      from: capability/dedicated-support
+      to: package/grafbase-enterprise-custom-pricing
+    - type: locks_via
+      from: capability/sla
+      to: package/grafbase-enterprise-custom-pricing
+    - type: locks_via
+      from: capability/self-hosting
+      to: package/grafbase-enterprise-custom-pricing
+    - type: locks_via
+      from: capability/compliance
+      to: package/grafbase-enterprise-custom-pricing

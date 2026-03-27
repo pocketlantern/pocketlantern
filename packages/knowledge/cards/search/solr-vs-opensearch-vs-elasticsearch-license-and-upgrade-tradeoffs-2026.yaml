@@ -1,0 +1,177 @@
+id: "search/solr-vs-opensearch-vs-elasticsearch-license-and-upgrade-tradeoffs-2026"
+title: "Solr vs OpenSearch vs Elasticsearch After 2026 License and Upgrade Shifts"
+problem: "Choose a self-managed search stack now that Elastic changed
+  source-code licensing, OpenSearch 3.x raised the upgrade baseline, and Solr 10
+  added notable platform and migration work."
+context:
+  - "search"
+  - "self-managed"
+  - "lucene"
+  - "java"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Apache Solr 10"
+    summary: "Apache Solr 10.0.0 was announced on 2026-03-03 and is the latest Solr
+      release as of 2026-03-27. It remains Apache License 2.0 software with no
+      vendor license fee shown on the official project site. The main tradeoff
+      is upgrade work: Solr 10 requires Java 21, moves to Jetty 12 and Jakarta,
+      and removes some older capabilities such as HDFS-backed indexes and
+      snapshots. Solr 10.x is current, 9.10.x is the previous major, and
+      versions below 9.10 are EOL."
+    when_to_use: "Use when Apache 2.0 licensing is mandatory and you want to avoid
+      vendor-controlled feature tiers. It fits teams that can absorb Java and
+      config migration work and prefer a community-governed stack over a
+      commercial distribution."
+    tradeoffs: "No vendor license lock-in and no published software fee, but the
+      upgrade burden is real because the Java baseline, servlet stack, and some
+      legacy features changed at once."
+    cautions: "As of 2026-03-27, Solr 10 requires Java 21. Solr 9.10 introduced a
+      SolrCloud safeguard that blocks lower-version nodes from starting if the
+      cluster already contains a higher major.minor version, so plan upgrades
+      carefully. Review removed features like HDFS storage, deprecated field
+      types, and Jetty/Jakarta-related client changes before committing."
+    links:
+      - "https://solr.apache.org/downloads.html"
+      - "https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-\
+        in-solr-10.html"
+      - "https://solr.apache.org/"
+  - name: "OpenSearch 3.x"
+    summary: "OpenSearch is Apache 2.0-licensed, and the official download page
+      shows v3.5.0 as current as of 2026-03-27. The maintenance policy shows 3.x
+      is current, 2.19.x stays in maintenance until 4.0 GA, and 1.x is
+      deprecated. The key upgrade constraint is that 1.3 or any 2.x deployment
+      must first move to 2.19 before 3.1+, and OpenSearch 3.0 also raises the
+      minimum JDK to 21 with additional pre-upgrade checks for some settings and
+      plugins."
+    when_to_use: "Use when you want Apache 2.0 terms with an actively maintained
+      fork and a clearer long-term path than staying on old Elasticsearch
+      distributions. It is the pragmatic choice if you can accept a staged
+      upgrade through 2.19 and validate plugin and index-setting compatibility
+      first."
+    tradeoffs: "Licensing is clean and current releases are active, but 3.x is not a
+      drop-in jump from older clusters because the compatibility baseline moved
+      and some settings now fail upgrade checks."
+    cautions: "As of 2026-03-27, OpenSearch 1.3 or 2.x must go through 2.19 before
+      3.1. OpenSearch 3.0 requires JDK 21, plugin versions must match OpenSearch
+      major.minor.patch, and some deprecated index settings will block upgrade
+      validation. If you use searchable snapshots or legacy Observability
+      notebooks, you must remediate those before 3.x."
+    links:
+      - "https://opensearch.org/"
+      - "https://opensearch.org/downloads/"
+      - "https://opensearch.org/releases/"
+      - "https://docs.opensearch.org/latest/upgrade-or-migrate/"
+  - name: "Elasticsearch self-managed"
+    summary: "Elastic's default self-managed distribution remains under Elastic
+      License 2.0, while the source code for the free portions of Elasticsearch
+      and Kibana gained AGPLv3 as an additional option before 8.16 GA; Elastic's
+      FAQ describes the source as SSPL, AGPLv3, and ELv2, but says releases
+      continue under ELv2. As of 2026-03-27, Elastic still offers a free Basic
+      tier and paid self-managed subscriptions, but the official subscriptions
+      page says pricing requires contacting sales. As of 2026-03-27, the pricing
+      FAQ also says self-managed Gold is no longer available for new customers,
+      leaving Platinum and Enterprise as the active paid self-managed tiers for
+      new buyers. This makes Elasticsearch the least price-transparent option of
+      the three."
+    when_to_use: "Use when you specifically want the official Elastic distribution
+      and are comfortable with ELv2 terms plus sales-led self-managed licensing.
+      It is the right fit when Elastic-only paid features matter enough to
+      justify commercial negotiation and vendor feature gating."
+    tradeoffs: "You get the official Elastic stack and paid feature path, but not
+      Apache 2.0 distribution terms, and self-managed commercial pricing is not
+      publicly posted."
+    cautions: "As of 2026-03-27, the AGPL change applies to source-code access, not
+      to the default distribution, which remains ELv2. New self-managed
+      customers cannot buy Gold, and some advanced search and ML capabilities
+      are explicitly tied to Platinum or Enterprise. Check official docs for
+      current version-specific upgrade steps and exact subscription pricing."
+    links:
+      - "https://www.elastic.co/pricing/faq/licensing"
+      - "https://www.elastic.co/licensing/elastic-license/faq"
+      - "https://www.elastic.co/pricing/faq"
+      - "https://www.elastic.co/subscriptions"
+tags:
+  - "search"
+  - "solr"
+  - "opensearch"
+  - "elasticsearch"
+  - "licensing"
+  - "upgrade-planning"
+aliases:
+  - "solr vs opensearch vs elasticsearch self managed"
+  - "search engine licensing 2026"
+  - "opensearch 3 upgrade baseline"
+related_cards:
+  - "_archived/elasticsearch-agpl-vs-elv2-vs-sspl-adoption-after-relicensing-20\
+    26"
+  - "search/opensearch-js-client-2-x-vs-3-x-breaking-changes-2026"
+  - "database/search-postgres-vs-opensearch-vs-meilisearch"
+  - search/vespa-vs-opensearch-vs-elasticsearch-for-vector-search-cost-2026
+  - search/elastic-cloud-standard-vs-gold-vs-platinum-support-percent-of-spend-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: package
+      id: package/solr-10
+      name: Apache Solr 10
+    - type: package
+      id: package/solr-below-9-10
+      name: Solr versions below 9.10
+    - type: runtime
+      id: runtime/java-21
+      name: Java 21
+    - type: capability
+      id: capability/hdfs-backed-indexes
+      name: HDFS-backed indexes
+    - type: capability
+      id: capability/snapshots
+      name: Snapshots
+    - type: package
+      id: package/opensearch-3
+      name: OpenSearch 3.x
+    - type: package
+      id: package/opensearch-2-19
+      name: OpenSearch 2.19
+    - type: package
+      id: package/opensearch-1-3
+      name: OpenSearch 1.3
+    - type: package
+      id: package/elasticsearch-self-managed
+      name: Elasticsearch self-managed
+  edges:
+    - type: requires_version
+      from: package/solr-10
+      to: runtime/java-21
+      note: Solr 10 requires Java 21.
+    - type: eol_date
+      from: package/solr-below-9-10
+      to: null
+      status: eol
+      note: Versions below 9.10 are EOL.
+    - type: breaking_change_in
+      from: capability/hdfs-backed-indexes
+      to: package/solr-10
+      note: Solr 10 removes HDFS-backed indexes.
+    - type: breaking_change_in
+      from: capability/snapshots
+      to: package/solr-10
+      note: Solr 10 removes snapshots.
+    - type: requires_version
+      from: package/opensearch-3
+      to: runtime/java-21
+      note: OpenSearch 3.0 requires JDK 21.
+    - type: requires_version
+      from: package/opensearch-3
+      to: package/opensearch-2-19
+      note: 1.3 or any 2.x deployment must first move to 2.19 before 3.1+.
+    - type: requires_version
+      from: package/opensearch-1-3
+      to: package/opensearch-2-19
+      note: OpenSearch 1.3 must go through 2.19 before 3.1+.

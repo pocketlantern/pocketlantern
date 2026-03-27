@@ -1,0 +1,136 @@
+id: "data/google-ads-api-v20-sunset-june-2026"
+title: "Google Ads API v20 Sunset in June 2026"
+problem: "Choose whether to hop from v20 straight to a newer version now or do
+  an intermediate upgrade before June 2026 shuts v20 off."
+context:
+  - "google-ads-api"
+  - "ads-tech"
+  - "api-versioning"
+constraints:
+  - "enterprise"
+  - "high-scale"
+  - "compliance"
+candidates:
+  - name: "Jump from v20 directly to v22 now"
+    summary: "As of 2026-03-20, Google lists v20 with a tentative sunset in June
+      2026, v21 with a tentative sunset in August 2026, and v22 with a tentative
+      sunset in October 2026. Google also states you do not need to upgrade in
+      strict sequential order and can move from version N directly to N+2, while
+      client libraries can support gradual service-by-service migration. Major
+      versions use separate endpoints and can include breaking changes, so this
+      path compresses the v20 to v21 and v21 to v22 migration work into one
+      program. As of 2026-03-20, the official docs surface access-level quotas
+      rather than version-specific API pricing: Basic allows 15,000 operations
+      per day and Standard allows unlimited operations for most services."
+    when_to_use: "Use this when you want to avoid doing two major-version migrations
+      inside a few months and you can afford one concentrated regression cycle
+      now. It is the stronger choice if your integration is mature enough to
+      absorb both v21 and v22 breaking changes together in exchange for the
+      longest post-migration support window currently verified."
+    tradeoffs: "One migration program, one endpoint hop, and the longest verified
+      runway versus more combined breakage to test at once."
+    cautions: "You must review both the v20 to v21 and v21 to v22 changes together.
+      Verified blocker-level changes include renamed video metrics in v22,
+      removal of AssetPerformanceLabel for Performance Max, replacement of
+      Campaign.url_expansion_opt_out handling with AssetAutomationType
+      FINAL_URL_EXPANSION_TEXT_ASSET_AUTOMATION, a 10,000-operations limit per
+      AddBatchJobOperations request, and stricter ListBatchJobResultsRequest
+      page_size behavior."
+    links:
+      - "https://developers.google.com/google-ads/api/docs/sunset-dates"
+      - "https://developers.google.com/google-ads/api/docs/concepts/versioning"
+      - "https://developers.google.com/google-ads/api/docs/release-notes"
+      - "https://developers.google.com/google-ads/api/diff-tool/v22/versus-v21/\
+        diff"
+  - name: "Upgrade to v21 first, then move again before v21 sunsets"
+    summary: "As of 2026-03-20, moving from v20 to v21 buys only a short extension
+      because v21 is tentatively scheduled to sunset in August 2026, about two
+      months after v20. v21 already introduces new surface area such as AI Max
+      for Search controls and adds account and campaign fields for EU political
+      advertising declaration in v21.1. This path reduces the immediate jump
+      size, but it still requires another major-version migration shortly after
+      because v22 was released on 2025-10-15 and remains the latest fully
+      verified major version in the official release notes. As of 2026-03-20,
+      the official access model remains quota-based rather than showing
+      version-specific API pricing, with Basic at 15,000 operations per day and
+      Standard unlimited for most services."
+    when_to_use: "Use this when your current codebase is brittle and the fastest
+      safe move is a smaller first step that gets you off the June 2026 v20
+      deadline. It is mainly justified if your team needs to isolate
+      v21-specific breakage first, especially around campaign behavior and
+      policy fields, before taking on v22."
+    tradeoffs: "Smaller first migration and potentially simpler debugging now, but
+      it creates two endpoint upgrades, two test cycles, and another forced
+      change window before August or October 2026 deadlines arrive."
+    cautions: "Do not treat v21 as a durable resting place. Verified blocker-level
+      migration issues include major-version endpoint changes, AI Max for Search
+      additions in v21, video metric renames already visible around the v21
+      release, and ongoing EU political advertising declaration handling where
+      missing self-declaration can already trigger criterion and experiment
+      errors in some flows."
+    links:
+      - "https://developers.google.com/google-ads/api/docs/sunset-dates"
+      - "https://developers.google.com/google-ads/api/docs/concepts/versioning"
+      - "https://developers.google.com/google-ads/api/docs/release-notes"
+      - "https://developers.google.com/google-ads/api/diff-tool/v21/versus-v20/\
+        diff"
+tags:
+  - "data"
+  - "google-ads-api"
+  - "migration"
+  - "api-versioning"
+aliases:
+  - "google ads api v20 sunset"
+  - "google ads api june 2026 upgrade"
+  - "google ads api v20 to v22"
+related_cards:
+  - "data/google-ads-api-conversion-environment-bidding-change-2026"
+  - "_archived/migration-strategy"
+  - "backend/api-versioning"
+  - data/google-ads-api-v21-vs-v22-before-august-2026
+  - data/ad-manager-soap-v202508-sunset-august-2026-vs-beta-api
+  - data/campaign-manager-360-api-version-sunset-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: package
+      id: package/google-ads-api-v20
+      name: Google Ads API v20
+      vendor: vendor/google
+    - type: package
+      id: package/google-ads-api-v21
+      name: Google Ads API v21
+      vendor: vendor/google
+    - type: package
+      id: package/google-ads-api-v22
+      name: Google Ads API v22
+      vendor: vendor/google
+  edges:
+    - type: eol_date
+      from: package/google-ads-api-v20
+      to: null
+      date: 2026-06
+      status: tentative
+    - type: eol_date
+      from: package/google-ads-api-v21
+      to: null
+      date: 2026-08
+      status: tentative
+    - type: eol_date
+      from: package/google-ads-api-v22
+      to: null
+      date: 2026-10
+      status: tentative
+    - type: breaking_change_in
+      from: package/google-ads-api-v20
+      to: package/google-ads-api-v21
+    - type: breaking_change_in
+      from: package/google-ads-api-v21
+      to: package/google-ads-api-v22

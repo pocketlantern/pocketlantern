@@ -140,6 +140,14 @@ related_cards:
   - security/permit-community-vs-startup-vs-pro-quotas-2026
   - security/cerbos-cloud-vs-on-prem-hub-after-january-2026-launch
   - security/permitio-vs-oso-cloud-policy-hosting-2026
+  - backend/directus-v11-extension-api-and-policy-breaking-changes-2026
+  - devtools/cursor-teams-vs-individual-plans-after-2025-pricing-reset
+  - security/teleport-community-vs-enterprise-license-and-access-policy-2026
+  - auth/authzed-cloud-serverless-vs-dedicated-pricing-2026
+  - devtools/insomnia-essentials-vs-pro-vs-enterprise-mock-request-pricing-2026
+  - security/cerbos-open-source-vs-hub-production-2026
+  - design/fern-docs-basic-vs-pro-authed-docs-ai-search-2026
+tier: core
 updated: "2026-03-15"
 review_by: 2026-08-10
 sidecar_hard_facts:

@@ -1,0 +1,184 @@
+id: "testing/playwright-mcp-vs-browser-use-vs-stagehand-agent-browser-cost-2026"
+title: "Playwright MCP vs Browser Use vs Stagehand Agent Browser Cost 2026"
+problem: "Choose an agent-browser testing stack when browser-minute pricing,
+  concurrency caps, and hosted execution limits changed rapidly in 2026."
+context:
+  - "testing"
+  - "playwright"
+  - "mcp"
+  - "browser-automation"
+  - "ai-agents"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Playwright MCP with self-hosted browsers or Cloudflare Browser Rendering"
+    summary: "Microsoft's official Playwright MCP server is open source, and the
+      GitHub repo shows release \"v0.0.68\" dated 2026-02-14. The core server
+      itself does not publish browser-minute pricing because it normally runs
+      against your own local or self-managed browser infrastructure. If you want
+      hosted execution, Cloudflare documents a Playwright MCP fork for Browser
+      Rendering; as of 2026-03-27, Workers Paid includes 10 browser hours per
+      month and 10 concurrent browsers, then charges \"$0.09\" per additional
+      browser hour and \"$2.00\" per additional concurrent browser. Cloudflare's
+      current Playwright MCP page also says its fork \"v1.1.1\" is synced only
+      with upstream Playwright MCP \"v0.0.30\", so hosted Cloudflare MCP may lag
+      current upstream features."
+    when_to_use: "Use this when you want the lowest software licensing cost and you
+      can accept owning the browser runtime yourself, or when you already
+      standardize on Playwright and MCP clients. The decisive factor is whether
+      self-hosting is acceptable; if not, Cloudflare is the clearest official
+      hosted path, but its pricing and version lag need to be accepted upfront."
+    tradeoffs: "Best control and least vendor lock-in if self-hosted. Hosted
+      Cloudflare execution is inexpensive at low usage, but Workers Bindings
+      adds concurrency charges and the Cloudflare fork is not on the latest
+      upstream release line."
+    cautions: "As of 2026-03-27, Cloudflare Browser Rendering paid accounts are
+      capped at 30 concurrent browsers per account by default unless Cloudflare
+      approves higher limits. Cloudflare's Playwright MCP deployment requires
+      `nodejs_compat` and a `compatibility_date` of 2025-09-15 or later."
+    links:
+      - "https://github.com/microsoft/playwright-mcp"
+      - "https://developers.cloudflare.com/browser-rendering/playwright/playwri\
+        ght-mcp/"
+      - "https://developers.cloudflare.com/browser-rendering/pricing/"
+      - "https://developers.cloudflare.com/browser-rendering/limits/"
+  - name: "Browser Use Cloud"
+    summary: "Browser Use is a hosted agent-browser platform with its own API
+      pricing instead of only charging for raw browser runtime. As of
+      2026-03-27, browser sessions cost \"$0.06/hour\" on pay-as-you-go and
+      \"$0.03/hour\" on Business or Scaleup, with a 1-minute minimum charge,
+      upfront billing, proportional refunds on early stop, and a 4-hour maximum
+      session timeout. Agent tasks are billed separately at \"$0.01\" per
+      started task plus per-step model charges, with `browser-use-2.0` at
+      \"$0.006\" per step and `browser-use-llm` at \"$0.002\" per step. Browser
+      Use also exposes a newer V3 token-based API, so pricing mode itself is now
+      a migration consideration."
+    when_to_use: "Use this when you want the least operational work and want hosted
+      browsers plus agent orchestration in one service. The decisive factor is
+      that Browser Use bundles the browser runtime and agent layer, which is
+      simpler for small teams but creates two-part billing: browser time plus
+      agent/model cost."
+    tradeoffs: "Fastest path to managed execution and built-in agent behavior. Less
+      cost-predictable than plain browser-hour services because task-init,
+      per-step, token-based V3, proxies, and skills can all stack onto the
+      browser bill."
+    cautions: "The official pricing page does not publish a public hard concurrency
+      cap, so check official docs or your account limits before assuming
+      parallel scale. As of 2026-03-27, V3 token billing and older per-step
+      billing coexist, so migrations can change cost shape even if workflows
+      stay the same."
+    links:
+      - "https://docs.browser-use.com/cloud/pricing"
+      - "https://docs.browser-use.com/cloud/introduction"
+      - "https://docs.browser-use.com/cloud/guides/browser-api"
+      - "https://docs.browser-use.com/cloud/guides/mcp-server"
+  - name: "Stagehand v3 with Browserbase"
+    summary: "Stagehand's official docs are on the \"v3\" line as of 2026-03-27 and
+      position it as an AI-powered browser automation framework maintained by
+      Browserbase. Stagehand itself is framework software; the clearest official
+      hosted browser cost comes from Browserbase pricing. As of 2026-03-27,
+      Browserbase Free includes 3 concurrent browsers and 1 browser hour,
+      Developer is \"$20/month\" with 25 concurrent browsers and 100 included
+      browser hours then \"$0.12/browser hour\", and Startup is \"$99/month\"
+      with 100 concurrent browsers and 500 included hours then \"$0.10/browser
+      hour\". Browserbase also publishes session duration limits: 15 minutes on
+      Free and 6 hours on Developer and Startup."
+    when_to_use: "Use this when you want a code-first automation stack that can mix
+      natural-language actions with deterministic browser control, and you are
+      comfortable pairing the framework with Browserbase infrastructure. The
+      decisive factor is that Browserbase publishes materially higher included
+      concurrency than Cloudflare's default hosted limits, which matters for
+      parallel test agents."
+    tradeoffs: "Good fit for teams that want Stagehand's higher-level primitives
+      without building all orchestration from scratch. More vendor-coupled than
+      plain Playwright MCP once you rely on Browserbase-specific hosted
+      economics."
+    cautions: "If you were planning to run Stagehand on Cloudflare Browser Rendering
+      instead of Browserbase, Cloudflare states that Browser Rendering supports
+      `@browserbasehq/stagehand` `v2.5.x` only and that Stagehand `v3` and later
+      are not supported because they are not Playwright-based. Cloudflare's
+      Stagehand example also requires Zod v3 and is not compatible with Zod v4."
+    links:
+      - "https://docs.stagehand.dev/v3/first-steps/introduction"
+      - "https://www.browserbase.com/pricing"
+      - "https://developers.cloudflare.com/browser-rendering/stagehand/"
+tags:
+  - "testing"
+  - "playwright"
+  - "browser-use"
+  - "stagehand"
+  - "mcp"
+  - "pricing"
+aliases:
+  - "playwright mcp vs browser use vs stagehand pricing"
+  - "agent browser stack cost 2026"
+  - "browser minute pricing playwright mcp browser use stagehand"
+related_cards:
+  - "testing/browserbase-vs-browserless-browser-session-pricing-2026"
+  - "testing/playwright-cloud-vs-managed-browser-grid-2026"
+  - "ai/mcp-server-hosting-and-distribution-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/microsoft
+      name: Microsoft
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+    - type: vendor
+      id: vendor/browser-use
+      name: Browser Use
+    - type: vendor
+      id: vendor/browserbase
+      name: Browserbase
+    - type: package
+      id: package/playwright-mcp
+      name: Playwright MCP
+    - type: framework
+      id: framework/stagehand
+      name: Stagehand
+    - type: package
+      id: package/zod
+      name: Zod
+    - type: runtime
+      id: runtime/nodejs-compat
+      name: nodejs_compat
+  edges:
+    - type: locks_via
+      from: vendor/cloudflare
+      to: package/playwright-mcp
+      version: v0.0.30
+      context: Cloudflare's Playwright MCP fork v1.1.1 is synced only with upstream
+        Playwright MCP v0.0.30.
+    - type: requires_version
+      from: vendor/cloudflare
+      to: runtime/nodejs-compat
+      version: 2025-09-15
+      field: compatibility_date
+      context: Cloudflare's Playwright MCP deployment requires nodejs_compat and a
+        compatibility_date of 2025-09-15 or later.
+    - type: requires_version
+      from: vendor/cloudflare
+      to: framework/stagehand
+      version: v2.5.x
+      context: Cloudflare Browser Rendering supports @browserbasehq/stagehand v2.5.x
+        only.
+    - type: breaking_change_in
+      from: framework/stagehand
+      to: vendor/cloudflare
+      version: v3
+      context: Stagehand v3 and later are not supported on Cloudflare Browser
+        Rendering because they are not Playwright-based.
+    - type: requires_version
+      from: vendor/cloudflare
+      to: package/zod
+      version: v3
+      context: Cloudflare's Stagehand example requires Zod v3 and is not compatible
+        with Zod v4.

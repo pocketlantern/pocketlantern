@@ -1,0 +1,176 @@
+id: "security/socket-vs-aikido-vs-endor-labs-supply-chain-pricing-2026"
+title: "Socket vs Aikido vs Endor Labs Supply Chain Security Pricing 2026"
+problem: "Teams replacing basic dependency scanning need a fresh vendor
+  comparison because current 2026 repo, contributor, and policy-pack pricing
+  varies sharply across these tools."
+context:
+  - "software-supply-chain-security"
+  - "dependency-scanning"
+  - "appsec"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Socket"
+    summary: "Socket publishes self-serve pricing, which makes it the easiest of the
+      three to model upfront. As of 2026-03-26, the pricing page shows
+      self-serve Free at \"$0 per month, per developer,\" Team at \"$25 per
+      month, per developer,\" and Business at \"$50 per month, per developer,\"
+      with annual billing advertised at 20% off. Socket measures a billable
+      developer as someone who committed to a scanned repository in the last 90
+      days. The page also states that products are purchased individually and
+      must stay within the same plan, with plan price varying by product, so
+      these published prices should be treated as the listed self-serve plan
+      rates rather than a universal price across every Socket module."
+    when_to_use: "Use Socket when you want transparent public pricing and can
+      tolerate developer-based billing tied to recent commit activity. It fits
+      cost-sensitive teams that need quick budget clarity and policy controls by
+      repository label more than a bundled AppSec platform."
+    tradeoffs: "Strong budget predictability and clean self-serve packaging, but
+      spend can rise with active contributors and with multiple products under
+      the same plan family. Repository-label limits are a real packaging
+      boundary on lower tiers."
+    cautions: "The main migration caveat is the billing unit: contributor count is
+      based on commits in the last 90 days, not just named seats. Also verify
+      how many repository labels you need before moving from a single global
+      policy model, because Free includes 1 label, Team 3, and Business
+      unlimited as of 2026-03-26."
+    links:
+      - "https://socket.dev/pricing"
+  - name: "Aikido Security"
+    summary: "Aikido publishes platform pricing as flat monthly bundles with
+      included user and repo limits. As of 2026-03-26, the pricing page shows
+      Free at \"$0\" with 2 users and 10 repos, Basic at \"$300 / month\" with
+      10 users and 100 repos, Pro at \"$600 / month\" with 10 users and 200
+      repos, and Advanced also displayed at \"$600 / month\" with 10 users and
+      500 repos. The same bundles also carry fair-usage limits for containers,
+      domains, cloud accounts, AI AutoFixes, and protected requests."
+    when_to_use: "Use Aikido when you want a bundled AppSec platform and your
+      decision is driven more by repo and cloud-asset coverage than by
+      per-commit contributor counting. It is especially attractive for small
+      teams that want one vendor for SCA plus adjacent scanners and compliance
+      reporting."
+    tradeoffs: "The bundle can be cheaper than assembling multiple point tools, but
+      the fair-usage caps make planning more about repos, images, domains, and
+      cloud accounts than just seats. Pricing is clearer than quote-only
+      vendors, but less granular than pure per-developer models."
+    cautions: "Do not treat the sticker price as unlimited platform access: each
+      tier has explicit fair-usage ceilings. Also note that the pricing page
+      currently shows both Pro and Advanced at \"$600 / month\" for 10 users as
+      of 2026-03-26, so check official docs or sales before assuming that
+      display is stable."
+    links:
+      - "https://www.aikido.dev/pricing"
+      - "https://help.aikido.dev"
+  - name: "Endor Labs"
+    summary: "Endor Labs does not publish numeric public pricing on its pricing
+      page. As of 2026-03-26, the official page shows quote-only packaging for
+      Core and Pro, with Pro adding capabilities such as upgrade impact
+      analysis, container scanning, binary scanning, artifact signing, and CI/CD
+      security. The page also lists separate packaging for Patches and mentions
+      add-ons such as CoDe and SBOM Hub, so total cost is likely
+      package-plus-add-on rather than a single simple seat or repo rate."
+    when_to_use: "Use Endor Labs when you need enterprise-grade reachability,
+      upgrade analysis, and patch workflows and are already comfortable with a
+      sales-led procurement process. It fits enterprises optimizing developer
+      time and policy sophistication more than teams that need instant public
+      price comparison."
+    tradeoffs: "Feature depth is stronger for organizations that care about
+      noisy-CVE reduction and remediation workflow, but budgeting is harder
+      because there are no public list prices. Add-on packaging can improve fit,
+      but it also complicates apples-to-apples comparison against self-serve
+      competitors."
+    cautions: "The blocker-level caveat is procurement friction: you cannot verify a
+      public per-seat, per-repo, or per-contributor price from the official
+      pricing page as of 2026-03-26. Also account for separate packaging around
+      Patches, CoDe, and SBOM Hub before assuming the base plan covers your full
+      migration target."
+    links:
+      - "https://www.endorlabs.com/pricing"
+      - "https://docs.endorlabs.com/managing-policies/"
+tags:
+  - "security"
+  - "supply-chain-security"
+  - "pricing"
+  - "dependency-scanning"
+aliases:
+  - "socket pricing 2026"
+  - "aikido pricing 2026"
+  - "endor labs pricing 2026"
+  - "software composition analysis pricing 2026"
+related_cards:
+  - "security/code-scanning-vendor-cost-sonarqube-vs-github-advanced-security-v\
+    s-snyk-2026"
+  - "security/dependency-scanning-sast-sca-boundary"
+  - "security/supply-chain-security-for-node"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/socket
+      name: Socket
+    - type: vendor
+      id: vendor/aikido-security
+      name: Aikido Security
+    - type: vendor
+      id: vendor/endor-labs
+      name: Endor Labs
+    - type: capability
+      id: capability/recent-commit-activity-billing
+      name: Recent commit activity billing
+    - type: capability
+      id: capability/repository-label-limits
+      name: Repository label limits
+    - type: capability
+      id: capability/repo-and-user-bundle-limits
+      name: Repo and user bundle limits
+    - type: capability
+      id: capability/fair-usage-limits
+      name: Fair-usage limits
+    - type: capability
+      id: capability/quote-only-packaging
+      name: Quote-only packaging
+    - type: capability
+      id: capability/add-on-packaging
+      name: Add-on packaging
+  edges:
+    - type: locks_via
+      from: vendor/socket
+      to: capability/recent-commit-activity-billing
+      scope: pricing
+      evidence: Socket measures a billable developer as someone who committed to a
+        scanned repository in the last 90 days.
+    - type: locks_via
+      from: vendor/socket
+      to: capability/repository-label-limits
+      scope: plan packaging
+      evidence: Free includes 1 label, Team 3, and Business unlimited as of 2026-03-26.
+    - type: locks_via
+      from: vendor/aikido-security
+      to: capability/repo-and-user-bundle-limits
+      scope: pricing
+      evidence: Aikido publishes platform pricing as flat monthly bundles with
+        included user and repo limits.
+    - type: locks_via
+      from: vendor/aikido-security
+      to: capability/fair-usage-limits
+      scope: platform access
+      evidence: The same bundles also carry fair-usage limits for containers, domains,
+        cloud accounts, AI AutoFixes, and protected requests.
+    - type: locks_via
+      from: vendor/endor-labs
+      to: capability/quote-only-packaging
+      scope: pricing
+      evidence: Endor Labs does not publish numeric public pricing on its pricing
+        page... the official page shows quote-only packaging for Core and Pro.
+    - type: locks_via
+      from: vendor/endor-labs
+      to: capability/add-on-packaging
+      scope: pricing
+      evidence: The page also lists separate packaging for Patches and mentions
+        add-ons such as CoDe and SBOM Hub.

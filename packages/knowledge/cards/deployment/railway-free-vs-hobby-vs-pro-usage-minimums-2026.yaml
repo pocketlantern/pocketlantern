@@ -101,6 +101,8 @@ related_cards:
   - cloud/railway-hobby-vs-pro-usage-commit-2026
   - web/render-vs-fly-vs-railway-small-app-costs-2026
   - cloud/railway-trial-vs-hobby-resource-limits-2026
+  - deployment/glitch-project-hosting-shutdown-migration-2026
+  - deployment/render-vs-fly-io-vs-railway-egress-pricing-2026
 tier: "core"
 status: "active"
 updated: "2026-03-19"

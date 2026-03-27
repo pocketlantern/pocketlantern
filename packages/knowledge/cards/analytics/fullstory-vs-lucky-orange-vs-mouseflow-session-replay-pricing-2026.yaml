@@ -1,0 +1,150 @@
+id: "analytics/fullstory-vs-lucky-orange-vs-mouseflow-session-replay-pricing-2026"
+title: "FullStory vs Lucky Orange vs Mouseflow Session Replay Pricing 2026"
+problem: "Select a session replay stack when seat pricing, retained-session
+  caps, and AI summary features changed product economics in 2026."
+context:
+  - "analytics"
+  - "session-replay"
+  - "product-analytics"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "FullStory"
+    summary: "As of 2026-03-27, FullStory's only public self-serve plan is
+      FullstoryFree: 30,000 monthly sessions, 12 months of data retention, and
+      up to 10 users. Paid tiers are Business, Advanced, and Enterprise, but the
+      public pricing page does not publish dollar amounts and instead requires a
+      demo request. FullStory's key differentiator is StoryAI, with the plans
+      page listing features such as \"StoryAI Summaries\" and \"Session Summary
+      Notes,\" while the StoryAI product page positions it as built-in AI agents
+      for summaries, opportunities, and Ask StoryAI."
+    when_to_use: "Use FullStory when you need a higher-end behavioral analytics
+      stack and are willing to accept sales-led pricing for broader analytics
+      and AI workflow features. It is the strongest fit when AI-assisted
+      analysis and enterprise packaging matter more than predictable self-serve
+      spend."
+    tradeoffs: "Strong free tier for evaluation and long retention on free, but paid
+      pricing is opaque and budgeting above the free tier is harder than with
+      self-serve competitors."
+    cautions: "As of 2026-03-27, advanced AI features are not included in the free
+      plan; the pricing page explicitly says you need to upgrade for
+      capabilities such as Dashboards or StoryAI. If you need a hard budget
+      before procurement, check official docs and sales terms because public
+      paid-session pricing is not posted."
+    links:
+      - "https://www.fullstory.com/plans/"
+      - "https://www.fullstory.com/platform/storyai/"
+      - "https://help.fullstory.com/"
+  - name: "Lucky Orange"
+    summary: "As of 2026-03-27, Lucky Orange publishes self-serve pricing with
+      annual billing shown on the pricing page: Free at $0 for 100 monthly
+      sessions, Build at $32/month for 3,500 sessions, Grow at $72/month for
+      10,000 sessions, Expand at $199/month starting with 50,000 sessions, and
+      Scale at $839/month starting with 300,000 sessions. The same page shows 30
+      days of data storage on Free and paid tiers starting at 60 days. Lucky
+      Orange also markets Discovery AI as a product layer connected to visitor
+      behavior data, with links to recordings, heatmaps, funnels, and forms."
+    when_to_use: "Use Lucky Orange when you want transparent self-serve pricing and
+      a combined stack of session recordings, heatmaps, surveys, chat, and
+      AI-assisted discovery without a sales process. It is the clearest fit for
+      cost-sensitive web teams that want known traffic buckets up front."
+    tradeoffs: "Public pricing is easy to compare and starts low, but retention is
+      shorter than FullStory's free tier and the package is more web-CRO
+      oriented than enterprise product analytics oriented."
+    cautions: "As of 2026-03-27, Lucky Orange has a separate \"Lucky Orange
+      Classic\" path linked from the current pricing page, so verify whether an
+      existing account is on legacy packaging before comparing limits or
+      planning a migration. If you need exact team-member or add-on economics,
+      check official docs because the public page exposes the row headings but
+      not every count cleanly in text extraction."
+    links:
+      - "https://www.luckyorange.com/pricing"
+      - "https://www.luckyorange.com/discovery"
+      - "https://developers.luckyorange.com/"
+  - name: "Mouseflow"
+    summary: "As of 2026-03-27, Mouseflow publishes self-serve pricing with Free at
+      $0 for 500 monthly sessions, Essential at $25/month for 5,000 sessions,
+      Advanced at $109/month for 25,000 sessions, Premium at $319/month for
+      100,000 sessions, and Enterprise as custom. The pricing table also shows
+      data retention scaling from 1 month on Free to 3 months on Essential, 6
+      months on Advanced, and 12 months on Premium, with unlimited users listed
+      across plans. Mouseflow's AI differentiator is Mina AI, which Mouseflow
+      says is built into the platform and, while in beta, is included without a
+      separate add-on for paying customers."
+    when_to_use: "Use Mouseflow when you want transparent pricing, explicit
+      retention ladders, and unlimited-user collaboration without moving into
+      enterprise sales too early. It is the best fit when replay economics are
+      primarily driven by session volume and retention windows rather than seat
+      controls."
+    tradeoffs: "Pricing and retention are easier to model than FullStory, and
+      collaboration is simpler because unlimited users are listed, but the free
+      tier is much smaller and Mina AI is still in beta."
+    cautions: "As of 2026-03-27, Mina AI is explicitly described as beta and
+      Mouseflow says availability beyond beta will follow its existing plan
+      structure. If AI workflow stability is core to the purchase, check
+      official docs before assuming today's beta inclusion will persist."
+    links:
+      - "https://mouseflow.com/pricing/"
+      - "https://mouseflow.com/platform/mouseflow-ai/"
+      - "https://help.mouseflow.com/"
+tags:
+  - "analytics"
+  - "session-replay"
+  - "pricing"
+  - "fullstory"
+  - "lucky-orange"
+  - "mouseflow"
+aliases:
+  - "fullstory vs lucky orange vs mouseflow pricing"
+  - "session replay pricing 2026"
+  - "fullstory lucky orange mouseflow ai summaries"
+related_cards:
+  - "analytics/fullstory-pricing-and-retention-tradeoffs-2026"
+  - "analytics/logrocket-ai-and-session-replay-packaging-2026"
+  - "analytics/sentry-session-replay-pricing-vs-full-replay-stack-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: capability
+      id: capability/session-replay
+      name: session replay
+    - type: capability
+      id: capability/ai-summaries
+      name: AI summaries
+    - type: vendor
+      id: vendor/fullstory
+      name: FullStory
+    - type: vendor
+      id: vendor/lucky-orange
+      name: Lucky Orange
+    - type: vendor
+      id: vendor/mouseflow
+      name: Mouseflow
+  edges:
+    - type: breaking_change_in
+      from: capability/session-replay
+      to: null
+      date: "2026"
+      basis: seat pricing, retained-session caps, and AI summary features changed
+        product economics in 2026
+    - type: locks_via
+      from: vendor/fullstory
+      to: capability/ai-summaries
+      basis: FullStory's key differentiator is StoryAI, with StoryAI Summaries and
+        Session Summary Notes; advanced AI features require upgrade
+    - type: locks_via
+      from: vendor/lucky-orange
+      to: capability/ai-summaries
+      basis: Lucky Orange markets Discovery AI as a product layer connected to visitor
+        behavior data
+    - type: locks_via
+      from: vendor/mouseflow
+      to: capability/ai-summaries
+      basis: Mouseflow's AI differentiator is Mina AI, built into the platform and
+        included for paying customers while in beta

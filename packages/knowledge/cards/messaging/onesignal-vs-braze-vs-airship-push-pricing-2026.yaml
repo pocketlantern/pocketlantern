@@ -1,0 +1,169 @@
+id: "messaging/onesignal-vs-braze-vs-airship-push-pricing-2026"
+title: "OneSignal vs Braze vs Airship Push and Journey Pricing 2026"
+problem: "Select a push and lifecycle messaging stack when active-user billing,
+  campaign entitlements, and add-on packaging create large cost variance."
+context:
+  - "messaging"
+  - "mobile"
+  - "push-notifications"
+  - "customer-engagement"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+candidates:
+  - name: "OneSignal"
+    summary: "As of 2026-03-19, OneSignal is the only one of these three with a
+      public self-serve rate card. Its Free plan lists unlimited mobile push
+      sends, Journeys workflows, and basic A/B testing, while Growth starts at
+      \"$19/mo\" plus usage. Public pricing shows mobile push at \"$0.012 per
+      monthly active user,\" web push at \"$0.004 per web push subscriber,\" and
+      email at \"20,000 free sends / month, then $1.50 / 1,000 sends\" on
+      Growth. Official billing docs also state the current pricing model
+      introduced in 2024 is \"Mobile MAU + Web Push Subscribers,\" while some
+      older accounts may still be on legacy push-subscriber pricing."
+    when_to_use: "Use this when you are cost-sensitive, want a public calculator and
+      self-serve onboarding, and your main requirement is push plus
+      basic-to-mid-tier journey orchestration. It is the strongest fit when
+      predictable entry pricing matters more than premium enterprise packaging."
+    tradeoffs: "Best public pricing transparency and lowest-friction start in this
+      group, but advanced journey depth, retention, exports, and premium
+      integrations move into annual custom plans."
+    cautions: "OneSignal bills mobile on active app subscriptions, not only opted-in
+      push recipients, and one user with multiple active subscriptions can count
+      multiple times. Legacy customers may still be on older push-subscriber
+      pricing, so migration to the 2024 MAU model should be checked before
+      comparing bills."
+    links:
+      - "https://onesignal.com/pricing"
+      - "https://documentation.onesignal.com/docs/en/billing-faq"
+      - "https://onesignal.com/blog/understanding-onesignals-pricing/"
+  - name: "Braze"
+    summary: "As of 2026-03-19, no public Braze list-price page with numeric push or
+      journey rates was verified in this search pass; official materials are
+      contract and entitlement driven. The official subscription agreement shows
+      automatic renewal unless notice is given at least 30 days before term end,
+      and Braze may increase renewal fees with 60 days notice by up to 7% for
+      the same products and services. The same agreement also states that if
+      subscription volume decreases at renewal, pricing can be reset without
+      regard to the prior term's per-unit price. Official search results also
+      surfaced a \"Revision July 2025\" Braze Entitlements Handbook, which
+      indicates packaging and feature entitlements are maintained separately
+      from any public sticker price."
+    when_to_use: "Use this when you need enterprise-grade multichannel orchestration
+      and are prepared for a sales-led procurement process. It is the better fit
+      when commercial negotiation and entitlement management are acceptable
+      tradeoffs for platform breadth."
+    tradeoffs: "Strong enterprise control and packaging depth, but pricing
+      transparency is weak from public materials and renewal mechanics need
+      contract review."
+    cautions: "Do not assume renewal savings from lower volume; the official
+      agreement says lower subscription volume can trigger repricing. For
+      current entitlements and packaging, check official docs and order-form
+      terms rather than relying on old quotes."
+    links:
+      - "https://www.braze.com/docs/compliance_documentation/"
+      - "https://www.braze.com/docs/"
+      - "https://marketing-assets.braze.com/production/hero/Braze-KK-Main-Subsc\
+        ription-Agreement-JP-EN-Online-Terms-Rev-October2023.pdf?v=1698167322"
+  - name: "Airship"
+    summary: "As of 2026-03-19, Airship's public pricing page is packaging-led
+      rather than rate-card-led. The site presents \"Airship Experience
+      Platform\" as a custom-quoted enterprise offering and separately
+      advertises \"Airship Essentials\" as a self-service option. Public pricing
+      content emphasizes unified cross-channel experiences, customer data
+      management, personalization and segmentation, journey orchestration,
+      testing and optimization, integrations, analytics, and strategic services.
+      No public numeric push, MAU, or journey-plan rates were verified in this
+      search pass, so check official docs or sales for current commercial
+      terms."
+    when_to_use: "Use this when you want an enterprise lifecycle platform with a
+      strong mobile and cross-channel orientation but do not require public list
+      pricing. It is the better fit when a custom quote is acceptable and
+      Airship's packaged orchestration model matches your procurement process."
+    tradeoffs: "Airship offers a clearer product boundary between self-service
+      Essentials and enterprise AXP than a single monolithic plan, but public
+      cost modeling is weaker than OneSignal."
+    cautions: "Budgeting is harder because the public page does not expose numeric
+      unit pricing or journey limits. Treat Essentials versus AXP qualification
+      as an early procurement question, not something to discover after
+      implementation work starts."
+    links:
+      - "https://www.airship.com/pricing/"
+      - "https://www.airship.com/docs/reference/feature-packages/"
+tags:
+  - "messaging"
+  - "push"
+  - "pricing"
+  - "onesignal"
+  - "braze"
+  - "airship"
+aliases:
+  - "onesignal vs braze pricing"
+  - "airship vs braze vs onesignal push pricing"
+  - "mobile push journey pricing 2026"
+related_cards:
+  - "messaging/push-notification-provider-choice"
+  - messaging/onesignal-growth-vs-legacy-subscriber-pricing-after-june-17-2024-mobile-mau-switch-2026
+  - mobile/onesignal-free-vs-growth-seat-and-message-limits-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/onesignal
+      name: OneSignal
+    - type: vendor
+      id: vendor/braze
+      name: Braze
+    - type: vendor
+      id: vendor/airship
+      name: Airship
+    - type: capability
+      id: capability/mobile-mau-plus-web-push-subscribers
+      name: Mobile MAU + Web Push Subscribers
+      category: pricing_model
+    - type: capability
+      id: capability/legacy-push-subscriber-pricing
+      name: Legacy push-subscriber pricing
+      category: pricing_model
+    - type: package
+      id: package/braze-entitlements-handbook-july-2025
+      name: Braze Entitlements Handbook
+      category: entitlements
+    - type: package
+      id: package/airship-experience-platform
+      name: Airship Experience Platform
+      category: enterprise-offering
+    - type: package
+      id: package/airship-essentials
+      name: Airship Essentials
+      category: self-service-offering
+  edges:
+    - type: locks_via
+      from: vendor/onesignal
+      to: capability/mobile-mau-plus-web-push-subscribers
+      note: Official billing docs state the current pricing model introduced in 2024
+        is Mobile MAU + Web Push Subscribers.
+    - type: locks_via
+      from: vendor/onesignal
+      to: capability/legacy-push-subscriber-pricing
+      note: Some older accounts may still be on legacy push-subscriber pricing.
+    - type: locks_via
+      from: vendor/braze
+      to: package/braze-entitlements-handbook-july-2025
+      note: Official search results surfaced a Revision July 2025 Braze Entitlements
+        Handbook indicating packaging and feature entitlements are maintained
+        separately.
+    - type: locks_via
+      from: vendor/airship
+      to: package/airship-experience-platform
+      note: The site presents Airship Experience Platform as a custom-quoted
+        enterprise offering.
+    - type: locks_via
+      from: vendor/airship
+      to: package/airship-essentials
+      note: The site separately advertises Airship Essentials as a self-service
+        option.

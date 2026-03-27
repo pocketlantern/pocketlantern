@@ -1,0 +1,139 @@
+id: "database/turso-developer-vs-scaler-after-july-2025-active-db-billing"
+title: "Turso Developer vs Scaler After July 4, 2025 Active-Database Billing"
+problem: "Choose the right Turso paid tier now that paid plans allow unlimited
+  databases but bill around monthly active database allowances, changing the
+  economics for agent-generated or multi-tenant database fleets."
+context:
+  - "turso"
+  - "sqlite"
+  - "multi-tenant-saas"
+  - "agentic-ai"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Turso Developer"
+    summary: "As of 2026-03-27, Turso's pricing page lists Developer at
+      \"$4.99/month\" with unlimited databases, 500 monthly active databases
+      included, and \"+ $0.20 / Active DB\" overage pricing. The same page lists
+      9GB total storage, 2.5 billion monthly rows read, 25 million monthly rows
+      written, 10GB monthly syncs, 10 days of point-in-time restore, and 3-day
+      audit log retention. Turso's June 17, 2025 \"Database Freedom Day\"
+      announcement says the paid-plan model switched on July 4, 2025 from hard
+      database-count limits to unlimited databases plus active-database
+      allowances."
+    when_to_use: "Use Developer when you are cost-sensitive, mostly single-team, and
+      expect to stay comfortably near or below roughly 500 active databases per
+      month. It is the right default if you want the new unlimited-database
+      model without paying for team features or a much larger active-database
+      allowance."
+    tradeoffs: "Lowest paid entry price and keeps unlimited database creation
+      available, but the active-database allowance is much smaller than Scaler
+      and current overage pricing appears materially worse. It also lacks Teams
+      and DPA support shown on the pricing page."
+    cautions: "Check the official pricing page before modeling active-database
+      overages: the June 17, 2025 launch post says \"$0.10\" per extra active
+      DB, while the current pricing page says \"+ $0.20 / Active DB\" as of
+      2026-03-27. Turso's March 19, 2025 Developer-plan announcement also said
+      Developer was AWS-only, and paid users on Fly.io needed AWS migration to
+      get the new pricing. Turso's AWS migration post says that move is
+      irreversible and can break Fly-era features such as `ATTACH` between group
+      databases, Multi-DB Schemas, server-side WebSockets using `wss://`, Edge
+      Replicas, and some extensions."
+    links:
+      - "https://turso.tech/pricing"
+      - "https://turso.tech/blog/unlimited-databases-are-here"
+      - "https://turso.tech/blog/turso-cloud-debuts-the-new-developer-plan"
+      - "https://turso.tech/blog/you-can-now-migrate-your-existing-databases-to\
+        -aws"
+  - name: "Turso Scaler"
+    summary: "As of 2026-03-27, Turso's pricing page lists Scaler at
+      \"$24.92/month\" with unlimited databases, 2,500 monthly active databases
+      included, and \"+ $0.05 / Active DB\" overage pricing. The same page lists
+      24GB total storage, 100 billion monthly rows read, 100 million monthly
+      rows written, 24GB monthly syncs, 30 days of point-in-time restore, 14-day
+      audit log retention, Teams support, and DPA support. Turso's June 17, 2025
+      announcement says the July 4, 2025 change replaced paid-plan
+      database-count limits with unlimited databases plus active-database
+      allowances. That announcement also listed Scaler at the same
+      \"$24.92/month\", 2,500 included active databases, and \"$0.05\" per extra
+      active DB, which matches the current pricing page."
+    when_to_use: "Use Scaler when you expect a real fleet of active per-tenant,
+      per-agent, or preview databases and want better active-database economics
+      before jumping to Pro. It is the safer choice once you need Teams, a DPA,
+      or enough monthly active databases that Developer overages would erase its
+      lower base price."
+    tradeoffs: "Much better allowance and active-database overage price than
+      Developer, plus collaboration and compliance-oriented features. The
+      tradeoff is a meaningfully higher base monthly spend, so it is wasteful if
+      your fleet stays small."
+    cautions: "As of 2026-03-27, Turso's point-in-time recovery docs say a restore
+      creates a new database, requires a new connection string and token, and
+      \"count[s] towards your plan's database quota.\" That documentation
+      wording does not explicitly explain how PITR restores map to the newer
+      monthly active database billing model, so verify the current billing
+      effect with Turso before assuming restores will increase monthly active DB
+      charges."
+    links:
+      - "https://turso.tech/pricing"
+      - "https://turso.tech/blog/unlimited-databases-are-here"
+      - "https://docs.turso.tech/features/point-in-time-recovery"
+tags: [ "database", "turso", "sqlite", "pricing" ]
+aliases:
+  - "turso developer vs scaler"
+  - "turso active database pricing"
+  - "turso unlimited databases july 2025"
+related_cards:
+  - "database/turso-free-vs-paid-plan-limits-2026"
+  - "database/multi-tenant-database-isolation"
+  - "ai/ai-feature-cost-governance"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/turso
+      name: Turso
+    - type: capability
+      id: capability/active-database-billing
+      name: Active-database billing
+    - type: capability
+      id: capability/unlimited-databases
+      name: Unlimited databases
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: capability
+      id: capability/point-in-time-restore
+      name: Point-in-time restore
+  edges:
+    - type: breaking_change_in
+      from: vendor/turso
+      to: capability/active-database-billing
+      date: 2025-07-04
+      summary: Paid plans switched from hard database-count limits to unlimited
+        databases plus monthly active-database allowances.
+    - type: breaking_change_in
+      from: vendor/turso
+      to: capability/unlimited-databases
+      date: 2025-07-04
+      summary: Turso's paid-plan model changed to allow unlimited databases on paid
+        tiers.
+    - type: requires_version
+      from: vendor/turso
+      to: vendor/aws
+      summary: The March 19, 2025 Developer-plan announcement said Developer was
+        AWS-only, and paid users on Fly.io needed AWS migration to get the new
+        pricing.
+    - type: breaking_change_in
+      from: vendor/turso
+      to: capability/point-in-time-restore
+      date: 2026-03-27
+      summary: Turso's documentation says a PITR restore creates a new database,
+        requires a new connection string and token, and counts toward the plan's
+        database quota wording.

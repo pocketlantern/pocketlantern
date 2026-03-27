@@ -1,0 +1,247 @@
+id: "devtools/cursor-teams-vs-individual-plans-after-2025-pricing-reset"
+title: "Cursor Teams vs Individual Plans After the 2025 Pricing Reset"
+problem: "Organizations deciding between reimbursed personal plans and
+  centralized Teams billing need an updated view of Cursor's 2026 per-seat
+  costs, RBAC, and SAML gating."
+context:
+  - "developer-tools"
+  - "ai-coding-assistants"
+  - "identity"
+  - "seat-billing"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+candidates:
+  - name: "Reimburse individual Cursor Pro seats"
+    summary: "As of 2026-03-21, Cursor Pro is listed at \"$20 / mo.\" per user on
+      the official pricing page. Teams is listed as \"Everything in Pro, plus\"
+      centralized team billing, usage analytics and reporting, org-wide privacy
+      mode controls, role-based access control, and SAML/OIDC SSO, so those org
+      controls are not part of the base Pro comparison set. Cursor's August 12,
+      2025 billing update says individual plans were already using the newer
+      variable request-cost system in production when Teams was moved over. This
+      is the cheapest standardized reimbursement path, but it leaves
+      procurement, identity, and access governance decentralized."
+    when_to_use: "Use this for small teams that mainly want Cursor access at the
+      lowest predictable seat sticker price and do not need centralized billing
+      or identity controls. It is the pragmatic default when the blocker is
+      budget, not RBAC, SSO, or admin reporting."
+    tradeoffs: "Lowest monthly seat cost versus Teams, but no centralized invoicing,
+      no org-level admin dashboard, and no Teams-listed access controls."
+    cautions: "If your security review requires SAML/OIDC SSO or role-based access
+      control, Pro does not satisfy the Teams-only feature gate shown on
+      Cursor's pricing page. Also check current usage docs if reimbursement
+      policy depends on exact included usage, because the reviewed sources do
+      not expose a simple Pro included-dollar allowance."
+    links:
+      - "https://cursor.com/pricing/"
+      - "https://cursor.com/blog/aug-2025-pricing"
+  - name: "Reimburse individual Pro+ or Ultra only for heavy users"
+    summary: "As of 2026-03-21, Cursor lists Pro+ at \"$60 / mo.\" and Ultra at
+      \"$200 / mo.\" for individual users. Pro+ adds \"3x usage on all OpenAI,
+      Claude, Gemini models,\" while Ultra adds \"20x usage\" plus priority
+      access to new features. This keeps users on personal billing while buying
+      headroom for a small number of power users. It does not solve the
+      governance gap, because the Teams-only additions on the pricing page still
+      include centralized billing, org privacy controls, RBAC, and SAML/OIDC
+      SSO."
+    when_to_use: "Use this when only a minority of engineers truly need much higher
+      model usage and the company can tolerate reimbursement overhead. It is
+      usually better than putting every user on Teams if the real problem is a
+      few high-consumption users rather than organization-wide access control."
+    tradeoffs: "Can be cheaper than blanket Teams rollout for mixed-usage groups,
+      but reimbursement complexity remains and seat entitlements become uneven
+      across users."
+    cautions: "This option becomes hard to defend if finance or security wants one
+      contract, one admin surface, or SSO enforcement. Check official docs
+      before budgeting around overages, because the reviewed pricing sources
+      emphasize usage multipliers rather than a simple included-credit table for
+      Pro+ and Ultra."
+    links:
+      - "https://cursor.com/pricing/"
+      - "https://cursor.com/blog/aug-2025-pricing"
+  - name: "Move the organization to Cursor Teams"
+    summary: "As of 2026-03-21, Cursor Teams is listed at \"$40 / user / mo.\" on
+      the official pricing page. Cursor explicitly lists shared chats, commands,
+      and rules, centralized team billing, usage analytics and reporting,
+      org-wide privacy mode controls, role-based access control, and SAML/OIDC
+      SSO on Teams. Cursor's August 12, 2025 pricing update says Teams moved
+      from fixed per-request billing to API-based usage, with \"$20 of agent
+      usage per user,\" starting at the next billing renewal after September 15,
+      2025. This is the main break from the old Teams economics and the key
+      reason to revisit any pre-reset seat-cost assumptions."
+    when_to_use: "Use Teams when centralized billing, admin visibility, RBAC, or
+      SAML/OIDC SSO are decision blockers. It is the right default for companies
+      that want policy enforcement and a single organizational bill without
+      paying for Enterprise."
+    tradeoffs: "Higher base seat price than reimbursed Pro, but it buys the core org
+      controls missing from personal plans. It still does not include
+      Enterprise-only pooled usage, SCIM seat management, or the most granular
+      admin controls."
+    cautions: "As of 2026-03-21, the 2025 pricing reset has already started for
+      renewals after September 15, 2025, but older annual subscriptions could
+      still be on prior terms until their next renewal. Teams now has per-user
+      included usage rather than Enterprise-style pooled usage, so low-usage
+      seats cannot offset heavy-usage seats."
+    links:
+      - "https://cursor.com/pricing/"
+      - "https://cursor.com/blog/aug-2025-pricing-teams"
+      - "https://cursor.com/blog/aug-2025-pricing"
+  - name: "Skip Teams and buy Cursor Enterprise if you need pooled usage or
+      lifecycle controls"
+    summary: "As of 2026-03-21, Cursor lists Enterprise as custom-priced and
+      positions it as \"Everything in Teams, plus\" pooled usage, invoice or PO
+      billing, SCIM seat management, AI code tracking API and audit logs,
+      granular admin and model controls, and priority support and account
+      management. That means the line between Teams and Enterprise is not just
+      support level; it is also where pooled economics and identity lifecycle
+      automation begin. For organizations comparing personal reimbursements
+      against Teams, Enterprise matters when Teams still leaves material
+      governance gaps. It is the escalation path when SAML alone is not enough."
+    when_to_use: "Use Enterprise when you need SCIM, pooled usage, invoice
+      procurement, or stronger audit and admin controls than Teams exposes. It
+      is usually the correct choice for larger regulated organizations that
+      would otherwise outgrow Teams immediately."
+    tradeoffs: "Solves more enterprise governance and budget-control problems than
+      Teams, but pricing is custom and likely overkill for small self-serve
+      groups."
+    cautions: "Do not assume Teams can be stretched into Enterprise behavior later
+      without process change; pooled usage and SCIM are explicitly gated to
+      Enterprise on the pricing page. Check official sales material for actual
+      pricing because Cursor does not publish a list price."
+    links:
+      - "https://cursor.com/pricing/"
+tags:
+  - "devtools"
+  - "cursor"
+  - "pricing"
+  - "sso"
+  - "rbac"
+aliases:
+  - "cursor teams pricing 2026"
+  - "cursor pro vs teams"
+  - "cursor saml rbac teams"
+  - "cursor 2025 pricing reset"
+related_cards:
+  - "auth/rbac-vs-abac-vs-rebac"
+  - "auth/sso-for-b2b-saas"
+  - "ai/ai-feature-cost-governance"
+  - devtools/windsurf-flow-action-credits-removed-april-21-2025-impact-2026
+  - ai/sourcegraph-amp-at-cost-vs-enterprise-minimum-spend-2026
+  - desktop/raycast-free-vs-team-pro-ai-and-shared-command-limits-2026
+tier: "core"
+status: "active"
+updated: "2026-03-21"
+review_by: "2026-06-19"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/cursor
+      name: Cursor
+    - type: package
+      id: package/cursor-pro
+      name: Cursor Pro
+    - type: package
+      id: package/cursor-pro-plus
+      name: Cursor Pro+
+    - type: package
+      id: package/cursor-ultra
+      name: Cursor Ultra
+    - type: package
+      id: package/cursor-teams
+      name: Cursor Teams
+    - type: package
+      id: package/cursor-enterprise
+      name: Cursor Enterprise
+    - type: capability
+      id: capability/role-based-access-control
+      name: Role-based access control
+    - type: capability
+      id: capability/centralized-team-billing
+      name: Centralized team billing
+    - type: capability
+      id: capability/org-wide-privacy-mode-controls
+      name: Org-wide privacy mode controls
+    - type: capability
+      id: capability/usage-analytics-and-reporting
+      name: Usage analytics and reporting
+    - type: capability
+      id: capability/shared-chats-commands-and-rules
+      name: Shared chats, commands, and rules
+    - type: capability
+      id: capability/saml-oidc-sso
+      name: SAML/OIDC SSO
+    - type: protocol
+      id: protocol/saml
+      name: SAML
+    - type: protocol
+      id: protocol/oidc
+      name: OIDC
+    - type: capability
+      id: capability/pooled-usage
+      name: Pooled usage
+    - type: capability
+      id: capability/scim-seat-management
+      name: SCIM seat management
+    - type: capability
+      id: capability/invoice-or-po-billing
+      name: Invoice or PO billing
+    - type: capability
+      id: capability/ai-code-tracking-api-and-audit-logs
+      name: AI code tracking API and audit logs
+    - type: capability
+      id: capability/granular-admin-and-model-controls
+      name: Granular admin and model controls
+  edges:
+    - type: requires_version
+      from: capability/centralized-team-billing
+      to: package/cursor-teams
+    - type: requires_version
+      from: capability/usage-analytics-and-reporting
+      to: package/cursor-teams
+    - type: requires_version
+      from: capability/org-wide-privacy-mode-controls
+      to: package/cursor-teams
+    - type: requires_version
+      from: capability/role-based-access-control
+      to: package/cursor-teams
+    - type: requires_version
+      from: capability/saml-oidc-sso
+      to: package/cursor-teams
+    - type: locks_via
+      from: capability/saml-oidc-sso
+      to: protocol/saml
+    - type: locks_via
+      from: capability/saml-oidc-sso
+      to: protocol/oidc
+    - type: requires_version
+      from: capability/shared-chats-commands-and-rules
+      to: package/cursor-teams
+    - type: requires_version
+      from: capability/pooled-usage
+      to: package/cursor-enterprise
+    - type: requires_version
+      from: capability/scim-seat-management
+      to: package/cursor-enterprise
+    - type: requires_version
+      from: capability/invoice-or-po-billing
+      to: package/cursor-enterprise
+    - type: requires_version
+      from: capability/ai-code-tracking-api-and-audit-logs
+      to: package/cursor-enterprise
+    - type: requires_version
+      from: capability/granular-admin-and-model-controls
+      to: package/cursor-enterprise
+    - type: breaking_change_in
+      from: vendor/cursor
+      to: package/cursor-teams
+      date: 2025-09-15
+      name: Teams pricing reset renewal start
+    - type: breaking_change_in
+      from: vendor/cursor
+      to: package/cursor-teams
+      date: 2025-08-12
+      name: Teams moved from fixed per-request billing to API-based usage

@@ -1,0 +1,209 @@
+id: "cloud/gcp-cloud-functions-gen1-deprecation-2025"
+title: "Google Cloud Functions Gen 1 Deprecated — Gen 2 Required 2025"
+problem: "As of 2026-03-18, Google Cloud Run functions (1st gen, formerly Cloud
+  Functions Gen 1) is deprecated for new deployments. Gen 2 (Cloud Run
+  functions) is the only recommended path for new functions and is the only
+  generation receiving new runtime support. Existing Gen 1 functions continue to
+  run but face rolling runtime decommissions: Node.js 18 Gen 1 was
+  decommissioned October 30, 2025; Python 3.9 Gen 1 decommissions April 5, 2026;
+  Node.js 20 Gen 1 decommissions October 30, 2026. Teams must decide whether to
+  migrate to Cloud Run functions (2nd gen), migrate directly to Cloud Run (no
+  Functions abstraction), or maintain existing Gen 1 functions while the runtime
+  decommission clock runs down."
+context:
+  - "gcp"
+  - "serverless"
+  - "cloud-functions"
+  - "cloud-run"
+  - "migration"
+constraints:
+  - "serverless"
+  - "low-ops"
+  - "microservices"
+  - "high-scale"
+  - "cost-sensitive"
+candidates:
+  - name: "Cloud Run functions (2nd gen) — recommended migration target"
+    summary: "Cloud Run functions (2nd gen) is Google's current serverless function
+      platform, built on Cloud Run infrastructure and the only generation
+      receiving new runtime support. It supports up to 1000 concurrent requests
+      per instance (vs 1 in Gen 1), 60-minute HTTP timeouts (vs 9 minutes), 16
+      GiB RAM / 4 vCPU instances (vs 8 GB / 2 vCPU), traffic splitting, and 90+
+      Eventarc event sources. As of 2026-03-18, exclusive runtimes include
+      Node.js 24, Python 3.14, Go 1.26, Java 25, PHP 8.5, and .NET 10. A staged
+      upgrade tool (Preview as of October 2025) automates migration from Gen 1
+      with rollback capability before final commit."
+    when_to_use: "Best for serverless + low-ops teams deploying any new function or
+      migrating existing Gen 1 functions, especially where concurrency, longer
+      timeouts, or current runtimes are required. The single most decisive
+      factor is that this is the only path for all new GCP projects and the only
+      generation receiving new runtime and feature investment."
+    tradeoffs: "Pros: default for all new deployments, 1000x concurrency improvement
+      over Gen 1, 60-min HTTP timeouts, 16 GiB RAM / 4 vCPU, 90+ Eventarc
+      sources, all new runtimes exclusive to Gen 2, traffic splitting, staged
+      upgrade tool with rollback, IAM conversion automated by upgrade tool.
+      Cons: upgrade tool (Preview) supports only HTTP and Pub/Sub-triggered
+      functions — Eventarc, Cloud Storage, and Firestore triggers require manual
+      side-by-side migration; upgrade commit is irreversible and permanently
+      deletes the original Gen 1 function; function is then managed only via
+      Cloud Run Admin API, not Cloud Functions v1 API."
+    cautions: "As of 2026-03-18, the upgrade tool is in Preview and only handles
+      HTTP and Pub/Sub triggers; teams with other trigger types must perform a
+      manual cutover and will lose the rollback option. Once you commit the
+      upgrade, the Gen 1 function is permanently deleted — there is no recovery
+      path if post-commit issues are discovered."
+    links:
+      - "https://docs.cloud.google.com/functions/docs/concepts/version-comparis\
+        on"
+      - "https://docs.cloud.google.com/functions/1stgendocs/migrating/upgrade-g\
+        en1-functions"
+      - "https://docs.cloud.google.com/functions/docs/runtime-support"
+      - "https://docs.cloud.google.com/functions/docs/release-notes"
+  - name: "Cloud Run functions (1st gen) — existing deployments only"
+    summary: "Cloud Run functions (1st gen) continues to execute for existing
+      deployments on projects that already have Gen 1 functions, but receives no
+      new feature development and no new runtime versions. As of 2026-03-18,
+      Node.js 18 Gen 1 was decommissioned October 30, 2025 (any Gen 1 function
+      on Node 18 can no longer be updated); Python 3.9 Gen 1 decommissions April
+      5, 2026; Node.js 20 Gen 1 decommissions October 30, 2026. The
+      functions.config API is deprecated and will be decommissioned in March
+      2027. Remaining on Gen 1 is a time-limited holding position, not a viable
+      long-term strategy."
+    when_to_use: "Best for cost-sensitive + low-ops teams maintaining stable Gen 1
+      functions whose runtime decommission date is more than 6 months away and
+      migration cannot fit the current delivery window. The single most decisive
+      factor is your runtime's scheduled decommission date — after that date,
+      you can no longer deploy any updates to that function."
+    tradeoffs: "Pros: no migration work required in the short term, existing
+      cloudfunctions.net URLs and IAM configuration remain unchanged, functions
+      continue to execute normally. Cons: no new runtimes available (Node 24,
+      Python 3.14, Go 1.26, Java 25 are Gen 2-exclusive); rolling decommission
+      dates create a forced migration timeline runtime by runtime;
+      functions.config API decommissioned March 2027; no traffic splitting, no
+      concurrency, no extended timeouts."
+    cautions: "As of 2026-03-18, Python 3.9 Gen 1 decommissions in 18 days (April 5,
+      2026) — any Gen 1 function on Python 3.9 must be migrated before that date
+      or become permanently un-deployable. Using the functions.config API for
+      environment configuration will break entirely in March 2027; migration to
+      Secret Manager or environment variables is required before that date
+      regardless of generation."
+    links:
+      - "https://docs.cloud.google.com/functions/docs/runtime-support"
+      - "https://docs.cloud.google.com/functions/docs/concepts/version-comparis\
+        on"
+      - "https://docs.cloud.google.com/functions/docs/release-notes"
+  - name: "Cloud Run (native, no Cloud Functions abstraction)"
+    summary: "Cloud Run (native) deploys containerized workloads directly via the
+      Cloud Run Admin API, without any Cloud Functions abstraction layer,
+      providing full control over the container image, build process, and Cloud
+      Run-specific features. Cloud Run functions (2nd gen) already deploys as a
+      Cloud Run service under the hood; 2nd gen functions created with the v2
+      API can be 'detached' to operate exclusively under Cloud Run Admin API
+      management. The decisive differentiator is that teams gain full Dockerfile
+      flexibility, multi-container sidecars, and direct VPC egress — at the cost
+      of owning the event-trigger wiring themselves."
+    when_to_use: "Best for microservices + high-scale teams whose workloads have
+      outgrown Cloud Functions constraints (complex build dependencies, custom
+      base images, multi-container patterns) and are comfortable managing
+      containers. The single most decisive factor is whether the Cloud Functions
+      HTTP/event trigger abstraction adds value or creates deployment overhead
+      for your team's existing container discipline."
+    tradeoffs: "Pros: full container control with custom Dockerfiles, no Cloud
+      Functions API dependency or migration risk, full Cloud Run features
+      (traffic splitting, min-instances, direct VPC egress Preview as of January
+      2026, multi-region), consistent deployment model with non-function
+      workloads. Cons: significantly higher operational complexity than Cloud
+      Functions — teams must build, test, and push container images; no built-in
+      event trigger abstraction (Eventarc or Pub/Sub must be wired manually);
+      cold start behavior and concurrency tuning are fully team-managed."
+    cautions: "Migrating Gen 1 functions directly to Cloud Run bypasses the Cloud
+      Functions upgrade tool; all event trigger subscriptions, IAM bindings
+      (cloudfunctions.invoker → run.invoker), and service accounts must be
+      recreated manually. Cloud Run billing is based on CPU and memory
+      allocation during request execution — verify actual invocation patterns
+      against Cloud Run pricing before assuming cost equivalence with Gen 1."
+    links:
+      - "https://docs.cloud.google.com/run/docs/migrate/from-gen1-functions-to-\
+        cloud-run"
+      - "https://docs.cloud.google.com/functions/docs/concepts/version-comparis\
+        on"
+      - "https://docs.cloud.google.com/functions/docs/release-notes"
+      - "https://docs.cloud.google.com/functions/1stgendocs/migrating/upgrade-g\
+        en1-functions"
+tags:
+  - "gcp"
+  - "cloud-functions"
+  - "cloud-run"
+  - "serverless"
+  - "deprecation"
+  - "migration"
+  - "eol"
+  - "gen1"
+  - "gen2"
+  - "google-cloud"
+  - "cloud-run-functions"
+aliases:
+  - "cloud functions gen 1 deprecated"
+  - "cloud functions 1st gen end of life"
+  - "migrate cloud functions gen 1 to gen 2"
+  - "cloud run functions migration"
+  - "gcf gen1 gen2"
+  - "google cloud functions upgrade"
+  - "cloud functions v1 v2 migration"
+  - "cloud functions deprecation 2025"
+  - "cloud run functions gen 1 eol"
+  - "gcf 1st gen sunset"
+related_cards:
+  - "runtime/java-11-lts-eol-september-2026"
+  - "devtools/github-actions-macos-13-runner-retirement-october-2025"
+  - cloud/gcp-cloud-run-jobs-execution-timeout-increase-to-24h-and-billing-change-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-11-01"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/google-cloud
+      name: Google Cloud
+    - type: framework
+      id: framework/cloud-run-functions-gen1
+      name: Cloud Run functions (1st gen)
+    - type: framework
+      id: framework/cloud-run-functions-gen2
+      name: Cloud Run functions (2nd gen)
+    - type: runtime
+      id: runtime/nodejs-18
+      name: Node.js 18
+    - type: runtime
+      id: runtime/python-3.9
+      name: Python 3.9
+    - type: runtime
+      id: runtime/nodejs-20
+      name: Node.js 20
+    - type: capability
+      id: capability/functions-config-api
+      name: functions.config API
+      category: configuration_api
+  edges:
+    - type: eol_date
+      from: runtime/nodejs-18
+      to: framework/cloud-run-functions-gen1
+      date: 2025-10-30
+      label: Node.js 18 Gen 1 decommissioned
+    - type: eol_date
+      from: runtime/python-3.9
+      to: framework/cloud-run-functions-gen1
+      date: 2026-04-05
+      label: Python 3.9 Gen 1 decommissions
+    - type: eol_date
+      from: runtime/nodejs-20
+      to: framework/cloud-run-functions-gen1
+      date: 2026-10-30
+      label: Node.js 20 Gen 1 decommissions
+    - type: eol_date
+      from: capability/functions-config-api
+      to: framework/cloud-run-functions-gen1
+      date: 2027-03-01
+      label: functions.config API decommissioned in March 2027

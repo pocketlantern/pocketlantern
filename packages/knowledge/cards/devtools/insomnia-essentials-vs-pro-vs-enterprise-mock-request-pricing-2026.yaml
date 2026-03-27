@@ -1,0 +1,183 @@
+id: "devtools/insomnia-essentials-vs-pro-vs-enterprise-mock-request-pricing-2026"
+title: "Insomnia Essentials vs Pro vs Enterprise Mock Request Pricing 2026"
+problem: "API platform teams need to choose between Insomnia’s free, $12, and
+  $45 per-user tiers based on Git Sync access, RBAC, SSO, and the jump from
+  1,000 to 10,000 to unlimited mock requests."
+context:
+  - "api-platform"
+  - "api-testing"
+  - "mock-servers"
+  - "developer-tooling"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Insomnia Essentials"
+    summary: "Insomnia Essentials is the free tier. As of 2026-03-27, official
+      pricing is \"$0 per user / month.\" It includes unlimited Git Sync
+      projects for up to 3 users, unlimited cloud/local projects for all users,
+      Inso CLI access, and 1,000 mock server requests per month. The pricing
+      page also lists an optional mock add-on after the included allowance at
+      \"$10/25,000 reqs.\""
+    when_to_use: "Use this when you are a small team with basic collaboration needs
+      and can keep Git Sync access limited to three users. It is the best fit
+      when cost sensitivity matters more than centralized permissions, because
+      the main breakpoint is the 1,000 monthly mock request cap and lack of
+      RBAC."
+    tradeoffs: "Lowest cost and still includes core API client, CLI, and local/cloud
+      workflows. The downside is that Git Sync access is capped to 3 users and
+      there is no RBAC or enterprise identity/governance layer."
+    cautions: "Do not assume free Git Sync scales to the full team. As of
+      2026-03-27, the official limit is \"up to 3 users,\" and teams with wider
+      Git-based collaboration will need Pro or above."
+    links:
+      - "https://insomnia.rest/pricing"
+      - "https://konghq.com/pricing"
+      - "https://developer.konghq.com/insomnia/mock-servers/"
+  - name: "Insomnia Pro"
+    summary: "Insomnia Pro is the paid team tier. As of 2026-03-27, official pricing
+      is \"$12 per user / month,\" with the pricing page also noting annual
+      billing savings. It adds unlimited users, Git Sync access for all users,
+      unlimited organizations, RBAC, and raises the included mock server
+      allowance to 10,000 requests per month. The same overage structure is
+      listed as \"$10/25,000 reqs\" after the included mock requests."
+    when_to_use: "Use this when your blocker is collaboration control rather than
+      identity federation. It is the practical upgrade for teams that have
+      outgrown the free tier’s 3-user Git Sync cap or need RBAC without paying
+      for SSO and enterprise governance controls."
+    tradeoffs: "It solves the biggest operational gaps for growing API teams:
+      team-wide Git Sync and role-based access control. The tradeoff is that
+      SSO, SCIM, storage policy enforcement, and unlimited mocks still require
+      Enterprise."
+    cautions: "RBAC is present here, but SSO and SCIM are not. If your procurement
+      or compliance baseline requires centralized identity, Pro will likely fail
+      review even if the 10,000 mock request allowance is enough."
+    links:
+      - "https://insomnia.rest/pricing"
+      - "https://konghq.com/pricing"
+      - "https://konghq.com/blog/product-releases/kong-insomnia-12"
+  - name: "Insomnia Enterprise"
+    summary: "Insomnia Enterprise is the governance-heavy tier. As of 2026-03-27,
+      official pricing is \"$45 per user / month,\" and the pricing page states
+      self-serve is available up to 50 users, with larger teams directed to
+      contact sales. It includes everything in Pro plus SSO (SAML/OIDC), SCIM,
+      mandated project storage controls, domain capture/lock and invite control,
+      enterprise support, native vault integrations, and unlimited mock server
+      requests. Official mock server docs also state Enterprise users have
+      unlimited requests on cloud-hosted mock servers and can deploy self-hosted
+      mocks."
+    when_to_use: "Use this when compliance, centralized identity, or governance
+      policy is the real decision driver. It is also the clear choice when mock
+      traffic is substantial enough that the free and Pro included quotas plus
+      add-ons become operationally noisy."
+    tradeoffs: "It removes the governance and mock-volume ceilings that matter to
+      larger organizations. The downside is the much higher per-seat cost and
+      likely sales involvement beyond 50 self-serve users."
+    cautions: "As of 2026-03-27, storage mandate controls and SSO/SCIM are
+      Enterprise-only, so teams planning local-only, git-only, or cloud-only
+      enforcement cannot reproduce that policy posture on lower tiers. For
+      organizations above 50 users, check official docs and sales terms because
+      the published self-serve boundary has already been reached."
+    links:
+      - "https://insomnia.rest/pricing"
+      - "https://konghq.com/pricing"
+      - "https://developer.konghq.com/insomnia/mock-servers/"
+tags:
+  - "devtools"
+  - "insomnia"
+  - "api-testing"
+  - "pricing"
+  - "mock-servers"
+aliases:
+  - "insomnia pricing 2026"
+  - "insomnia essentials vs pro vs enterprise"
+  - "insomnia mock request limits"
+  - "insomnia git sync rbac sso pricing"
+related_cards:
+  - "testing/mocking-strategy"
+  - "auth/rbac-vs-abac-vs-rebac"
+  - "auth/sso-for-b2b-saas"
+  - devtools/bruno-open-source-vs-pro-vs-ultimate-pricing-2026
+  - devtools/insomnia-vs-bruno-seat-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/kong
+      name: Kong
+    - type: package
+      id: package/insomnia-essentials
+      name: Insomnia Essentials
+      vendor: vendor/kong
+    - type: package
+      id: package/insomnia-pro
+      name: Insomnia Pro
+      vendor: vendor/kong
+    - type: package
+      id: package/insomnia-enterprise
+      name: Insomnia Enterprise
+      vendor: vendor/kong
+    - type: capability
+      id: capability/git-sync
+      name: Git Sync
+    - type: capability
+      id: capability/rbac
+      name: RBAC
+    - type: capability
+      id: capability/sso
+      name: SSO
+    - type: capability
+      id: capability/scim
+      name: SCIM
+    - type: capability
+      id: capability/mock-servers
+      name: Mock Servers
+    - type: protocol
+      id: protocol/saml
+      name: SAML
+    - type: protocol
+      id: protocol/oidc
+      name: OIDC
+  edges:
+    - type: requires_version
+      from: capability/rbac
+      to: package/insomnia-pro
+      note: Insomnia Pro adds RBAC.
+    - type: requires_version
+      from: capability/sso
+      to: package/insomnia-enterprise
+      note: SSO is Enterprise-only.
+    - type: requires_version
+      from: capability/scim
+      to: package/insomnia-enterprise
+      note: SCIM is Enterprise-only.
+    - type: requires_version
+      from: protocol/saml
+      to: package/insomnia-enterprise
+      note: Enterprise includes SSO via SAML.
+    - type: requires_version
+      from: protocol/oidc
+      to: package/insomnia-enterprise
+      note: Enterprise includes SSO via OIDC.
+    - type: requires_version
+      from: capability/git-sync
+      to: package/insomnia-pro
+      note: Pro provides Git Sync access for all users; Essentials limits Git Sync to
+        up to 3 users.
+    - type: requires_version
+      from: capability/mock-servers
+      to: package/insomnia-essentials
+      note: Essentials includes 1,000 mock server requests per month.
+    - type: requires_version
+      from: capability/mock-servers
+      to: package/insomnia-pro
+      note: Pro includes 10,000 mock server requests per month.
+    - type: requires_version
+      from: capability/mock-servers
+      to: package/insomnia-enterprise
+      note: Enterprise includes unlimited mock server requests.

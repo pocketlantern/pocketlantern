@@ -1,0 +1,272 @@
+id: "infra/finops-platform-cloudzero-vs-kubecost-vs-vantage-2026"
+title: "FinOps Platform - CloudZero vs Kubecost vs Vantage vs Harness CCM 2026"
+problem: "Cost governance adoption accelerated 100% year-over-year. CloudZero
+  (ML-based unit economics), Kubecost (k8s-native, now IBM/Apptio), Vantage
+  (SaaS multi-cloud with self-serve pricing tiers), and Harness CCM
+  (CI/CD-integrated, modular SKUs) differ fundamentally in scope, operational
+  model, and pricing structure. Critical selection for engineering teams
+  spending more than $500k/month on cloud infrastructure."
+context:
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "kubernetes"
+  - "finops"
+  - "cloud-cost"
+  - "multi-cloud"
+constraints:
+  - "high-scale"
+  - "enterprise"
+  - "cost-sensitive"
+  - "microservices"
+  - "compliance"
+candidates:
+  - name: "CloudZero"
+    summary: "CloudZero is a purpose-built multi-cloud FinOps platform (AWS, Azure,
+      GCP, SaaS vendors) using ML-based cost allocation to assign 100% of spend
+      to business dimensions without requiring perfect tagging. As of
+      2026-03-18, pricing is a fixed monthly tiered model with no overage
+      charges — your bill does not increase when cloud spend spikes — with
+      unlimited users included; specific tier amounts require contacting sales.
+      In December 2025, CloudZero launched agentic FinOps features including Ask
+      Advisor (natural language cost queries), an MCP Server for AI agent
+      integration, and LiteLLM support for AI workload cost visibility. The
+      primary differentiator is code-driven dimensional allocation producing
+      unit economics metrics such as cost-per-customer and cost-per-feature —
+      usable even across shared, untagged Kubernetes infrastructure."
+    when_to_use: "Best for high-scale + enterprise teams where unit economics (cost
+      per customer, cost per product, cost per AI token) is the primary FinOps
+      outcome rather than raw spend visibility. The decisive factor is that
+      CloudZero's ML allocation handles untagged shared infrastructure without
+      enforcing tagging discipline — critical for multi-tenant SaaS
+      architectures and Kubernetes environments at $500k+/month where full cost
+      allocation is otherwise infeasible."
+    tradeoffs: "Pros: fixed predictable pricing with no spend-spike overages; ML
+      allocation eliminates tagging enforcement as a prerequisite; unit
+      economics calculated natively; unlimited users; MCP Server enables AI
+      agent cost integration as of Dec 2025; dedicated FinOps account manager
+      included. Cons: pricing is opaque (contact sales required, no self-serve
+      tier); no public pricing benchmarks for budget planning; best value
+      requires a dedicated FinOps practitioner to drive adoption across
+      engineering teams."
+    cautions: "CloudZero does not publish pricing amounts on its website — budget
+      planning requires a sales conversation, which can extend procurement
+      timelines for organizations with annual approval cycles. The fixed-tier
+      model means teams with highly variable cloud spend pay for peak-tier
+      capacity; verify whether contract thresholds are set to your p95 spend,
+      not your average, before signing."
+    links:
+      - "https://www.cloudzero.com/"
+      - "https://www.cloudzero.com/pricing/"
+      - "https://www.cloudzero.com/guide/cloud-unit-economics-2026/"
+      - "https://www.cloudzero.com/guide/2026-buyers-guide-to-finops-platforms/"
+      - "https://www.cloudzero.com/press-releases/20251201/"
+  - name: "Kubecost (IBM Apptio)"
+    summary: "Kubecost is a Kubernetes-native cost monitoring platform, now owned by
+      IBM via the Apptio portfolio, providing real-time cost allocation down to
+      namespace, workload, pod, and label granularity across EKS, GKE, AKS, and
+      self-managed clusters. As of 2026-03-18, the Foundations tier is free for
+      self-hosted deployments up to 250 cores with 15-day metric retention;
+      Enterprise Self-hosted and Enterprise Cloud (SaaS) tiers cover unlimited
+      cluster scale with RBAC, unlimited metric retention, and custom pricing.
+      Kubecost is the only candidate purpose-built exclusively for container
+      infrastructure — multi-cloud non-Kubernetes spend is out of scope without
+      a complementary tool. The IBM/Apptio acquisition has introduced concern
+      about enterprise pricing escalation at renewal."
+    when_to_use: "Best for microservices + high-scale teams running primarily
+      Kubernetes workloads who need per-pod, per-namespace showback or
+      chargeback with minimal setup — deployable via Helm in under five minutes.
+      The decisive factor is the free self-hosted tier supporting up to 250
+      cores, making it viable for mid-size K8s footprints without procurement
+      friction; teams with significant non-Kubernetes cloud spend must pair it
+      with a separate multi-cloud tool."
+    tradeoffs: "Pros: deepest Kubernetes cost granularity of any candidate; free
+      self-hosted tier up to 250 cores; fastest time-to-value for K8s-only
+      environments; on-cluster data residency preserves compliance posture.
+      Cons: IBM/Apptio acquisition has raised enterprise pricing concerns at
+      renewal; 15-day retention on the free tier limits trend analysis;
+      multi-cloud non-Kubernetes coverage requires separate tooling; self-hosted
+      Enterprise adds operational overhead."
+    cautions: "Since the IBM/Apptio acquisition, teams have reported steeper
+      enterprise pricing in renewal negotiations — obtain a written quote before
+      committing to an annual contract rather than relying on pre-acquisition
+      pricing benchmarks. Self-hosted deployment retains data residency benefits
+      but transfers full responsibility for Kubecost upgrades, Prometheus
+      storage scaling, and HA to the platform team."
+    links:
+      - "https://www.apptio.com/products/kubecost/"
+      - "https://www.ibm.com/docs/en/SSW0JQG_2.x/install-and-configure/install/\
+        getting-started.html"
+  - name: "Vantage"
+    summary: "Vantage is a SaaS-first multi-cloud cost platform supporting 27+
+      providers including AWS, Azure, GCP, Kubernetes (EKS, GKE, AKS, OKE,
+      self-managed via Helm agent), Datadog, Snowflake, and MongoDB. As of
+      2026-03-18, public self-serve pricing tiers are: Starter free up to
+      $2,500/month tracked spend (3 users), Pro $30/month up to $7,500 (5
+      users), Business $200/month up to $20,000 (10 users, 12-month data
+      retention), and Enterprise at custom pricing with unlimited spend
+      tracking, unlimited users, RBAC, and an Automated FinOps Agent charged at
+      10% of savings generated. Vantage is the only candidate offering both a
+      Terraform provider for IaC-managed cost reporting and an MCP Server
+      enabling AI agent cost queries. Kubernetes cost allocation is provided via
+      a lightweight Helm chart across all major managed K8s services."
+    when_to_use: "Best for cost-sensitive + low-ops engineering teams needing
+      immediate multi-cloud visibility without procurement delay — public tier
+      pricing and self-serve onboarding let teams connect accounts and see costs
+      on day one. For teams spending above $500k/month, the Enterprise
+      negotiable fixed-rate annual contract removes the percentage-of-spend cost
+      exposure that exists on the default tier model at high volumes."
+    tradeoffs: "Pros: only candidate with a fully public self-serve pricing page;
+      broadest provider ecosystem (27+); Terraform provider and MCP Server
+      support IaC and AI agent workflows; Kubernetes support across EKS, GKE,
+      AKS, OKE without per-node licensing fees; Business tier at $200/month is
+      accessible for $10k–$20k/month spend teams. Cons: Starter/Pro/Business
+      tracked-spend caps are far below $500k/month — Enterprise is mandatory at
+      scale and requires negotiation; Kubernetes cost allocation is less
+      granular than Kubecost; no self-hosted deployment option."
+    cautions: "The Enterprise Automated FinOps Agent is charged at 10% of savings
+      generated — validate the savings attribution methodology before signing,
+      as compounding savings credits on large Reserved Instance purchases can
+      exceed the cost of a fixed-fee alternative over a full contract year.
+      Vantage is primarily a visibility and reporting layer; optimization
+      actions require either manual execution or Autopilot, and spend reductions
+      are not policy-enforced."
+    links:
+      - "https://www.vantage.sh/"
+      - "https://www.vantage.sh/pricing"
+      - "https://www.vantage.sh/integrations/kubernetes"
+  - name: "Harness CCM"
+    summary: "Harness Cloud Cost Management is a cost governance module within the
+      Harness DevOps platform, covering AWS, Azure, and GCP with Kubernetes cost
+      allocation down to pod level. As of 2026-03-18, the Free Forever plan
+      supports up to $250K/year in cloud spend (2 Kubernetes clusters, 10
+      AutoStopping rules, 30 days data retention, USD only); the Enterprise plan
+      is sold as four modular SKUs — Cloud Cost Insights, Commitment
+      Orchestrator, AutoStopping, and Cluster Orchestrator — purchasable
+      individually or bundled, with pricing via sales quote. AutoStopping is the
+      standout feature, automatically idling non-production resources with a
+      reported 70% savings potential. Native integration with Harness CI/CD
+      pipelines enables cost-gated deployments and policy-as-code governance
+      with 150+ built-in rules."
+    when_to_use: "Best for enterprise + compliance teams already running Harness
+      CI/CD who want cost governance embedded in the deployment pipeline rather
+      than adopting a separate SaaS tool. The decisive factor is AutoStopping —
+      if idle dev, staging, and QA environments represent a large share of
+      monthly spend, Harness CCM's automated shutdown delivers faster payback
+      than visibility-only competitors at equivalent license cost."
+    tradeoffs: "Pros: only candidate with native CI/CD pipeline integration enabling
+      cost-gated deployments; AutoStopping for non-production delivers
+      measurable savings without manual intervention; modular SKU model allows
+      purchasing only the capabilities needed; 150+ built-in policy-as-code
+      rules reduce governance setup time. Cons: Free tier hard-caps at
+      $250K/year making it irrelevant for teams spending $500k+/month unless
+      Enterprise is purchased; provider coverage limited to AWS, Azure, GCP
+      (narrower than Vantage's 27+); full platform value requires pre-existing
+      Harness CI/CD adoption."
+    cautions: "The Free tier hard-caps at $250K/year of cloud spend — if this
+      threshold is crossed, data collection halts immediately until an
+      Enterprise license is provisioned; plan the upgrade before reaching the
+      limit rather than after. Harness CCM's Kubernetes Cluster Orchestrator for
+      EKS is documented as Beta as of the most recent documentation review;
+      confirm GA status with the Harness sales team before depending on it for
+      production cluster cost governance."
+    links:
+      - "https://www.harness.io/products/cloud-cost-management"
+      - "https://developer.harness.io/docs/cloud-cost-management/get-started/ov\
+        erview/"
+      - "https://developer.harness.io/docs/cloud-cost-management/product-behavi\
+        our/"
+      - "https://developer.harness.io/docs/cloud-cost-management/"
+tags:
+  - "finops"
+  - "cloud-cost"
+  - "cost-management"
+  - "cloudzero"
+  - "kubecost"
+  - "vantage"
+  - "harness-ccm"
+  - "kubernetes"
+  - "multi-cloud"
+  - "aws"
+  - "azure"
+  - "gcp"
+  - "infra"
+  - "comparison"
+aliases:
+  - "cloud cost management platform"
+  - "finops tool comparison 2026"
+  - "cloudzero vs vantage"
+  - "cloudzero vs kubecost"
+  - "kubecost vs vantage"
+  - "harness cloud cost management"
+  - "cloud cost optimization platform"
+  - "kubernetes cost monitoring"
+  - "unit economics cloud"
+  - "finops platform 2026"
+  - "cloud spend visibility tool"
+  - "ibm kubecost"
+  - "apptio kubecost"
+related_cards:
+  - "devtools/replit-vs-gitpod-vs-github-codespaces-development-cost-2026"
+  - "security/docker-scout-free-tier-3-repo-limit-and-paid-pricing-2026"
+  - data/clickhouse-cloud-paygo-vs-committed-contract-aws-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/cloudzero
+      name: CloudZero
+    - type: vendor
+      id: vendor/kubecost
+      name: Kubecost
+    - type: vendor
+      id: vendor/vantage
+      name: Vantage
+    - type: vendor
+      id: vendor/harness-ccm
+      name: Harness CCM
+    - type: framework
+      id: framework/kubernetes
+      name: Kubernetes
+    - type: framework
+      id: framework/harness-ci-cd
+      name: Harness CI/CD
+    - type: protocol
+      id: protocol/mcp-server
+      name: MCP Server
+    - type: package
+      id: package/terraform-provider
+      name: Terraform provider
+    - type: capability
+      id: capability/auto-stopping
+      name: AutoStopping
+      category: cost-optimization
+  edges:
+    - type: locks_via
+      from: vendor/vantage
+      to: package/terraform-provider
+      mechanism: IaC-managed cost reporting
+    - type: locks_via
+      from: vendor/vantage
+      to: protocol/mcp-server
+      mechanism: AI agent cost queries
+    - type: locks_via
+      from: vendor/cloudzero
+      to: protocol/mcp-server
+      mechanism: AI agent integration
+    - type: requires_version
+      from: vendor/harness-ccm
+      to: framework/harness-ci-cd
+      requirement: full platform value requires pre-existing Harness CI/CD adoption
+    - type: requires_version
+      from: vendor/kubecost
+      to: framework/kubernetes
+      requirement: purpose-built exclusively for container infrastructure
+    - type: requires_version
+      from: vendor/harness-ccm
+      to: capability/auto-stopping
+      requirement: standout feature for automated idling of non-production resources

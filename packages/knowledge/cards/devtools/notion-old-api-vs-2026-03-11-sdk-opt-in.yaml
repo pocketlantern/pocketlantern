@@ -1,0 +1,162 @@
+id: "devtools/notion-old-api-vs-2026-03-11-sdk-opt-in"
+title: "Notion Old API Version vs SDK v5.12 Opt-In to 2026-03-11"
+problem: "Decide whether to stay pinned on an older Notion API version or
+  upgrade the SDK and adopt the March 2026 schema changes now."
+context:
+  - "notion"
+  - "api"
+  - "typescript"
+  - "javascript-sdk"
+  - "webhooks"
+constraints:
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Stay on API version 2025-09-03 for now"
+    summary: "As of 2026-03-20, Notion says it has no current plans to stop
+      supporting older API versions. The official JS/TS SDK supports both API
+      versions `2025-09-03` and `2026-03-11`, and the SDK default remains
+      `2025-09-03` unless you explicitly set `notionVersion`. Deferring opt-in
+      avoids immediate migration work for the three March 2026 breaking changes:
+      `after` to `position`, `archived` to `in_trash`, and `transcription` to
+      `meeting_notes`. This is the lowest-risk choice if your integration
+      already works and you do not need the latest version alignment yet."
+    when_to_use: "Use this when you are `small-team` plus `low-ops` and want to
+      avoid touching stable integration code right now. The decisive factor is
+      that Notion has not published a deprecation deadline for older API
+      versions, so there is no forced cutoff as of 2026-03-20."
+    tradeoffs: "You minimize immediate migration risk and can keep shipping without
+      schema updates. The downside is staying off the newest API surface and
+      carrying a later migration task."
+    cautions: "If you are pinned earlier than `2025-09-03`, do not assume the latest
+      JS/TS SDK is compatible: Notion states SDK `v5.0.0` and above dropped
+      support for `2022-06-28` and earlier. Also note that new webhook actions
+      default to `2026-03-11`, so mixed-version behavior can appear over time."
+    links:
+      - "https://developers.notion.com/reference/versioning"
+      - "https://github.com/makenotion/notion-sdk-js"
+      - "https://developers.notion.com/page/changelog"
+  - name: "Upgrade to @notionhq/client v5.12.0+ and opt in to 2026-03-11 now"
+    summary: "As of 2026-03-20, Notion API version `2026-03-11` is available and the
+      official JS/TS SDK added support in `@notionhq/client` `v5.12.0`. Notion
+      describes the release as three breaking changes intended to simplify the
+      API surface, and its upgrade guide says most integrations only need simple
+      find-and-replace updates. The required migration points are `after` to
+      `position` for Append Block Children, `archived` to `in_trash` in REST
+      request and response handling, and `transcription` to `meeting_notes`.
+      This path gets you onto the latest official version and aligns new code
+      with current docs."
+    when_to_use: "Use this when version alignment and reducing future migration drag
+      matter more than short-term stability. The decisive factor is whether you
+      can budget a focused migration pass across REST calls, block filtering,
+      and any typed code that still references deprecated names."
+    tradeoffs: "You clear the migration now and match the current API release with
+      official SDK support. The cost is immediate regression risk anywhere your
+      code or tests still depend on the old field names or block type."
+    cautions: "The SDK keeps old names in TypeScript types with `@deprecated`
+      annotations, so code may still compile while remaining only partially
+      migrated. Also, the `archived` to `in_trash` rename does not apply to
+      webhook event payloads, so do not over-apply the rename to integration
+      webhook consumers."
+    links:
+      - "https://developers.notion.com/guides/get-started/upgrade-guide-2026-03\
+        -11"
+      - "https://developers.notion.com/page/changelog"
+      - "https://developers.notion.com/reference/versioning"
+      - "https://github.com/makenotion/notion-sdk-js"
+tags:
+  - "devtools"
+  - "notion"
+  - "api"
+  - "sdk"
+  - "versioning"
+aliases:
+  - "notion api 2026-03-11 upgrade"
+  - "notion sdk v5.12 opt in"
+  - "notion archived in_trash migration"
+related_cards:
+  - "backend/api-versioning"
+  - "deployment/rollback-strategy-for-schema-plus-app"
+  - "_archived/migration-strategy"
+  - frontend/notion-databases-vs-data-sources-api-after-2025-09-03
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/notion
+      name: Notion
+    - type: package
+      id: package/notionhq-client-v5-12-0
+      name: "@notionhq/client v5.12.0"
+    - type: package
+      id: package/notionhq-client-v5-0-0
+      name: "@notionhq/client v5.0.0"
+    - type: protocol
+      id: protocol/notion-api-2026-03-11
+      name: Notion API 2026-03-11
+    - type: protocol
+      id: protocol/notion-api-2025-09-03
+      name: Notion API 2025-09-03
+    - type: protocol
+      id: protocol/notion-api-2022-06-28
+      name: Notion API 2022-06-28
+    - type: capability
+      id: capability/webhooks
+      name: webhooks
+    - type: data_format
+      id: format/after
+      name: after
+    - type: data_format
+      id: format/position
+      name: position
+    - type: data_format
+      id: format/archived
+      name: archived
+    - type: data_format
+      id: format/in_trash
+      name: in_trash
+    - type: data_format
+      id: format/transcription
+      name: transcription
+    - type: data_format
+      id: format/meeting_notes
+      name: meeting_notes
+  edges:
+    - type: requires_version
+      from: package/notionhq-client-v5-12-0
+      to: protocol/notion-api-2026-03-11
+      fact: Support for Notion API 2026-03-11 was added in @notionhq/client v5.12.0.
+    - type: requires_version
+      from: package/notionhq-client-v5-12-0
+      to: protocol/notion-api-2025-09-03
+      fact: The official JS/TS SDK supports API version 2025-09-03.
+    - type: breaking_change_in
+      from: format/after
+      to: protocol/notion-api-2026-03-11
+      replaced_by: format/position
+      fact: The March 2026 upgrade changes after to position for Append Block
+        Children.
+    - type: breaking_change_in
+      from: format/archived
+      to: protocol/notion-api-2026-03-11
+      replaced_by: format/in_trash
+      fact: The March 2026 upgrade changes archived to in_trash in REST request and
+        response handling.
+    - type: breaking_change_in
+      from: format/transcription
+      to: protocol/notion-api-2026-03-11
+      replaced_by: format/meeting_notes
+      fact: The March 2026 upgrade changes transcription to meeting_notes.
+    - type: requires_version
+      from: capability/webhooks
+      to: protocol/notion-api-2026-03-11
+      fact: New webhook actions default to 2026-03-11.
+    - type: breaking_change_in
+      from: package/notionhq-client-v5-0-0
+      to: protocol/notion-api-2022-06-28
+      fact: SDK v5.0.0 and above dropped support for API version 2022-06-28 and
+        earlier.

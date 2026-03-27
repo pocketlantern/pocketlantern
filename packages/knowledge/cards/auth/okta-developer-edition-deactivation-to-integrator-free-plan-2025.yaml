@@ -1,0 +1,184 @@
+id: "auth/okta-developer-edition-deactivation-to-integrator-free-plan-2025"
+title: "Okta Developer Edition Deactivation to Integrator Free Plan 2025"
+problem: "Teams using old Okta Developer Edition orgs need to know the
+  deactivation dates, inactive-org limitations, and migration path to Integrator
+  Free Plan so test environments, OIN submissions, and automation do not
+  disappear unexpectedly."
+context:
+  - "auth"
+  - "okta"
+  - "okta-developer-edition"
+  - "okta-integrator-free-plan"
+  - "okta-integration-network"
+  - "oin"
+  - "test-environments"
+  - "developer-sandbox"
+  - "migration"
+  - "policy"
+constraints:
+  - "enterprise"
+  - "small-team"
+  - "low-ops"
+  - "cost-sensitive"
+  - "compliance"
+candidates:
+  - name: "Migrate old Developer Edition org work into a new Integrator Free Plan
+      org now"
+    summary: "As of 2026-03-15, Okta's official May 2025 change notice says new
+      Developer Edition org creation stopped on May 22, 2025, Developer Edition
+      OIN submissions stopped the same day, and Developer Edition deactivation
+      began on July 18, 2025 in batches. Okta also says affected teams lose
+      access to the old Developer Edition org and its resources, so the safe
+      path is to stand up a new Integrator Free Plan org and rebuild the
+      required test configuration there before depending on the old org."
+    when_to_use: "Best for cost-sensitive + low-ops teams where the old org was only
+      a dev or test sandbox, the Integrator Free Plan limits fit, and the
+      immediate goal is to keep automation, sample tenants, and pre-production
+      auth flows alive as of 2026-03-15. This is the default migration path when
+      you do not need paid support, Org2Org, or larger-user sandbox capacity."
+    tradeoffs: "You move onto Okta's current free developer org model, which is the
+      documented replacement for Developer Edition and the required org type for
+      OIN work. The tradeoff is that this is not an in-place preservation of the
+      old org: teams should expect to recreate or re-import configuration into a
+      separate Integrator Free Plan org and validate anything that depended on
+      the old org's data or URLs."
+    cautions: "Okta documents that Integrator Free Plan orgs are for building and
+      testing integrations, are provided free of charge, and have changeable
+      features and limits. The official change notice also says neither the old
+      Developer Edition org nor the new Integrator org is meant for production
+      use cases, so do not treat this as a production tenancy migration."
+    links:
+      - "https://developer.okta.com/blog/2025/05/13/okta-developer-edition-chan\
+        ges"
+      - "https://developer.okta.com/docs/reference/org-defaults/"
+      - "https://developer.okta.com/docs/release-notes/2025/"
+      - "https://developer.okta.com/docs/concepts/okta-organizations/"
+      - "https://developer.okta.com/terms/"
+  - name: "Use the Integrator Free Plan org as the single OIN build, test, and
+      submission org"
+    summary: "As of 2026-03-15, Okta docs say Integrator Free Plan orgs are required
+      for developers submitting to the OIN, the OIN Wizard is only available in
+      Integrator Free Plan orgs, and Okta recommends using the same Integrator
+      Free Plan org for development, testing, and OIN submission. Okta's change
+      notice also says Developer Edition orgs could no longer submit new OIN
+      integrations after May 22, 2025, and any Developer Edition submissions
+      still in Draft or In Review on June 9, 2025 were automatically declined
+      and had to be resubmitted from an Integrator Free Plan org."
+    when_to_use: "Best for small-team + low-ops or enterprise + compliance teams
+      where the main risk is losing OIN submission continuity, review access, or
+      tester setup during the Developer Edition shutdown as of 2026-03-15.
+      Choose this when you need one supported sandbox for integration
+      development, tester execution, and later OIN updates."
+    tradeoffs: "This aligns with Okta's current OIN workflow and avoids splitting
+      development and submission state across org types. The tradeoff is that
+      you must adapt to Integrator Free Plan testing rules, including the Okta
+      Browser Plugin flow, the preinstalled OIN Submission Tester, and
+      password-only app sign-in policy requirements for tester compatibility."
+    cautions: "Okta recommends separate development, testing, and production
+      environments and explicitly says not to connect generated Integrator Free
+      Plan test instances to your production environment. For published
+      integrations, Okta's update guide says the OIN Wizard expects the
+      Integrator Free Plan org from which the integration was originally
+      submitted, so org ownership and OIN linkage need to be kept clean."
+    links:
+      - "https://developer.okta.com/blog/2025/05/13/okta-developer-edition-chan\
+        ges"
+      - "https://developer.okta.com/docs/concepts/okta-organizations/"
+      - "https://developer.okta.com/docs/guides/submit-app-prereq/main/"
+      - "https://developer.okta.com/docs/guides/submit-oin-app/main/"
+      - "https://developer.okta.com/docs/guides/update-oin-app/-/main/"
+  - name: "Move non-trivial sandboxes to a paid Okta org instead of relying on
+      Integrator Free Plan"
+    summary: "As of 2026-03-15, the Integrator Free Plan is free of charge, but
+      Okta's official limits are strict: orgs deactivate after 180 days of
+      inactivity unless you submit an app to the OIN, active users are capped at
+      10, Workflows are capped at 5, Org2Org is unavailable, email templates
+      can't be edited, email automation isn't available, and there is no paid
+      support. Okta also reserves the right to change org features, limitations,
+      and pricing policy."
+    when_to_use: "Best for enterprise + compliance teams, or low-ops + small-team
+      teams with long-lived internal test environments, where the real
+      requirement is persistent availability, larger user counts, support
+      coverage, Org2Org, or features beyond the free-plan sandbox envelope as of
+      2026-03-15. Choose this when the risk of a 180-day inactivity deactivation
+      or feature cap is worse than paying for a proper tenant."
+    tradeoffs: "A paid org is the safer operational answer when your sandbox behaves
+      like a shared internal service rather than an occasional integration lab.
+      The tradeoff is procurement, ongoing cost, and a different lifecycle from
+      the free developer workflow."
+    cautions: "Okta's public developer docs referenced here do not publish a
+      standard paid-plan price for this migration choice, so check official
+      commercial docs or contact Okta sales before assuming budget. Do not
+      assume Integrator Free Plan is a durable substitute for production-like
+      environments just because it does not expire on a fixed calendar date."
+    links:
+      - "https://developer.okta.com/docs/reference/org-defaults/"
+      - "https://developer.okta.com/docs/concepts/okta-organizations/"
+      - "https://developer.okta.com/terms/"
+tags:
+  - "auth"
+  - "okta"
+  - "okta-developer-edition"
+  - "okta-integrator-free-plan"
+  - "oin"
+  - "migration"
+  - "deactivation"
+  - "policy"
+  - "test-environments"
+  - "developer-sandbox"
+aliases:
+  - "okta developer edition deactivation"
+  - "okta integrator free plan migration"
+  - "okta developer edition shutdown 2025"
+  - "okta oin integrator free plan"
+  - "okta developer org deactivated"
+  - "okta integrator free plan inactivity 180 days"
+  - "okta developer edition to integrator free plan"
+related_cards:
+  - "auth/sso-for-b2b-saas"
+  - "auth/google-microsoft-github-oauth-policy-drift"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-06-15"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/okta
+      name: Okta
+    - type: package
+      id: package/okta-developer-edition-org
+      name: Okta Developer Edition org
+    - type: package
+      id: package/okta-integrator-free-plan-org
+      name: Okta Integrator Free Plan org
+    - type: capability
+      id: capability/oin-submission
+      name: OIN submission
+    - type: capability
+      id: capability/oin-wizard
+      name: OIN Wizard
+  edges:
+    - type: eol_date
+      from: package/okta-developer-edition-org
+      to: null
+      date: 2025-07-18
+      description: Developer Edition deactivation began on July 18, 2025 in batches.
+    - type: breaking_change_in
+      from: package/okta-developer-edition-org
+      to: capability/oin-submission
+      date: 2025-05-22
+      description: Developer Edition orgs could no longer submit new OIN integrations
+        after May 22, 2025.
+    - type: breaking_change_in
+      from: capability/oin-submission
+      to: package/okta-integrator-free-plan-org
+      date: 2025-06-09
+      description: Developer Edition submissions still in Draft or In Review on June
+        9, 2025 were automatically declined and had to be resubmitted from an
+        Integrator Free Plan org.
+    - type: breaking_change_in
+      from: capability/oin-wizard
+      to: package/okta-integrator-free-plan-org
+      description: The OIN Wizard is only available in Integrator Free Plan orgs.

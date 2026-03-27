@@ -1,0 +1,207 @@
+id: "devtools/prismic-locale-and-api-limit-pricing-2026"
+title: "Prismic Locale and API Limit Pricing Tradeoffs 2026"
+problem: "Choose the right Prismic plan when locale count, repository pricing,
+  and API usage ceilings now drive CMS cost and risk more than seat count
+  alone."
+context:
+  - "prismic"
+  - "headless-cms"
+  - "localization"
+  - "api-usage"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on Starter if you fit within 3 locales and 4 million API calls"
+    summary: "As of 2026-03-26, Prismic charges per repository, with Starter at
+      \"$10/month\" on annual billing. Starter includes 3 users, 3 locales, and
+      4 million API calls per month. CDN overages are allowed up to 500 GB at
+      \"$0.30/GB\" on this lower paid tier."
+    when_to_use: "Use this when you are cost-sensitive, have one repository, and can
+      stay at 3 locales or fewer with predictable traffic under 4 million API
+      calls per month."
+    tradeoffs: "Lowest recurring cost on paid plans and enough for modest
+      multilingual sites, but API capacity does not improve until Medium. If
+      traffic spikes, the cheap monthly price can be misleading because the next
+      meaningful API step-up is a large jump to Medium."
+    cautions: "Prismic's Spend Manager update on 2026-01-20 made auto-upgrade the
+      default behavior when API or CDN limits are exceeded. If auto-upgrade is
+      disabled, the repository pauses at the hard limit and content delivery
+      stops until you manually upgrade or the next billing cycle starts."
+    links:
+      - "https://prismic.io/pricing"
+      - "https://prismic.io/updates/spend-manager"
+      - "https://prismic.io/docs/admin/usage-dashboard"
+  - name: "Choose Small if you need 4 locales or more seats but not more API
+      headroom"
+    summary: "As of 2026-03-26, Small is \"$25/month\" on annual billing. It
+      includes 7 users, 4 locales, and the same 4 million API calls per month as
+      Starter. CDN overages are allowed up to 500 GB at \"$0.30/GB\" on this
+      tier."
+    when_to_use: "Use this when your bottleneck is the jump from 3 to 4 locales or
+      from 3 to 7 users, while traffic still fits under 4 million API calls per
+      month."
+    tradeoffs: "Cheap step-up from Starter for teams that need one extra locale or
+      more seats, but it does not buy more API capacity. If usage growth is
+      traffic-driven, Small can delay but not avoid a later jump to Medium."
+    cautions: "Spend Manager behavior still matters here because Small keeps the
+      same API ceiling as Starter. If auto-upgrade is disabled, hitting the hard
+      limit can still pause delivery until you upgrade or the billing cycle
+      resets."
+    links:
+      - "https://prismic.io/pricing"
+      - "https://prismic.io/updates/spend-manager"
+      - "https://prismic.io/docs/admin/usage-dashboard"
+  - name: "Move to Medium for the first real step-up in both locales and API
+      headroom"
+    summary: "As of 2026-03-26, Medium is \"$150/month\" per repository on annual
+      billing. It raises limits to 5 locales, 5 million API calls per month, 500
+      GB of CDN bandwidth, and user roles for up to 25 users. Prismic lists no
+      API overages for Medium, so it is a hard ceiling rather than a
+      pay-as-you-go tier."
+    when_to_use: "Use this when 5 locales is enough and you need to move beyond the
+      4 million API cap on Free, Starter, and Small."
+    tradeoffs: "It is a large price jump from Small, but it consolidates more
+      authors, roles, and moderate traffic into one plan. The downside is that
+      there is still no API overage cushion, so crossing 5 million monthly API
+      calls becomes an operational risk."
+    cautions: "Do not treat Medium as a gradual upgrade from Small. It is
+      effectively the first serious traffic tier, and Spend Manager means
+      overrun behavior now needs an explicit budget decision."
+    links:
+      - "https://prismic.io/pricing"
+      - "https://prismic.io/updates/spend-manager"
+  - name: "Choose Platinum if 6 to 8 locales or API overage flexibility matters"
+    summary: "As of 2026-03-26, Platinum is \"$675/month\" per repository on annual
+      billing. It includes 8 locales, 10 million API calls per month, 1 TB of
+      CDN bandwidth, unlimited users, and a development environment as a paid
+      option on yearly invoiced plans. Unlike Medium, Platinum explicitly allows
+      paid API overages up to 20 million on yearly invoiced plans, and CDN
+      overages go up to 5 TB at \"$0.25/GB\"."
+    when_to_use: "Use this when locale count exceeds Medium's 5-locale cap or
+      traffic can spike beyond a fixed ceiling and you need a supported overage
+      path."
+    tradeoffs: "It avoids a forced jump to Enterprise for many multilingual brands
+      and gives more resilience under traffic spikes. The cost jump from Medium
+      is steep, so it is hard to justify if you only need more users but not
+      more locales or API elasticity."
+    cautions: "API overages are only stated as allowed up to 20 million on yearly
+      invoiced plans, so check contract structure before assuming burst
+      capacity. If you need more than 8 locales, Platinum still does not solve
+      the localization ceiling."
+    links:
+      - "https://prismic.io/pricing"
+      - "https://prismic.io/updates/spend-manager"
+  - name: "Negotiate Enterprise for more than 8 locales or custom quota controls"
+    summary: "As of 2026-03-26, Enterprise pricing is custom and still charged per
+      repository. Prismic lists custom usage quotas for API calls, CDN, and
+      locales, plus 2 development environments, backups, SSO, support and uptime
+      SLAs, infosec and legal review, and premium support. This is the only
+      published tier that removes the fixed 8-locale ceiling and fixed API quota
+      ladder."
+    when_to_use: "Use this when your blocker is more than 8 locales, contract-level
+      support requirements, or quota terms that do not fit Platinum's published
+      caps."
+    tradeoffs: "Enterprise is the only official path for custom locale and API
+      ceilings, and it bundles governance and support features larger teams
+      often need. The downside is custom sales pricing and the need to manage
+      repository count deliberately because billing remains repository-based."
+    cautions: "Do not assume Enterprise is only about security or support. In
+      Prismic's current pricing model, it is also the escape hatch for custom
+      locale and usage quotas when published plan ceilings become the real
+      constraint."
+    links:
+      - "https://prismic.io/pricing"
+      - "https://prismic.io/docs/admin/usage-dashboard"
+tags:
+  - "devtools"
+  - "prismic"
+  - "cms"
+  - "pricing"
+  - "localization"
+aliases:
+  - "prismic pricing locales api calls"
+  - "prismic plan locale limit"
+  - "prismic api limit pricing"
+related_cards:
+  - "backend/strapi-vs-contentful-vs-sanity-headless-cms-2026"
+  - "web/storyblok-legacy-pricing-vs-growth-plus-packaging-2026"
+  - design/contentful-free-vs-lite-vs-premium-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/prismic
+      name: Prismic
+    - type: capability
+      id: capability/localization
+      name: Localization
+    - type: capability
+      id: capability/api-usage
+      name: API usage
+    - type: package
+      id: package/prismic-starter
+      name: Prismic Starter
+    - type: package
+      id: package/prismic-small
+      name: Prismic Small
+    - type: package
+      id: package/prismic-medium
+      name: Prismic Medium
+    - type: package
+      id: package/prismic-platinum
+      name: Prismic Platinum
+    - type: package
+      id: package/prismic-enterprise
+      name: Prismic Enterprise
+  edges:
+    - type: locks_via
+      from: package/prismic-starter
+      to: capability/localization
+      limit: 3 locales
+    - type: locks_via
+      from: package/prismic-starter
+      to: capability/api-usage
+      limit: 4 million API calls per month
+    - type: locks_via
+      from: package/prismic-small
+      to: capability/localization
+      limit: 4 locales
+    - type: locks_via
+      from: package/prismic-small
+      to: capability/api-usage
+      limit: 4 million API calls per month
+    - type: locks_via
+      from: package/prismic-medium
+      to: capability/localization
+      limit: 5 locales
+    - type: locks_via
+      from: package/prismic-medium
+      to: capability/api-usage
+      limit: 5 million API calls per month
+    - type: locks_via
+      from: package/prismic-platinum
+      to: capability/localization
+      limit: 8 locales
+    - type: locks_via
+      from: package/prismic-platinum
+      to: capability/api-usage
+      limit: 10 million API calls per month
+    - type: locks_via
+      from: package/prismic-enterprise
+      to: capability/localization
+      limit: custom locales
+    - type: locks_via
+      from: package/prismic-enterprise
+      to: capability/api-usage
+      limit: custom API quotas
+    - type: breaking_change_in
+      from: vendor/prismic
+      to: capability/api-usage
+      date: 2026-01-20
+      name: Spend Manager auto-upgrade default on limit overrun

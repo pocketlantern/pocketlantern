@@ -1,0 +1,194 @@
+id: "runtime/deno-deploy-paid-plans-after-ga-pricing-2026"
+title: "Deno Deploy Paid Plan Choice After GA Pricing Launch in 2026"
+problem: "Teams evaluating Deno runtime hosting need a current decision card for
+  Deno Deploy after its GA-era pricing and quota changes, especially how plan
+  caps, overages, and pause behavior affect production hosting cost and risk."
+context:
+  - "deno"
+  - "serverless"
+  - "edge-runtime"
+  - "hosting"
+  - "pricing"
+constraints:
+  - "serverless"
+  - "low-ops"
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Stay on Deno Deploy Free"
+    summary: "As of 2026-03-18, Deno Deploy Free is priced at \"$0/month\" and
+      includes 1M requests/month, 100GB egress, 15 CPU hours, 350 GB-h memory
+      time, 20 active apps, 50 custom domains per org, and 5 team members. Deno
+      announced on February 3, 2026 that Deno Deploy is generally available, but
+      billing and metering had already been enabled for all organizations on
+      September 26, 2025. Since that change, new organizations default to Free.
+      If a Free organization exceeds requests, bandwidth, CPU time, or memory
+      time, its applications are paused until the next billing cycle."
+    when_to_use: "Use this only for prototypes, internal tools, or production
+      workloads with very predictable low traffic and a hard tolerance for
+      service pause on quota exhaustion. The decisive factor is whether a
+      pause-until-next-cycle failure mode is acceptable."
+    tradeoffs: "Lowest cost and simplest entry point, but it converts quota overrun
+      into downtime instead of billed overage."
+    cautions: "Organizations only get restricted Free-plan limits until they verify
+      by linking a credit card. CPU and memory-time pricing notes on the main
+      pricing page do not apply to Deno Deploy Classic, so Classic users should
+      check the separate Classic limits page before assuming parity."
+    links:
+      - "https://deno.com/deploy/pricing"
+      - "https://docs.deno.com/deploy/changelog/"
+      - "https://deno.com/blog/deno-deploy-is-ga"
+      - "https://docs.deno.com/deploy/pricing_and_limits/"
+  - name: "Upgrade to Deno Deploy Pro"
+    summary: "As of 2026-03-18, Deno Deploy Pro is \"$20/month\" and includes 5M
+      requests/month, 200GB egress, 40 CPU hours, 1,000 GB-h memory time, 100
+      active apps, 100 custom domains per org, and 10 team members; extra team
+      members are \"$20/member\". Overage pricing is listed as \"$2/M\"
+      requests, \"$0.50/GB\" egress, \"$0.05/h\" CPU time, and \"$0.016/GB-h\"
+      memory time. Since billing rollout on September 26, 2025, Pro
+      organizations are billed for overages at month end instead of being
+      paused. Pro also adds wildcard subdomains, spend limits, and Pro-only
+      features such as custom TLS certificate management."
+    when_to_use: "Use this for most real production hosting on Deno Deploy when you
+      want managed overage instead of a hard stop and your usage is still small
+      enough that per-unit overages remain economical. The decisive factor is
+      that Pro turns quota breaches from downtime risk into metered spend that
+      you can cap with spend limits."
+    tradeoffs: "Strong default for small teams and low-ops production, but marginal
+      cost remains usage-based and can grow if traffic or egress becomes
+      bursty."
+    cautions: "Build improvements in the changelog show Pro-specific build ceilings,
+      including build timeouts up to 15 minutes and builder memory up to 4GB;
+      teams with heavier builds should verify those limits before standardizing.
+      If you depend on Deno Deploy Classic behavior, note that CPU time and
+      memory time metering on the pricing page explicitly does not apply to
+      Classic."
+    links:
+      - "https://deno.com/deploy/pricing"
+      - "https://docs.deno.com/deploy/changelog/"
+      - "https://deno.com/blog/deploy-spend-limits"
+      - "https://deno.com/blog/deno-deploy-is-ga"
+  - name: "Negotiate Deno Deploy Enterprise"
+    summary: "As of 2026-03-18, Deno Deploy Enterprise is custom-priced and the
+      pricing page lists custom allocations for requests, bandwidth, CPU time,
+      memory time, active apps, team members, and deployment rates. The pricing
+      matrix also shows Enterprise-only controls such as authenticated
+      invocations, dedicated Anycast IP, and included write-region selection for
+      Deno KV. Enterprise retains longer analytics history than lower tiers on
+      the pricing page. This is the plan Deno positions for maximum support,
+      security, and performance."
+    when_to_use: "Use this when compliance, traffic shape, networking controls, or
+      procurement requirements matter more than self-serve monthly pricing. The
+      decisive factor is needing custom limits or Enterprise-only platform
+      controls rather than simply needing a little more headroom than Pro."
+    tradeoffs: "Best fit for regulated or high-scale teams that need negotiated
+      limits and security features, but it gives up transparent self-serve
+      economics."
+    cautions: "Because pricing is custom, you cannot model production cost from
+      public list prices alone; get a written quote with quota definitions and
+      overage terms. If your main need is only moderate production traffic, Pro
+      is easier to forecast because its included usage and overage prices are
+      public."
+    links:
+      - "https://deno.com/deploy/pricing"
+      - "https://docs.deno.com/deploy/changelog/"
+      - "https://deno.com/blog/deno-deploy-is-ga"
+tags:
+  - "runtime"
+  - "deno"
+  - "hosting"
+  - "serverless"
+  - "pricing"
+aliases:
+  - "deno deploy pricing 2026"
+  - "deno deploy free vs pro"
+  - "deno deploy ga pricing"
+  - "deno deploy overage caps"
+related_cards:
+  - "infra/js-runtime"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - "infra/production-readiness"
+  - cloud/deno-deploy-free-vs-pro-after-metering-sept-2025
+  - runtime/deno-sandbox-beta-pricing-vs-self-built-microvms-2026
+  - cloud/deno-deploy-managed-vs-self-hosted-deployd-after-ga-2026
+  - deployment/deno-deploy-classic-vs-ga-2026
+  - web/deno-deploy-ga-vs-classic-pricing-2026
+  - web/deno-sandbox-vs-deploy-cost-controls-2026
+tier: "core"
+status: "active"
+updated: "2026-03-18"
+review_by: "2026-06-16"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/deno
+      name: Deno
+    - type: runtime
+      id: runtime/deno-deploy-free
+      name: Deno Deploy Free
+    - type: runtime
+      id: runtime/deno-deploy-pro
+      name: Deno Deploy Pro
+    - type: runtime
+      id: runtime/deno-deploy-enterprise
+      name: Deno Deploy Enterprise
+    - type: capability
+      id: capability/pause-until-next-billing-cycle
+      name: Pause until next billing cycle
+      category: quota_exhaustion_behavior
+    - type: capability
+      id: capability/spend-limits
+      name: Spend limits
+      category: cost_control
+    - type: capability
+      id: capability/custom-tls-certificate-management
+      name: Custom TLS certificate management
+      category: networking
+    - type: capability
+      id: capability/authenticated-invocations
+      name: Authenticated invocations
+      category: security
+    - type: capability
+      id: capability/dedicated-anycast-ip
+      name: Dedicated Anycast IP
+      category: networking
+    - type: capability
+      id: capability/write-region-selection-deno-kv
+      name: Write-region selection for Deno KV
+      category: data_platform
+  edges:
+    - type: locks_via
+      from: runtime/deno-deploy-free
+      to: capability/pause-until-next-billing-cycle
+      evidence: If a Free organization exceeds requests, bandwidth, CPU time, or
+        memory time, its applications are paused until the next billing cycle.
+    - type: locks_via
+      from: runtime/deno-deploy-pro
+      to: capability/spend-limits
+      evidence: Pro also adds wildcard subdomains, spend limits, and Pro-only features
+        such as custom TLS certificate management.
+    - type: locks_via
+      from: runtime/deno-deploy-pro
+      to: capability/custom-tls-certificate-management
+      evidence: Pro also adds wildcard subdomains, spend limits, and Pro-only features
+        such as custom TLS certificate management.
+    - type: locks_via
+      from: runtime/deno-deploy-enterprise
+      to: capability/authenticated-invocations
+      evidence: The pricing matrix also shows Enterprise-only controls such as
+        authenticated invocations, dedicated Anycast IP, and included
+        write-region selection for Deno KV.
+    - type: locks_via
+      from: runtime/deno-deploy-enterprise
+      to: capability/dedicated-anycast-ip
+      evidence: The pricing matrix also shows Enterprise-only controls such as
+        authenticated invocations, dedicated Anycast IP, and included
+        write-region selection for Deno KV.
+    - type: locks_via
+      from: runtime/deno-deploy-enterprise
+      to: capability/write-region-selection-deno-kv
+      evidence: The pricing matrix also shows Enterprise-only controls such as
+        authenticated invocations, dedicated Anycast IP, and included
+        write-region selection for Deno KV.

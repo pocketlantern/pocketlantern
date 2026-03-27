@@ -1,0 +1,198 @@
+id: "data/snowflake-standard-vs-enterprise-vs-business-critical-pricing-2026"
+title: "Snowflake Standard vs Enterprise vs Business Critical Credit Pricing in 2026"
+problem: "Choose the right Snowflake edition now that official 2026 pricing
+  tables still show meaningful per-credit spreads by edition, region, and
+  private connectivity requirements."
+context:
+  - "snowflake"
+  - "data-warehouse"
+  - "aws"
+  - "azure"
+  - "gcp"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Standard Edition"
+    summary: "Standard is Snowflake's introductory edition with core warehouse, SQL,
+      security, and 1-day Time Travel capabilities. As of 2026-03-19, the
+      official on-demand credit table shows Standard at \"$2.00\" per credit in
+      lower-cost commercial regions such as AWS US East 2, Azure East US 2, and
+      GCP US Central 1, rising to \"$3.25\" in GCP Middle East Central 2
+      (Dammam). Standard does not include Enterprise-only features such as
+      multi-cluster warehouses or extended Time Travel, and it does not include
+      Business Critical private connectivity features. Snowpipe's simplified
+      fixed credit-per-GB billing now applies to all editions, so Standard
+      remains the cheapest option when edition-gated controls are not required."
+    when_to_use: "Use Standard when you are cost-sensitive and do not need
+      multi-cluster concurrency controls, extended governance, or private
+      connectivity. The decisive factor is that it preserves the lowest
+      per-credit rate while Snowpipe pricing is no longer a differentiator
+      across editions."
+    tradeoffs: "Lowest compute unit cost and simplest starting point, but fewer
+      governance, recovery, and scaling controls than Enterprise or Business
+      Critical."
+    cautions: "Do not choose Standard if you already know you need private
+      connectivity, customer-managed encryption via Tri-Secret Secure,
+      PHI/PCI-oriented controls, or longer Time Travel windows. Upgrading later
+      is possible, but the edition change increases unit costs for credits and
+      storage."
+    links:
+      - "https://www.snowflake.com/wp-content/uploads/2017/07/CreditConsumption\
+        Table.pdf"
+      - "https://docs.snowflake.com/en/user-guide/intro-editions"
+      - "https://docs.snowflake.com/en/user-guide/data-load-snowpipe-billing"
+  - name: "Enterprise Edition"
+    summary: "Enterprise includes all Standard capabilities and adds features aimed
+      at larger-scale organizations, including multi-cluster virtual warehouses,
+      extended Time Travel up to 90 days, and additional governance controls. As
+      of 2026-03-19, the official on-demand credit table shows Enterprise at
+      \"$3.00\" per credit in lower-cost commercial regions such as AWS US East
+      2, Azure East US 2, and GCP US Central 1, rising to \"$4.90\" in GCP
+      Middle East Central 2 (Dammam). The pricing spread versus Standard is
+      material, but Enterprise is the first edition where concurrency scaling
+      and longer recovery windows are available. It is the practical middle tier
+      when operational scale and governance matter more than minimum unit cost."
+    when_to_use: "Use Enterprise when you need higher concurrency management, longer
+      retention and recovery windows, or stronger governance, but you do not
+      need private connectivity or Business Critical compliance features. The
+      decisive factor is whether multi-cluster warehouses and extended Time
+      Travel justify paying roughly 50 percent more per credit than Standard in
+      many mainstream regions."
+    tradeoffs: "Stronger enterprise controls than Standard without the full Business
+      Critical premium, but still a clear cost increase on every warehouse
+      credit."
+    cautions: "Enterprise is not the right landing zone if private connectivity is a
+      hard requirement. Snowflake's edition matrix places private connectivity
+      to the service and internal stages in Business Critical and VPS, not
+      Enterprise."
+    links:
+      - "https://www.snowflake.com/wp-content/uploads/2017/07/CreditConsumption\
+        Table.pdf"
+      - "https://docs.snowflake.com/en/user-guide/intro-editions"
+      - "https://www.snowflake.com/en/pricing-options/calculator/feedback-faqs/"
+  - name: "Business Critical Edition"
+    summary: "Business Critical includes all Enterprise features and adds enhanced
+      security and data protection for highly sensitive workloads, including PHI
+      and PCI-oriented use cases, disaster recovery and business continuity
+      support, Tri-Secret Secure, and private connectivity. As of 2026-03-19,
+      the official on-demand credit table shows Business Critical at \"$4.00\"
+      per credit in lower-cost commercial regions such as AWS US East 2, Azure
+      East US 2, and GCP US Central 1, rising to \"$6.50\" in GCP Middle East
+      Central 2 (Dammam). Snowflake's edition matrix lists private connectivity
+      to the Snowflake service and internal stages under Business Critical and
+      VPS. Recent release notes also show Google Cloud private connectivity
+      support reaching GA for internal stages on 2025-12-12 and for Tri-Secret
+      Secure on 2026-01-28, reducing cross-cloud feature gaps for Business
+      Critical accounts."
+    when_to_use: "Use Business Critical when compliance, private connectivity,
+      customer-managed encryption, or regulated-data handling are
+      non-negotiable. The decisive factor is that if private connectivity is
+      required, the edition gate matters more than the per-credit premium."
+    tradeoffs: "Unlocks the security and network isolation features that regulated
+      environments often need, but it carries a large per-credit premium versus
+      Enterprise and Standard."
+    cautions: "Business Critical should be treated as a policy-driven purchase, not
+      a speculative upgrade. If your workload does not require private
+      connectivity, Tri-Secret Secure, PHI/PCI support, or stronger continuity
+      features, the recurring credit premium can be hard to justify."
+    links:
+      - "https://www.snowflake.com/wp-content/uploads/2017/07/CreditConsumption\
+        Table.pdf"
+      - "https://docs.snowflake.com/en/user-guide/intro-editions"
+      - "https://docs.snowflake.com/en/release-notes/2025/other/2025-12-12-gcp-\
+        pl-internal-stages"
+      - "https://docs.snowflake.com/en/release-notes/2026/other/2026-01-28-tss-\
+        private-connectivity-gcp"
+tags:
+  - "data"
+  - "snowflake"
+  - "pricing"
+  - "data-warehouse"
+aliases:
+  - "snowflake edition pricing 2026"
+  - "snowflake standard vs enterprise vs business critical"
+  - "snowflake private connectivity business critical"
+  - "snowflake edition credit cost"
+  - "snowflake credit pricing by edition"
+  - "snowflake enterprise pricing 2026"
+  - "snowflake business critical pricing"
+  - "snowflake standard pricing 2026"
+  - "snowflake edition pricing by region"
+  - "snowflake privatelink business critical"
+  - "snowflake private connectivity pricing"
+  - "snowflake bc vs enterprise"
+  - "snowflake std vs ent pricing"
+related_cards:
+  - "data/snowflake-credit-pricing-and-serverless-cost-shifts-2026"
+  - "data/data-warehouse-bigquery-vs-snowflake-vs-redshift-startup-2026"
+  - "data/bigquery-on-demand-vs-editions-capacity-pricing-2026"
+  - data/snowflake-hybrid-tables-pricing-march-2026
+  - data/singlestore-helios-shared-vs-standard-vs-enterprise-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/snowflake
+      name: Snowflake
+    - type: package
+      id: package/snowflake-standard-edition
+      name: Standard Edition
+      category: edition
+    - type: package
+      id: package/snowflake-enterprise-edition
+      name: Enterprise Edition
+      category: edition
+    - type: package
+      id: package/snowflake-business-critical-edition
+      name: Business Critical Edition
+      category: edition
+    - type: capability
+      id: capability/multi-cluster-virtual-warehouses
+      name: Multi-cluster virtual warehouses
+      category: concurrency
+    - type: capability
+      id: capability/extended-time-travel-up-to-90-days
+      name: Extended Time Travel up to 90 days
+      category: recovery
+    - type: capability
+      id: capability/private-connectivity
+      name: Private connectivity
+      category: networking
+    - type: capability
+      id: capability/tri-secret-secure
+      name: Tri-Secret Secure
+      category: security
+    - type: capability
+      id: capability/phi-pci-oriented-controls
+      name: PHI and PCI-oriented controls
+      category: compliance
+  edges:
+    - type: requires_version
+      from: capability/multi-cluster-virtual-warehouses
+      to: package/snowflake-enterprise-edition
+      requirement: Enterprise includes multi-cluster virtual warehouses; Standard does
+        not include Enterprise-only features such as multi-cluster warehouses.
+    - type: requires_version
+      from: capability/extended-time-travel-up-to-90-days
+      to: package/snowflake-enterprise-edition
+      requirement: Enterprise adds extended Time Travel up to 90 days.
+    - type: requires_version
+      from: capability/private-connectivity
+      to: package/snowflake-business-critical-edition
+      requirement: Private connectivity to the service and internal stages is listed
+        under Business Critical and VPS, not Enterprise.
+    - type: requires_version
+      from: capability/tri-secret-secure
+      to: package/snowflake-business-critical-edition
+      requirement: Business Critical adds Tri-Secret Secure.
+    - type: requires_version
+      from: capability/phi-pci-oriented-controls
+      to: package/snowflake-business-critical-edition
+      requirement: Business Critical adds enhanced security and data protection for
+        PHI and PCI-oriented use cases.

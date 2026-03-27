@@ -1,0 +1,208 @@
+id: "auth/fusionauth-community-vs-enterprise-vs-zitadel-saml-pricing-2026"
+title: "FusionAuth Community vs Enterprise vs ZITADEL After 2026 SAML and Tenant
+  Packaging"
+problem: "Decide whether to stay self-hosted, pay for enterprise auth features,
+  or move to a managed alternative now that plan boundaries around SAML,
+  tenants, and support drive total cost."
+context:
+  - "authentication"
+  - "sso"
+  - "saml"
+  - "multi-tenant-saas"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Stay on FusionAuth Community self-hosted"
+    summary: "FusionAuth Community is free and unlimited as of 2026-03-19, with
+      self-hosting included and community support only. FusionAuth docs and
+      pricing both state SAML v2 support, and the product docs say FusionAuth
+      acts as both a SAML service provider and identity provider. The pricing
+      compare table also lists tenants across plans, so basic tenant isolation
+      is not the paid boundary. The main cost boundary is support and certain
+      advanced enterprise features rather than basic self-hosting or baseline
+      SAML."
+    when_to_use: "Use this when you are cost-sensitive, already operate your own
+      infrastructure, and only need baseline SAML plus standard tenant
+      separation. It is the lowest-cash option if your team can absorb upgrades,
+      support, and enterprise-customer escalations without a vendor SLA."
+    tradeoffs: "No license fee and full deployment control, but no business-hours or
+      24/7 support. Advanced packaging lines such as SCIM, threat detection, and
+      some higher-tier SAML and admin features are outside Community."
+    cautions: "As of 2026-03-19, FusionAuth release notes show version 1.64.0. If
+      you are upgrading from older deployments, note that 1.63.0 removed the
+      deprecated retrieveUserViaJWT client-library method, so old integrations
+      may break during upgrade."
+    links:
+      - "https://fusionauth.io/pricing"
+      - "https://fusionauth.io/docs/"
+      - "https://fusionauth.io/docs/release-notes/"
+  - name: "Upgrade to FusionAuth Essentials or Enterprise"
+    summary: "FusionAuth Essentials starts at 850 dollars per month billed annually
+      as of 2026-03-19, and Enterprise starts at 3300 dollars per month billed
+      annually. Essentials adds advanced connectivity, MFA, custom OAuth scopes,
+      email support with a 24 to 48 hour response target during business hours,
+      and initial architecture and engineering reviews. Enterprise adds advanced
+      threat detection, Kubernetes technical support, tenant manager, 24/7 email
+      and phone support, solution architect guidance, and fine-grained
+      authorization support. This path keeps the same product and self-hosting
+      model while buying down support and enterprise-feature risk."
+    when_to_use: "Use this when migration risk is higher than license cost, or when
+      enterprise deals now require contractual support, stronger governance, or
+      faster escalations. Enterprise is the decisive tier when tenant
+      administration and 24/7 support are the blockers, not just SAML itself."
+    tradeoffs: "Least architectural change if you already run FusionAuth, but annual
+      software cost becomes material quickly. Essentials may be enough for
+      business-hours support, while Enterprise is the real step-up for
+      mission-critical and compliance-heavy accounts."
+    cautions: "Do not assume paid FusionAuth is only about SAML. As of 2026-03-19,
+      the price jump is mostly justified by support, admin tooling, security
+      extras, and enterprise operating requirements, so confirm that those are
+      the actual blockers before upgrading."
+    links:
+      - "https://fusionauth.io/pricing"
+      - "https://fusionauth.io/docs/"
+      - "https://fusionauth.io/docs/release-notes/"
+  - name: "Move to ZITADEL cloud or negotiate ZITADEL Enterprise"
+    summary: "ZITADEL pricing as of 2026-03-19 shows a Free plan at 0 dollars per
+      month with 100 daily active users, unlimited users, unlimited
+      organizations, 3 identity providers, and community support. Pro starts at
+      100 dollars per month with 25000 daily active users included, 3 identity
+      providers, a custom domain, a 99.5 percent uptime guarantee, and extended
+      support and SLA; add-ons are 999 dollars per month for stronger support
+      and 100 dollars per month for data location. Enterprise is custom-priced
+      for cloud or own infrastructure and adds custom support SLA, tailored
+      volume pricing, custom metrics, custom threat analysis, and a technical
+      account manager. The official changelog shows ZITADEL 3.2.0 added
+      federated logout for SAML IdP on 2025-05-23, while 3.0.0 had already
+      changed the self-hosted license to AGPL3 and removed CockroachDB support
+      in favor of PostgreSQL."
+    when_to_use: "Use this when you want a lower entry price for managed auth,
+      stronger built-in organization modeling, or a credible path off
+      self-managed vendor support burden. It is the strongest alternative when
+      FusionAuth Enterprise cost is hard to justify but you still need a managed
+      or commercially supported SSO platform."
+    tradeoffs: "Much lower published starting price than FusionAuth paid tiers, but
+      the cloud plans have identity-provider and DAU packaging boundaries and
+      enterprise self-hosting is custom. Migration is a bigger project because
+      you are changing both vendor and operational model."
+    cautions: "As of 2026-03-19, the ZITADEL V3 license change to AGPL3 has already
+      occurred, and CockroachDB support has already been removed in favor of
+      PostgreSQL. If you want self-hosted commercial support or custom
+      packaging, the pricing page pushes that into Enterprise rather than
+      publishing a self-serve price."
+    links:
+      - "https://zitadel.com/pricing"
+      - "https://zitadel.com/pricing/detail"
+      - "https://zitadel.com/changelog"
+      - "https://zitadel.com/docs/self-hosting/deploy/overview"
+tags:
+  - "auth"
+  - "fusionauth"
+  - "zitadel"
+  - "saml"
+  - "pricing"
+aliases:
+  - "fusionauth community vs enterprise pricing"
+  - "zitadel saml pricing"
+  - "fusionauth vs zitadel self hosted auth"
+  - "fusionauth saml enterprise cost"
+  - "fusionauth enterprise tenant pricing"
+  - "fusionauth multi tenant license"
+  - "fusionauth vs zitadel pricing"
+  - "zitadel b2b saml pricing"
+  - "zitadel tenant limits"
+  - "fusion auth enterprise pricing"
+  - "fusionauth self hosted vs zitadel"
+  - "fusionauth paid vs community"
+  - "saml auth pricing fusionauth"
+
+  - "fusionauth community vs enterprise pricing"
+  - "zitadel saml pricing"
+  - "fusionauth vs zitadel self hosted auth"
+related_cards:
+  - "auth/auth-provider-migration-and-lock-in-2026"
+  - "auth/multi-tenant-auth-boundary"
+  - "auth/sso-for-b2b-saas"
+  - auth/ory-vs-supertokens-vs-fusionauth-pricing-self-host-vs-hosted-2026
+  - security/workos-vs-fusionauth-vs-keycloak-b2b-sso-2026
+  - auth/zitadel-free-vs-pro-dau-thresholds-2026
+  - security/workos-vs-fusionauth-vs-ory-enterprise-sso-cost-surface-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-19
+  nodes:
+    - type: vendor
+      id: vendor/fusionauth
+      name: FusionAuth
+    - type: vendor
+      id: vendor/zitadel
+      name: ZITADEL
+    - type: protocol
+      id: protocol/saml-v2
+      name: SAML v2
+      standard: SAML v2
+    - type: package
+      id: package/fusionauth-1.63.0
+      name: FusionAuth 1.63.0
+      version: 1.63.0
+    - type: package
+      id: package/zitadel-3.0.0
+      name: ZITADEL 3.0.0
+      version: 3.0.0
+    - type: package
+      id: package/zitadel-3.2.0
+      name: ZITADEL 3.2.0
+      version: 3.2.0
+    - type: package
+      id: package/zitadel-enterprise
+      name: ZITADEL Enterprise
+      category: plan
+    - type: runtime
+      id: runtime/postgresql
+      name: PostgreSQL
+    - type: runtime
+      id: runtime/cockroachdb
+      name: CockroachDB
+    - type: capability
+      id: capability/federated-logout-for-saml-idp
+      name: Federated logout for SAML IdP
+    - type: capability
+      id: capability/self-hosted-commercial-support
+      name: Self-hosted commercial support
+    - type: capability
+      id: capability/custom-packaging
+      name: Custom packaging
+    - type: package
+      id: package/fusionauth-client-library
+      name: FusionAuth client library
+      category: client-library
+  edges:
+    - type: breaking_change_in
+      from: package/fusionauth-client-library
+      to: package/fusionauth-1.63.0
+      change: Removed deprecated retrieveUserViaJWT method
+    - type: requires_version
+      from: capability/federated-logout-for-saml-idp
+      to: package/zitadel-3.2.0
+      version: 3.2.0
+    - type: breaking_change_in
+      from: runtime/cockroachdb
+      to: package/zitadel-3.0.0
+      change: Support removed in favor of PostgreSQL
+    - type: requires_version
+      from: runtime/postgresql
+      to: package/zitadel-3.0.0
+      change: Used in favor of CockroachDB from 3.0.0
+    - type: locks_via
+      from: capability/self-hosted-commercial-support
+      to: package/zitadel-enterprise
+      scope: ZITADEL pricing pushes self-hosted commercial support into Enterprise
+    - type: locks_via
+      from: capability/custom-packaging
+      to: package/zitadel-enterprise
+      scope: ZITADEL pricing pushes custom packaging into Enterprise

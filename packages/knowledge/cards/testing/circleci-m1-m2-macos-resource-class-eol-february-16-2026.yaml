@@ -1,0 +1,189 @@
+id: "testing/circleci-m1-m2-macos-resource-class-eol-february-16-2026"
+title: "CircleCI macOS M1 and M2 Resource Class EOL on February 16, 2026"
+problem: "Teams with Apple-platform CI pipelines need to know which CircleCI
+  macOS configs already broke after the February 16, 2026 retirement and which
+  M4 Pro replacement classes to budget for."
+context:
+  - "circleci"
+  - "ci-cd"
+  - "macos"
+  - "ios"
+  - "xcode"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Pin \"m4pro.medium\" for standard Apple-platform CI"
+    summary: "As of 2026-03-26, CircleCI has already retired the older macOS
+      resource classes \"macos.m1.medium.gen1\", \"macos.m1.large.gen1\",
+      \"m2pro.medium\", and \"m2pro.large\". CircleCI's current price list shows
+      \"m4pro.medium\" at \"200 credits/min\" with \"6 CPU\" and \"28 GB RAM\".
+      CircleCI's macOS docs list current M4 Pro support for Xcode \"14.3.1\",
+      \"15.4.0\", \"16.3.0\", \"16.4.0\", and \"26.0.1\" through \"26.3.0\".
+      CircleCI support states jobs that still specify M1 or M2 classes now fail
+      with a configuration error."
+    when_to_use: "Use this when you want the lowest-cost supported replacement and
+      your builds fit within the medium M4 Pro footprint. It is the direct
+      successor for teams that were previously on M1 or M2 medium-sized
+      executors and need to get pipelines green again with minimal spend."
+    tradeoffs: "Lowest supported macOS replacement cost on CircleCI, but less
+      headroom than \"m4pro.large\" for parallel test shards, large simulators,
+      or memory-heavy Xcode builds."
+    cautions: "Do not assume older Xcode images survived the migration. CircleCI
+      states Xcode \"16.2.0\" was deprecated from M4 Pro on \"2026-01-14\" and
+      was only left on M1/M2 until those classes were retired, so some
+      previously working M1/M2 plus older-Xcode combinations are no longer
+      available."
+    links:
+      - "https://support.circleci.com/hc/en-us/articles/46015760855835-M1-M2-Ma\
+        c-Not-Running-End-of-Life-February-16-2026"
+      - "https://circleci.com/docs/guides/execution-managed/using-macos/"
+      - "https://circleci.com/pricing/price-list/"
+  - name: "Pin \"m4pro.large\" for faster or memory-heavier macOS jobs"
+    summary: "As of 2026-03-26, \"m4pro.large\" is the larger supported CircleCI
+      macOS replacement class after the M1/M2 retirement. CircleCI's current
+      price list shows \"m4pro.large\" at \"400 credits/min\" with \"12 CPU\"
+      and \"56 GB RAM\". The same current M4 Pro Xcode matrix applies here, so
+      it supports the listed M4-compatible Xcode versions rather than restoring
+      retired M1/M2-only combinations. This option is the budget target if
+      medium jobs become unstable, too slow, or memory-constrained after
+      migration."
+    when_to_use: "Use this when build time, simulator load, or memory pressure makes
+      \"m4pro.medium\" unreliable or too slow. The decisive factor is whether
+      the extra credits buy enough wall-clock reduction or stability to justify
+      a 2x per-minute compute rate."
+    tradeoffs: "More CPU and RAM can shorten builds and reduce flaky resource
+      contention, but it doubles the macOS credit burn relative to
+      \"m4pro.medium\"."
+    cautions: "This is not a compatibility escape hatch for retired M1/M2 Xcode
+      images. If your pipeline depended on an older Xcode version that only
+      existed on M1/M2, moving to large does not bring that version back."
+    links:
+      - "https://circleci.com/docs/guides/execution-managed/using-macos/"
+      - "https://circleci.com/pricing/price-list/"
+      - "https://support.circleci.com/hc/en-us/articles/46015760855835-M1-M2-Ma\
+        c-Not-Running-End-of-Life-February-16-2026"
+  - name: "Remove explicit resource_class and accept CircleCI's default
+      \"m4pro.medium\""
+    summary: "As of 2026-03-26, CircleCI support states that macOS jobs with no
+      explicit \"resource_class\" automatically use \"m4pro.medium\". CircleCI
+      also recorded the default rollout dates: Free plan default changed on
+      \"2025-11-10\" and paid plan default changed on \"2025-12-03\", before the
+      final retirement on \"2026-02-16\". This can be the quickest remediation
+      for repositories that only need a supported default and do not want to pin
+      executor size everywhere. Budget-wise, the underlying default is still the
+      \"m4pro.medium\" class, so the relevant official compute price remains
+      \"200 credits/min\" as of 2026-03-26."
+    when_to_use: "Use this when you want the smallest config diff and are
+      comfortable with CircleCI's current macOS default. It is most appropriate
+      for simple pipelines where explicit executor sizing is not part of your
+      capacity planning."
+    tradeoffs: "Fastest migration path, but less explicit than pinning a resource
+      class and easier to overlook in future cost or performance reviews."
+    cautions: "This only helps jobs that omitted the field. Any config that still
+      explicitly references \"macos.m1.medium.gen1\", \"macos.m1.large.gen1\",
+      \"m2pro.medium\", or \"m2pro.large\" will continue to fail until changed."
+    links:
+      - "https://support.circleci.com/hc/en-us/articles/46015760855835-M1-M2-Ma\
+        c-Not-Running-End-of-Life-February-16-2026"
+      - "https://circleci.com/pricing/price-list/"
+tags:
+  - "testing"
+  - "circleci"
+  - "macos"
+  - "ios"
+  - "xcode"
+  - "pricing"
+aliases:
+  - "circleci m1 m2 eol"
+  - "circleci macos resource class retirement 2026"
+  - "circleci m4pro.medium pricing"
+related_cards:
+  - "devtools/circleci-performance-vs-scale-credit-pricing-2026"
+  - "testing/circleci-free-vs-performance-user-credit-costs-2026"
+  - "mobile/apple-sdk-minimum-xcode-upgrade-deadline-planning-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/circleci
+      name: CircleCI
+    - type: runtime
+      id: runtime/macos-m1-medium-gen1
+      name: macos.m1.medium.gen1
+    - type: runtime
+      id: runtime/macos-m1-large-gen1
+      name: macos.m1.large.gen1
+    - type: runtime
+      id: runtime/m2pro-medium
+      name: m2pro.medium
+    - type: runtime
+      id: runtime/m2pro-large
+      name: m2pro.large
+    - type: runtime
+      id: runtime/m4pro-medium
+      name: m4pro.medium
+    - type: runtime
+      id: runtime/m4pro-large
+      name: m4pro.large
+    - type: runtime
+      id: runtime/xcode-16-2-0
+      name: Xcode 16.2.0
+  edges:
+    - type: eol_date
+      from: runtime/macos-m1-medium-gen1
+      to: null
+      date: 2026-02-16
+      vendor: vendor/circleci
+    - type: eol_date
+      from: runtime/macos-m1-large-gen1
+      to: null
+      date: 2026-02-16
+      vendor: vendor/circleci
+    - type: eol_date
+      from: runtime/m2pro-medium
+      to: null
+      date: 2026-02-16
+      vendor: vendor/circleci
+    - type: eol_date
+      from: runtime/m2pro-large
+      to: null
+      date: 2026-02-16
+      vendor: vendor/circleci
+    - type: breaking_change_in
+      from: runtime/macos-m1-medium-gen1
+      to: vendor/circleci
+      date: 2026-02-16
+      effect: jobs fail with a configuration error
+    - type: breaking_change_in
+      from: runtime/macos-m1-large-gen1
+      to: vendor/circleci
+      date: 2026-02-16
+      effect: jobs fail with a configuration error
+    - type: breaking_change_in
+      from: runtime/m2pro-medium
+      to: vendor/circleci
+      date: 2026-02-16
+      effect: jobs fail with a configuration error
+    - type: breaking_change_in
+      from: runtime/m2pro-large
+      to: vendor/circleci
+      date: 2026-02-16
+      effect: jobs fail with a configuration error
+    - type: eol_date
+      from: runtime/xcode-16-2-0
+      to: null
+      date: 2026-01-14
+      scope: deprecated from M4 Pro
+    - type: requires_version
+      from: runtime/m4pro-medium
+      to: runtime/xcode-16-2-0
+      status: not_supported
+    - type: requires_version
+      from: runtime/m4pro-large
+      to: runtime/xcode-16-2-0
+      status: not_supported

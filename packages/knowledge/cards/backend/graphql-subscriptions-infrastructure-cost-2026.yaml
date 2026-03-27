@@ -1,0 +1,238 @@
+id: "backend/graphql-subscriptions-infrastructure-cost-2026"
+title: "GraphQL Subscriptions Cost—Apollo vs Hasura vs Custom Infrastructure 2026"
+problem: "Real-time applications using GraphQL subscriptions must choose between
+  Apollo GraphOS with a self-hosted router (cloud routing fully discontinued as
+  of March 2026), Hasura DDN's model-based managed platform (subscriptions in
+  beta), or custom self-hosted infrastructure using graphql-ws and Redis
+  Pub/Sub. Concurrency and cost scale non-linearly across all three approaches
+  and the optimal choice depends on federation complexity, schema shape, and
+  event volume."
+context:
+  - "graphql"
+  - "real-time"
+  - "subscriptions"
+  - "websocket"
+  - "backend"
+  - "apollo"
+  - "hasura"
+  - "federation"
+constraints:
+  - "real-time"
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Apollo GraphOS + Self-Hosted Router"
+    summary: "As of 2026-03-16, Apollo's cloud-hosted router (Serverless and
+      Dedicated plans) is fully discontinued — Dedicated cloud routing ended
+      March 15, 2026. Teams now run the Apollo Router self-hosted and pay for
+      GraphOS platform access separately. Developer plan charges $5 per million
+      GraphQL requests plus $2 per million subscription update events
+      (first-250M tier), no commitment required. Standard plan starts at
+      $2,500/month with an annual commitment and includes 250M requests;
+      Federated Subscriptions are metered independently on both plans."
+    when_to_use: "Best for enterprise + microservices teams using Apollo Federation
+      who need a unified supergraph with schema registry, field-level
+      observability, and cross-subgraph subscription fan-out. The single most
+      decisive factor: if your subscriptions span multiple federated subgraphs,
+      no other managed option provides equivalent built-in cross-subgraph
+      subscription routing without significant custom engineering."
+    tradeoffs: "Subscription update events are metered independently of request
+      volume at $2/M (first 250M), enabling predictable per-event cost
+      modelling. The self-hosted router gives full control over WebSocket
+      connection handling and deployment topology. Apollo Federation 2.4+ with
+      the graphql-transport-ws protocol is required for cloud subscriptions. At
+      Developer-plan rates, 100M subscription events/month costs approximately
+      $200 for events alone, before request volume charges. Enterprise pricing
+      is custom and requires a sales engagement."
+    cautions: "As of 2026-03-16, Apollo's cloud-hosted router is gone — any team
+      that relied on Serverless or Dedicated cloud routing must have already
+      migrated to a self-hosted router. The Free plan is hard-capped at 60
+      requests per minute, making it unsuitable for any production subscription
+      workload. The self-hosted router requires WebSocket-aware load balancing;
+      standard HTTP load balancers break persistent subscription connections
+      mid-stream."
+    links:
+      - "https://www.apollographql.com/pricing"
+      - "https://www.apollographql.com/docs/graphos/routing/cloud/subscriptions"
+      - "https://www.apollographql.com/blog/whats-new-in-graphos-apollo-summer-\
+        25-release-ai-ready-api-orchestration-with-enhanced-mcp-server-pricing-\
+        plans-and-performance-upgrades"
+  - name: "Hasura DDN"
+    summary: "As of 2026-03-16, Hasura DDN prices by active model: DDN Free is
+      $0/month with unlimited API requests and unlimited concurrent users; DDN
+      Base is $5/active model/month; DDN Advanced is $30/active model/month. An
+      active model is any model or command accessed over 1,000 times per month.
+      Subscriptions on DDN are currently in beta. The legacy Hasura Cloud v2
+      Professional plan (per-hour database billing) remains available for
+      existing v2 users but is a separate product from DDN."
+    when_to_use: "Best for low-ops + small-team teams building Postgres-primary APIs
+      where auto-generated subscriptions eliminate all server-side subscription
+      resolver code. The single most decisive factor: if you want zero-code
+      real-time subscriptions over a relational database without managing
+      WebSocket infrastructure or federation routing, Hasura DDN's model-based
+      pricing scales cheaply at low-to-moderate active model counts."
+    tradeoffs: "DDN's unlimited concurrent users and unlimited API requests per
+      month on all tiers remove per-connection pricing pressure entirely.
+      Model-based billing is predictable when schemas are stable. Subscriptions
+      are automatically generated from your data model with no resolver code.
+      Custom business logic in subscriptions requires Hasura Actions or event
+      triggers, which add operational and deployment complexity. DDN
+      subscriptions are in beta as of 2026-03-16, meaning production SLA
+      coverage for the subscription feature should be confirmed with Hasura
+      directly."
+    cautions: "DDN subscriptions are beta — validate GA status and SLA applicability
+      with Hasura before committing to production subscription workloads. Active
+      model billing can compound significantly for wide schemas: 50
+      frequently-accessed models on DDN Advanced costs $1,500/month for model
+      access alone, independent of request volume. Migrating from legacy Hasura
+      Cloud v2 to DDN is not a drop-in upgrade and involves schema and metadata
+      restructuring."
+    links:
+      - "https://hasura.io/pricing"
+      - "https://hasura.io/blog/introducing-graphql-subscriptions-to-hasura-ddn"
+      - "https://hasura.io/docs/2.0/subscriptions/overview/"
+      - "https://hasura.io/docs/2.0/hasura-cloud/plans/"
+  - name: "Custom Self-Hosted (graphql-ws + Redis Pub/Sub)"
+    summary: "Run your own GraphQL subscription server using graphql-ws (the
+      maintained successor to the deprecated subscriptions-transport-ws) with
+      Redis Pub/Sub for multi-instance event fan-out. Compatible with any
+      GraphQL server (Apollo Server, GraphQL Yoga, and others). GraphQL Yoga
+      provides a ready-made @graphql-yoga/redis-event-target; Apollo Server's
+      built-in PubSub class is in-memory only and not suitable for production
+      multi-instance deployments. Infrastructure cost is server and Redis
+      hosting only — no per-request or per-event platform fees."
+    when_to_use: "Best for high-scale + cost-sensitive teams where per-event managed
+      platform fees would exceed raw infrastructure costs, or for teams with
+      non-relational data sources that cannot map cleanly to Hasura's
+      auto-generation model. The single most decisive factor: if your
+      subscription event volume is high enough that $2/M event platform fees
+      compound materially, or if you need full control over WebSocket lifecycle
+      and backpressure handling."
+    tradeoffs: "Zero platform fees beyond infrastructure. Full protocol choice:
+      graphql-ws for WebSocket or graphql-sse for Server-Sent Events over HTTP.
+      Compatible with any deployment topology that supports persistent
+      connections. Tradeoffs are significant: multi-instance deployments require
+      Redis Pub/Sub with stable long-running connections (explicitly not viable
+      for serverless or edge functions per GraphQL Yoga documentation),
+      WebSocket-aware load balancing, and ongoing operational maintenance. Teams
+      own reconnection logic, idle-connection memory pressure, and backpressure
+      handling in full."
+    cautions: "Redis Pub/Sub requires stable long-running connections and is
+      explicitly not suitable for serverless or edge function environments —
+      this rules out the custom self-hosted pattern for any serverless-first
+      deployment. The legacy subscriptions-transport-ws library is no longer
+      maintained; any new implementation must use graphql-ws or graphql-sse. At
+      high concurrency, idle WebSocket connections consume significant server
+      memory — capacity planning must account for connected-client count, not
+      just request throughput."
+    links:
+      - "https://the-guild.dev/graphql/yoga-server/docs/features/subscriptions"
+      - "https://www.apollographql.com/docs/apollo-server/data/subscriptions"
+      - "https://the-guild.dev/graphql/hive/blog/graphql-over-websockets"
+tags:
+  - "backend"
+  - "graphql"
+  - "graphql-subscriptions"
+  - "real-time"
+  - "websocket"
+  - "apollo"
+  - "apollo-graphos"
+  - "hasura"
+  - "hasura-ddn"
+  - "graphql-ws"
+  - "pricing"
+  - "comparison"
+  - "infrastructure"
+  - "federation"
+aliases:
+  - "graphql subscriptions cost"
+  - "apollo vs hasura subscriptions"
+  - "graphql real-time pricing"
+  - "graphql websocket infrastructure"
+  - "hasura subscriptions cost"
+  - "apollo federation subscriptions"
+  - "graphql-ws vs apollo subscriptions"
+  - "managed graphql subscriptions"
+  - "graphql pub sub cost"
+  - "graphql real-time infrastructure"
+  - "apollo graphos subscriptions pricing"
+related_cards:
+  - "backend/message-queue"
+  - "backend/typesafe-api"
+  - messaging/ably-standard-vs-pro-limit-jumps-2026
+  - game/photon-fusion-vs-realtime-traffic-included-plans-2026
+  - messaging/sendbird-vs-stream-vs-pubnub-chat-mau-and-message-pricing-2026
+  - video/agora-automatic-vs-force-udp-vs-force-tls-cloud-proxy-2026
+  - web/grafbase-free-trial-vs-production-graphql-gateway-pricing-2026
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-09-21"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/apollo
+      name: Apollo
+    - type: framework
+      id: framework/apollo-graphos
+      name: Apollo GraphOS
+    - type: runtime
+      id: runtime/self-hosted-router
+      name: Self-Hosted Router
+    - type: capability
+      id: capability/dedicated-cloud-routing
+      name: Dedicated cloud routing
+      category: graphql-subscriptions
+    - type: framework
+      id: framework/apollo-federation
+      name: Apollo Federation
+      standard: 2.4+
+    - type: protocol
+      id: protocol/graphql-transport-ws
+      name: graphql-transport-ws
+      standard: GraphQL over WebSocket
+    - type: vendor
+      id: vendor/hasura
+      name: Hasura
+    - type: framework
+      id: framework/hasura-ddn
+      name: Hasura DDN
+    - type: capability
+      id: capability/ddn-subscriptions
+      name: DDN subscriptions
+      category: graphql-subscriptions
+    - type: package
+      id: package/graphql-ws
+      name: graphql-ws
+    - type: package
+      id: package/subscriptions-transport-ws
+      name: subscriptions-transport-ws
+    - type: runtime
+      id: runtime/redis-pub-sub
+      name: Redis Pub/Sub
+  edges:
+    - type: eol_date
+      from: capability/dedicated-cloud-routing
+      to: null
+      date: 2026-03-15
+    - type: requires_version
+      from: framework/apollo-graphos
+      to: framework/apollo-federation
+      version: 2.4+
+      context: cloud subscriptions
+    - type: requires_version
+      from: framework/apollo-graphos
+      to: protocol/graphql-transport-ws
+      context: cloud subscriptions
+    - type: breaking_change_in
+      from: package/subscriptions-transport-ws
+      to: package/graphql-ws
+      change: deprecated; new implementations must use graphql-ws or graphql-sse
+    - type: locks_via
+      from: package/graphql-ws
+      to: runtime/redis-pub-sub
+      context: multi-instance event fan-out

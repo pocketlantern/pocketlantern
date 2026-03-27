@@ -1,0 +1,200 @@
+id: "devtools/monday-api-version-deprecations-after-february-15-2026"
+title: "monday.com API Version Migrations After the February 15, 2026 Deprecations"
+problem: "Teams maintaining monday.com apps need to decide whether to pin to the
+  newest supported API version now or keep patching around deprecated 2024-10
+  and 2025-01 behavior after the February 15, 2026 cutoff."
+context:
+  - "monday.com"
+  - "graphql"
+  - "api-versioning"
+  - "saas-integrations"
+constraints:
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Pin production to API version 2026-01 now"
+    summary: "As of 2026-03-21, monday.com lists `2026-01` as the Current version,
+      `2025-10` as Maintenance, and `2026-04` as the Release candidate. monday
+      recommends that production apps pass an explicit `API-Version` header on
+      every call, and the Current version is the default if no header is sent.
+      The February 15, 2026 deprecation of `2024-10` and `2025-01` has already
+      occurred, so continuing to call those versions no longer preserves their
+      original behavior. Moving directly to `2026-01` avoids a second migration
+      hop from `2025-04` or `2025-10` later."
+    when_to_use: "Use this when you can budget one real migration pass now and want
+      the longest stable runway. It is the cleanest choice for teams that want
+      to stop carrying compatibility shims around deprecated error shapes and
+      routed behavior."
+    tradeoffs: "Best long-term stability and least ambiguity, but requires
+      validating your app against the current schema and current-version
+      behavior now."
+    cautions: "Do not use `2026-04` in production just because it is newer; monday
+      marks Release candidate versions as unstable and not for production. Also
+      do not rely on docs alone without sending the version header, because
+      unpinned requests get the Current version automatically."
+    links:
+      - "https://developer.monday.com/api-reference/docs/api-versioning"
+      - "https://developer.monday.com/api-reference/docs/release-notes"
+      - "https://developer.monday.com/api-reference/docs/migrating-to-version-2\
+        025-04"
+  - name: "Pin production to API version 2025-10 as a short-term stabilization step"
+    summary: "As of 2026-03-21, `2025-10` is the Maintenance version and monday says
+      Maintenance is still stable for production, but is recommended only when
+      you are unable to migrate to the Current version on time. This gives teams
+      a supported stable target without jumping straight to `2026-01`. It is
+      materially safer than leaving calls on deprecated `2024-10` or `2025-01`,
+      because those deprecated versions were already routed away after February
+      15, 2026. This option works as a temporary landing zone if your codebase
+      needs phased cleanup."
+    when_to_use: "Use this when migration capacity is limited and you need a
+      supported version pin immediately while scheduling a second pass to
+      `2026-01`. It is a pragmatic bridge for teams blocked on testing or
+      typed-client updates."
+    tradeoffs: "Lower immediate migration risk than jumping straight to Current, but
+      it knowingly creates another migration step later and shortens your
+      runway."
+    cautions: "This is not equivalent to preserving `2024-10` or `2025-01`
+      semantics. monday's deprecation notice says calls to those versions are
+      automatically routed to `2025-04`, and the migration guide calls out
+      breaking changes such as GraphQL-standard error responses for `2024-10`
+      users, updated complexity budget exhausted error format, changed
+      `create_webhook` errors, subitems query changes, and a unique request ID
+      in all API responses."
+    links:
+      - "https://developer.monday.com/api-reference/docs/api-versioning"
+      - "https://developer.monday.com/api-reference/changelog/deprecating-versi\
+        ons-2025-01-and-2024-10-on-february-15th-2026"
+      - "https://developer.monday.com/api-reference/docs/migrating-to-version-2\
+        025-04"
+  - name: "Keep calling deprecated 2024-10 or 2025-01 and patch around breakage"
+    summary: "As of 2026-03-21, this is no longer a real versioning strategy because
+      the February 15, 2026 deprecation has already occurred. monday's
+      deprecation notice and migration guide both state that calls to `2024-10`
+      and `2025-01` are automatically routed to `2025-04` after that date. That
+      means you no longer control behavior by naming the deprecated version, and
+      any code that assumes old response formats can still break. This path
+      preserves the most operational ambiguity while giving up the benefits of
+      an explicit supported pin."
+    when_to_use: "Use this only as an emergency stopgap while preparing an immediate
+      explicit version pin. It is not appropriate as a steady-state production
+      plan."
+    tradeoffs: "Lowest short-term engineering effort, but highest debugging cost and
+      weakest predictability because request intent and actual executed version
+      diverge."
+    cautions: "For `2024-10` users, monday specifically calls out the `2025-01`
+      shift to GraphQL-standard error responses as an extra breaking change. For
+      both `2024-10` and `2025-01` users, the `2025-04` migration guide also
+      flags error-format changes and webhook/subitems behavior changes that can
+      break strict parsers and snapshot tests."
+    links:
+      - "https://developer.monday.com/api-reference/changelog/deprecating-versi\
+        ons-2025-01-and-2024-10-on-february-15th-2026"
+      - "https://developer.monday.com/api-reference/docs/migrating-to-version-2\
+        025-04"
+      - "https://developer.monday.com/api-reference/docs/api-versioning"
+tags:
+  - "devtools"
+  - "monday"
+  - "api"
+  - "graphql"
+  - "versioning"
+aliases:
+  - "monday api version deprecation 2026"
+  - "monday 2024-10 2025-01 deprecation"
+  - "monday api-version migration 2026"
+related_cards:
+  - "backend/api-versioning"
+  - "_archived/migration-strategy"
+  - devtools/monday-legacy-sentence-builder-migration-before-april-30-2026
+tier: "core"
+status: "active"
+updated: "2026-03-21"
+review_by: "2026-06-19"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/monday-com
+      name: monday.com
+    - type: protocol
+      id: protocol/graphql
+      name: GraphQL
+    - type: package
+      id: package/monday-api-2024-10
+      name: monday API 2024-10
+      vendor: vendor/monday-com
+      version: 2024-10
+    - type: package
+      id: package/monday-api-2025-01
+      name: monday API 2025-01
+      vendor: vendor/monday-com
+      version: 2025-01
+    - type: package
+      id: package/monday-api-2025-04
+      name: monday API 2025-04
+      vendor: vendor/monday-com
+      version: 2025-04
+    - type: package
+      id: package/monday-api-2025-10
+      name: monday API 2025-10
+      vendor: vendor/monday-com
+      version: 2025-10
+    - type: package
+      id: package/monday-api-2026-01
+      name: monday API 2026-01
+      vendor: vendor/monday-com
+      version: 2026-01
+    - type: package
+      id: package/monday-api-2026-04
+      name: monday API 2026-04
+      vendor: vendor/monday-com
+      version: 2026-04
+  edges:
+    - type: eol_date
+      from: package/monday-api-2024-10
+      to: null
+      date: 2026-02-15
+    - type: eol_date
+      from: package/monday-api-2025-01
+      to: null
+      date: 2026-02-15
+    - type: locks_via
+      from: vendor/monday-com
+      to: package/monday-api-2026-01
+      mechanism: API-Version header
+      note: monday recommends production apps pass an explicit API-Version header on
+        every call
+    - type: breaking_change_in
+      from: package/monday-api-2024-10
+      to: package/monday-api-2025-01
+      note: 2024-10 users face a shift to GraphQL-standard error responses in 2025-01
+    - type: breaking_change_in
+      from: package/monday-api-2024-10
+      to: package/monday-api-2025-04
+      note: 2025-04 migration guide flags updated complexity budget exhausted error
+        format, changed create_webhook errors, subitems query changes, and a
+        unique request ID in all API responses
+    - type: breaking_change_in
+      from: package/monday-api-2025-01
+      to: package/monday-api-2025-04
+      note: 2025-04 migration guide flags error-format changes and webhook/subitems
+        behavior changes
+    - type: requires_version
+      from: package/monday-api-2024-10
+      to: package/monday-api-2025-04
+      note: after February 15, 2026 calls to 2024-10 are automatically routed to
+        2025-04
+    - type: requires_version
+      from: package/monday-api-2025-01
+      to: package/monday-api-2025-04
+      note: after February 15, 2026 calls to 2025-01 are automatically routed to
+        2025-04
+    - type: requires_version
+      from: package/monday-api-2026-04
+      to: package/monday-api-2026-04
+      note: release candidate is marked unstable and not for production
+    - type: requires_version
+      from: package/monday-api-2025-10
+      to: package/monday-api-2026-01
+      note: maintenance is recommended only when unable to migrate to the current
+        version on time

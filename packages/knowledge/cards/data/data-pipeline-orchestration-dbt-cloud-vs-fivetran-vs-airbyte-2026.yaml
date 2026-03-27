@@ -188,6 +188,7 @@ related_cards:
   - backend/message-queue
   - data/data-warehouse-bigquery-vs-snowflake-vs-redshift-startup-2026
   - data/prefect-cloud-vs-dagster-cloud-vs-astronomer-orchestration-pricing-2026
+  - analytics/rudderstack-vs-segment-cdp-pricing-2026
 status: active
 tier: core
 updated: 2026-03-16

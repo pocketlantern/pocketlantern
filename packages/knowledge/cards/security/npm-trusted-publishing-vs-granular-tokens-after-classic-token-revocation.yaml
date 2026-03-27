@@ -1,0 +1,215 @@
+id: security/npm-trusted-publishing-vs-granular-tokens-after-classic-token-revocation
+title: npm Trusted Publishing vs Granular Tokens After Classic Token Revocation
+problem: Choose a secure package publishing strategy after npm token policy
+  changes by weighing trusted publishing, granular access tokens, and CI
+  provenance requirements against repository topology, private packages, and
+  release automation needs.
+context:
+  - security
+  - npm
+  - node
+  - ci-cd
+  - package-publishing
+  - oidc
+  - provenance
+  - private-packages
+constraints:
+  - low-ops
+  - compliance
+  - enterprise
+  - small-team
+  - monorepo
+candidates:
+  - name: Trusted publishing on GitHub Actions or GitLab CI/CD, then disallow tokens
+    summary: Best default for public-package automation on supported cloud runners.
+      As of 2026-03-15, npm recommends trusted publishing over access tokens,
+      requires npm CLI 11.5.1+ and Node 22.14.0+, and automatically publishes
+      provenance attestations when the publish runs from GitHub Actions or
+      GitLab CI/CD for a public package in a public repository.
+    when_to_use: Choose this for compliance + low-ops or small-team + monorepo
+      setups where releases already run on GitHub-hosted or GitLab.com shared
+      runners, each package can map to one canonical publish workflow, and you
+      want token-free publishing plus provenance without managing write-token
+      rotation.
+    tradeoffs: 'This removes long-lived publish secrets and lets you harden the
+      package setting to "Require two-factor authentication and disallow tokens"
+      after migration. The main limits are platform fit and topology: trusted
+      publishing is only supported on GitHub Actions, GitLab CI/CD, and CircleCI
+      cloud, self-hosted runners are not supported, and each package can have
+      only one trusted publisher connection at a time.'
+    cautions: Trusted publishing only covers the publish operation. If the workflow
+      must install private npm dependencies, you still need a separate read-only
+      granular token for install steps. Verify the workflow filename and other
+      npm-side settings exactly, because npm does not validate them when you
+      save the trusted publisher configuration.
+    links:
+      - https://docs.npmjs.com/trusted-publishers/
+      - https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow/
+      - https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/
+      - https://docs.npmjs.com/generating-provenance-statements/
+  - name: Trusted publishing even when provenance is unavailable or partial
+    summary: Use trusted publishing for token-free CI publishes even if you cannot
+      get npm provenance. As of 2026-03-15, npm documents that CircleCI trusted
+      publishing does not generate provenance, and automatic provenance also
+      does not apply when publishing from a private repository or when the
+      package is private.
+    when_to_use: Choose this for enterprise + monorepo or small-team + compliance
+      cases where your CI provider is still a supported cloud provider, but your
+      repository topology is private, your package is private, or your release
+      automation is on CircleCI and you value removing publish secrets more than
+      you need npm provenance badges.
+    tradeoffs: You still eliminate long-lived publish tokens and keep the CI publish
+      path cleaner than a bypass-2FA token workflow. The downside is weaker
+      supply-chain signaling to downstream consumers because npm provenance is
+      unavailable in these cases, and private-package workflows may still need
+      read-only tokens for dependency installation.
+    cautions: Do not assume trusted publishing automatically solves all
+      authentication. npm documents that OIDC auth is currently limited to `npm
+      publish`, so install, view, and access flows still use traditional auth.
+      Private packages require a paid npm user or organization account as of
+      2026-03-15; check npm's official products page for current pricing.
+    links:
+      - https://docs.npmjs.com/trusted-publishers/
+      - https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow/
+      - https://docs.npmjs.com/about-private-packages/
+      - https://docs.npmjs.com/creating-an-organization
+  - name: Granular access tokens for unsupported CI, self-hosted runners, or mixed
+      install/publish automation
+    summary: This is the fallback when trusted publishing is unavailable. As of
+      2026-03-15, npm only supports granular access tokens, and npm documents
+      package- and scope-level permissions, expirations, CIDR restrictions,
+      read-only vs read-write modes, and optional bypass 2FA for automated write
+      workflows.
+    when_to_use: Choose this for enterprise + microservices or monorepo + compliance
+      environments that publish from Jenkins, Azure DevOps, self-hosted GitHub
+      runners, or other unsupported systems, or where a single automation
+      context must both install private packages and publish packages without
+      migrating the whole release system to a supported OIDC flow.
+    tradeoffs: "Granular tokens work across more CI topologies and can be tightly
+      scoped to packages, scopes, organizations, IP ranges, and expiry windows.
+      The cost is ongoing credential lifecycle work: rotation, secret storage,
+      secret scanning exposure risk, and policy review around bypass 2FA for
+      noninteractive publishes."
+    cautions: 'For CI/CD publish flows, npm says you must enable bypass 2FA on the
+      granular token if trusted publishing is not available. That bypass
+      overrides account-level and package-level 2FA checks unless the package
+      setting is changed to "Require two-factor authentication and disallow
+      tokens," in which case granular tokens cannot publish at all. Also note
+      the current scale limits: up to 1000 granular tokens per account, with
+      each token limited to up to 50 organizations and up to 50 packages and
+      scopes combined.'
+    links:
+      - https://docs.npmjs.com/about-access-tokens/
+      - https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow/
+      - https://docs.npmjs.com/cli/v11/commands/npm-token/
+      - https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/
+      - https://docs.npmjs.com/revoking-access-tokens/
+  - name: Interactive publishing with 2FA and short-lived npm login sessions
+    summary: Use manual publishing when you want the strongest human-in-the-loop
+      control and do not need unattended release automation. As of 2026-03-15,
+      npm's December 9, 2025 security update says `npm login` now issues
+      two-hour session tokens, and npm recommends the package setting that
+      requires two-factor authentication and disallows tokens.
+    when_to_use: Choose this for compliance + enterprise or small-team +
+      cost-sensitive releases where publishes are infrequent, a human approval
+      step is desirable, and you want to avoid both CI write tokens and
+      trusted-publisher setup complexity.
+    tradeoffs: "This gives the narrowest publish path because maintainers must
+      authenticate interactively and respond to 2FA prompts, and package
+      settings can block granular tokens entirely. The downside is operational
+      friction: it does not scale to unattended release trains, scheduled
+      releases, or multi-package automation."
+    cautions: This is a poor fit for continuous deployment, because npm documents
+      that maintainers must publish interactively when token use is disallowed,
+      and the current npm login sessions expire after two hours. If you later
+      automate releases, you will need to move to trusted publishing or
+      reintroduce granular tokens.
+    links:
+      - https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/
+      - https://github.blog/changelog/2025-12-09-npm-classic-tokens-revoked-session-based-auth-and-cli-token-management-now-available/
+tags:
+  - security
+  - npm
+  - oidc
+  - trusted-publishing
+  - granular-access-tokens
+  - provenance
+  - github-actions
+  - gitlab-ci
+  - circleci
+  - ci-cd
+aliases:
+  - npm trusted publishers
+  - npm oidc publish
+  - npm granular token
+  - npm classic token revoked
+  - npm provenance
+  - npm publish token strategy
+  - npm bypass 2fa token
+related_cards:
+  - security/supply-chain-security-for-node
+  - security/secrets-on-edge-and-build-systems
+  - devtools/npm-yarn-v1-v2-publishing-auth-migration-after-session-token-and-legacy-endpoint-changes-2026
+  - infra/nodejs-22-lts-adoption-breaking-changes-worker-threads-2026
+  - devtools/npm-classic-token-shutdown-and-session-auth-2026
+  - devtools/npm-trusted-publishing-vs-bypass-2fa-granular-tokens-2026
+  - security/npm-granular-token-lifetime-cap-february-3-2026
+  - devtools/npm-classic-token-removal-and-90-day-max-2026
+  - devtools/verdaccio-6-upgrade-token-and-node-compatibility-breaks-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-05-18
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/npm
+      name: npm
+      category: package-registry
+    - type: protocol
+      id: protocol/oidc-trusted-publishing
+      name: OIDC Trusted Publishing
+      standard: true
+    - type: package
+      id: package/npm-cli-11.5
+      name: npm CLI 11.5.1+
+      version: 11.5.1
+    - type: runtime
+      id: runtime/nodejs-22.14
+      name: Node.js 22.14.0+
+      current_lts: false
+      eol_date: null
+  edges:
+    - type: breaking_change_in
+      from: vendor/npm
+      to: null
+      change: "December 9, 2025: classic tokens revoked; npm login now issues two-hour
+        session tokens"
+      migration_path: Migrate to trusted publishing (GitHub Actions, GitLab CI/CD,
+        CircleCI) or granular access tokens
+    - type: requires_version
+      from: protocol/oidc-trusted-publishing
+      to: package/npm-cli-11.5
+      min_version: npm CLI 11.5.1
+      reason: Trusted publishing requires npm CLI 11.5.1+ and Node 22.14.0+
+    - type: requires_version
+      from: protocol/oidc-trusted-publishing
+      to: runtime/nodejs-22.14
+      min_version: Node 22.14.0
+      reason: Trusted publishing requires npm CLI 11.5.1+ and Node 22.14.0+
+    - type: breaking_change_in
+      from: protocol/oidc-trusted-publishing
+      to: null
+      change: Only supported on GitHub Actions, GitLab CI/CD, and CircleCI cloud;
+        self-hosted runners not supported; each package can have only one
+        trusted publisher connection; OIDC auth limited to npm publish only
+      migration_path: Use granular access tokens for unsupported CI platforms,
+        self-hosted runners, or install/view operations
+    - type: locks_via
+      from: vendor/npm
+      to: protocol/oidc-trusted-publishing
+      surface: Trusted publishing only covers publish; private package installs still
+        need read-only granular tokens; granular tokens limited to 1000 per
+        account, 50 orgs and 50 packages/scopes per token
+      severity: low

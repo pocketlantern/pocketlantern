@@ -1,0 +1,178 @@
+id: ai/google-gen-ai-sdk-migration-before-vertex-ai-sdk-generative-module-shutdown-2026
+title: "Vertex AI SDK Generative Module Deprecation: Migrate to Google Gen AI
+  SDK Before June 24, 2026"
+problem: Teams using deprecated Vertex AI SDK generative namespaces need a
+  verified migration plan to the Google Gen AI SDK before those modules are
+  removed, especially when code must span Gemini Developer API prototyping and
+  Vertex AI enterprise authentication flows.
+context:
+  - ai
+  - vertex-ai
+  - gemini-api
+  - google-gen-ai-sdk
+  - google-cloud
+  - sdk-migration
+  - authentication
+  - deprecation
+constraints:
+  - enterprise
+  - compliance
+  - small-team
+  - low-ops
+  - monorepo
+  - microservices
+  - serverless
+candidates:
+  - name: Cut over fully to the Google Gen AI SDK on Vertex AI with ADC or
+      service-account-backed auth
+    summary: As of 2026-03-15, this is the default production migration path for
+      teams already committed to Google Cloud. Google documents that the
+      Generative AI module in the Vertex AI SDK was deprecated on June 24, 2025,
+      will be removed on June 24, 2026, and that the Google Gen AI SDK has full
+      feature parity with the deprecated modules and packages while adding
+      additional capabilities.
+    when_to_use: Best for enterprise + compliance or microservices + monorepo
+      environments where production traffic should stay on Vertex AI, IAM-based
+      auth matters more than API-key convenience, and you want one supported SDK
+      before the June 24, 2026 shutdown. Prefer this when your code currently
+      depends on deprecated Python, JavaScript, Java, or Go generative
+      namespaces from the Vertex AI SDK.
+    tradeoffs: You align with Google's replacement SDK, keep Vertex AI enterprise
+      controls, and can authenticate with ADC or a Google Cloud API key bound to
+      a service account. The tradeoff is migration work across dependencies,
+      imports, client initialization, and method shapes, plus the normal Google
+      Cloud setup for billing, IAM, and project configuration.
+    cautions: AI Studio API keys are not supported in Vertex AI. As of 2026-03-15,
+      the Vertex AI quickstart says existing Google Cloud users should use ADC
+      or an API key bound to a service account, and the migration docs say
+      supported regions can differ from the Gemini Developer API. Recheck the
+      live Vertex AI pricing page before rollout if approval depends on exact
+      token, grounding, or batch prices.
+    links:
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/try-gen-ai
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/migrate/migrate-google-ai
+      - https://cloud.google.com/vertex-ai/generative-ai/pricing
+  - name: Adopt one Google Gen AI SDK codebase that switches between Gemini
+      Developer API and Vertex AI
+    summary: As of 2026-03-15, Google positions the Google Gen AI SDK as a unified
+      interface across the Gemini Developer API and the Gemini API on Vertex AI.
+      Google says that, with a few exceptions, code that runs on one platform
+      will run on both, making this the cleanest option when one codebase spans
+      prototype API-key flows and enterprise Vertex AI deployments.
+    when_to_use: Best for small-team + low-ops or monorepo + microservices teams
+      that need shared model-calling code across local prototyping, staging, and
+      production, but still want the option to move workloads from Gemini
+      Developer API to Vertex AI without a full rewrite. Prefer this when the
+      real constraint combination is Gemini API for fast iteration plus Vertex
+      AI for enterprise auth, regional controls, or SLA-backed production.
+    tradeoffs: "One SDK reduces duplicated wrappers and lets you switch by
+      configuration: API key for Gemini Developer API, or project and location
+      with Vertex AI settings for Vertex AI. The tradeoff is that
+      backend-specific features still exist, so a shared abstraction has to gate
+      or branch around services that are only available on one backend."
+    cautions: Google explicitly notes that some services are only available in a
+      specific backend and that unsupported calls can raise
+      `UnsupportedOperationException`. If you standardize on one codebase, keep
+      backend-specific integration tests and avoid assuming Gemini Developer API
+      auth, regions, quotas, or enterprise controls match Vertex AI.
+    links:
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/sdks/overview
+      - https://googleapis.github.io/js-genai/release_docs/index.html
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/migrate/migrate-google-ai
+  - name: Use Vertex AI express mode as a short-lived API-key bridge, then upgrade
+      to full Vertex AI
+    summary: As of 2026-03-15, Vertex AI express mode lets teams start with an API
+      key and the Google Gen AI SDK while staying on the Vertex AI API surface
+      instead of the Gemini Developer API. Google documents a simplified setup,
+      a 90-day free tier for new Google Cloud users, and an upgrade path to full
+      Google Cloud without service interruption.
+    when_to_use: Best for small-team + low-ops or serverless + cost-sensitive teams
+      that need to stop depending on deprecated Vertex AI SDK namespaces
+      quickly, still want Vertex AI endpoints, and are not ready to do full
+      Google Cloud project and IAM rollout on day one. This fits staged
+      migrations where prototypes or internal tools can tolerate express-mode
+      limits while the production path is being moved to standard Vertex AI.
+    tradeoffs: You get a faster API-key-based on-ramp to the replacement SDK and can
+      later upgrade to full Google Cloud, carrying workloads, saved prompts, and
+      API keys forward. The tradeoff is that express mode exposes only a subset
+      of Vertex AI features, simplifies away organizations and projects, and is
+      not the same operational model as full Vertex AI.
+    cautions: Express mode is Preview and subject to Pre-GA terms. As of 2026-03-15,
+      Google documents no SLA in the free tier, a `@gmail.com` requirement to
+      sign up, 90-day access unless billing is enabled, and data marked for
+      deletion 30 days after the free period ends if billing is never turned on.
+      Use it as a bridge, not as the long-term enterprise target.
+    links:
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/start/express-mode/overview
+      - https://cloud.google.com/resources/cloud-express-faqs
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/start/quickstarts/try-gen-ai
+      - https://cloud.google.com/vertex-ai/generative-ai/docs/start/express-mode/vertex-ai-express-mode-api-reference
+tags:
+  - ai
+  - vertex-ai
+  - google-gen-ai-sdk
+  - google-cloud
+  - gemini-api
+  - google-ai-studio
+  - sdk
+  - migration
+  - deprecation
+  - authentication
+aliases:
+  - vertex ai sdk generative module deprecation
+  - migrate vertex ai sdk to google gen ai sdk
+  - vertexai.generative_models migration
+  - google gen ai sdk vertex ai migration
+  - gemini developer api to vertex ai sdk unification
+  - vertex ai express mode google gen ai sdk
+related_cards:
+  - ai/gemini-api-free-vs-paid-tier-quota-and-pricing-2026
+  - backend/ai-sdk-selection
+  - ai/gemini-2-0-and-2-5-model-shutdowns-and-replacements-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-24
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/google-cloud
+      name: Google Cloud (Vertex AI)
+      category: cloud
+    - type: package
+      id: package/vertex-ai-sdk-generative
+      name: Vertex AI SDK (Generative Module)
+      version: deprecated
+    - type: package
+      id: package/google-gen-ai-sdk
+      name: Google Gen AI SDK
+      version: GA
+    - type: capability
+      id: capability/vertex-ai-express
+      name: Vertex AI Express Mode
+  edges:
+    - type: eol_date
+      from: package/vertex-ai-sdk-generative
+      to: null
+      date: 2026-06-24
+      successor: package/google-gen-ai-sdk
+    - type: breaking_change_in
+      from: package/google-gen-ai-sdk
+      to: null
+      change: AI Studio API keys not supported in Vertex AI backend — must use ADC or
+        service-account-bound API key
+      migration_path: use ADC for Vertex AI, API key for Gemini Developer API
+    - type: breaking_change_in
+      from: package/google-gen-ai-sdk
+      to: null
+      change: some services only available on one backend —
+        UnsupportedOperationException on cross-backend calls
+      migration_path: keep backend-specific integration tests, gate features by backend
+    - type: locks_via
+      from: vendor/google-cloud
+      to: capability/vertex-ai-express
+      surface: express mode is Preview — no SLA, @gmail.com required, 90-day free
+        tier, data deleted 30 days after expiry
+      severity: medium

@@ -1,0 +1,194 @@
+id: "cloud/azure-postgresql-single-server-retirement-and-backup-stop-2025"
+title: "Azure Database for PostgreSQL Single Server Retirement and Backup Stop 2025"
+problem: "Teams that were late migrating off Azure Database for PostgreSQL
+  Single Server need a high-stakes decision card that makes the March 28, 2025
+  retirement and backup fallout explicit, because the blast radius includes
+  failed restores, lost compliance assumptions, and urgent rebuild or migration
+  work."
+context:
+  - "cloud"
+  - "database"
+  - "azure"
+  - "azure-database-for-postgresql"
+  - "postgresql"
+  - "single-server"
+  - "flexible-server"
+  - "migration"
+  - "backup"
+  - "retirement"
+  - "pricing"
+constraints:
+  - "low-ops"
+  - "enterprise"
+  - "compliance"
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Move surviving workloads to Azure Database for PostgreSQL Flexible Server
+      with the Azure migration service"
+    summary: "As of 2026-03-15, Microsoft Learn and Azure Advisor show that Azure
+      Database for PostgreSQL Single Server retired on March 28, 2025, and
+      Microsoft positions Flexible Server as the next-generation PostgreSQL
+      service in Azure. The Azure migration service officially supports Azure
+      Database for PostgreSQL Single Server as a source for both offline and
+      online migrations into Flexible Server."
+    when_to_use: "Best for enterprise + compliance or low-ops + small-team teams
+      that still have a readable source environment and want the least
+      disruptive supported landing zone in Azure. Prefer this when you need
+      managed migration options, want to stay on Azure PostgreSQL, and need a
+      target that supports current Flexible Server features and versions instead
+      of rebuilding onto self-managed PostgreSQL."
+    tradeoffs: "Offline migration is simpler and has fewer failure modes, but it
+      requires application downtime. Online migration minimizes downtime, but
+      Microsoft documents extra complexity and restrictions for
+      replication-based migration. Flexible Server adds modern Azure PostgreSQL
+      capabilities such as stop/start, burstable compute, built-in PgBouncer,
+      and private networking, but exact regional pricing must be checked on the
+      official pricing page as of 2026-03-15."
+    cautions: "Do not assume all Single Server estates are safely recoverable just
+      because Flexible Server exists. Microsoft documents that online migration
+      has restrictions, and Flexible Server version support now starts at
+      PostgreSQL 11, with PostgreSQL 10 and older not supported. Validate the
+      target major version, extension support, and migration mode before
+      cutover."
+    links:
+      - "https://learn.microsoft.com/en-us/azure/advisor/advisor-how-to-use-ser\
+        vice-upgrade-retirement-recommendations"
+      - "https://learn.microsoft.com/en-us/azure/postgresql/migrate/migration-s\
+        ervice/overview-migration-service-postgresql"
+      - "https://learn.microsoft.com/en-us/azure/postgresql/overview"
+      - "https://learn.microsoft.com/en-us/azure/postgresql/configure-maintain/\
+        concepts-supported-versions"
+      - "https://azure.microsoft.com/en-us/pricing/details/postgresql/flexible-\
+        server/"
+  - name: "Recover from retained Azure Backup restore points by restoring as files
+      and rebuilding on Flexible Server"
+    summary: "As of 2026-03-15, Microsoft Learn states that on March 28, 2025 all
+      scheduled Azure Backup jobs for PostgreSQL Single Server permanently
+      stopped, new restore points can no longer be created, and new or changed
+      backup policies for that workload are no longer allowed. Microsoft also
+      documents that existing vaulted restore points are retained per policy,
+      but the supported restore path is now Restore as Files followed by manual
+      creation of a new PostgreSQL Flexible Server from the restored files."
+    when_to_use: "Best for compliance + enterprise or small-team + compliance teams
+      that missed migration, no longer trust the source service, and still have
+      retained Azure Backup restore points that matter for recovery or audit
+      evidence. Use this when restoreability is more urgent than minimizing
+      labor, and when the last retained backup is good enough to seed a
+      replacement Flexible Server."
+    tradeoffs: "This preserves a documented recovery path even after scheduled
+      backup generation stopped. The tradeoff is that recovery becomes a manual
+      rebuild flow, data freshness is capped at the newest retained restore
+      point, and you lose the old Restore as Database convenience."
+    cautions: "Do not assume protected workloads are still being backed up after
+      March 28, 2025. Microsoft says scheduled jobs permanently stopped and no
+      new restore points can be created. Microsoft also says Protected Instance
+      charges ended on March 31, 2025, but backup storage charges still apply
+      until restore points are deleted, and the last restore point can require
+      manual deletion."
+    links:
+      - "https://learn.microsoft.com/en-us/azure/backup/backup-azure-database-p\
+        ostgresql-overview"
+      - "https://learn.microsoft.com/en-us/azure/backup/backup-azure-database-p\
+        ostgresql-server-faq"
+  - name: "Re-establish restore and compliance posture on Flexible Server with
+      native backups plus Azure Backup vaulted backups"
+    summary: "As of 2026-03-15, Microsoft documents that Flexible Server native
+      backups support point-in-time recovery with a default retention of 7 days
+      and a maximum of 35 days, while Azure Backup for Flexible Server provides
+      policy-based vaulted backup protection. This is the right post-migration
+      pattern when the Single Server retirement exposed that operational restore
+      and long-term compliance retention are separate concerns."
+    when_to_use: "Best for compliance + enterprise or low-ops + small-team teams
+      that need both fast managed restore inside Flexible Server and a separate
+      vaulted backup policy after leaving Single Server. Prefer this when
+      restore testing, retention governance, and auditability matter more than
+      running with only the service default backups."
+    tradeoffs: "Native Flexible Server backups give managed PITR and restore to a
+      new server, which is good for operational recovery. Azure Backup adds a
+      separate policy and vault layer for longer-lived backup governance, but it
+      adds vault, policy, permission, and recovery-process overhead that teams
+      must operate intentionally."
+    cautions: "Do not treat native Flexible Server backups as a substitute for every
+      compliance requirement. Microsoft says native backup files can't be
+      exported, PITR always restores to a new server, and network mode matters
+      during restore because public-access servers can't be restored into
+      private access and vice versa. If you need geo-redundant backup, Microsoft
+      says it must be configured at server creation time."
+    links:
+      - "https://learn.microsoft.com/en-us/azure/postgresql/backup-restore/conc\
+        epts-backup-restore"
+      - "https://learn.microsoft.com/en-us/azure/backup/backup-azure-database-p\
+        ostgresql-flex"
+      - "https://learn.microsoft.com/en-us/azure/postgresql/overview"
+tags:
+  - "cloud"
+  - "database"
+  - "azure"
+  - "azure-database-for-postgresql"
+  - "postgresql"
+  - "single-server"
+  - "flexible-server"
+  - "backup"
+  - "migration"
+  - "retirement"
+  - "compliance"
+  - "pricing"
+aliases:
+  - "azure postgresql single server retirement"
+  - "azure database for postgresql single server march 28 2025"
+  - "azure postgresql single server backup jobs stopped"
+  - "azure postgresql single server restore as files"
+  - "azure postgresql single to flexible migration"
+  - "azure postgresql single server retired"
+  - "azure backup postgresql single server stopped"
+related_cards:
+  - "database/managed-postgres-major-upgrade-with-extension-compatibility-2026"
+  - "database/postgres-major-version-upgrade"
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-05-25"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/azure-pg-single
+      name: Azure PostgreSQL Single Server
+      category: database
+    - type: vendor
+      id: vendor/azure-pg-flexible
+      name: Azure PostgreSQL Flexible Server
+      category: database
+    - type: runtime
+      id: runtime/postgresql-11
+      name: PostgreSQL 11
+      current_lts: "11"
+      eol_date: ""
+  edges:
+    - type: eol_date
+      from: vendor/azure-pg-single
+      to: null
+      date: 2025-03-28
+      successor: vendor/azure-pg-flexible
+    - type: breaking_change_in
+      from: vendor/azure-pg-single
+      to: null
+      change: all scheduled Azure Backup jobs permanently stopped on March 28, 2025;
+        new restore points cannot be created; new or changed backup policies not
+        allowed
+      migration_path: use Restore as Files from retained restore points, then rebuild
+        on Flexible Server
+    - type: breaking_change_in
+      from: vendor/azure-pg-single
+      to: null
+      change: Protected Instance charges ended March 31, 2025; backup storage charges
+        still apply until restore points are manually deleted
+      migration_path: manually delete restore points after successful migration to
+        stop storage charges
+    - type: requires_version
+      from: vendor/azure-pg-flexible
+      to: runtime/postgresql-11
+      min_version: "11"
+      reason: Flexible Server version support starts at PostgreSQL 11; PostgreSQL 10
+        and older not supported

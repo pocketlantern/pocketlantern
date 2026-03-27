@@ -1,0 +1,209 @@
+id: "mobile/app-analytics-appsflyer-vs-firebase-vs-mixpanel-2026"
+title: "Mobile App Analytics - AppsFlyer vs Firebase vs Mixpanel Pricing 2026"
+problem: "AppsFlyer charges per attributed conversion, Mixpanel overhauled to
+  event-based pricing in February 2025, and Firebase Analytics remains free.
+  Attribution accuracy vs. cost tradeoff is critical for mobile-first teams —
+  equivalent tracking volume can differ 5x+ in cost depending on the tool
+  chosen."
+context:
+  - "mobile"
+  - "analytics"
+  - "attribution"
+  - "ios"
+  - "android"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "AppsFlyer"
+    summary: "AppsFlyer is a mobile measurement and attribution platform that tracks
+      which paid campaigns, channels, and partners drive installs and
+      post-install events. As of 2026-03-18, the Growth plan charges $0.07 per
+      attributed conversion (non-organic install or tracked action); organic
+      installs are always free. Enterprise pricing is custom and negotiated at
+      volume. The single most important differentiator is best-in-class paid
+      media attribution, SKAdNetwork (SKAN) support for iOS privacy, and fraud
+      prevention — capabilities that Firebase and Mixpanel do not offer."
+    when_to_use: "Best for high-scale + cost-sensitive paid UA teams where knowing
+      which ad network or campaign drove each install is a hard requirement. The
+      decisive factor is ROI accountability across paid channels: if your team
+      manages significant UA spend and needs to reconcile installs back to
+      specific creatives or networks with fraud protection, AppsFlyer is the
+      only option here that does this."
+    tradeoffs: "Pro: Industry-leading deterministic + probabilistic attribution,
+      SKAN 4 support, deep linking via OneLink, real-time fraud blocking
+      (Protect360 add-on). Con: $0.07/conversion adds up fast at scale (100K
+      monthly non-organic installs = $7,000/month on Growth); does not replace a
+      product analytics tool — teams still need Mixpanel or Firebase for
+      behavioral analysis."
+    cautions: "AppsFlyer counts any attributed in-app event as a billable conversion
+      if you enable in-app event measurement, not just installs — teams
+      frequently underestimate costs by only modeling installs. As of February
+      2026, Connected TV, PC, and console platform installs are billed at the
+      same $0.07 rate; verify your platform scope before committing to Growth
+      tier."
+    links:
+      - "https://www.appsflyer.com/pricing/"
+      - "https://dev.appsflyer.com/hc/docs/getting-started"
+      - "https://www.appsflyer.com/glossary/mobile-attribution/"
+
+  - name: "Firebase Analytics (Google Analytics for Firebase)"
+    summary: "Firebase Analytics is Google's free, unlimited mobile analytics
+      solution built into the Firebase platform. As of 2026-03-18, it is
+      available at no charge on both the Spark (free) and Blaze (pay-as-you-go)
+      plans, with no per-event or per-user fees. It supports unlimited reporting
+      on up to 500 distinct custom event types and integrates natively with
+      Remote Config, A/B Testing, Crashlytics, and Google Ads. The single most
+      important differentiator is zero cost regardless of scale, making it the
+      default choice for early-stage apps or teams already in the
+      Google/Firebase ecosystem."
+    when_to_use: "Best for small-team + low-ops apps where budget is constrained and
+      deep behavioral funnels are not a priority. The decisive factor is Google
+      ecosystem integration: if you use Firebase for backend services, Remote
+      Config, or push messaging, the tight native integration with Analytics
+      eliminates SDK overhead and adds free A/B testing and crash correlation."
+    tradeoffs: "Pro: Completely free, no event volume limits, automatic session and
+      retention tracking, native Crashlytics integration, easy Google Ads
+      import. Con: Limited to 500 distinct custom event types; the reporting UI
+      is relatively rigid with pre-built charts and no ad-hoc user-level query
+      support; not an attribution platform — does not track which paid network
+      drove a specific install."
+    cautions: "Firebase Analytics uses Google's own attribution model when linked to
+      Google Ads, which can conflict with numbers from a third-party MMP like
+      AppsFlyer — do not assume the two will agree on install counts. Data is
+      sampled in some reports at high volume; for precise behavioral cohort
+      analysis, teams typically graduate to Mixpanel or BigQuery export before
+      Firebase's built-in reporting becomes a bottleneck."
+    links:
+      - "https://firebase.google.com/docs/analytics"
+      - "https://firebase.google.com/pricing"
+
+  - name: "Mixpanel"
+    summary: "Mixpanel is an event-based product analytics platform focused on user
+      behavior — funnels, cohort analysis, retention curves, and A/B test
+      impact. As of 2026-03-18, the Free plan includes 1 million lifetime events
+      and 5 saved reports per user; the Growth plan (restructured February 2025)
+      includes 1 million events per month free plus 20K session replays and
+      unlimited reports, with additional events billed at approximately $0.00028
+      per event ($0.28 per 1,000 events). Enterprise pricing is custom with
+      optional MTU billing. The single most important differentiator is the
+      depth of ad-hoc behavioral analysis — user-level journeys, flexible
+      cohorts, and retention breakdowns that Firebase's pre-built dashboards
+      cannot match."
+    when_to_use: "Best for small-team to enterprise product teams where
+      understanding in-app behavior, retention drivers, and feature adoption is
+      the core analytics job. The decisive factor is query flexibility: if your
+      team needs to answer open-ended questions about what users do after
+      install (not where they came from), Mixpanel's event model and cohort
+      tools outperform Firebase and do not require attribution spend."
+    tradeoffs: "Pro: 1M events/month free on Growth (as of February 2025, a
+      significant improvement); powerful funnel, cohort, and retention analysis;
+      first-party data model that is resilient to privacy changes. Con: Beyond
+      1M events/month, costs scale with volume (~$280/month at 2M events); not
+      an attribution platform — no paid-channel ROI or fraud detection; teams at
+      high event volume (10M+ events/month) face meaningful per-event costs."
+    cautions: "All events are billed at ingestion time regardless of event timestamp
+      — replaying historical events or re-instrumenting tracking will consume
+      billable quota immediately. Mixpanel counts Group Analytics and Data
+      Pipelines as paid add-ons (40% and 20% of base plan cost respectively);
+      teams building data warehouse exports or account-level analytics should
+      factor these into total cost before comparing against Firebase."
+    links:
+      - "https://mixpanel.com/pricing/"
+      - "https://docs.mixpanel.com/docs/pricing"
+      - "https://docs.mixpanel.com/changelogs/2025-02-04-1million-events-free-o\
+        n-growth"
+      - "https://mixpanel.com/blog/mixpanel-pricing-1m-free-events-autocapture/"
+
+tags:
+  - "mobile"
+  - "analytics"
+  - "attribution"
+  - "appsflyer"
+  - "firebase"
+  - "mixpanel"
+  - "pricing"
+  - "comparison"
+  - "ios"
+  - "android"
+aliases:
+  - "mobile attribution"
+  - "app analytics pricing"
+  - "firebase analytics vs mixpanel"
+  - "appsflyer cost"
+  - "mobile MMP"
+  - "mobile measurement partner"
+  - "in-app analytics"
+  - "user behavior analytics mobile"
+  - "Google Analytics for Firebase"
+related_cards:
+  - "payment/stripe-webhooks-v2-event-format-migration-2026"
+  - "devtools/replit-vs-gitpod-vs-github-codespaces-development-cost-2026"
+  - "serverless/cloudflare-workers-free-tier-100k-requests-per-day-limit-2026"
+  - mobile/adjust-vs-singular-vs-kochava-mmp-pricing-2026
+  - analytics/simple-analytics-vs-aptabase-vs-telemetrydeck-pricing-2026
+  - mobile/appsflyer-extended-platform-conversion-billing-february-2026
+  - mobile/appsflyer-roi360-apple-receipt-validation-migration-2026
+  - mobile/tenjin-vs-airbridge-vs-appmetrica-attribution-pricing-2026
+  - mobile/firebase-crashlytics-crash-free-metrics-sdk-cutover-2026
+  - mobile/appsmetrica-vs-countly-mobile-analytics-self-host-cost-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/appsflyer
+      name: AppsFlyer
+    - type: vendor
+      id: vendor/firebase-analytics
+      name: Firebase Analytics (Google Analytics for Firebase)
+    - type: vendor
+      id: vendor/mixpanel
+      name: Mixpanel
+    - type: protocol
+      id: protocol/skadnetwork-4
+      name: SKAdNetwork 4
+      standard: SKAN 4
+    - type: capability
+      id: capability/paid-media-attribution
+      name: Paid media attribution
+      category: attribution
+    - type: capability
+      id: capability/fraud-prevention
+      name: Fraud prevention
+      category: security
+    - type: capability
+      id: capability/skan-support
+      name: SKAdNetwork support
+      category: privacy attribution
+    - type: capability
+      id: capability/event-based-pricing
+      name: Event-based pricing
+      category: pricing
+  edges:
+    - type: locks_via
+      from: vendor/appsflyer
+      to: capability/paid-media-attribution
+      evidence: best-in-class paid media attribution
+    - type: locks_via
+      from: vendor/appsflyer
+      to: capability/fraud-prevention
+      evidence: fraud prevention
+    - type: locks_via
+      from: vendor/appsflyer
+      to: capability/skan-support
+      evidence: SKAdNetwork (SKAN) support for iOS privacy; SKAN 4 support
+    - type: requires_version
+      from: capability/skan-support
+      to: protocol/skadnetwork-4
+      evidence: SKAN 4 support
+    - type: breaking_change_in
+      from: vendor/mixpanel
+      to: capability/event-based-pricing
+      date: 2025-02
+      evidence: Mixpanel overhauled to event-based pricing in February 2025

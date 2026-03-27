@@ -1,0 +1,161 @@
+id: "mobile/ima-dai-android-deprecated-sdk-branch-risk-2026"
+title: "IMA DAI Android Deprecated SDK Branch Risk in 2026"
+problem: "Decide whether to remain on a deprecated Google IMA Dynamic Ad
+  Insertion SDK branch for Android despite support and ad-serving risk, or
+  upgrade sooner and absorb the migration work."
+context:
+  - "mobile"
+  - "android"
+  - "google-ad-manager"
+  - "ima-dai"
+  - "video-stitching"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Upgrade now to the latest supported IMA DAI Android branch"
+    summary: "As of 2026-03-20, Google's Android IMA DAI deprecation policy says a
+      version is supported for 12 months after its successor releases, while
+      deprecated versions are not guaranteed to serve ads and do not receive
+      support-team answers. The latest release shown is 3.39.0 from 2026-01-22
+      with no deprecation date yet, and 3.38.0 deprecates on 2027-01-22. The
+      main migration steps are that 3.37.0 requires app desugaring and raises
+      minimum tooling to compileSdk 35 and Android Gradle Plugin 8.6.0, 3.38.0
+      raises minSdkVersion to 23, and 3.39.0 removes several deprecated APIs."
+    when_to_use: "Use this when monetization continuity matters more than short-term
+      build churn, especially for teams that cannot accept any branch where ad
+      serving is explicitly not guaranteed. It is the right default if you can
+      absorb tooling updates now and want the longest remaining support window."
+    tradeoffs: "Best support posture and lowest ad-serving risk, but it can force
+      Android platform work such as enabling desugaring, raising compileSdk and
+      AGP, moving to minSdk 23, and replacing removed deprecated APIs."
+    cautions: "Check your app for use of APIs removed in 3.37.0 and 3.39.0 before
+      upgrading. If you use the Video Stitcher workflow, the Android guide says
+      your app must send ID3 events through onUserTextReceived() for IMA DAI to
+      function."
+    links:
+      - "https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/andr\
+        oid/deprecation"
+      - "https://developers.google.com/interactive-media-ads/docs/sdks/android/\
+        client-side/history"
+      - "https://developers.google.com/interactive-media-ads/docs/sdks/android/\
+        client-side/get-started"
+      - "https://docs.cloud.google.com/video-stitcher/docs/how-to/gam/live/ima-\
+        sdk/android"
+  - name: "Stay temporarily on deprecated 3.35.1 only as a short bridge"
+    summary: "As of 2026-03-20, 3.35.1 is already deprecated, with a deprecation
+      date of 2025-11-07. Google's deprecation page says deprecated versions are
+      not guaranteed to serve ads, may have ad serving sunset if app-crashing
+      bugs appear, and do not receive support-team answers on the developer
+      forum. The practical reason to hold here is to avoid the minSdk 23 jump in
+      3.38.0 while still using the fixed 3.35.1 branch instead of 3.35.0."
+    when_to_use: "Use this only if your immediate blocker is the minSdk 23 increase
+      introduced later, but you can already avoid the older 3.34.x-specific
+      crash risk and do not need to stay below the 3.35.x line. Choose 3.35.1
+      when minSdk 21 support is the main short-term requirement and your
+      near-term upgrade path is to clear later tooling and API-removal work."
+    tradeoffs: "Lower immediate engineering disruption than upgrading now, but with
+      explicitly weaker support and ad-serving guarantees because the branch is
+      deprecated."
+    cautions: "3.35.0 had an OMID issue and Google says to use 3.35.1 instead, so do
+      not target 3.35.0 as a holding branch."
+    links:
+      - "https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/andr\
+        oid/deprecation"
+      - "https://developers.google.com/interactive-media-ads/docs/sdks/android/\
+        client-side/history"
+  - name: "Stay temporarily on deprecated 3.34.0 only if 3.35.1 is also blocked"
+    summary: "As of 2026-03-20, 3.34.0 is already deprecated, with a deprecation
+      date of 2025-09-24. Google's deprecation page says deprecated versions are
+      not guaranteed to serve ads, may have ad serving sunset if app-crashing
+      bugs appear, and do not receive support-team answers on the developer
+      forum. The practical reason to hold here is to avoid both the later minSdk
+      23 increase and the migration changes introduced after 3.34.0, but this is
+      the weakest support posture of the listed options."
+    when_to_use: "Use this only if 3.35.1 is still not viable in the short term
+      because you must remain below the 3.35.x line as well as avoid later
+      blockers such as compileSdk 35 or AGP 8.6.0 readiness, removed deprecated
+      APIs, or the minSdk 23 increase. Choose 3.34.0 only when those combined
+      constraints leave no realistic short-term move beyond 3.34.x."
+    tradeoffs: "Lowest immediate engineering disruption, but highest platform risk
+      because Google explicitly warns that ad serving is not guaranteed on
+      deprecated versions and support responses are unavailable."
+    cautions: "3.34.0 has a documented known issue for apps without Java 8+ API
+      desugaring on Android API 25 and lower that may cause crashes."
+    links:
+      - "https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/andr\
+        oid/deprecation"
+      - "https://developers.google.com/interactive-media-ads/docs/sdks/android/\
+        client-side/history"
+tags:
+  - "mobile"
+  - "android"
+  - "google-ad-manager"
+  - "ima"
+  - "dai"
+  - "sdk-deprecation"
+aliases:
+  - "google ima dai android deprecated sdk"
+  - "ima dai android branch support risk"
+  - "ima sdk android deprecation schedule"
+related_cards:
+  - "_archived/migration-strategy"
+  - video/jwx-android-v4-vs-older-sdk-after-migration-reference-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/google
+      name: Google
+    - type: package
+      id: package/ima-dai-android-3-39-0
+      name: IMA DAI Android 3.39.0
+      vendor: vendor/google
+    - type: package
+      id: package/ima-dai-android-3-38-0
+      name: IMA DAI Android 3.38.0
+      vendor: vendor/google
+    - type: package
+      id: package/ima-dai-android-3-37-0
+      name: IMA DAI Android 3.37.0
+      vendor: vendor/google
+    - type: package
+      id: package/ima-dai-android-3-35-1
+      name: IMA DAI Android 3.35.1
+      vendor: vendor/google
+    - type: package
+      id: package/ima-dai-android-3-34-0
+      name: IMA DAI Android 3.34.0
+      vendor: vendor/google
+    - type: package
+      id: package/android-gradle-plugin-8-6-0
+      name: Android Gradle Plugin 8.6.0
+    - type: runtime
+      id: runtime/android-api-23
+      name: Android API 23
+  edges:
+    - type: eol_date
+      from: package/ima-dai-android-3-38-0
+      to: null
+      date: 2027-01-22
+    - type: eol_date
+      from: package/ima-dai-android-3-35-1
+      to: null
+      date: 2025-11-07
+    - type: eol_date
+      from: package/ima-dai-android-3-34-0
+      to: null
+      date: 2025-09-24
+    - type: requires_version
+      from: package/ima-dai-android-3-37-0
+      to: package/android-gradle-plugin-8-6-0
+      requirement: requires Android Gradle Plugin 8.6.0
+    - type: requires_version
+      from: package/ima-dai-android-3-38-0
+      to: runtime/android-api-23
+      requirement: raises minSdkVersion to 23

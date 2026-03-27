@@ -120,6 +120,53 @@ related_cards:
   - ai/cohere-trial-vs-production-rate-limits-2026
   - devtools/jetbrains-ai-top-up-vs-tier-upgrade-2026
   - ai/replicate-serverless-gpu-choice-t4-vs-l40s-vs-a100-2026
+  - devtools/gitkraken-insights-advanced-vs-business-2026
+  - ai/mistral-voxtral-realtime-vs-batch-transcription-2026
+  - ai/hugging-face-inference-providers-routed-vs-custom-provider-key-2026
+  - ai/hugging-face-inference-endpoints-vs-inference-providers-2026
+  - design/adobe-creative-cloud-pro-vs-single-app-generative-credit-packaging-2026
+  - design/adobe-firefly-plan-vs-generative-credit-add-on-2026
+  - design/adobe-express-teams-vs-creative-cloud-pro-2026
+  - devtools/readme-startup-vs-business-vs-ai-booster-pack-2026
+  - ai/hugging-face-deprecated-intel-icl-endpoints-after-july-2025-2026
+  - ai/deepgram-voice-agent-vs-stt-plus-tts-pricing-2026
+  - ai/modal-region-multiplier-cost-control-2026
+  - design/builder-fusion-vs-publish-after-ai-credit-enforcement-march-2026
+  - design/builder-free-vs-paid-visual-copilot-and-ai-generation-credits-2026
+  - devtools/cursor-teams-vs-individual-plans-after-2025-pricing-reset
+  - devtools/windsurf-flow-action-credits-removed-april-21-2025-impact-2026
+  - ai/sourcegraph-amp-at-cost-vs-enterprise-minimum-spend-2026
+  - devtools/pipedream-ai-token-bundles-vs-credit-budgeting-2026
+  - devtools/apify-rental-actors-sunset-to-pay-per-usage-2026
+  - devtools/firecrawl-vs-scraperapi-vs-scrapingbee-pricing-2026
+  - devtools/bright-data-web-unlocker-vs-zyte-api-pricing-2026
+  - ai/sambanova-free-vs-payg-cloud-credits-2026
+  - devtools/codacy-free-vs-paid-ai-code-review-packaging-2026
+  - web/builderio-visual-copilot-credit-pricing-2026
+  - observability/pagerduty-included-advance-credits-vs-paid-add-on-2026
+  - desktop/raycast-free-vs-team-pro-ai-and-shared-command-limits-2026
+  - ai/cohere-eval-keys-vs-production-keys-2026
+  - ai/mistral-le-chat-pro-vs-team-pricing-2026
+  - messaging/infobip-vs-twilio-whatsapp-pricing-after-meta-rate-changes-2026
+  - ai/perplexity-sonar-vs-sonar-pro-after-2026-model-and-price-changes
+  - video/agora-automatic-vs-force-udp-vs-force-tls-cloud-proxy-2026
+  - video/agora-aggregate-resolution-full-hd-billing-trap-2026
+  - video/videosdk-postpaid-to-prepaid-wallet-migration-january-2026
+  - frontend/zed-token-based-ai-pricing-after-february-19-2026-model-retirements
+  - database/turso-developer-vs-scaler-after-july-2025-active-db-billing
+  - search/brave-search-api-vs-tavily-vs-exa-pricing-2026
+  - search/serpapi-vs-searchapi-vs-serper-google-search-api-pricing-2026
+  - search/tavily-development-vs-production-keys-rate-limits-2026
+  - search/azure-ai-search-semantic-ranker-free-vs-billable-2026
+  - search/vertex-ai-search-standard-vs-configurable-pricing-2026
+  - search/firecrawl-search-vs-scrape-credit-economics-2026
+  - search/azure-ai-search-vectorizer-integrated-vs-external-embeddings-cost-2026
+  - search/searchanise-legacy-plan-vs-ai-upgraded-pricing-2026
+  - devtools/scalar-agent-message-vs-token-pricing-2026
+  - design/contentful-ai-actions-and-automation-quotas-2026
+  - web/daily-paygo-vs-startup-program-video-pricing-2026
+  - ai/together-serverless-vs-dedicated-endpoint-pricing-2026
+tier: core
 updated: 2026-03-15
 review_by: 2026-10-19
 sidecar_hard_facts:

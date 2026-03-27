@@ -1,0 +1,152 @@
+id: "backend/intercom-api-v2-12-deprecation-before-december-2026"
+title: "Intercom API v2.12 Migration Before December 2026 Deprecation"
+problem: "Choose whether to stay pinned to Intercom API v2.12 behavior for now
+  or migrate to newer API versions before v2.12 is fully deprecated in December
+  2026."
+context:
+  - "intercom"
+  - "rest-api"
+  - "webhooks"
+  - "tickets"
+constraints:
+  - "low-ops"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "Stay on v2.12 temporarily while isolating migration blockers"
+    summary: "Intercom's v2.12 changelog says the version includes breaking changes
+      and that the API will be deprecated completely in December 2026. As of
+      2026-03-27, the public Intercom pricing page is still framed around
+      workspace plans, seats, and usage charges rather than API-version pricing,
+      so this is mainly a compatibility and delivery-timing decision. If you are
+      already stable on v2.12, you can keep it briefly while you test newer
+      versions via the `Intercom-Version` header and inventory webhook and
+      ticket-state dependencies. This minimizes immediate churn, but it leaves a
+      hard platform deadline in place."
+    when_to_use: "Use this when you need a short-term freeze because production
+      integrations are stable on v2.12 and you have a near-term delivery
+      constraint. The decisive factor is whether you can commit engineering time
+      soon to remove migration blockers before December 2026."
+    tradeoffs: "Lowest immediate change risk and easiest rollback path, but it
+      defers work into a fixed deprecation window and delays access to newer
+      APIs and webhook behavior."
+    cautions: "v2.12 already changed ticket state responses to a `ticket_state`
+      object, deprecated using `state` in request bodies in favor of
+      `ticket_state_id`, and removed run assignment rules in v2.12 and all
+      following versions. If your code still depends on older pre-v2.12 ticket
+      or assignment behavior, pinning does not solve the underlying migration
+      work."
+    links:
+      - "https://developers.intercom.com/docs/references/2.12/changelog"
+      - "https://developers.intercom.com/docs/build-an-integration/learn-more/r\
+        est-apis/update-your-api-version"
+      - "https://developers.intercom.com/docs/build-an-integration/learn-more/r\
+        est-apis/api-changelog"
+      - "https://www.intercom.com/pricing"
+  - name: "Migrate now to the latest stable version shown in the docs"
+    summary: "As of 2026-03-27, Intercom's current REST API reference shows v2.15,
+      and both v2.14 and v2.15 introduce additional breaking changes on top of
+      v2.12. v2.14 changes ticket update behavior and splits admin assignment
+      limit activity logs, while v2.15 changes ticket webhook semantics,
+      conversation webhook serialization, and some AI Agent enum values. Moving
+      now reduces deadline risk and lets you adopt newer endpoints and fields
+      instead of carrying a temporary compatibility layer until late 2026. This
+      is the better long-horizon choice if you can test tickets, webhooks, and
+      conversation payload consumers."
+    when_to_use: "Use this when you want to eliminate deprecation risk early and can
+      run integration tests against webhook payloads and ticket workflows. The
+      decisive factor is whether your integration depends on `ticket.closed`,
+      HTML webhook fields, or older ticket update semantics."
+    tradeoffs: "Best long-term support posture and feature access, but it requires
+      coordinated code changes across webhook consumers, ticket update calls,
+      and any AI-state or conversation parsing logic."
+    cautions: "In v2.15, `ticket.closed` no longer means the same thing for resolved
+      tickets, conversation webhook `body` and `subject` move to plain text, and
+      date fields in webhook statistics move to Unix timestamps. In v2.14, `PUT
+      /tickets/{id}` changes shape and requires attention to `admin_id` and
+      assignment behavior."
+    links:
+      - "https://developers.intercom.com/docs/references/changelog"
+      - "https://developers.intercom.com/docs/references/introduction"
+      - "https://developers.intercom.com/docs/references/2.14/changelog"
+      - "https://developers.intercom.com/docs/build-an-integration/learn-more/r\
+        est-apis/update-your-api-version"
+tags:
+  - "backend"
+  - "intercom"
+  - "api-versioning"
+  - "webhooks"
+aliases:
+  - "intercom api v2.12 deprecation"
+  - "intercom api version migration"
+  - "intercom v2.15 upgrade"
+  - "intercom 2.12 sunset"
+  - "intercom api sunset"
+  - "intercom api deprecation"
+  - "intercom version pinning"
+  - "intercom api upgrade"
+  - "intercom webhook versioning"
+  - "intercom v2.12 migration"
+  - "intercom v2.12 deprecated"
+  - "intercom 2.15 migration"
+
+  - "intercom api v2.12 deprecation"
+  - "intercom api version migration"
+  - "intercom v2.15 upgrade"
+related_cards:
+  - "backend/api-versioning"
+  - "backend/intercom-run-assignment-rules-removal-december-31-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-28
+  nodes:
+    - type: vendor
+      id: vendor/intercom
+      name: Intercom
+    - type: protocol
+      id: protocol/intercom-rest-api-v2.12
+      name: Intercom REST API v2.12
+      vendor: vendor/intercom
+    - type: protocol
+      id: protocol/intercom-rest-api-v2.14
+      name: Intercom REST API v2.14
+      vendor: vendor/intercom
+    - type: protocol
+      id: protocol/intercom-rest-api-v2.15
+      name: Intercom REST API v2.15
+      vendor: vendor/intercom
+    - type: capability
+      id: capability/webhooks
+      name: Webhooks
+    - type: capability
+      id: capability/tickets
+      name: Tickets
+  edges:
+    - type: eol_date
+      from: protocol/intercom-rest-api-v2.12
+      to: null
+      when: December 2026
+      status: deprecated completely
+    - type: breaking_change_in
+      from: protocol/intercom-rest-api-v2.12
+      to: capability/tickets
+      details: Changed ticket state responses to a `ticket_state` object, deprecated
+        `state` in request bodies in favor of `ticket_state_id`, and removed run
+        assignment rules in v2.12 and following versions.
+    - type: breaking_change_in
+      from: protocol/intercom-rest-api-v2.14
+      to: capability/tickets
+      details: Changes ticket update behavior and splits admin assignment limit
+        activity logs.
+    - type: breaking_change_in
+      from: protocol/intercom-rest-api-v2.15
+      to: capability/webhooks
+      details: Changes ticket webhook semantics, conversation webhook serialization,
+        and some AI Agent enum values.
+    - type: locks_via
+      from: protocol/intercom-rest-api-v2.12
+      to: vendor/intercom
+      mechanism: "`Intercom-Version` header"

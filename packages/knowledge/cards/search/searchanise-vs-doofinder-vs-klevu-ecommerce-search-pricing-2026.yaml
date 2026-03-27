@@ -1,0 +1,190 @@
+id: "search/searchanise-vs-doofinder-vs-klevu-ecommerce-search-pricing-2026"
+title: "Searchanise vs Doofinder vs Klevu Ecommerce Search Pricing in 2026"
+problem: "Commerce teams need to choose a search SaaS after 2026 plan
+  differences in session caps, merchandising features, and AI add-ons changed
+  the true cost of replacing built-in storefront search."
+context:
+  - "ecommerce"
+  - "shopify"
+  - "woocommerce"
+  - "site-search"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "enterprise"
+candidates:
+  - name: "Searchanise"
+    summary: "Searchanise is a storefront search and filtering app with
+      platform-specific pricing. As of 2026-03-27, its official pricing page
+      shows Shopify plans priced by active product count rather than
+      search-session overage, with examples including Basic at \"$19/month\" for
+      up to 25 products, Essential at \"$39/month\" for up to 1.5k products,
+      Growth at \"$139/month\" for up to 15k products, and Pro at \"$209/month\"
+      for up to 30k products; annual billing discounts are also shown. Its FAQ
+      says plan choice is based on active products and features, and that
+      merchandising campaigns, analytics, and sync frequency are not capped by
+      plan. On WooCommerce, the official FAQ says all plans include unlimited
+      search queries, so traffic spikes do not change price there."
+    when_to_use: "Use Searchanise when you are cost-sensitive, run on a supported
+      platform, and want predictable pricing tied mostly to catalog size instead
+      of request volume. It is the strongest fit when you want search, filters,
+      merchandising, and recommendations without stepping into quote-only
+      enterprise pricing."
+    tradeoffs: "Lower entry price and simpler packaging than enterprise suites, but
+      pricing and limits vary by platform. It appears more app-platform-centric
+      than enterprise discovery suites with broad AI packaging."
+    cautions: "As of 2026-03-27, pricing differs by platform, so do not assume
+      WooCommerce request policy or Shopify product caps carry over to every
+      integration. If you are migrating from another search app, Searchanise
+      explicitly recommends removing the old plugin first to avoid conflicts."
+    links:
+      - "https://searchanise.io/pricing/"
+      - "https://searchanise.io/pricing/woocommerce"
+      - "https://searchanise.io/pricing/shopifyplus"
+  - name: "Doofinder"
+    summary: "Doofinder packages Search, Recommendations, and Quiz together in every
+      plan. As of 2026-03-27, the official pricing page lists Basic at
+      \"$49/month\" or \"$44/month billed annually\" with up to 10k requests per
+      month for each product, Pro at \"$149/month\" or \"$134/month billed
+      annually\" with up to 150k requests per month for each product, and
+      Advanced at \"$349/month\" or \"$314/month billed annually\" with up to
+      400k requests per month for each product; Enterprise is custom. Category
+      Merchandising appears only from Advanced upward, and the page says AI
+      Assistant is available only on Pro, Advanced, and Enterprise with separate
+      pricing on request. The key pricing blocker is that request caps apply
+      separately to each bundled product, so using Search plus Recommendations
+      plus Quiz can expand usage governance complexity."
+    when_to_use: "Use Doofinder when you want bundled discovery features and your
+      team expects value from recommendations and quizzes alongside site search.
+      It is most compelling when request volumes are predictable and you
+      specifically want Advanced-tier merchandising or paid AI assistant
+      add-ons."
+    tradeoffs: "The bundle can be efficient if you will use all included products,
+      but it is less attractive if you only need search. Request-based packaging
+      can become harder to budget than catalog-based pricing."
+    cautions: "As of 2026-03-27, AI Assistant is not included in entry pricing and
+      requires separate pricing discussions. The official FAQ also says plan
+      fitting is determined after trial usage, so final plan selection may move
+      once real traffic is observed."
+    links:
+      - "https://www.doofinder.com/en/price"
+      - "https://docs.doofinder.com/"
+  - name: "Klevu"
+    summary: "Klevu has been rebranded into Athos Commerce. As of 2026-03-27, the
+      official Klevu site redirects to Athos Commerce, whose pricing page no
+      longer shows public numeric monthly prices and instead says usage is based
+      on a combination of domains, sessions, and SKUs across Essential,
+      Advanced, and Expert plans. The current packaging gates merchandising
+      depth and indexing frequency by tier: Essential includes 20 active
+      merchandising campaigns and 2x daily indexing, Advanced includes 50
+      campaigns and 4x daily indexing, and Expert includes 200+ campaigns plus
+      live or real-time indexing. Personalized category results and personalized
+      product recommendations are listed only on Expert."
+    when_to_use: "Use Klevu when you are enterprise-oriented, can tolerate
+      quote-based procurement, and need heavier merchandising or personalization
+      controls tied to session volume and multi-domain scale. It is the better
+      fit when AI-driven discovery is strategic enough to justify sales-led
+      pricing."
+    tradeoffs: "Feature depth is stronger than lower-cost app-style tools, but
+      current public pricing transparency is weaker. Budgeting is harder because
+      the official model is usage-based across several variables instead of a
+      simple flat plan."
+    cautions: "As of 2026-03-27, the old Klevu public price book is no longer the
+      operative official packaging; check official docs for the current quote
+      because the live Athos Commerce page does not publish numeric plan prices.
+      The rebrand also means teams replacing or renewing Klevu should verify
+      contract, migration, and support paths under Athos Commerce branding."
+    links:
+      - "https://www.klevu.com/pricing/"
+      - "https://athoscommerce.com/pricing/"
+      - "https://www.klevu.com/"
+tags: [ "search", "ecommerce", "pricing", "shopify", "woocommerce" ]
+aliases:
+  [
+    "searchanise pricing 2026",
+    "doofinder pricing 2026",
+    "klevu pricing 2026",
+    "athos commerce pricing",
+    "ecommerce search pricing comparison"
+  ]
+related_cards:
+  - "search/addsearch-vs-sitesearch360-vs-expertrec-site-search-pricing-2026"
+  - "data/algolia-vs-meilisearch-cloud-vs-typesense-cloud-search-pricing-2026"
+  - "database/search-postgres-vs-opensearch-vs-meilisearch"
+  - search/searchanise-legacy-plan-vs-ai-upgraded-pricing-2026
+  - search/doofinder-search-vs-discovery-suite-packaging-2026
+  - search/klevu-search-vs-discovery-suite-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/searchanise
+      name: Searchanise
+    - type: vendor
+      id: vendor/doofinder
+      name: Doofinder
+    - type: vendor
+      id: vendor/klevu
+      name: Klevu
+    - type: vendor
+      id: vendor/athos-commerce
+      name: Athos Commerce
+    - type: capability
+      id: capability/active-product-count
+      name: Active product count
+    - type: capability
+      id: capability/monthly-requests
+      name: Monthly requests
+    - type: capability
+      id: capability/domains-sessions-skus
+      name: Domains, sessions, and SKUs
+    - type: capability
+      id: capability/category-merchandising
+      name: Category merchandising
+    - type: capability
+      id: capability/ai-assistant
+      name: AI Assistant
+    - type: capability
+      id: capability/personalized-product-recommendations
+      name: Personalized product recommendations
+  edges:
+    - type: locks_via
+      from: vendor/searchanise
+      to: capability/active-product-count
+      basis: Shopify pricing is based on active product count; WooCommerce FAQ says
+        all plans include unlimited search queries.
+    - type: locks_via
+      from: vendor/doofinder
+      to: capability/monthly-requests
+      basis: Basic, Pro, and Advanced plans each include request caps per month for
+        each bundled product.
+    - type: locks_via
+      from: vendor/klevu
+      to: capability/domains-sessions-skus
+      basis: Athos Commerce pricing says usage is based on a combination of domains,
+        sessions, and SKUs.
+    - type: requires_version
+      from: capability/category-merchandising
+      to: vendor/doofinder
+      version: Advanced
+      basis: Category Merchandising appears only from Advanced upward.
+    - type: requires_version
+      from: capability/ai-assistant
+      to: vendor/doofinder
+      version: Pro
+      basis: AI Assistant is available only on Pro, Advanced, and Enterprise with
+        separate pricing on request.
+    - type: requires_version
+      from: capability/personalized-product-recommendations
+      to: vendor/klevu
+      version: Expert
+      basis: Personalized product recommendations are listed only on Expert.
+    - type: breaking_change_in
+      from: vendor/klevu
+      to: vendor/athos-commerce
+      basis: Klevu has been rebranded into Athos Commerce, and the official Klevu site
+        redirects to Athos Commerce.

@@ -1,0 +1,233 @@
+id: "database/vector-database-consolidation-pinecone-vs-weaviate-vs-milvus-2026"
+title: "Vector Database Consolidation: Pinecone vs Weaviate vs Milvus vs Qdrant
+  After Market Shake-Out 2026"
+problem: "Vector databases enable semantic search and RAG at scale. Pinecone
+  (managed-only, high cost), Weaviate (managed or self-hosted, hybrid search),
+  Milvus/Zilliz Cloud (self-hosted or managed, billion-scale), and Qdrant
+  (self-hosted or managed, filterable HNSW) have consolidated in 2026 with
+  different pricing models, operational overhead, and vendor lock-in profiles.
+  Market consolidation makes long-term platform viability a first-class
+  selection criterion."
+context:
+  - "rag"
+  - "semantic-search"
+  - "embeddings"
+  - "ai-infrastructure"
+  - "vector-search"
+constraints:
+  - "high-scale"
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Pinecone"
+    summary: "Fully managed, closed-source, serverless-first vector database with no
+      self-hosting option. As of 2026-03-18, plans are Starter (free: 2GB
+      storage, 5 indexes, 1M read units/month), Standard ($50/month minimum),
+      and Enterprise ($500/month minimum, 99.95% SLA, HIPAA eligible); BYOC is
+      available at custom pricing but still relies on Pinecone's control plane.
+      Supports hybrid retrieval, real-time indexing on upsert, and SOC
+      2/GDPR/ISO 27001 compliance. The single most important differentiator is
+      the lowest operational burden of any major vector database, at the cost of
+      hard vendor lock-in with no open-source exit path."
+    when_to_use: "Best for low-ops + small-team where the team lacks Kubernetes
+      expertise and zero infrastructure management outweighs cost efficiency.
+      The decisive factor is whether you can accept permanent vendor lock-in:
+      Pinecone is the only major player with no self-hosting path, no
+      open-source codebase, and a proprietary index format requiring full
+      re-indexing to migrate away."
+    tradeoffs: "Zero operational overhead, real-time indexing on upsert, and native
+      hybrid search with first-party compliance certifications make it the
+      fastest path to production. Standard plan's $50/month minimum plus
+      per-read/write-unit charges compound steeply at high throughput, and
+      closed-source infrastructure with a proprietary index format create hard
+      vendor lock-in."
+    cautions: "Public reporting indicates Pinecone revenue declined in 2025 versus
+      2024 — assess acquisition or pricing-change risk before committing
+      long-term production workloads. BYOC retains Pinecone's control plane
+      involvement and is not a true data-sovereignty solution. Migration out
+      requires full re-indexing due to the proprietary index format."
+    links:
+      - "https://www.pinecone.io/"
+      - "https://www.pinecone.io/pricing/"
+      - "https://docs.pinecone.io/guides/assistant/pricing-and-limits"
+  - name: "Weaviate"
+    summary: "Open-source (BSD-3 license) vector database with both managed cloud
+      (Weaviate Cloud) and self-hosted options. As of 2026-03-18, Weaviate Cloud
+      plans are Flex ($45/month, shared, 99.5% SLA), Plus ($280/month annual
+      commitment, 99.9% SLA), and Premium ($400/month+, dedicated, 99.95% SLA);
+      all plans bill on vector dimensions ($0.00975–$0.01668/M), storage
+      ($0.2125–$0.31875/GiB), and backups following the October 2025 pricing
+      update. The single most important differentiator is native BM25 plus
+      vector hybrid search fusion without external tooling, consistently
+      improving RAG recall over pure vector retrieval."
+    when_to_use: "Best for enterprise + real-time where hybrid search (vector plus
+      keyword) is core to retrieval quality and you need the flexibility to
+      start managed and migrate to self-hosted later. The decisive factor is RAG
+      accuracy: Weaviate's native hybrid fusion avoids the recall degradation
+      that occurs when post-filtering or external re-rankers are bolted on top
+      of a pure-vector database."
+    tradeoffs: "Native hybrid search, modular vectorizer integrations, and a BSD-3
+      open-source exit path from managed cloud are the primary strengths.
+      Vectorizer modules that call external embedding APIs add per-query latency
+      and cost; self-hosted production HA requires Kubernetes and is
+      memory-intensive (8GB+ RAM for multi-tenant workloads)."
+    cautions: "The October 2025 pricing update added storage and backup billing
+      dimensions — audit current storage footprint before migrating plan tiers,
+      as costs can increase unexpectedly. The Plus plan requires an annual
+      commitment with no month-to-month option between Flex and Premium; factor
+      in lock-in period when evaluating at the pilot stage."
+    links:
+      - "https://weaviate.io/pricing"
+      - "https://weaviate.io/blog/weaviate-cloud-pricing-update"
+      - "https://docs.weaviate.io/weaviate"
+  - name: "Milvus / Zilliz Cloud"
+    summary: "Milvus is open-source (Apache 2.0), currently at v2.6.12 (released
+      March 17, 2026), built for billion-scale workloads with GPU acceleration,
+      DiskANN tiered storage, and distributed Kubernetes architecture. Zilliz
+      Cloud is the fully managed hosted version with a free tier (5GB storage,
+      2.5M vCUs/month), Serverless (pay-as-you-go at $4/M vCUs), Dedicated
+      Standard (from $99/month), and Dedicated Enterprise (from $155/month,
+      99.95% SLA); storage standardized at $0.04/GB/month across all clouds from
+      January 1, 2026. Cluster types span performance-optimized ($65/M
+      vectors/month), capacity-optimized ($20/M), and tiered-storage ($7/M). The
+      single most important differentiator is tiered-storage indexing at
+      $7/million vectors/month, making billion-scale deployments economically
+      viable where in-memory-only alternatives become cost-prohibitive."
+    when_to_use: "Best for high-scale + cost-sensitive where vector counts exceed
+      100M and RAM cost is the binding constraint. The decisive factor is scale
+      economics: Milvus's DiskANN index offloads warm vectors to SSD, enabling
+      billion-scale at a fraction of the in-memory cost of Pinecone or Qdrant."
+    tradeoffs: "Highest throughput at billion-scale, tiered storage for dramatic
+      cost reduction, GPU-accelerated indexing, and Apache 2.0 licensing with no
+      per-seat cost are the primary strengths. Distributed self-hosted mode
+      requires etcd, MinIO/S3, and Kafka/Pulsar, making it operationally the
+      most complex option by a wide margin; standalone mode is not
+      production-safe for HA."
+    cautions: "Two critical security vulnerabilities were patched in early 2026:
+      CVE-2026-26190 fixed in v2.6.10 (February 5, 2026) and an authentication
+      bypass in the 2.5.x branch fixed in v2.5.27 (February 27, 2026) — all
+      self-hosted deployments must be on these versions or newer. Schema changes
+      trigger segment reopening (introduced in v2.6.9), which can cause
+      transient query latency spikes during active write periods."
+    links:
+      - "https://github.com/milvus-io/milvus"
+      - "https://github.com/milvus-io/milvus/releases"
+      - "https://zilliz.com/pricing"
+      - "https://zilliz.com/cloud"
+      - "https://zilliz.com/blog/zilliz-cloud-oct-2025-update"
+  - name: "Qdrant"
+    summary: "Open-source (Apache 2.0) vector database written in Rust, optimized
+      for filterable HNSW with maintained high recall under aggressive metadata
+      predicates. Qdrant Cloud offers a free-forever tier (0.5 vCPU, 1GB RAM,
+      4GB disk), Standard (usage-based, no published per-unit rates — requires
+      pricing calculator), and Premium (minimum spend required, SSO, private VPC
+      links, 99.9% SLA); managed cloud starts at $25/month for paid tiers.
+      Self-hosted options include Hybrid Cloud (customer Kubernetes plus Qdrant
+      management plane) and Private Cloud (fully air-gapped). The single most
+      important differentiator is payload-aware HNSW graph traversal that avoids
+      post-filtering ANN recall degradation under selective filter conditions."
+    when_to_use: "Best for cost-sensitive + compliance where workloads have heavy
+      metadata filtering (e.g. multi-tenant RAG with per-user ACLs) or data
+      residency requirements via Hybrid/Private Cloud. The decisive factor is
+      filter selectivity: Qdrant maintains high recall under aggressive filter
+      conditions where other engines fall back to brute-force scanning."
+    tradeoffs: "Payload-aware HNSW, free-forever managed tier, and Rust-based memory
+      efficiency make it the most cost-effective self-hosting option;
+      Hybrid/Private Cloud deployment modes directly address data residency and
+      compliance. Standard cloud tier has no published per-unit rates or uptime
+      SLA, and the first-party integration ecosystem is smaller than Pinecone or
+      Weaviate."
+    cautions: "Qdrant Cloud Standard tier does not commit to an uptime SLA — only
+      Premium guarantees 99.9%; do not rely on Standard for revenue-critical
+      production workloads without verifying SLA requirements with Qdrant.
+      Hybrid Cloud routes management traffic through Qdrant's control plane and
+      is not fully air-gapped — use Private Cloud for strict isolation
+      requirements."
+    links:
+      - "https://qdrant.tech/pricing/"
+      - "https://qdrant.tech/documentation/cloud-pricing-payments/"
+      - "https://qdrant.tech/cloud/"
+tags:
+  - "database"
+  - "vector-database"
+  - "pinecone"
+  - "weaviate"
+  - "milvus"
+  - "qdrant"
+  - "zilliz"
+  - "rag"
+  - "semantic-search"
+  - "embeddings"
+  - "comparison"
+  - "ai-infrastructure"
+aliases:
+  - "vector db"
+  - "vector search"
+  - "embedding database"
+  - "semantic search database"
+  - "RAG database"
+  - "ANN search"
+  - "approximate nearest neighbor"
+  - "pgvector alternative"
+  - "pinecone alternative"
+  - "weaviate vs pinecone"
+  - "milvus vs pinecone"
+  - "qdrant vs pinecone"
+related_cards:
+  - "backend/api-response-caching-cdn-edge-vs-database-2026"
+  - "backend/rate-limiting"
+  - ai/pinecone-starter-vs-standard-50-dollar-minimum-2026
+  - data/vectorchord-vs-pgvector-vs-qdrant-self-hosted-2026
+  - search/weaviate-shared-cloud-pricing-change-october-27-2025
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-18
+  nodes:
+    - type: vendor
+      id: vendor/pinecone
+      name: Pinecone
+    - type: data_format
+      id: format/pinecone-proprietary-index-format
+      name: proprietary index format
+    - type: capability
+      id: capability/milvus-self-hosted-deployment
+      name: self-hosted deployment
+    - type: package
+      id: package/milvus-v2.6.10
+      name: Milvus v2.6.10
+    - type: package
+      id: package/milvus-v2.5.27
+      name: Milvus v2.5.27
+    - type: capability
+      id: capability/schema-changes
+      name: schema changes
+    - type: package
+      id: package/milvus-v2.6.9
+      name: Milvus v2.6.9
+  edges:
+    - type: locks_via
+      from: vendor/pinecone
+      to: format/pinecone-proprietary-index-format
+      mechanism: Migration out requires full re-indexing due to the proprietary index
+        format.
+    - type: requires_version
+      from: capability/milvus-self-hosted-deployment
+      to: package/milvus-v2.6.10
+      requirement: v2.6.10 or newer for the 2.6.x branch
+      reason: CVE-2026-26190 fixed in v2.6.10.
+    - type: requires_version
+      from: capability/milvus-self-hosted-deployment
+      to: package/milvus-v2.5.27
+      requirement: v2.5.27 or newer for the 2.5.x branch
+      reason: Authentication bypass fixed in v2.5.27.
+    - type: breaking_change_in
+      from: capability/schema-changes
+      to: package/milvus-v2.6.9
+      change: Schema changes trigger segment reopening, which can cause transient
+        query latency spikes during active write periods.
+      introduced_in: v2.6.9

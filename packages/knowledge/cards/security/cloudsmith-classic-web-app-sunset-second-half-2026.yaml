@@ -1,0 +1,140 @@
+id: "security/cloudsmith-classic-web-app-sunset-second-half-2026"
+title: "Cloudsmith Classic Web App Sunset in Second Half 2026"
+problem: "Package teams need to decide whether to complete workflow migration to
+  Cloudsmith's new web app now or keep a temporary dual-UI operating mode before
+  the classic UI is removed."
+context:
+  - "artifact-management"
+  - "package-registry"
+  - "software-supply-chain"
+constraints:
+  - "enterprise"
+  - "small-team"
+  - "compliance"
+candidates:
+  - name: "Migrate primary operator workflows to the new Cloudsmith web app now"
+    summary: "As of 2026-03-26, Cloudsmith says the classic web app will remain
+      available through the second half of 2026, after slipping from the
+      previously announced January 2026 retirement. Cloudsmith also states the
+      new web app is now the primary platform and is where active investment is
+      landing. A concrete blocker signal already appeared on 2026-02-10: Client
+      Logs, Client Statistics, and Package Statistics views in the classic app
+      were deprecated, and Cloudsmith says the old package statistics graph
+      stopped updating in mid-December 2025. Pricing is workspace-based rather
+      than presented as separate classic versus new UI plans; as of 2026-03-26
+      the pricing page lists Core at \"$0/month\" with \"500 MB\" artifact data
+      and \"1 GB\" package delivery, and Pro at \"$149/month\" with \"5 GB\"
+      artifact data and \"25 GB\" package delivery."
+    when_to_use: "Use this when your team depends on package or client visibility,
+      security review evidence, or other day-to-day operational flows that
+      cannot sit on stale classic-only views. The decisive factor is that some
+      classic pages are already no longer the source of current data, so waiting
+      increases migration risk without reducing subscription cost."
+    tradeoffs: "You align early with Cloudsmith's primary interface and avoid late
+      scramble risk, but you may need to retrain users and rework bookmarks or
+      internal runbooks."
+    cautions: "Do not assume classic metrics pages remain reliable until the final
+      sunset date. Cloudsmith says historical and current logs are in the new
+      app, but there is not a 1:1 graph replacement for individual package
+      statistics, so teams using those visuals should validate replacement
+      workflows explicitly."
+    links:
+      - "https://docs.cloudsmith.com/bug-bounty-program"
+      - "https://docs.cloudsmith.com/logs-and-observability/client-logs"
+      - "https://docs.cloudsmith.com/workspaces/workspace-settings"
+  - name: "Run a temporary dual-UI period while validating remaining gap closures"
+    summary: "As of 2026-03-26, Cloudsmith has not published a final retirement day,
+      only that the classic app remains available through the second half of
+      2026 and that detailed migration resources will arrive before retirement.
+      Cloudsmith identified the remaining transition items around the new app as
+      public and open-source broadcasts, package logs, multi-select and bulk
+      actions, and social login; related rollout posts show Broadcasts became
+      generally available in January 2026 and multi-select package actions were
+      announced in February 2026. Cloudsmith also changed new web app repository
+      URLs on 2026-01-23 from \"app.cloudsmith.com/[WORKSPACE]/[REPOSITORY]/\"
+      to \"app.cloudsmith.com/[WORKSPACE]/r/[REPOSITORY]/\", with redirects in
+      place. Pricing still appears to be the same workspace plan structure
+      during the overlap period, with no separate classic UI price listed on the
+      official pricing page as of 2026-03-26."
+    when_to_use: "Use this when you have regulated or high-friction workflows that
+      require side-by-side validation before changing team operating procedures.
+      The decisive factor is whether your blockers are usability and runbook
+      drift rather than hard loss of current data."
+    tradeoffs: "This reduces immediate change-management pressure and gives teams
+      time to confirm parity, but it prolongs split documentation, split support
+      paths, and the risk that users stay on classic until a later forced
+      cutover."
+    cautions: "Treat this as a short-lived transition, not a steady state. Even
+      during overlap, Cloudsmith is already redirecting certain classic-era
+      flows to the new app and evolving new-app URL patterns, so bookmarks,
+      browser automations, and internal docs should be updated during the
+      validation window."
+    links:
+      - "https://docs.cloudsmith.com/bug-bounty-program"
+      - "https://docs.cloudsmith.com/software-distribution/broadcasts"
+      - "https://docs.cloudsmith.com/repositories/create-a-repository"
+      - "https://docs.cloudsmith.com/workspaces/workspace-settings"
+tags:
+  - "security"
+  - "cloudsmith"
+  - "package-registry"
+  - "deprecation"
+aliases:
+  - "cloudsmith classic ui sunset"
+  - "cloudsmith web app migration"
+  - "cloudsmith classic web app retirement"
+related_cards:
+  - "_archived/migration-strategy"
+  - "infra/package-manager"
+  - "security/supply-chain-security-for-node"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/cloudsmith
+      name: Cloudsmith
+    - type: capability
+      id: capability/classic-web-app
+      name: Classic Web App
+    - type: capability
+      id: capability/new-web-app
+      name: New Web App
+    - type: capability
+      id: capability/client-logs
+      name: Client Logs
+    - type: capability
+      id: capability/client-statistics
+      name: Client Statistics
+    - type: capability
+      id: capability/package-statistics
+      name: Package Statistics
+  edges:
+    - type: eol_date
+      from: capability/classic-web-app
+      to: null
+      date_text: through the second half of 2026
+      source_date: 2026-03-26
+    - type: breaking_change_in
+      from: capability/classic-web-app
+      to: capability/client-logs
+      date: 2026-02-10
+      change: deprecated in the classic app
+    - type: breaking_change_in
+      from: capability/classic-web-app
+      to: capability/client-statistics
+      date: 2026-02-10
+      change: deprecated in the classic app
+    - type: breaking_change_in
+      from: capability/classic-web-app
+      to: capability/package-statistics
+      date: 2026-02-10
+      change: deprecated in the classic app
+    - type: breaking_change_in
+      from: capability/package-statistics
+      to: capability/classic-web-app
+      date_text: mid-December 2025
+      change: old package statistics graph in the classic app stopped updating

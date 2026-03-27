@@ -1,0 +1,168 @@
+id: "observability/grafana-oncall-oss-archive-march-2026"
+title: "Grafana OnCall OSS Archive Deadline on March 24, 2026"
+problem: "Teams still relying on Grafana OnCall OSS need a migration decision
+  before the OSS archive and Grafana Cloud Connection shutdown on March 24,
+  2026."
+context:
+  - "grafana"
+  - "on-call"
+  - "incident-response"
+  - "sre"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "enterprise"
+  - "compliance"
+candidates:
+  - name: "Migrate to Grafana Cloud IRM"
+    summary: "As of 2026-03-19, Grafana's official docs state that Grafana OnCall
+      OSS will be archived on 2026-03-24 and that Cloud Connection support for
+      SMS, phone, and mobile push notifications ends the same day. Grafana
+      positions Grafana Cloud IRM as the managed replacement and provides an
+      official migration path from OnCall OSS. Grafana Cloud IRM pricing, as of
+      2026-03-19, is a free tier with 3 active IRM users per month, and a Pro
+      tier at \"$20 / active IRM user\" with a \"$19 per month\" platform fee
+      that includes 3 active IRM users. It is the only option here with a
+      verified first-party migration guide from Grafana."
+    when_to_use: "Best for \"low-ops\" plus \"cost-sensitive\" teams already
+      invested in Grafana and willing to accept SaaS. Choose this when the
+      decisive factor is keeping built-in SMS, voice, and mobile push
+      notifications with the least migration ambiguity before 2026-03-24."
+    tradeoffs: "Fastest supported path and ongoing product development, but it moves
+      you to a managed Grafana service with active-user pricing instead of
+      self-hosted control."
+    cautions: "Grafana's migration guide requires a Grafana Cloud account, admin
+      access to the OSS instance, and API tokens for both source and
+      destination. Teams and users may need to be recreated manually or
+      provisioned through SCIM or Team Sync. Grafana also states that the
+      Grafana Cloud Migration Assistant does not migrate OnCall or IRM
+      resources."
+    links:
+      - "https://grafana.com/docs/oncall/latest/set-up/open-source/"
+      - "https://grafana.com/docs/oncall/latest/set-up/migration-from-other-too\
+        ls/"
+      - "https://grafana.com/products/cloud/irm/"
+      - "https://grafana.com/blog/oncall-management-incident-response-grafana-c\
+        loud-irm/"
+  - name: "Keep Grafana OnCall OSS and replace Cloud Connection dependencies"
+    summary: "As of 2026-03-19, Grafana's official docs say existing Grafana OnCall
+      OSS deployments continue to function in your own environment, but the
+      project is already in maintenance mode and will be archived on 2026-03-24.
+      Grafana states there will be no further feature development, with fixes
+      limited to critical bugs and valid CVEs with a CVSS score of 7.0 or
+      higher. Cloud Connection-backed mobile push, SMS, and phone notifications
+      stop being supported on 2026-03-24. Grafana's documentation points OSS
+      users to self-managed alternatives such as Twilio, Exotel, Zvonok,
+      webhooks, Pushover, Gotify, and ntfy."
+    when_to_use: "Best for \"compliance\" or self-hosted environments where moving
+      incident routing into vendor SaaS is not acceptable. Choose this when the
+      decisive factor is keeping control of the runtime and you can absorb the
+      operational work of replacing notification plumbing immediately."
+    tradeoffs: "Preserves self-hosting and avoids an immediate platform migration,
+      but leaves you on a frozen project with no feature roadmap and more
+      operator burden."
+    cautions: "Grafana says the GitHub repository is read-only, no new features will
+      be developed, and Cloud Connection-dependent notification paths end on
+      2026-03-24. Mobile push through the Grafana IRM mobile app will no longer
+      work for OSS after that date, so you must validate replacement
+      notification paths before the cutoff."
+    links:
+      - "https://grafana.com/docs/oncall/latest/set-up/open-source/"
+      - "https://grafana.com/blog/grafana-oncall-maintenance-mode/"
+      - "https://github.com/grafana/oncall"
+  - name: "Migrate to PagerDuty"
+    summary: "As of 2026-03-19, PagerDuty's official pricing page presents it as a
+      managed incident platform with a free tier for up to 5 users and paid
+      Incident Management plans that expand phone/SMS notifications, schedules,
+      escalation policies, and incident workflow features. This is a clean
+      strategic break from Grafana for teams that want a dedicated on-call SaaS.
+      No verified first-party Grafana-to-PagerDuty migration guide was found in
+      the sources reviewed here."
+    when_to_use: "Best for teams that want a dedicated incident SaaS and are willing
+      to accept a fuller reimplementation outside the Grafana stack. Choose this
+      when the decisive factor is reducing future dependency on Grafana's IRM
+      roadmap rather than preserving in-stack integration."
+    tradeoffs: "Potentially stronger dedicated incident-management focus, but likely
+      more migration work and less native alignment with existing Grafana
+      dashboards, alerting, and access patterns."
+    cautions: "The official Grafana migration documentation retrieved here is
+      specifically for Grafana Cloud IRM, not PagerDuty. Before committing,
+      verify export and import coverage for schedules, escalation chains,
+      integrations, and user provisioning in your own evaluation."
+    links:
+      - "https://www.pagerduty.com/pricing/"
+      - "https://grafana.com/docs/oncall/latest/set-up/migration-from-other-too\
+        ls/"
+tags:
+  - "observability"
+  - "grafana"
+  - "oncall"
+  - "incident-management"
+aliases:
+  - "grafana oncall oss archive"
+  - "grafana oncall cloud connection shutdown"
+  - "grafana cloud irm migration"
+related_cards:
+  - "observability/incident-alert-routing-strategy"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/grafana
+      name: Grafana
+    - type: package
+      id: package/grafana-oncall-oss
+      name: Grafana OnCall OSS
+    - type: package
+      id: package/grafana-cloud-irm
+      name: Grafana Cloud IRM
+    - type: capability
+      id: capability/grafana-cloud-connection
+      name: Grafana Cloud Connection
+    - type: capability
+      id: capability/sms-notifications
+      name: SMS notifications
+    - type: capability
+      id: capability/phone-notifications
+      name: Phone notifications
+    - type: capability
+      id: capability/mobile-push-notifications
+      name: Mobile push notifications
+  edges:
+    - type: eol_date
+      from: package/grafana-oncall-oss
+      to: null
+      date: 2026-03-24
+      event: archived
+    - type: eol_date
+      from: capability/grafana-cloud-connection
+      to: null
+      date: 2026-03-24
+      event: shutdown
+    - type: breaking_change_in
+      from: capability/grafana-cloud-connection
+      to: package/grafana-oncall-oss
+      date: 2026-03-24
+      change: Cloud Connection support for SMS, phone, and mobile push notifications
+        ends for Grafana OnCall OSS
+    - type: breaking_change_in
+      from: capability/mobile-push-notifications
+      to: package/grafana-oncall-oss
+      date: 2026-03-24
+      change: Mobile push through the Grafana IRM mobile app will no longer work for
+        OSS after this date
+    - type: breaking_change_in
+      from: capability/sms-notifications
+      to: package/grafana-oncall-oss
+      date: 2026-03-24
+      change: Cloud Connection-backed SMS notifications stop being supported
+    - type: breaking_change_in
+      from: capability/phone-notifications
+      to: package/grafana-oncall-oss
+      date: 2026-03-24
+      change: Cloud Connection-backed phone notifications stop being supported

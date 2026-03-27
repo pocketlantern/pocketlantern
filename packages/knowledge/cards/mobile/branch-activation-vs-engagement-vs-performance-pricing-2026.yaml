@@ -1,0 +1,167 @@
+id: "mobile/branch-activation-vs-engagement-vs-performance-pricing-2026"
+title: "Branch Activation vs Engagement vs Performance Pricing in 2026"
+problem: "Choose the cheapest Branch product tier that still supports the mix of
+  branded links, deferred deep linking, and attribution your app needs."
+context:
+  - "mobile"
+  - "deep-linking"
+  - "attribution"
+  - "branch"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Branch Activation"
+    summary: "As of 2026-03-20, Branch lists Activation starting at $199/month with
+      100k volume credits. It is the lowest-cost Branch product focused on
+      custom app.link domains, branded short links, web configuration, and QR
+      codes. Branch’s official Activation docs say SDK integration enables deep
+      linking and deferred deep linking for branded short links, but the product
+      itself mainly provides click and scan analytics. Branch explicitly
+      positions Engagement or Performance as the add-ons for comprehensive app
+      deep link attribution and full-funnel conversion visibility."
+    when_to_use: "Use this when you mainly need branded links, QR codes, custom
+      domains, and possibly deferred deep linking for UX, but you do not need
+      Branch to act as your main attribution layer. It is the cheapest
+      acceptable tier if attribution is optional or handled elsewhere."
+    tradeoffs: "Lowest published entry price and fastest path to branded links, but
+      weaker measurement scope. You get link analytics, not the broader
+      owned-channel or paid-media attribution stack."
+    cautions: "If you use the \"$deeplink_no_attribution\" key to force deep linking
+      without attribution, Branch says link metrics are lost for that link.
+      Activation also does not by itself unlock the full-funnel attribution that
+      Engagement or Performance provide."
+    links:
+      - "https://www.branch.io/pricing/"
+      - "https://www.branch.io/products/activation/"
+      - "https://help.branch.io/marketer-hub/docs/deep-link-reference"
+      - "https://help.branch.io/docs/improved-deep-linking-without-attribution"
+  - name: "Branch Engagement"
+    summary: "As of 2026-03-20, Branch lists Engagement starting at $499/month with
+      100k volume credits. Branch positions it for owned and organic channels
+      such as email, web, social, and QR codes, with direct and deferred deep
+      linking plus attribution on those touchpoints. The product page explicitly
+      includes deferred deep linking for iOS and Android and says clicks can be
+      attributed through owned-channel journeys. This is the first Branch
+      product that clearly fits teams needing both deep linking and attribution
+      without stepping up to paid-media measurement."
+    when_to_use: "Use this when your app needs branded links plus deferred deep
+      linking plus attribution for owned or organic channels. It is the cheapest
+      Branch tier that clearly covers deep linking and attribution together
+      without requiring the paid-ads measurement feature set."
+    tradeoffs: "More capable than Activation for lifecycle and owned-channel
+      measurement, but costs more. It is still not the paid acquisition and
+      partner-integration package that Performance is built for."
+    cautions: "Some deep link behavior in Branch docs is marked as
+      Engagement-specific, including certain web-opening behaviors. If your
+      design depends on using links only for UX without claiming attribution,
+      the \"$deeplink_no_attribution\" option disables metrics for that link."
+    links:
+      - "https://www.branch.io/pricing/"
+      - "https://www.branch.io/products/engagement/"
+      - "https://help.branch.io/marketer-hub/docs/deep-link-reference"
+      - "https://help.branch.io/docs/improved-deep-linking-without-attribution"
+  - name: "Branch Performance"
+    summary: "As of 2026-03-20, Branch lists Performance starting at $499/month with
+      100k volume credits. Branch positions it for paid media measurement with
+      reliable ad linking and attribution, ad partner integrations and
+      postbacks, real-time mobile measurement, and multi-touch attribution at
+      higher plan levels. The Performance product page emphasizes paid-channel
+      ROI, deterministic first-party attribution, deep links through the install
+      process, and partner integrations. Choose this over Engagement when
+      attribution for ads, postbacks, and media partner connectivity is the
+      blocker."
+    when_to_use: "Use this when your app needs branded or deep links tied to paid
+      acquisition measurement, ad network integrations, and postbacks. It is the
+      cheapest Branch product family intended for attribution as a marketing
+      measurement partner, even though some advanced measurement features only
+      appear on higher Branch pricing tiers."
+    tradeoffs: "Best fit for ad spend optimization and partner integrations, but
+      more operationally complex than Activation and often broader than what an
+      owned-channel deep linking use case needs. Depending on required features,
+      Basics may be enough, but unlimited partners and some advanced measurement
+      capabilities are reserved for higher pricing tiers."
+    cautions: "Branch’s pricing FAQ says advanced features such as multi-touch
+      attribution, fraud reporting, and CTV measurement require higher tiers,
+      and CTV/OTT attribution is Enterprise-only. Branch also notes SAN deferred
+      deep linking is by request, and Facebook deferred deep linking requires a
+      Branch Ad Link plus Instant Experience."
+    links:
+      - "https://www.branch.io/pricing/"
+      - "https://www.branch.io/products/performance/"
+      - "https://help.branch.io/developer-hub/docs/san-deferred-deep-linking"
+      - "https://help.branch.io/faq/docs/facebook-campaigns-attributing-to-deep\
+        -links"
+tags: [ "mobile", "branch", "deep-linking", "attribution", "pricing" ]
+aliases:
+  [
+    "branch activation pricing 2026",
+    "branch engagement vs performance",
+    "branch deferred deep linking pricing",
+    "branch branded links attribution tiers"
+  ]
+related_cards:
+  - "mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-li\
+    nks-vs-branch-2026"
+  - "mobile/adjust-vs-singular-vs-kochava-mmp-pricing-2026"
+  - mobile/firebase-dynamic-links-replacement-after-august-25-2025-shutdown-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/branch
+      name: Branch
+    - type: package
+      id: package/branch-activation
+      name: Branch Activation
+      vendor: vendor/branch
+    - type: package
+      id: package/branch-engagement
+      name: Branch Engagement
+      vendor: vendor/branch
+    - type: package
+      id: package/branch-performance
+      name: Branch Performance
+      vendor: vendor/branch
+    - type: capability
+      id: capability/branded-links
+      name: branded links
+    - type: capability
+      id: capability/deferred-deep-linking
+      name: deferred deep linking
+    - type: capability
+      id: capability/attribution
+      name: attribution
+    - type: capability
+      id: capability/paid-media-measurement
+      name: paid media measurement
+  edges:
+    - type: locks_via
+      from: capability/attribution
+      to: package/branch-engagement
+      note: Engagement is the first Branch product that clearly fits teams needing
+        both deep linking and attribution for owned or organic channels.
+    - type: locks_via
+      from: capability/attribution
+      to: package/branch-performance
+      note: Performance is intended for paid media measurement with attribution, ad
+        partner integrations, and postbacks.
+    - type: locks_via
+      from: capability/paid-media-measurement
+      to: package/branch-performance
+      note: Choose Performance when paid acquisition measurement, ad network
+        integrations, and postbacks are required.
+    - type: locks_via
+      from: capability/branded-links
+      to: package/branch-activation
+      note: Activation is the lowest-cost Branch product focused on branded short
+        links and custom app.link domains.
+    - type: locks_via
+      from: capability/deferred-deep-linking
+      to: package/branch-activation
+      note: Activation docs say SDK integration enables deferred deep linking for
+        branded short links.

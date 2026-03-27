@@ -1,0 +1,181 @@
+id: infra/github-actions-macos-intel-vs-arm64-runner-migration-after-image-retirements-2026
+title: GitHub Actions macOS Intel vs arm64 Runner Migration After Image Retirements
+problem: Decide how to migrate Apple-platform CI as GitHub retires older macOS
+  images and nudges teams toward Apple Silicon runners with different costs and
+  compatibility constraints.
+context:
+  - infra
+  - ci-cd
+  - github-actions
+  - runners
+  - macos
+  - apple-platform
+  - ios
+  - xcode
+constraints:
+  - cost-sensitive
+  - low-ops
+  - enterprise
+  - small-team
+  - monorepo
+  - compliance
+candidates:
+  - name: Standard GitHub-hosted arm64 macOS runners
+    summary: Default migration target when your workflow is architecture-agnostic.
+      As of 2026-03-15, GitHub lists standard arm64 macOS labels `macos-latest`,
+      `macos-14`, `macos-15`, and `macos-26`, recommends architecture-agnostic
+      workflows move to arm64 labels, and prices standard macOS minutes at
+      $0.062 per minute.
+    when_to_use: Best for small-team + low-ops + cost-sensitive or monorepo +
+      enterprise setups where your Actions dependencies already work on arm64,
+      you do not need a static UDID, and you want the cleanest path away from
+      retired hosted images. This is the default choice after GitHub's macOS 13
+      closure if your Apple CI is mostly standard build-and-test work.
+    tradeoffs: You stay on fully managed GitHub-hosted infrastructure and align with
+      GitHub's stated migration direction, but standard arm64 macOS runners have
+      fewer documented resources than standard Intel macOS runners and community
+      actions may need manual fixes or runtime installs.
+    cautions: GitHub documents that community actions may not be compatible with
+      arm64, nested virtualization is not supported, and arm64 macOS runners do
+      not have a static UUID or UDID. Validate every non-GitHub action, binary
+      dependency, and signing/test step before removing Intel labels.
+    links:
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+      - https://docs.github.com/en/billing/reference/actions-runner-pricing
+      - https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+      - https://github.blog/changelog/2026-02-26-macos-26-is-now-generally-available-for-github-hosted-runners/
+  - name: GitHub-hosted Intel bridge runners
+    summary: Use hosted Intel only as a transition path for hard x64 or signing
+      constraints. As of 2026-03-15, GitHub documents standard x64 labels
+      `macos-15-intel` and `macos-26-intel`, macOS large x64 labels such as
+      `macos-15-large` and `macos-26-large`, prices standard macOS at $0.062 per
+      minute and 12-core Intel larger runners at $0.077 per minute, and says
+      macOS x86_64 support ends after the macOS 15 runner image is retired in
+      Fall 2027.
+    when_to_use: Best for enterprise + compliance or small-team + monorepo
+      combinations where you still have an unavoidable Intel dependency today,
+      such as x86-only binaries, a static UDID requirement for Apple Developer
+      workflows, or unresolved arm64 action compatibility gaps. Use this as a
+      time-boxed migration bridge, not a new long-term default.
+    tradeoffs: You keep GitHub-managed operations and can preserve Intel-specific
+      behavior, including the documented static UDID on Intel macOS runners. The
+      tradeoff is that Intel is a sunset path, larger Intel runners are a paid
+      premium tier, and you are still exposed to GitHub's hosted image
+      retirement schedule.
+    cautions: GitHub explicitly says to begin migrating macOS workloads to arm64 as
+      soon as possible. The maximum concurrent macOS job limit is shared across
+      standard and larger hosted runners, and GitHub also documents that macOS
+      larger runners do not support Azure private networking or static IP
+      assignment.
+    links:
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+      - https://docs.github.com/en/actions/reference/runners/larger-runners
+      - https://docs.github.com/en/billing/reference/actions-runner-pricing
+      - https://docs.github.com/en/enterprise-cloud@latest/actions/reference/limits
+      - https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+      - https://github.blog/changelog/2026-02-26-macos-26-is-now-generally-available-for-github-hosted-runners/
+  - name: Self-hosted Apple runners
+    summary: Use self-hosted Macs when hosted labels no longer fit your
+      architecture, lifecycle, or network requirements. As of 2026-03-15, GitHub
+      says self-hosted runners are free to use with GitHub Actions, but you are
+      responsible for machine cost, operating system updates, and all other
+      software maintenance.
+    when_to_use: Best for enterprise + compliance + cost-sensitive or monorepo +
+      enterprise combinations where you already operate Macs, need long-lived
+      Intel beyond GitHub's hosted retirement path, need exact image control for
+      Xcode/signing, or need access to local network resources that do not fit
+      hosted runners. This is also the fallback when a critical Apple CI
+      dependency cannot be moved to hosted arm64 on GitHub's timetable.
+    tradeoffs: You get full control over hardware, architecture, OS version, and
+      installed tooling, and GitHub does not bill Actions minutes for the runner
+      itself. The tradeoff is that you own runner provisioning, patching,
+      isolation, security posture, and availability.
+    cautions: GitHub recommends using self-hosted runners only with private
+      repositories because public forks can run dangerous code on the runner
+      machine. GitHub also states that runner application auto-updates do not
+      update the operating system or other software, so operational hygiene is
+      your responsibility.
+    links:
+      - https://docs.github.com/en/actions/concepts/runners/self-hosted-runners
+      - https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/add-runners
+tags:
+  - infra
+  - github-actions
+  - github
+  - ci-cd
+  - runners
+  - macos
+  - apple-silicon
+  - intel
+  - arm64
+  - ios
+  - xcode
+  - pricing
+aliases:
+  - github actions macos intel vs arm64
+  - github actions apple silicon migration
+  - macos-15-intel
+  - macos-26-intel
+  - github actions intel runner deprecation
+  - xcode github actions arm64
+related_cards:
+  - infra/github-actions-hosted-vs-larger-vs-self-hosted-runner-economics-2026
+  - infra/monorepo-tools
+  - mobile/apple-sdk-minimum-xcode-upgrade-deadline-planning-2026
+  - infra/github-actions-self-hosted-runner-minimum-version-enforcement-2026
+  - devtools/github-actions-ubuntu-24-and-windows-2025-runner-image-migrations
+  - desktop/flutter-desktop-minimum-toolchain-and-breaking-upgrades-2026
+  - devtools/github-actions-standard-vs-larger-runners-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-29
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/github-actions
+      name: GitHub Actions
+      category: ci-cd
+    - type: runtime
+      id: runtime/macos-13
+      name: macOS 13 (Ventura)
+      current_lts: false
+      eol_date: null
+    - type: capability
+      id: capability/arm64-macos-runner
+      name: arm64 macOS Runner
+    - type: capability
+      id: capability/intel-macos-runner
+      name: Intel x64 macOS Runner
+  edges:
+    - type: eol_date
+      from: runtime/macos-13
+      to: null
+      date: 2025-09
+      successor: runtime/macos-15
+    - type: eol_date
+      from: capability/intel-macos-runner
+      to: null
+      date: Fall 2027
+      successor: capability/arm64-macos-runner
+    - type: breaking_change_in
+      from: vendor/github-actions
+      to: null
+      change: macOS 13 runner image closed down; macOS x86_64 support ends after macOS
+        15 runner image retired Fall 2027
+      migration_path: Move to arm64 labels (macos-latest, macos-14, macos-15,
+        macos-26); use macos-15-intel or macos-26-intel only as bridge
+    - type: breaking_change_in
+      from: capability/arm64-macos-runner
+      to: null
+      change: arm64 runners have no static UUID/UDID; nested virtualization not
+        supported; community actions may not be compatible
+      migration_path: Validate every non-GitHub action, binary dependency, and
+        signing/test step before removing Intel labels
+    - type: locks_via
+      from: vendor/github-actions
+      to: capability/intel-macos-runner
+      surface: "Intel bridge: standard macOS $0.062/min, 12-core Intel larger runners
+        $0.077/min; sunset path after Fall 2027"
+      severity: medium

@@ -1,0 +1,159 @@
+id: "database/motherduck-local-duckdb-vs-hosted-pricing-2026"
+title: "MotherDuck vs Local DuckDB Switching Heuristics 2026"
+problem: "Decide when local DuckDB stops being enough and MotherDuck becomes
+  justified under current storage, sharing, and concurrency pricing."
+context:
+  - "duckdb"
+  - "analytics"
+  - "data-warehouse"
+  - "object-storage"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+  - "low-ops"
+candidates:
+  - name: "Stay on local DuckDB only"
+    summary: "DuckDB is free and open-source under the MIT license, and the DuckDB
+      homepage showed version 1.5 as current as of 2026-03-20. It runs
+      in-process on a laptop, server, or embedded runtime, so the software cost
+      crossover is still effectively zero unless you separately add
+      infrastructure. This remains the cheapest path when data fits a single
+      machine workflow and you do not need a managed shared catalog, cloud
+      access, or team concurrency. The practical limit is organizational and
+      operational rather than license price."
+    when_to_use: "Use this when you are cost-sensitive, mostly solo, and your data
+      work stays inside one machine or a simple file-and-object-storage
+      workflow. The decisive factor is that local DuckDB still avoids any
+      MotherDuck platform fee and keeps the exact same SQL engine."
+    tradeoffs: "Lowest direct cost and least vendor lock-in, but you give up
+      MotherDuck's managed sharing, cloud-hosted catalog, browser UI, and
+      built-in multi-user access to the same database."
+    cautions: "MotherDuck's official DuckDB comparison says local DuckDB is best
+      when you are solo on small datasets, but it also notes the local model is
+      limited by local RAM. If your real pain is collaboration rather than raw
+      storage, local DuckDB can become the wrong tool before compute cost is the
+      issue."
+    links:
+      - "https://duckdb.org/"
+      - "https://motherduck.com/product/duckdb-users/"
+  - name: "Use MotherDuck Lite as the first step beyond local DuckDB"
+    summary: "As of 2026-03-20, MotherDuck Lite starts from $0 per org per month and
+      includes up to 3 active internal users, 2 service accounts, 10 GB of
+      MotherDuck-managed storage, and 10 hours of Pulse compute per month.
+      Official pricing shows additional storage at $0.04 per GB and Pulse
+      compute at $0.60 per hour. MotherDuck also states it does not charge for
+      data on your laptop, data in your own object storage bucket, or zero-copy
+      shares used for data sharing. This makes Lite the real crossover point
+      when you need lightweight sharing or cloud access but want to avoid the
+      $250 Business base fee."
+    when_to_use: "Use this when local DuckDB is too isolated, but you still fit
+      Lite's concrete limits: no more than 3 active internal users, no more than
+      2 service accounts, about 10 GB of MotherDuck-managed storage, and roughly
+      10 hours per month of bursty Pulse compute. The decisive factor is that
+      you need managed sharing or cloud access without yet justifying the $250
+      per org per month Business base fee."
+    tradeoffs: "Very low entry cost and keeps DuckDB compatibility, but it is
+      constrained to Pulse instances, caps active users and service accounts,
+      and is not the right plan for heavier production transforms."
+    cautions: "As of 2026-03-20, MotherDuck bills storage on compressed on-disk size
+      rather than raw file size. As of 2026-03-20, it also retains mutated or
+      deleted data for 7 days of fail-safe recovery, which affects billed stored
+      footprint. As of 2026-03-20, each organization is scoped to a single
+      region, and MotherDuck lists only AWS us-east-1 and eu-central-1 as
+      available regions."
+    links:
+      - "https://motherduck.com/product/pricing/"
+      - "https://motherduck.com/product/duckdb-users/"
+  - name: "Move to MotherDuck Business for production shared analytics"
+    summary: "As of 2026-03-20, MotherDuck Business costs $250 per org per month
+      plus usage. Official pricing includes up to 10 active internal users,
+      unlimited service accounts, 5 instance types with read-scaling replicas,
+      90-day snapshot retention, query history, expert support, and a 99.9%
+      availability SLA. The pricing page shows storage at $0.04 per GB, Pulse at
+      $0.60 per hour, and Standard compute at $2.40 per hour. This is the point
+      where the decision is no longer about software cost and becomes about
+      paying for managed concurrency, operational features, and production
+      support."
+    when_to_use: "Use this when you need a real shared production warehouse
+      experience: more than 3 active users, unlimited automation identities,
+      better workload options, or support and SLA commitments. The decisive
+      factor is that the fixed $250 monthly base fee only becomes justified once
+      team access, reliability, or production workload features matter more than
+      keeping infra fully local."
+    tradeoffs: "You get managed collaboration and production features with the same
+      DuckDB SQL surface, but the platform fee is a large jump from Lite and can
+      dominate cost for hobby or low-duty workloads."
+    cautions: "If you only need occasional sharing or read-only customer-facing
+      analytics, check whether Lite plus usage is still enough before accepting
+      the Business floor. As of 2026-03-20, Business is still region-scoped per
+      organization, so multi-region requirements may force architectural
+      workarounds."
+    links:
+      - "https://motherduck.com/product/pricing/"
+      - "https://motherduck.com/product/duckdb-users/"
+tags:
+  - "database"
+  - "duckdb"
+  - "motherduck"
+  - "pricing"
+  - "analytics"
+aliases:
+  - "motherduck vs local duckdb cost"
+  - "when to switch from duckdb to motherduck"
+  - "motherduck pricing crossover 2026"
+related_cards:
+  - "data/motherduck-lite-vs-business-after-2025-pricing-change"
+  - "database/object-storage-s3-vs-r2-vs-gcs"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/duckdb-1.5
+      name: DuckDB
+      version: "1.5"
+    - type: vendor
+      id: vendor/motherduck
+      name: MotherDuck
+    - type: capability
+      id: capability/managed-sharing
+      name: managed sharing
+    - type: capability
+      id: capability/cloud-access
+      name: cloud access
+    - type: capability
+      id: capability/multi-user-access
+      name: multi-user access
+    - type: capability
+      id: capability/production-shared-analytics
+      name: production shared analytics
+  edges:
+    - type: requires_version
+      from: vendor/motherduck
+      to: package/duckdb-1.5
+      as_of: 2026-03-20
+      evidence: MotherDuck Lite keeps DuckDB compatibility, and DuckDB homepage showed
+        version 1.5 as current as of 2026-03-20.
+    - type: locks_via
+      from: vendor/motherduck
+      to: capability/managed-sharing
+      evidence: Local DuckDB has least vendor lock-in, but gives up MotherDuck's
+        managed sharing.
+    - type: locks_via
+      from: vendor/motherduck
+      to: capability/cloud-access
+      evidence: MotherDuck Lite is the crossover point when you need lightweight
+        sharing or cloud access.
+    - type: locks_via
+      from: vendor/motherduck
+      to: capability/multi-user-access
+      evidence: Local DuckDB gives up MotherDuck's built-in multi-user access to the
+        same database.
+    - type: locks_via
+      from: vendor/motherduck
+      to: capability/production-shared-analytics
+      evidence: MotherDuck Business is for production shared analytics with managed
+        concurrency, operational features, and production support.

@@ -1,0 +1,275 @@
+id: "ai/fine-tuning-vs-api-cost-openai-vs-anthropic-vs-llama-2026"
+title: "Fine-tuning Strategy: OpenAI vs Anthropic vs Open-source Model Cost 2026"
+problem: "Fine-tuning reduces per-token inference cost and latency by replacing
+  in-context few-shot examples with baked-in behavior, but training economics
+  differ sharply by provider: OpenAI offers managed fine-tuning for GPT-4o and
+  GPT-4o-mini at verified per-token training rates, Anthropic offers fine-tuning
+  only for Claude 3 Haiku via AWS Bedrock with unpublished pricing, and
+  open-source Llama models can be fine-tuned via managed services or self-hosted
+  GPU compute. Teams must model training amortization, inference break-even, ops
+  burden, and data-residency requirements before committing to a strategy."
+context:
+  - "ai"
+  - "llm"
+  - "fine-tuning"
+  - "cost-optimization"
+  - "model-training"
+  - "openai"
+  - "anthropic"
+  - "llama"
+  - "open-source-models"
+  - "mlops"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "enterprise"
+  - "low-ops"
+  - "small-team"
+  - "compliance"
+candidates:
+  - name: "OpenAI managed fine-tuning (GPT-4o, GPT-4o-mini)"
+    summary: "As of 2026-03-16, OpenAI offers managed fine-tuning with training at
+      $25/1M tokens for GPT-4o and $3/1M tokens for GPT-4o-mini. Post-training
+      inference for fine-tuned GPT-4o is $3.75/1M input and $15/1M output at
+      standard rates; fine-tuned GPT-4o-mini is $0.30/1M input and $1.20/1M
+      output. No GPU infrastructure is required — training jobs run on OpenAI's
+      compute."
+    when_to_use: "Best for low-ops + small-team or enterprise teams already on the
+      OpenAI stack that need a production fine-tuned model without MLOps
+      overhead. GPT-4o-mini at $3/1M training tokens is the cheapest
+      fully-managed option among the major providers and suits narrow
+      classification, extraction, or format-following tasks. GPT-4o fine-tuning
+      at $25/1M training tokens makes sense when baseline GPT-4o quality is
+      required and the task cannot be solved by prompting alone. Break-even vs
+      base GPT-4o-mini inference ($0.15/$0.60 per 1M) depends on how many
+      in-context example tokens are eliminated per request: at a 500-token
+      prompt reduction across 10M monthly tokens, $3 in training cost recovers
+      within one month of savings at scale."
+    tradeoffs: "Fully managed, fast iteration, and no infra cost. GPT-4o-mini
+      training at $3/1M is cost-competitive with open-source managed services
+      for small-to-mid scale. Fine-tuned model inference rates are higher than
+      the base model (GPT-4o-mini fine-tuned $0.30 input vs $0.15 base), which
+      reduces break-even margin on the inference side. An optional data-sharing
+      discount can reduce inference costs, but requires allowing OpenAI to use
+      training data, which conflicts with some compliance postures. See OpenAI
+      pricing page for current discount rates."
+    cautions: "As of 2026-03-16, fine-tuned models are hosted exclusively on OpenAI
+      infrastructure — no on-prem, private VPC, or data-residency option. Not
+      all OpenAI models support per-token fine-tuning: newer models like o4-mini
+      use hourly training billing ($100/hour) rather than per-token rates.
+      Verify current model fine-tuning availability on the official pricing page
+      before building a pipeline, as supported models change frequently.
+      Enabling the data-sharing inference discount must be evaluated against
+      your data classification policy before use."
+    links:
+      - "https://developers.openai.com/api/docs/pricing"
+  - name: "Anthropic Claude fine-tuning via AWS Bedrock (Claude 3 Haiku only)"
+    summary: "As of 2026-03-16, Anthropic does not offer fine-tuning through its
+      native Claude API. Fine-tuning is available only for Claude 3 Haiku via
+      Amazon Bedrock, not for Claude Sonnet or Opus tiers. Training and
+      inference pricing for fine-tuned Bedrock models is not publicly listed —
+      teams must contact their AWS account team for quotes. Inference on
+      fine-tuned Bedrock models requires Provisioned Throughput capacity
+      reservations."
+    when_to_use: "Best for enterprise + compliance teams already running AI
+      workloads on AWS Bedrock that need an Anthropic-branded fine-tuned model,
+      require AWS data-handling agreements, and can work within Claude 3 Haiku's
+      capability tier (2024-era model, not the current Claude Opus 4.6 or Claude
+      Sonnet 4.6 generation). Also fits teams with strict data-residency
+      requirements where Anthropic's first-party API is not viable due to its
+      global-only routing. Not suitable for teams needing fine-tuned Claude
+      Sonnet or Opus, teams wanting transparent per-token pricing, or teams on
+      Anthropic's native API — none of these scenarios are available as of
+      2026-03-16."
+    tradeoffs: "Provides AWS IAM integration, VPC routing, and AWS compliance
+      posture that the direct Anthropic API cannot match. The tradeoffs are
+      significant: pricing is opaque, Provisioned Throughput forces a capacity
+      reservation that is uneconomical for variable or low-volume workloads, and
+      the fine-tunable model is Claude 3 Haiku (an older, smaller model), not
+      the current Claude 4.6 generation. The lack of publicly listed pricing
+      makes break-even modeling difficult before committing to an architecture."
+    cautions: "Anthropic's native Claude API has no fine-tuning feature as of
+      2026-03-16 — do not plan a pipeline assuming first-party API fine-tuning
+      will launch imminently without confirmed announcements. Bedrock
+      fine-tuning supports text-only training data (vision fine-tuning is not
+      yet available), has a 32K token context cap during training, and limits
+      training data size to 10 GB. Provisioned Throughput pricing for inference
+      on fine-tuned models requires a separate capacity booking, which creates
+      idle-cost risk for teams with spiky or low-volume workloads."
+    links:
+      - "https://claude.com/blog/fine-tune-claude-3-haiku"
+      - "https://aws.amazon.com/bedrock/pricing/"
+  - name: "Open-source Llama fine-tuning via managed service (Together AI)"
+    summary: "As of 2026-03-16, Together AI offers managed LoRA fine-tuning for
+      Llama and other open-source models at $0.48/1M training tokens for models
+      up to 16B and $2.90/1M for 70-100B models. Post-training serverless
+      inference is $0.10-$0.88/1M tokens depending on model size (Llama 4
+      Maverick at $0.27/$0.85 input/output, Llama 3.3 70B at $0.88/$0.88,
+      smaller models around $0.10). Training runs on Together AI's managed GPU
+      fleet with no infrastructure required."
+    when_to_use: "Best for cost-sensitive + high-scale teams that need the lowest
+      blended training-plus-inference cost over time and can accept Llama-class
+      model quality for their task. Strong fit when: training data volume is
+      large (millions of tokens, amortizing the per-token training rate
+      quickly), the task is narrow and well-defined (classification, entity
+      extraction, tone adaptation), and the team wants to avoid OpenAI or
+      Anthropic vendor lock-in. LoRA fine-tuning on a 7-8B Llama model at
+      $0.48/1M training tokens is 6x cheaper than GPT-4o-mini training at $3/1M,
+      and inference at $0.10-$0.18/1M is substantially below fine-tuned
+      GPT-4o-mini inference rates."
+    tradeoffs: "Training cost per token is the lowest of any fully-managed option,
+      and inference rates at scale undercut OpenAI and Anthropic for comparable
+      model sizes. Together AI and competing managed services (Fireworks, Modal)
+      provide portability between open-source models, so you are not locked to a
+      single model family. The tradeoff is model capability: even Llama 3.3 70B
+      or Llama 4 may require more tuning iterations than GPT-4o to reach
+      equivalent quality on complex reasoning or instruction-following tasks.
+      Managed service SLAs and data handling policies differ from first-party
+      providers."
+    cautions: "As of 2026-03-16, Llama 4 Maverick LoRA fine-tuning (Supervised
+      Fine-Tuning) on Together AI carries a minimum charge of $8 per job
+      regardless of token volume, which raises the cost of small iterative
+      experiments at that model tier. Model weights from managed LoRA adapters
+      are typically stored on the provider's infrastructure — portability to
+      self-hosted inference requires re-running the fine-tuning job on your own
+      compute. Verify current model support and per-tier pricing at
+      together.ai/pricing before finalizing a pipeline, as open-source model
+      availability and pricing on managed services changes frequently."
+    links:
+      - "https://www.together.ai/pricing"
+  - name: "Self-hosted open-source fine-tuning on cloud GPU (compute-only)"
+    summary: "As of 2026-03-16, cloud H100 GPU instances are available at
+      $1.99-$3.29/hour on-demand from providers such as RunPod and Lambda, and
+      A100 instances at approximately $1.48/hour. Fine-tuning Llama 3.3 8B with
+      LoRA on a single A100 can complete in a few hours, and the resulting
+      adapter weights are owned by you for deployment anywhere. Total cost is
+      purely GPU compute time — no per-token training fee."
+    when_to_use: "Best for enterprise + compliance or high-scale + cost-sensitive
+      teams that need to own model weights for data-privacy, air-gap, or on-prem
+      requirements, or that have a sustained high inference volume (typically
+      >2M tokens/day) where self-hosted inference amortizes the GPU reservation
+      cost. Also the right path when you iterate frequently on fine-tuning with
+      large proprietary datasets that cannot leave your infrastructure, or when
+      you need to deploy the fine-tuned model into a private VPC rather than a
+      vendor API endpoint. Requires an MLOps-capable team."
+    tradeoffs: "Total cost of ownership is the lowest at high utilization: a single
+      A100 at $1.48/hour running fine-tuning and inference for a 7-8B model can
+      produce tokens at $0.01-$0.05/1M at full utilization (assuming dedicated
+      A100 with consistent batch processing and inference load), far below
+      managed API rates. You own the full model artifact with no provider
+      dependency. Tradeoffs are substantial: requires MLOps tooling (Axolotl,
+      LLaMA-Factory, vLLM, or similar), experiment tracking, data pipelines, and
+      GPU serving infrastructure. Reserved instances (1-3 year) reduce cost by
+      30-40% but require capacity commitment. Iterating on hyperparameters or
+      training data incurs full compute cost per run."
+    cautions: "GPU utilization is the critical economic variable: at 30%
+      utilization, effective cost on an A100 ($1.48/hour) rises to roughly
+      $0.23/1M tokens, which is competitive with or worse than managed APIs for
+      small models. GPU VRAM requirements gate what you can fine-tune: LoRA on a
+      7-8B Llama model needs 16-24 GB VRAM; 70B models require 4-8x A100 or H100
+      GPUs. Hidden costs typically add 40-60% on top of raw GPU compute: data
+      preparation, failed experiment iterations, checkpoint storage, serving
+      infrastructure, and ongoing maintenance. Do not compare raw GPU hourly
+      rates to managed API token rates without accounting for idle time and
+      operational overhead."
+    links:
+      - "https://lambda.ai/pricing"
+      - "https://www.runpod.io/pricing"
+tags:
+  - "ai"
+  - "fine-tuning"
+  - "openai"
+  - "anthropic"
+  - "llama"
+  - "open-source"
+  - "cost-optimization"
+  - "pricing"
+  - "model-training"
+  - "llm"
+  - "gpu"
+  - "mlops"
+aliases:
+  - "fine-tuning cost comparison 2026"
+  - "openai fine-tuning vs anthropic fine-tuning"
+  - "llama fine-tuning vs gpt fine-tuning"
+  - "managed fine-tuning vs self-hosted"
+  - "fine-tuning break-even analysis"
+  - "custom model training cost openai anthropic"
+  - "together ai fine-tuning pricing"
+  - "gpt-4o-mini fine-tuning cost"
+  - "claude fine-tuning bedrock"
+  - "llama fine-tuning cost per token"
+related_cards:
+  - "ai/ai-feature-cost-governance"
+  - "ai/anthropic-prompt-caching-vs-openai-cached-input-pricing-2026"
+  - "ai/openai-batch-api-vs-standard-processing-cost-and-latency-2026"
+  - "ai/model-fallback-strategy"
+  - "ai/openai-scale-tier-vs-priority-vs-standard-processing-pricing-2026"
+status: "active"
+tier: "core"
+updated: "2026-03-16"
+review_by: "2026-06-01"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/openai
+      name: OpenAI
+    - type: vendor
+      id: vendor/anthropic
+      name: Anthropic
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: vendor
+      id: vendor/together-ai
+      name: Together AI
+    - type: framework
+      id: framework/amazon-bedrock
+      name: Amazon Bedrock
+    - type: capability
+      id: capability/managed-fine-tuning
+      name: Managed fine-tuning
+    - type: capability
+      id: capability/anthropic-fine-tuning
+      name: Anthropic fine-tuning
+    - type: capability
+      id: capability/openai-fine-tuned-hosting
+      name: OpenAI fine-tuned model hosting
+    - type: engine
+      id: engine/gpt-4o
+      name: GPT-4o
+    - type: engine
+      id: engine/gpt-4o-mini
+      name: GPT-4o-mini
+    - type: engine
+      id: engine/o4-mini
+      name: o4-mini
+    - type: engine
+      id: engine/claude-3-haiku
+      name: Claude 3 Haiku
+    - type: engine
+      id: engine/claude-sonnet
+      name: Claude Sonnet
+    - type: engine
+      id: engine/claude-opus
+      name: Claude Opus
+    - type: engine
+      id: engine/llama
+      name: Llama
+  edges:
+    - type: requires_version
+      from: capability/managed-fine-tuning
+      to: engine/gpt-4o
+    - type: requires_version
+      from: capability/managed-fine-tuning
+      to: engine/gpt-4o-mini
+    - type: requires_version
+      from: capability/anthropic-fine-tuning
+      to: engine/claude-3-haiku
+    - type: locks_via
+      from: capability/anthropic-fine-tuning
+      to: framework/amazon-bedrock
+    - type: locks_via
+      from: capability/openai-fine-tuned-hosting
+      to: vendor/openai

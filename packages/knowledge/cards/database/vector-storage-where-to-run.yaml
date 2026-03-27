@@ -1,0 +1,209 @@
+id: database/vector-storage-where-to-run
+title: "Where to Run Vector Search: Postgres Extension vs Dedicated Vector DB"
+problem: Decide whether to keep embeddings in Postgres with pgvector or move to
+  a dedicated vector database given current recall/performance tradeoffs,
+  hosting options, operational overhead, and pricing.
+context:
+  - database
+  - vector-search
+  - embeddings
+  - rag
+  - retrieval
+  - postgres
+constraints:
+  - serverless
+  - high-scale
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+  - microservices
+  - real-time
+  - compliance
+candidates:
+  - name: Postgres with pgvector
+    summary: "Keep vectors in PostgreSQL when you want one operational system for
+      transactional data, metadata, and retrieval. Official pgvector docs state
+      that HNSW has a better speed-recall tradeoff than IVFFlat but uses more
+      memory and builds more slowly; they also state that, starting with 0.8.0,
+      iterative index scans can recover more filtered results when approximate
+      indexes would otherwise under-return. As of 2026-03-14, managed-provider
+      support is real but version-skewed: Aurora's extension matrix lists
+      pgvector 0.8.0 on current releases, Supabase tells you to check your
+      installed pgvector version explicitly, and Azure requires allowlisting the
+      extension before enabling it."
+    when_to_use: Best for cost-sensitive + small-team or monorepo + low-ops setups
+      where you already run Postgres, need SQL joins and transactional
+      consistency around the same records, and can accept tuning HNSW or IVFFlat
+      instead of buying a separate vector platform. It is also a strong fit for
+      enterprise + compliance teams that prefer staying inside existing Postgres
+      controls and managed Postgres hosting.
+    tradeoffs: "Operational simplicity is the main win: one database, one backup
+      model, one access-control surface, and straightforward joins between
+      embeddings and relational metadata. The tradeoff is that vector-search
+      tuning is more manual than in dedicated systems: official docs call out
+      memory/build-time tradeoffs for HNSW, lower query-performance for IVFFlat,
+      and filtered ANN queries that may need iterative scans, partial indexes,
+      or partitioning."
+    cautions: "Do not assume hosted Postgres exposes the same pgvector version or
+      knobs everywhere. Supabase explicitly documents version checks and
+      upgrades, Aurora documents a specific supported version matrix, and Azure
+      requires extension allowlisting. Also watch filtered ANN behavior
+      carefully: both pgvector and Supabase docs state that naive filtering on
+      HNSW or IVFFlat can return fewer rows than requested unless you use
+      iterative search or a different indexing/layout strategy."
+    links:
+      - https://github.com/pgvector/pgvector
+      - https://supabase.com/docs/guides/database/extensions/pgvector
+      - https://supabase.com/docs/guides/ai/vector-indexes
+      - https://docs.aws.amazon.com/AmazonRDS/latest/AuroraPostgreSQLReleaseNotes/AuroraPostgreSQL.Extensions.html
+      - https://learn.microsoft.com/en-us/azure/postgresql/extensions/how-to-use-pgvector
+  - name: Pinecone
+    summary: Choose Pinecone when you want a managed vector service with a
+      serverless default and a clearer separation between storage cost and query
+      cost. As of 2026-03-14, official Pinecone pricing shows a free Starter
+      plan, a Standard plan with a "$50/month min. usage" commitment, and an
+      Enterprise plan with a "$500/month min. usage" commitment; official cost
+      docs say serverless billing is based on read units, write units, and
+      storage, and that query cost scales with targeted namespace size at 1 RU
+      per 1 GB with a 0.25 RU minimum. Pinecone also documents Dedicated Read
+      Nodes as a public-preview option for predictable high-volume read
+      performance.
+    when_to_use: Best for serverless + low-ops or real-time + high-scale
+      environments where you want managed multitenancy, usage-based serverless
+      pricing, and the option to move to dedicated read capacity without
+      redesigning your API layer. It is especially strong for microservices +
+      small-team setups that want namespace-based tenant isolation and minimal
+      database operations work.
+    tradeoffs: "The platform is operationally simple and its docs are unusually
+      explicit about cost mechanics, namespace isolation, limits, backups, and
+      dedicated read capacity. The main tradeoff is that cost and architecture
+      are more product-shaped than Postgres: namespace sizing directly affects
+      query cost, dedicated read nodes change the economics from usage-based to
+      fixed hourly capacity, and certain advanced capabilities are feature-gated
+      by plan or maturity."
+    cautions: "Watch current product-state details. Pinecone docs say Dedicated Read
+      Nodes are in public preview and currently support only single-namespace
+      indexes, so namespace-heavy multitenant workloads should stay on on-demand
+      serverless for now. Metadata indexing is documented as early access on API
+      version 2025-10 and cannot be changed after index or namespace creation.
+      Starter and plan limits also matter: official limits docs list 5
+      serverless indexes per project and 100 namespaces per serverless index on
+      Starter, versus 100,000 namespaces on Standard and Enterprise."
+    links:
+      - https://www.pinecone.io/pricing/
+      - https://docs.pinecone.io/guides/manage-cost/understanding-cost
+      - https://docs.pinecone.io/guides/index-data/implement-multitenancy
+      - https://docs.pinecone.io/reference/api/database-limits
+      - https://docs.pinecone.io/guides/index-data/dedicated-read-nodes
+      - https://docs.pinecone.io/guides/index-data/create-an-index
+      - https://docs.pinecone.io/guides/manage-data/backups-overview
+  - name: Qdrant
+    summary: Choose Qdrant when you want a dedicated vector database with more
+      explicit control over storage, quantization, tenancy layout, and
+      deployment model. As of 2026-03-14, official Qdrant pricing states that
+      managed Cloud is priced by CPU, memory, and disk usage, the free tier is a
+      single-node cluster with "0.5 vCPU / 1GB RAM / 4 GB Disk," Standard is
+      usage-based, Premium adds enterprise features, Hybrid Cloud runs managed
+      Qdrant on your own infrastructure, and Private Cloud is offered for
+      isolated or air-gapped environments. Official docs also state that Qdrant
+      provides built-in tiered multitenancy starting in v1.16.0.
+    when_to_use: Best for enterprise + compliance or high-scale + real-time
+      workloads where you want a dedicated vector engine, but also want
+      deployment choice between managed cloud, hybrid cloud, and private cloud.
+      It is a strong fit for microservices + compliance teams that need local
+      data residency or regulated-cloud patterns, and for high-scale +
+      cost-sensitive teams willing to tune quantization, on-disk storage, and
+      sharding.
+    tradeoffs: Qdrant exposes more of the performance-control surface than Pinecone.
+      Official docs describe quantization, on-disk versus RAM tradeoffs, and
+      tuning patterns such as low-memory plus high-speed, high-precision plus
+      low-memory, and high-precision plus high-speed with rescoring. The
+      tradeoff is that you generally do more sizing and data-layout thinking
+      yourself, especially around collections, shards, and tenant placement.
+    cautions: "Qdrant's multitenancy docs explicitly warn against creating hundreds
+      or thousands of collections and state that Qdrant Cloud limits collections
+      per cluster to 1000. They also note that global requests without the
+      tenant filter will be slower in grouped-tenant layouts. Quantization is
+      powerful but not free: official docs state that it reduces memory and
+      speeds search at the cost of approximation error, so you need
+      workload-specific testing before enabling aggressive compression."
+    links:
+      - https://qdrant.tech/pricing/
+      - https://qdrant.tech/documentation/cloud-pricing-payments/
+      - https://qdrant.tech/documentation/guides/multitenancy/
+      - https://qdrant.tech/documentation/guides/quantization/
+      - https://qdrant.tech/documentation/guides/optimize/
+tags:
+  - database
+  - vector-search
+  - pgvector
+  - postgresql
+  - pinecone
+  - qdrant
+  - embeddings
+  - rag
+  - comparison
+aliases:
+  - vector db vs postgres
+  - pgvector vs pinecone
+  - pgvector vs qdrant
+  - where to store embeddings
+  - vector search hosting
+  - postgres vector search vs dedicated vector database
+related_cards:
+  - ai/rag-architecture-choices
+  - database/search-postgres-vs-opensearch-vs-meilisearch
+  - database/managed-postgres-major-upgrade-with-extension-compatibility-2026
+  - database/pinecone-serverless-vs-pod-based-indexes-after-august-2025-cutoff
+  - data/vectorchord-vs-pgvector-vs-qdrant-self-hosted-2026
+  - data/meilisearch-usage-based-vs-resource-based-cloud-2026
+  - search/vespa-cloud-payg-vs-self-managed-tco-2026
+  - search/weaviate-shared-cloud-pricing-change-october-27-2025
+tier: "core"
+status: active
+updated: 2026-03-14
+review_by: 2026-10-05
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: package
+      id: package/pgvector
+      name: pgvector
+    - type: capability
+      id: capability/iterative-index-scans
+      name: iterative index scans
+      category: filtered ANN recovery
+    - type: vendor
+      id: vendor/aurora-postgresql
+      name: Aurora PostgreSQL
+    - type: vendor
+      id: vendor/azure-database-for-postgresql
+      name: Azure Database for PostgreSQL
+    - type: engine
+      id: engine/qdrant
+      name: Qdrant
+    - type: capability
+      id: capability/tiered-multitenancy
+      name: built-in tiered multitenancy
+      category: multitenancy
+  edges:
+    - type: requires_version
+      from: capability/iterative-index-scans
+      to: package/pgvector
+      version: 0.8.0
+      operator: ">="
+    - type: locks_via
+      from: vendor/aurora-postgresql
+      to: package/pgvector
+      version: 0.8.0
+      mechanism: supported extension matrix
+    - type: locks_via
+      from: vendor/azure-database-for-postgresql
+      to: package/pgvector
+      mechanism: extension allowlisting before enabling
+    - type: requires_version
+      from: capability/tiered-multitenancy
+      to: engine/qdrant
+      version: 1.16.0
+      operator: ">="

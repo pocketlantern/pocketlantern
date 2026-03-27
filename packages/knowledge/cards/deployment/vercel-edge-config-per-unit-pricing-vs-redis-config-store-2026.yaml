@@ -1,0 +1,181 @@
+id: deployment/vercel-edge-config-per-unit-pricing-vs-redis-config-store-2026
+title: Vercel Edge Config Per-Unit Pricing vs Redis-Backed Config Store
+problem: Choose whether to keep Edge Config or move hot configuration reads to
+  Redis or another store after Vercel’s per-unit pricing change altered the cost
+  curve.
+context:
+  - deployment
+  - configuration
+  - feature-flags
+  - edge
+  - serverless
+  - cost-modeling
+constraints:
+  - serverless
+  - cost-sensitive
+  - low-ops
+  - small-team
+  - high-scale
+candidates:
+  - name: Vercel Edge Config
+    summary: As of 2026-03-15, Edge Config remains the lowest-ops option if you are
+      already on Vercel and your config fits its limits. Vercel’s pricing pages
+      show 100,000 reads and 100 writes included per month, then starting at
+      $3.00 per 1M reads and $5.00 per 500 writes, while the 2025-11-06
+      changelog says Pro billing moved from package-based to per-unit billing at
+      the same effective rates.
+    when_to_use: Best for serverless + low-ops or small-team + Vercel-native
+      deployments where configuration is read-heavy, updated infrequently, and
+      can be batched with `getAll()` so multiple keys still count as a single
+      read. Keep it when you want the fewest moving parts, config must be
+      available inside Vercel edge/serverless paths, and the Pro limits are
+      acceptable as of 2026-03-15.
+    tradeoffs: "Edge Config is operationally simple on Vercel, and Vercel documents
+      that a request through the SDK or REST API counts as one read even if you
+      retrieve one or all items. The tradeoff is that the price floor for
+      sustained hot reads is higher than some alternatives, and Pro limits are
+      tight: the limits page shows 64 KB maximum store size, 3 stores total, and
+      3 stores connected to a project."
+    cautions: Do not use it for frequently updated or immediately consistent data.
+      Vercel documents that global write propagation can take up to 10 seconds,
+      and Pro plan store/project limits are small enough that larger dynamic
+      config sets may need another backend.
+    links:
+      - https://vercel.com/pricing
+      - https://vercel.com/changelog/pro-edge-config-pricing
+      - https://vercel.com/docs/edge-config/edge-config-limits
+      - https://vercel.com/docs/edge-config
+  - name: Upstash Redis
+    summary: As of 2026-03-15, Upstash Redis is a Redis-backed alternative for
+      serverless and edge configuration reads when Edge Config’s per-unit
+      pricing becomes less attractive. Upstash’s official pricing docs show
+      pay-as-you-go pricing at $0.20 per 100K requests, while its official
+      materials also document REST access and Global Database read regions for
+      serverless and edge use cases; however, Upstash’s bandwidth presentation
+      is inconsistent across official pages, so do not rely on an 'unlimited
+      bandwidth' claim without re-checking current pricing details.
+    when_to_use: Best for serverless + cost-sensitive or high-scale + low-ops teams
+      that need hotter config reads, larger datasets, richer key/value
+      structures, or direct HTTP access from edge and serverless runtimes.
+      Choose it when config reads are frequent enough that command-priced Redis
+      is materially cheaper than Edge Config, and when you can tolerate Redis
+      semantics instead of a Vercel-managed config primitive.
+    tradeoffs: Upstash gives you Redis data structures, Redis protocol support up to
+      version 8.2, and an HTTP REST API that the docs explicitly recommend for
+      edge environments and serverless functions where TCP connection management
+      is awkward. Its Global Database adds primary plus read regions and routes
+      reads to the nearest read region, but replicated writes are also billed as
+      commands and global mode is eventually consistent.
+    cautions: Global Database is documented as eventually consistent and write-heavy
+      workloads are called out as a poor fit. Production governance features
+      such as uptime SLA, RBAC, encryption at rest, and SOC-2 are listed under
+      the separate Prod Pack, so verify whether that extra monthly cost is
+      required for your environment.
+    links:
+      - https://upstash.com/pricing/redis
+      - https://upstash.com/docs/redis/features/restapi
+      - https://upstash.com/docs/redis/features/globaldatabase
+      - https://upstash.com/docs/redis/overall/rediscompatibility
+  - name: Cloudflare Workers KV
+    summary: As of 2026-03-15, Workers KV is the strongest non-Redis alternative if
+      the workload is truly read-heavy configuration and eventual consistency is
+      acceptable. Cloudflare’s pricing docs show 10 million reads per month
+      included on the paid Workers plan with reads at $0.50 per million after
+      that, writes at $5.00 per million, 1 GB included storage, and no egress
+      charges.
+    when_to_use: Best for serverless + high-scale or cost-sensitive + global-read
+      deployments where configuration is highly cacheable, changes infrequently,
+      and can tolerate cross-region propagation delay. Choose it when the main
+      pressure is read cost, the config workload matches Cloudflare’s documented
+      guidance for application configuration, and you are willing to place this
+      part of the stack on Cloudflare.
+    tradeoffs: "Cloudflare explicitly documents Workers KV as ideal for read-heavy
+      workloads including application configuration, allow-lists, and caching,
+      so it maps well to hot config reads. The tradeoff is consistency: KV
+      achieves performance through caching, reads are eventually consistent with
+      writes, and bulk reads are billed per key read rather than as a single
+      document-style fetch."
+    cautions: Do not use it when the same key is updated frequently or must be
+      globally fresh immediately. Cloudflare documents that writes may take up
+      to 60 seconds or more to become visible in other global locations, and
+      that same-key write-heavy patterns are not an ideal fit.
+    links:
+      - https://developers.cloudflare.com/kv/platform/pricing/
+      - https://developers.cloudflare.com/kv/concepts/how-kv-works/
+tags:
+  - deployment
+  - pricing
+  - configuration
+  - feature-flags
+  - vercel
+  - edge-config
+  - redis
+  - upstash
+  - cloudflare
+  - workers-kv
+  - edge
+aliases:
+  - vercel edge config pricing
+  - edge config vs redis
+  - upstash vs edge config
+  - cloudflare kv vs edge config
+  - config store pricing 2026
+  - hot config reads vercel
+related_cards:
+  - deployment/feature-flags-vendor-choice
+  - serverless/vercel-edge-vs-node-runtime
+  - infra/vercel-vs-netlify-vs-cloudflare-pages-2026
+  - security/redis-8-agpl-vs-rsal-sspl-adoption-after-license-change-2025
+  - backend/upstash-redis-free-payg-fixed-after-march-2025-pricing
+  - web/vercel-edge-config-package-vs-per-unit-pricing-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-06-29
+sidecar_hard_facts:
+  extracted: 2026-03-15
+  nodes:
+    - type: vendor
+      id: vendor/vercel
+      name: Vercel
+    - type: package
+      id: package/vercel-edge-config
+      name: Vercel Edge Config
+    - type: vendor
+      id: vendor/upstash
+      name: Upstash
+    - type: package
+      id: package/upstash-redis
+      name: Upstash Redis
+    - type: protocol
+      id: protocol/redis
+      name: Redis
+      standard: protocol
+    - type: vendor
+      id: vendor/cloudflare
+      name: Cloudflare
+    - type: package
+      id: package/cloudflare-workers-kv
+      name: Cloudflare Workers KV
+  edges:
+    - type: breaking_change_in
+      from: package/vercel-edge-config
+      to: vendor/vercel
+      date: 2025-11-06
+      change: Pro billing moved from package-based to per-unit billing at the same
+        effective rates.
+    - type: locks_via
+      from: package/vercel-edge-config
+      to: vendor/vercel
+      reason: Lowest-ops if you are already on Vercel and for Vercel-native
+        deployments.
+    - type: requires_version
+      from: package/upstash-redis
+      to: protocol/redis
+      version: "8.2"
+      relation: supports up to version
+    - type: locks_via
+      from: package/cloudflare-workers-kv
+      to: vendor/cloudflare
+      reason: Choose it when you are willing to place this part of the stack on
+        Cloudflare.

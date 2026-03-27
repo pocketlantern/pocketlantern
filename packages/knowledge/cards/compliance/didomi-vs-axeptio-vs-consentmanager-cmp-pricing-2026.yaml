@@ -1,0 +1,182 @@
+id: "compliance/didomi-vs-axeptio-vs-consentmanager-cmp-pricing-2026"
+title: "Didomi vs Axeptio vs consentmanager CMP Pricing After 2026 Policy Tightening"
+problem: "Teams replacing or adding a CMP need a current comparison of Didomi,
+  Axeptio, and consentmanager on pricing model, traffic and domain limits, TCF
+  readiness, and geo-specific consent features after 2026 consent-framework
+  tightening."
+context:
+  - "privacy"
+  - "cmp"
+  - "adtech"
+  - "google-consent-mode"
+  - "iab-tcf"
+constraints:
+  - "compliance"
+  - "cost-sensitive"
+  - "enterprise"
+candidates:
+  - name: "Didomi"
+    summary: "As of 2026-03-19, Didomi presents CMP pricing as sales-led rather than
+      public self-serve pricing. Its official offers page says consent
+      management is available on \"unlimited domains, based on MUV\" and the
+      platform includes multi-regulation support, notice personalization,
+      integrations, consent analytics, consent proofs, and cross-domain consent,
+      with cross-device consent available upon request. Didomi publicly states
+      its CMP is already compliant with IAB Europe TCF v2.3 ahead of the
+      February 28, 2026 enforcement deadline. It also markets native GPP
+      integration, Google Consent Mode v2 support, Google Gold CMP
+      certification, and US-law support across multiple state privacy regimes."
+    when_to_use: "Use Didomi when you need enterprise-scale, multi-domain consent
+      management and want one platform for EU, US, web, app, and CTV
+      requirements. It is the strongest fit when public sticker pricing matters
+      less than cross-region coverage, Google-certified deployment, and
+      negotiated enterprise packaging."
+    tradeoffs: "Strong compliance breadth and cross-domain features, but no public
+      list pricing means procurement is slower and direct cost comparison is
+      harder. It is better aligned to enterprise buying than to teams wanting
+      transparent self-serve entry pricing."
+    cautions: "As of 2026-03-19, TCF v2.3 enforcement has already occurred. Didomi
+      says it is already compliant, but pricing is quote-based and some features
+      such as cross-device consent are marked \"upon request,\" so confirm
+      packaged scope in the contract."
+    links:
+      - "https://www.didomi.io/offers"
+      - "https://www.didomi.io/regulations/tcf-2-3"
+      - "https://www.didomi.io/regulations/google-consent-mode-v2"
+      - "https://www.didomi.io/regulations/us-privacy-laws"
+  - name: "Axeptio"
+    summary: "As of 2026-03-19, Axeptio has public self-serve CMP pricing with Free,
+      Small, Medium, and Large plans plus Enterprise. The pricing page shows
+      Free at 0 CHF forever for 200 visitors per month on 1 domain, Small at 29
+      CHF per month for 5,000 pageviews on 1 domain, Medium at 69 CHF per month
+      for 100,000 pageviews on 1 domain, and Large at 129 CHF per month for
+      500,000 pageviews on 1 domain plus subdomains. TCF and Google Consent Mode
+      v2 are included on paid plans, and Enterprise is custom with unlimited
+      domains, APIs, advanced analytics, and universal consent for logged-in
+      users and multi-domains. Axeptio also publicly positions itself as a
+      Google-certified Gold Tier CMP Partner and highlights IAB Europe and IAB
+      Canada support plus GDPR, Law 25, and Swiss FADP coverage."
+    when_to_use: "Use Axeptio when you want transparent self-serve pricing and a
+      cleaner path from small traffic volumes to mid-market scale on a single
+      domain. It is especially attractive for branded consent UX and for teams
+      that want paid-plan TCF without immediately moving to full enterprise
+      procurement."
+    tradeoffs: "Pricing is clearer than Didomi, but domain limits are stricter on
+      self-serve plans and advanced multi-domain capabilities push you toward
+      Enterprise. The public positioning is strong for publishers and Google
+      Consent Mode, but the public materials emphasize narrower regional
+      frameworks than Didomi's US-state coverage pages."
+    cautions: "As of 2026-03-19, Axeptio's public publisher page still says \"TCF
+      v2.2-compliant\" while the 2026 TCF v2.3 deadline has already passed. Do
+      not assume TCF v2.3 readiness from the pricing page alone; verify current
+      production support and migration status directly before choosing it for
+      EEA or UK ad monetization."
+    links:
+      - "https://www.axept.io/pricing"
+      - "https://www.axept.io/axeptio-for-publishers"
+      - "https://www.axept.io/google-cmp-partner"
+  - name: "consentmanager"
+    summary: "As of 2026-03-19, consentmanager has the most explicit traffic-based
+      public pricing of the three. Its pricing page shows Free at 0 EUR for
+      3,000 views per month on 1 website, Starter at 23 EUR per month for
+      100,000 views on 1 website, Essential at 59 EUR per month for 1 million
+      views across up to 3 websites or apps, Professional at 219 EUR per month
+      for 10 million views across up to 20 websites or apps, and Ultimate as
+      contact-sales with usage by agreement. A key packaging breakpoint is that
+      IAB TCF and IAB GPP are not included in Free or Starter, but are included
+      from Essential upward. consentmanager also states Google Consent Mode v2
+      support, automatic or early activation support for TCF v2.3, and
+      US-privacy support through IAB GPP for California, Virginia, Colorado,
+      Utah, and Connecticut."
+    when_to_use: "Use consentmanager when cost sensitivity and explicit traffic
+      economics matter most, especially if you manage several sites and want
+      known pageview overage rates. It is the strongest fit for buyers who need
+      public EUR pricing and want to avoid quote-only procurement until traffic
+      or domain count forces it."
+    tradeoffs: "It offers the clearest public traffic ladder, but cheaper tiers
+      exclude TCF and GPP, which can make the entry price misleading for
+      ad-supported or US-privacy-heavy use cases. The free plan is operationally
+      risky because the banner stops displaying after the monthly cap is
+      reached."
+    cautions: "As of 2026-03-19, TCF v2.3 enforcement has already occurred.
+      consentmanager says TCF v2.3 is already supported and can be activated
+      early or will auto-update at the end of February, but teams on Free or
+      Starter should note that TCF and GPP are not included there."
+    links:
+      - "https://www.consentmanager.net/en/pricing/"
+      - "https://www.consentmanager.net/en/"
+      - "https://www.consentmanager.net/en/knowledge/iab-tcf-2-3/"
+tags:
+  - "compliance"
+  - "cmp"
+  - "pricing"
+  - "privacy"
+  - "google-consent-mode"
+  - "iab-tcf"
+aliases:
+  - "didomi pricing 2026"
+  - "axeptio pricing 2026"
+  - "consentmanager pricing 2026"
+  - "cmp tcf 2.3 comparison"
+related_cards:
+  - "compliance/cookie-consent-platform-onetrust-vs-cookiebot-vs-privacy-first-\
+    2026"
+  - "compliance/delaware-opt-out-signal-by-2026-01-01"
+  - design/usercentrics-vs-cookieyes-cmp-api-and-banner-customization-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/didomi
+      name: Didomi
+    - type: vendor
+      id: vendor/axeptio
+      name: Axeptio
+    - type: vendor
+      id: vendor/consentmanager
+      name: consentmanager
+    - type: protocol
+      id: protocol/iab-europe-tcf-v2-3
+      name: IAB Europe TCF v2.3
+      standard: IAB Europe TCF
+    - type: protocol
+      id: protocol/google-consent-mode-v2
+      name: Google Consent Mode v2
+      standard: Google Consent Mode
+    - type: protocol
+      id: protocol/iab-gpp
+      name: IAB GPP
+      standard: IAB GPP
+    - type: package
+      id: package/axeptio-paid-plans
+      name: Axeptio paid plans
+    - type: package
+      id: package/consentmanager-essential-up
+      name: consentmanager Essential and up
+  edges:
+    - type: locks_via
+      from: protocol/iab-europe-tcf-v2-3
+      to: package/axeptio-paid-plans
+      vendor: vendor/axeptio
+      evidence: TCF and Google Consent Mode v2 are included on paid plans.
+    - type: locks_via
+      from: protocol/google-consent-mode-v2
+      to: package/axeptio-paid-plans
+      vendor: vendor/axeptio
+      evidence: TCF and Google Consent Mode v2 are included on paid plans.
+    - type: locks_via
+      from: protocol/iab-europe-tcf-v2-3
+      to: package/consentmanager-essential-up
+      vendor: vendor/consentmanager
+      evidence: IAB TCF and IAB GPP are not included in Free or Starter, but are
+        included from Essential upward.
+    - type: locks_via
+      from: protocol/iab-gpp
+      to: package/consentmanager-essential-up
+      vendor: vendor/consentmanager
+      evidence: IAB TCF and IAB GPP are not included in Free or Starter, but are
+        included from Essential upward.

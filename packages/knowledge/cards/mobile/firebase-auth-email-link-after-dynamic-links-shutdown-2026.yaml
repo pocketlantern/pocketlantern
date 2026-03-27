@@ -1,0 +1,159 @@
+id: "mobile/firebase-auth-email-link-after-dynamic-links-shutdown-2026"
+title: "Firebase Auth Email Link After Dynamic Links Shutdown"
+problem: "Decide how to keep Firebase Authentication email-link sign-in working
+  on mobile after the Firebase Dynamic Links shutdown, and identify the
+  blocker-level SDK and domain migration requirements that now apply."
+context:
+  - "firebase"
+  - "firebase-auth"
+  - "mobile"
+  - "android"
+  - "ios"
+constraints:
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Migrate Firebase Auth email-link sign-in to the Firebase Hosting default
+      domain"
+    summary: "As of 2026-03-26, the Firebase Dynamic Links shutdown has already
+      occurred on August 25, 2025. Firebase documents that mobile email-link
+      authentication must use the newer Firebase Hosting-based flow instead of
+      Firebase Dynamic Links. For Android, Firebase says this requires Firebase
+      Authentication Android SDK version 23.2.0+ and Firebase BoM 33.9.0+ for
+      the new migration path; for Apple platforms, Firebase says the required
+      minimum is Firebase Authentication iOS SDK 11.8.0+. Pricing for any
+      Hosting or Auth usage should be checked in official docs."
+    when_to_use: "Use this when you want the lowest-friction path and you are
+      staying on Firebase Authentication for mobile passwordless sign-in. It is
+      the default choice when you can update all supported app versions and are
+      fine using the project's Firebase Hosting domain for link handling."
+    tradeoffs: "Keeps the existing Firebase Auth product boundary and avoids adding
+      a separate deep-link vendor. The tradeoff is accepting an unbranded
+      firebaseapp.com or web.app link domain, which may be worse for user trust,
+      deliverability perception, or preserving an existing branded link
+      surface."
+    cautions: "Firebase states that older app versions that do not use the new
+      Authentication SDK flow will no longer support these affected features
+      after the shutdown. On Android, older OAuth implementations below
+      Authentication SDK 20.0.0 or BoM 26.0.0 also require upgrade to keep OAuth
+      flows working."
+    links:
+      - "https://firebase.google.com/docs/auth/android/email-link-migration"
+      - "https://firebase.google.com/docs/auth/android/email-link-auth"
+      - "https://firebase.google.com/docs/auth/ios/email-link-auth"
+      - "https://firebase.google.com/support/dynamic-links-faq"
+  - name: "Keep Firebase Auth email-link sign-in but move to a custom Firebase
+      Hosting domain"
+    summary: "Firebase also supports using a custom Firebase Hosting domain for
+      mobile email-link sign-in after the Dynamic Links shutdown. As of
+      2026-03-26, this is the supported way to preserve a branded domain while
+      still using Firebase Authentication's Hosting-based replacement flow.
+      Firebase documents that you can either set up a custom Hosting domain or
+      re-use a former custom Dynamic Links domain as the new custom domain, but
+      Dynamic Links-specific behavior is gone. Pricing for custom domain and
+      related Firebase services should be checked in official docs."
+    when_to_use: "Use this when you need branded links, domain continuity, or
+      stricter control over the link domain while remaining on Firebase
+      Authentication. It is the better fit when the default Firebase Hosting
+      domain is not acceptable for product, trust, or migration reasons."
+    tradeoffs: "Preserves brand and can reduce user-visible domain changes. The
+      tradeoff is extra DNS, certificate, and mobile association setup and
+      testing for the custom domain, which adds more operational surface area
+      than using the default Firebase Hosting domain."
+    cautions: "Firebase states that re-used custom Dynamic Links domains no longer
+      provide Firebase Dynamic Links functionality, including app-store fallback
+      behavior if the app is not installed. You still need to update app
+      handling and ActionCodeSettings to use the new Hosting-based linkDomain."
+    links:
+      - "https://firebase.google.com/docs/auth/android/email-link-migration"
+      - "https://firebase.google.com/docs/auth/ios/email-link-migration"
+      - "https://firebase.google.com/support/dynamic-links-faq"
+tags:
+  - "mobile"
+  - "firebase"
+  - "firebase-auth"
+  - "email-link"
+  - "dynamic-links"
+aliases:
+  - "firebase email link after dynamic links shutdown"
+  - "firebase auth email link migration 2026"
+  - "firebase hosting email link auth mobile"
+related_cards:
+  - "mobile/firebase-dynamic-links-shutdown-migration-to-app-links-universal-li\
+    nks-vs-branch-2026"
+  - "auth/firebase-auth-base-vs-identity-platform-pricing-2026"
+  - "auth/auth-provider-migration-and-lock-in-2026"
+  - mobile/firebase-dynamic-links-replacement-after-august-25-2025-shutdown-2026
+  - auth/firebase-auth-email-link-migration-after-dynamic-links-shutdown-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/firebase
+      name: Firebase
+    - type: capability
+      id: capability/email-link-sign-in
+      name: Email-link sign-in
+    - type: capability
+      id: capability/dynamic-links
+      name: Dynamic Links
+    - type: package
+      id: package/firebase-auth-android-sdk-23-2-0
+      name: Firebase Authentication Android SDK 23.2.0
+    - type: package
+      id: package/firebase-bom-33-9-0
+      name: Firebase BoM 33.9.0
+    - type: package
+      id: package/firebase-auth-ios-sdk-11-8-0
+      name: Firebase Authentication iOS SDK 11.8.0
+    - type: package
+      id: package/firebase-auth-android-sdk-20-0-0
+      name: Firebase Authentication Android SDK 20.0.0
+    - type: package
+      id: package/firebase-bom-26-0-0
+      name: Firebase BoM 26.0.0
+  edges:
+    - type: eol_date
+      from: capability/dynamic-links
+      to: null
+      date: 2025-08-25
+      note: Firebase Dynamic Links shutdown occurred on August 25, 2025.
+    - type: requires_version
+      from: capability/email-link-sign-in
+      to: package/firebase-auth-android-sdk-23-2-0
+      platform: android
+      version_min: 23.2.0
+      note: Android mobile email-link authentication migration requires Firebase
+        Authentication Android SDK 23.2.0+.
+    - type: requires_version
+      from: capability/email-link-sign-in
+      to: package/firebase-bom-33-9-0
+      platform: android
+      version_min: 33.9.0
+      note: Android mobile email-link authentication migration requires Firebase BoM
+        33.9.0+.
+    - type: requires_version
+      from: capability/email-link-sign-in
+      to: package/firebase-auth-ios-sdk-11-8-0
+      platform: ios
+      version_min: 11.8.0
+      note: Apple-platform mobile email-link authentication migration requires
+        Firebase Authentication iOS SDK 11.8.0+.
+    - type: requires_version
+      from: capability/dynamic-links
+      to: package/firebase-auth-android-sdk-20-0-0
+      platform: android
+      version_min: 20.0.0
+      note: Older OAuth implementations below Firebase Authentication Android SDK
+        20.0.0 require upgrade to keep OAuth flows working.
+    - type: requires_version
+      from: capability/dynamic-links
+      to: package/firebase-bom-26-0-0
+      platform: android
+      version_min: 26.0.0
+      note: Older OAuth implementations below Firebase BoM 26.0.0 require upgrade to
+        keep OAuth flows working.

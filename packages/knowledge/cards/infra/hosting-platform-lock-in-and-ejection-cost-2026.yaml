@@ -335,6 +335,22 @@ related_cards:
   - runtime/koyeb-on-demand-vs-reserved-instance-pricing-2026
   - deployment/dokploy-license-change-apache-2-and-source-available-enterprise-2026
   - web/firebase-app-hosting-free-allowances-vs-blaze-costs-2026
+  - serverless/sst-console-resource-pricing-2026
+  - design/directus-cloud-starter-sunset-after-february-28-2026
+  - deployment/zeabur-shared-cluster-vs-dedicated-server-pricing-2026
+  - web/medusa-cloud-vs-saleor-cloud-headless-commerce-pricing-2026
+  - backend/activepieces-cloud-vs-self-hosted-pricing-2026
+  - design/webstudio-open-source-vs-cloud-hosting-pricing-2026
+  - cloud/ovhcloud-apac-free-egress-until-june-1-2026
+  - backend/nango-pricing-after-2026-managed-auth-and-sync-packaging
+  - messaging/livekit-cloud-telephony-vs-bring-your-own-carrier-costs-2026
+  - devtools/backstage-self-host-vs-roadie-vs-port-pricing-2026
+  - cloud/oracle-arm-vs-amd-flex-pricing-after-free-tier-tightening-2026
+  - game/nakama-open-source-vs-heroic-cloud-after-2026-pricing
+  - messaging/novu-free-vs-pro-vs-team-workflow-run-pricing-2026
+  - search/typesense-self-host-vs-cloud-after-720-hour-free-tier
+  - design/nuxt-studio-hosted-sunset-vs-open-source-module-2026
+  - data/xata-standard-vs-enterprise-byoc-pricing-2026
 status: active
 tier: core
 updated: "2026-03-16"

@@ -1,0 +1,148 @@
+id: "ai/deepgram-voice-agent-vs-stt-plus-tts-pricing-2026"
+title: "Deepgram Voice Agent API vs STT Plus TTS Assembly Cost 2026"
+problem: "Decide whether Deepgram's bundled voice agent pricing beats assembling
+  your own speech-to-text and text-to-speech pipeline under current per-minute
+  rates and concurrency limits."
+context:
+  - "deepgram"
+  - "voice-ai"
+  - "speech-to-text"
+  - "text-to-speech"
+  - "realtime-apis"
+constraints:
+  - "cost-sensitive"
+  - "real-time"
+  - "high-scale"
+candidates:
+  - name: "Deepgram Voice Agent API"
+    summary: "Deepgram's bundled real-time voice stack prices Voice Agent Standard
+      at $0.0800/min pay-as-you-go and $0.0700/min on Growth as of 2026-03-20,
+      billed by WebSocket connection time. Published variants include Standard -
+      BYO TTS at $0.0600/min, Custom - BYO LLM at $0.0700/min, Custom - BYO LLM
+      + TTS at $0.0500/min, and Advanced at $0.1600/min. Default concurrency is
+      45 concurrent Voice Agent connections on pay-as-you-go, 60 on Growth, and
+      starts at 100 on Enterprise. Deepgram raised default concurrency limits on
+      2026-02-11, so older comparisons using lower caps are stale."
+    when_to_use: "Use this when low-ops plus real-time matters more than minimizing
+      raw media cost, or when the bundled orchestration and model routing are
+      worth paying a flat per-minute premium. It is the cleaner choice if you
+      want one API and predictable per-minute billing instead of managing
+      separate STT, TTS, and turn-taking logic."
+    tradeoffs: "Operationally simpler and includes orchestration, but its listed
+      per-minute rate is materially higher than raw STT plus TTS media charges
+      alone. Concurrency is not higher than a separately assembled pipeline's
+      TTS streaming ceiling on self-serve plans."
+    cautions: "As of 2026-03-20, the pricing page still notes rates are listed with
+      the Model Improvement Program, but the 2026-03-05 changelog says
+      pay-as-you-go and Growth customers can opt in or out with no impact on
+      listed rates. If you compare against a custom stack, include your external
+      LLM and orchestration costs separately because Deepgram's bundle is not
+      just STT plus TTS."
+    links:
+      - "https://deepgram.com/pricing"
+      - "https://developers.deepgram.com/reference/api-rate-limits"
+      - "https://developers.deepgram.com/changelog"
+      - "https://deepgram.com/product/voice-agent-api"
+  - name: "Assemble your own pipeline with Deepgram STT plus Deepgram Aura TTS"
+    summary: "Deepgram's self-serve component pricing is cheaper on raw media usage
+      as of 2026-03-20: streaming Flux or Nova-3 monolingual STT is $0.0077/min
+      pay-as-you-go, while Aura-2 TTS is $0.030 per 1,000 characters and Aura-1
+      is $0.015 per 1,000 characters. That means a self-assembled media path
+      costs $0.0077 plus TTS character charges per conversation minute, instead
+      of the flat $0.0800/min Voice Agent Standard rate. Using published rates
+      only, the raw media stack stays below Voice Agent Standard until generated
+      speech reaches about 2,410 Aura-2 characters per minute or about 4,820
+      Aura-1 characters per minute; external LLM and orchestration costs would
+      be additional. Concurrency is 150 streaming STT plus 45 streaming TTS on
+      pay-as-you-go, and 225 plus 60 on Growth, so TTS streaming remains the
+      self-serve bottleneck."
+    when_to_use: "Use this when cost-sensitive plus engineering-capable applies and
+      you can tolerate stitching together STT, TTS, interruption handling, and
+      agent logic yourself. It is the better default if your goal is lowest raw
+      speech I/O cost rather than lowest implementation effort."
+    tradeoffs: "Usually cheaper on pure speech media, and STT capacity is much
+      higher than Voice Agent on self-serve plans. The downside is more moving
+      parts, separate billing dimensions, and the need to own turn detection,
+      barge-in handling, and LLM integration."
+    cautions: "TTS is billed per character, not per minute, so any per-minute
+      comparison depends on your actual output density. Self-serve concurrency
+      does not meaningfully beat Voice Agent on the TTS side because streaming
+      Aura is capped at 45 concurrent requests on pay-as-you-go and 60 on
+      Growth, matching Voice Agent's 45 and 60 connection limits."
+    links:
+      - "https://deepgram.com/pricing"
+      - "https://developers.deepgram.com/reference/api-rate-limits"
+      - "https://developers.deepgram.com/changelog"
+tags:
+  - "ai"
+  - "deepgram"
+  - "pricing"
+  - "voice-agent"
+  - "speech-to-text"
+  - "text-to-speech"
+aliases:
+  - "deepgram voice agent pricing vs stt tts"
+  - "deepgram bundled voice api cost comparison"
+  - "deepgram aura and nova pricing 2026"
+  - "deepgram voice agent cost"
+  - "deepgram voice api pricing"
+  - "deepgram stt tts cost"
+  - "nova aura pricing compare"
+  - "deepgram realtime voice cost"
+  - "deepgram agent vs pipeline"
+  - "stt tts assembly pricing"
+  - "deepgram bundled voice cost"
+  - "deepgram voice pricing 2026"
+  - "dg voice agent pricing"
+
+  - "deepgram voice agent pricing vs stt tts"
+  - "deepgram bundled voice api cost comparison"
+  - "deepgram aura and nova pricing 2026"
+related_cards:
+  - "ai/deepgram-stt-vs-assemblyai-pricing-2026"
+  - "ai/ai-feature-cost-governance"
+  - "ai/streaming-inference-vs-batch-processing-token-cost-2026"
+  - messaging/livekit-cloud-telephony-vs-bring-your-own-carrier-costs-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/deepgram
+      name: Deepgram
+    - type: capability
+      id: capability/voice-agent-api
+      name: Voice Agent API
+    - type: capability
+      id: capability/speech-to-text
+      name: speech-to-text
+    - type: capability
+      id: capability/text-to-speech
+      name: text-to-speech
+    - type: protocol
+      id: protocol/websocket
+      name: WebSocket
+  edges:
+    - type: locks_via
+      from: capability/voice-agent-api
+      to: protocol/websocket
+      evidence: Voice Agent Standard is billed by WebSocket connection time.
+    - type: breaking_change_in
+      from: vendor/deepgram
+      to: capability/voice-agent-api
+      date: 2026-02-11
+      evidence: Deepgram raised default Voice Agent concurrency limits on 2026-02-11,
+        making older lower-cap comparisons stale.
+    - type: locks_via
+      from: capability/voice-agent-api
+      to: capability/speech-to-text
+      evidence: Deepgram describes the Voice Agent API as a bundled real-time voice
+        stack rather than raw STT alone.
+    - type: locks_via
+      from: capability/voice-agent-api
+      to: capability/text-to-speech
+      evidence: Deepgram describes the Voice Agent API as a bundled real-time voice
+        stack rather than raw TTS alone.

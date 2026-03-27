@@ -73,7 +73,7 @@ candidates:
       - "https://peps.python.org/pep-0693/"
       - "https://docs.python.org/3.12/whatsnew/3.12.html"
       - "https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html"
-tags: ["runtime", "python", "upgrade", "aws-lambda"]
+tags: [ "runtime", "python", "upgrade", "aws-lambda" ]
 aliases:
   - "python 3.10 eol"
   - "python 3.10 to 3.11 or 3.12"

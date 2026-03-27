@@ -1,0 +1,195 @@
+id: "observability/slo-sli-for-b2b-saas"
+title: "SLO/SLI Strategy for B2B SaaS: Defining and Monitoring Service Level
+  Objectives"
+problem: "Defining meaningful SLOs and SLIs for a B2B SaaS product where the
+  choice between vendor SLO tools (Nobl9, Datadog SLO, Grafana SLO) and custom
+  implementations affects cost, alerting accuracy, and customer-facing
+  reporting"
+context:
+  - "observability"
+  - "reliability"
+  - "slo"
+  - "b2b-saas"
+constraints:
+  - small-team
+  - enterprise
+  - compliance
+candidates:
+  - name: "Datadog SLOs (integrated with APM)"
+    summary: "Built-in SLO tracking within Datadog, using monitors or metrics as SLI
+      sources. Included with Datadog Pro/Enterprise plans — no additional
+      per-SLO cost. Supports error budget alerts, burn rate alerts, and SLO
+      status pages."
+    when_to_use: "When you already use Datadog for monitoring and want SLOs
+      integrated with your existing dashboards and alerts. Best for enterprise
+      constraints where unified observability (SLOs + APM + logs) in one vendor
+      matters. Zero additional cost if you already pay for Datadog."
+    tradeoffs: "Zero additional cost for Datadog customers. SLOs defined from
+      existing monitors or metrics — no new instrumentation needed. Burn rate
+      alerts prevent error budget exhaustion. Limited to Datadog's ecosystem —
+      SLO data not portable. SLO widgets available on dashboards for team
+      visibility."
+    cautions: "Datadog SLOs are only useful if your SLI data is already in Datadog.
+      If you use Grafana or Prometheus for metrics, Datadog SLOs require
+      duplicating data ingestion. SLO definitions are Datadog-specific —
+      migrating SLOs to another vendor requires rebuilding. Monitor-based SLOs
+      inherit the monitor's evaluation window, which may not match your SLO
+      period."
+    links:
+      - "https://docs.datadoghq.com/service_management/service_level_objectives/"
+      - "https://www.datadoghq.com/blog/define-and-manage-slos/"
+  - name: "Grafana SLO (open-source + Cloud)"
+    summary: "SLO feature in Grafana Cloud and self-hosted Grafana (with plugins).
+      Define SLOs from Prometheus metrics, Loki logs, or any Grafana data
+      source. Grafana Cloud SLO is included in Pro plan ($29/user/month)."
+    when_to_use: "When you use Prometheus/Grafana for monitoring and want SLOs
+      without adding a vendor. Best for small-team + cost-sensitive constraints
+      where Grafana is already the observability layer. Self-hosted option for
+      zero vendor cost."
+    tradeoffs: "Works with any Grafana data source — Prometheus, Loki, InfluxDB.
+      Self-hosted is free. Grafana Cloud SLO included in Pro plan. Less polished
+      UX than Datadog SLOs. SLO alerting via Grafana alerting rules (requires
+      separate configuration). Multi-window burn rate alerts need manual
+      PromQL."
+    cautions: "Grafana SLO is newer and less mature than Datadog SLOs. Self-hosted
+      requires managing Prometheus recording rules for efficient SLO
+      computation. PromQL for multi-window multi-burn-rate alerts is complex —
+      use sloth or pyrra to generate the rules. Evaluate whether your team has
+      PromQL expertise before committing."
+    links:
+      - "https://grafana.com/docs/grafana-cloud/alerting-and-irm/slo/"
+      - "https://grafana.com/pricing/"
+  - name: "Nobl9 (dedicated SLO platform)"
+    summary: "Dedicated SLO management platform that connects to multiple data
+      sources (Datadog, Prometheus, CloudWatch, New Relic, Splunk). Defines
+      SLOs, tracks error budgets, and generates reports. Free tier: 20 SLOs.
+      Pro: custom pricing."
+    when_to_use: "When you need SLOs across multiple monitoring tools (Datadog for
+      some services, Prometheus for others) with a unified view. Best for
+      enterprise + compliance constraints where customer-facing SLO reports and
+      error budget tracking across heterogeneous infrastructure matter."
+    tradeoffs: "Vendor-agnostic SLO management — connects to any monitoring backend.
+      Unified SLO view across multiple tools. Error budget policies and
+      alerting. Free tier (20 SLOs) covers small deployments. Adds another
+      vendor to your stack. SLO definitions are in Nobl9, not your monitoring
+      tool."
+    cautions: "Nobl9 is a niche tool — evaluate whether your SLO needs justify a
+      dedicated vendor. For most B2B SaaS teams under 50 engineers, Datadog or
+      Grafana SLOs are sufficient. Nobl9's value is in multi-vendor SLO
+      aggregation, which most teams don't need until they have heterogeneous
+      monitoring."
+    links:
+      - "https://www.nobl9.com/pricing"
+      - "https://docs.nobl9.com/"
+  - name: "Custom SLO with Prometheus Recording Rules"
+    summary: "Implement SLOs using Prometheus recording rules and multi-window burn
+      rate alerting. Use sloth or pyrra to generate the PromQL. Zero vendor
+      cost. The Google SRE book pattern implemented in open-source tooling."
+    when_to_use: "When you use Prometheus and want full control over SLO computation
+      without vendor lock-in. Best for small-team + cost-sensitive constraints
+      where the team has PromQL expertise and wants SLOs as code
+      (version-controlled, reproducible)."
+    tradeoffs: "Zero vendor cost. SLOs as code — version-controlled, reviewable.
+      Full control over alerting thresholds and burn rates. Requires PromQL
+      expertise. Multi-window multi-burn-rate alerting rules are complex to
+      write manually — use sloth (recommended) or pyrra to generate them. No
+      built-in SLO dashboard — build in Grafana."
+    cautions: "Writing multi-window burn rate alerts in raw PromQL is error-prone —
+      always use a generator (sloth, pyrra). Recording rules consume Prometheus
+      resources — monitor rule evaluation time. SLO dashboards require manual
+      Grafana setup. This approach is best for teams that already know
+      Prometheus well; otherwise, use Grafana SLO or Datadog SLOs."
+    links:
+      - "https://github.com/slok/sloth"
+      - "https://sre.google/workbook/alerting-on-slos/"
+tags:
+  - "observability"
+  - "slo"
+  - "sli"
+  - "reliability"
+  - "b2b-saas"
+  - "error-budget"
+aliases:
+  - "slo sli"
+  - "service level objective"
+  - "error budget"
+  - "slo monitoring"
+  - "reliability target"
+related_cards:
+  - "observability/datadog-vs-grafana-cloud-vs-new-relic"
+  - "observability/incident-alert-routing-strategy"
+  - "observability/synthetic-monitoring-vs-rum"
+  - "infra/monitoring-observability"
+  - observability/incident-io-vs-firehydrant-vs-statuspage-pricing-2026
+tier: core
+updated: "2026-03-15"
+review_by: 2026-08-24
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: framework
+      id: framework/datadog-slos
+      name: Datadog SLOs
+      category: slo_tool
+    - type: vendor
+      id: vendor/datadog
+      name: Datadog
+    - type: framework
+      id: framework/grafana-slo
+      name: Grafana SLO
+      category: slo_tool
+    - type: vendor
+      id: vendor/grafana
+      name: Grafana
+    - type: vendor
+      id: vendor/nobl9
+      name: Nobl9
+    - type: framework
+      id: framework/custom-slo-prometheus-recording-rules
+      name: Custom SLO with Prometheus Recording Rules
+      category: slo_implementation
+    - type: engine
+      id: engine/prometheus
+      name: Prometheus
+      category: metrics_engine
+    - type: package
+      id: package/sloth
+      name: sloth
+      category: rule_generator
+    - type: package
+      id: package/pyrra
+      name: pyrra
+      category: rule_generator
+  edges:
+    - type: locks_via
+      from: framework/datadog-slos
+      to: vendor/datadog
+      scope: ecosystem
+      evidence: Limited to Datadog's ecosystem — SLO data not portable. SLO
+        definitions are Datadog-specific.
+    - type: requires_version
+      from: framework/datadog-slos
+      to: vendor/datadog
+      requirement: SLI data already in Datadog
+      evidence: Datadog SLOs are only useful if your SLI data is already in Datadog.
+    - type: requires_version
+      from: framework/grafana-slo
+      to: vendor/grafana
+      requirement: Grafana Cloud Pro plan for included Cloud SLO feature
+      evidence: Grafana Cloud SLO is included in Pro plan ($29/user/month).
+    - type: requires_version
+      from: framework/custom-slo-prometheus-recording-rules
+      to: engine/prometheus
+      requirement: Prometheus recording rules
+      evidence: Implement SLOs using Prometheus recording rules and multi-window burn
+        rate alerting.
+    - type: requires_version
+      from: framework/custom-slo-prometheus-recording-rules
+      to: package/sloth
+      requirement: recommended generator for complex PromQL rules
+      evidence: use sloth (recommended) or pyrra to generate them.
+    - type: requires_version
+      from: framework/custom-slo-prometheus-recording-rules
+      to: package/pyrra
+      requirement: generator for complex PromQL rules
+      evidence: use sloth (recommended) or pyrra to generate them.

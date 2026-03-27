@@ -15,17 +15,17 @@ constraints:
 candidates:
   - name: "Upgrade to Playwright v1.57 or v1.58 and rebaseline in one controlled
       pass"
-    summary: 'As of 2026-03-19, Playwright release notes show v1.58 as the latest
+    summary: "As of 2026-03-19, Playwright release notes show v1.58 as the latest
       release. In v1.57, Playwright switched its bundled runtime from Chromium
-      builds to Chrome for Testing, with headed mode using "chrome" and
-      headless mode using "chrome-headless-shell", and the release notes say
+      builds to Chrome for Testing, with headed mode using \"chrome\" and
+      headless mode using \"chrome-headless-shell\", and the release notes say
       existing tests should continue to pass. The bigger already-shipped break
-      happened earlier in v1.49, where the branded "chrome" and "msedge"
+      happened earlier in v1.49, where the branded \"chrome\" and \"msedge\"
       channels switched to the new headless mode and Playwright warned that some
       suites would need snapshot updates or code changes around PDF viewers and
       extensions. For visual tests, Playwright’s snapshot docs explicitly warn
       that rendering varies by OS, version, hardware, and headless mode, so a
-      bulk rebaseline in a pinned CI environment is the safe upgrade pattern.'
+      bulk rebaseline in a pinned CI environment is the safe upgrade pattern."
     when_to_use: "Use this when you want current Playwright features and your suite
       does not depend on legacy Chrome/Edge headless quirks. The decisive factor
       is whether you can run the full suite once in CI and accept a deliberate
@@ -33,27 +33,27 @@ candidates:
     tradeoffs: "Keeps you on the latest release line and aligns with Playwright’s
       current bundled browser behavior, but it can create noisy screenshot diffs
       and expose latent assumptions in channel-specific tests."
-    cautions: 'As of 2026-03-19, the branded-channel headless switch from v1.49 has
+    cautions: "As of 2026-03-19, the branded-channel headless switch from v1.49 has
       already occurred, so snapshot churn is not hypothetical. Also note that
-      since v1.50, "updateSnapshots: all" updates every snapshot, while
-      "changed" keeps the old changed-only behavior.'
+      since v1.50, \"updateSnapshots: all\" updates every snapshot, while
+      \"changed\" keeps the old changed-only behavior."
     links:
       - "https://playwright.dev/docs/release-notes"
       - "https://playwright.dev/docs/test-snapshots"
   - name: "Pin Playwright until you audit channel usage, extension tests, and
       assertion semantics"
-    summary: 'This is the safer path if your automation uses "chrome" or
-      "msedge" channels, exercises PDF viewers, or depends on extension
+    summary: "This is the safer path if your automation uses \"chrome\" or
+      \"msedge\" channels, exercises PDF viewers, or depends on extension
       loading behavior. Playwright v1.49 changed those branded channels to the
       new headless mode and explicitly called out possible breakages in
       snapshots, PDF viewers, and extensions. Playwright’s Chrome extension docs
       also state that Chrome and Edge removed the command-line flags needed to
       side-load extensions, so extension automation should use bundled Chromium,
-      and the docs note that the "chromium" channel supports headless
+      and the docs note that the \"chromium\" channel supports headless
       extension runs. Additional assertion and test-maintenance breaks landed
-      after that: v1.50 made "expect(locator).toBeEditable()" throw on
-      non-editable elements and changed "updateSnapshots: all", and v1.55
-      dropped support for Chromium Manifest V2 extensions.'
+      after that: v1.50 made \"expect(locator).toBeEditable()\" throw on
+      non-editable elements and changed \"updateSnapshots: all\", and v1.55
+      dropped support for Chromium Manifest V2 extensions."
     when_to_use: "Use this when your suite is channel-specific, extension-heavy, or
       snapshot-heavy and you cannot absorb nondeterministic failures during an
       active delivery window. The decisive factor is whether a failed upgrade

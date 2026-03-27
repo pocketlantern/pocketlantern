@@ -15,15 +15,15 @@ constraints:
   - "low-ops"
 candidates:
   - name: "Stay on legacy Functions billing for existing projects"
-    summary: 'Legacy Vercel Functions remain available for projects that do not use
+    summary: "Legacy Vercel Functions remain available for projects that do not use
       Fluid Compute. As of 2026-03-19, official docs still describe legacy
-      pricing separately: Pro usage is billed at "$0.18 per 1 GB-Hour" for
-      duration and "$0.60 per 1,000,000 Invocations," while Hobby includes
-      "100 GB-Hours" and "100,000" invocations before projects may be paused
+      pricing separately: Pro usage is billed at \"$0.18 per 1 GB-Hour\" for
+      duration and \"$0.60 per 1,000,000 Invocations,\" while Hobby includes
+      \"100 GB-Hours\" and \"100,000\" invocations before projects may be paused
       instead of billed overage. Legacy billing is wall-clock oriented for
       Node.js functions, measured in GB-hours from allocated memory multiplied
       by runtime, and execution is split into 50 ms billing units when CPU
-      exceeds 50 ms. New projects do not start here by default anymore.'
+      exceeds 50 ms. New projects do not start here by default anymore."
     when_to_use: "Use this only when you already have an existing project on legacy
       billing and changing runtime behavior or cost shape is riskier than paying
       for wall-clock duration. The decisive factor is whether your functions are
@@ -41,17 +41,17 @@ candidates:
       - "https://vercel.com/docs/functions/usage-and-pricing/legacy-pricing"
       - "https://vercel.com/docs/functions/usage-and-pricing"
   - name: "Move workloads to Fluid Compute"
-    summary: 'Fluid Compute is the default for all new Vercel projects as of
-      2026-03-19. Official pricing bills separately for "Active CPU" and
-      "Provisioned Memory" plus invocations; for example, Portland and
-      Washington D.C. are listed at "$0.128" per CPU-hour and "$0.0106" per
+    summary: "Fluid Compute is the default for all new Vercel projects as of
+      2026-03-19. Official pricing bills separately for \"Active CPU\" and
+      \"Provisioned Memory\" plus invocations; for example, Portland and
+      Washington D.C. are listed at \"$0.128\" per CPU-hour and \"$0.0106\" per
       GB-hour of memory, with the first 1 million invocations included and Hobby
       also including 4 CPU-hours and 360 GB-hours monthly. Billing pauses CPU
       charges during I/O waits but continues memory billing until the last
       in-flight request completes. Vercel also raised default Function limits
       for Fluid in June 2025: default duration is 300 seconds on all plans, Pro
       and Enterprise can go to 800 seconds, Standard is now 1 vCPU and 2 GB,
-      Performance is 2 vCPU and 4 GB, and the Basic CPU instance was removed.'
+      Performance is 2 vCPU and 4 GB, and the Basic CPU instance was removed."
     when_to_use: "Use this for cost-sensitive or high-concurrency serverless
       workloads, especially when requests spend meaningful time waiting on
       databases, APIs, or model calls. The decisive factor is whether you

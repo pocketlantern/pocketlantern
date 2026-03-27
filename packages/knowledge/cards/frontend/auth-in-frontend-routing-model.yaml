@@ -132,6 +132,7 @@ related_cards:
   - frontend/nextjs-vs-remix-for-b2b-saas-2026
   - frontend/sveltekit-2-vs-nextjs-16-vs-remix-fullstack-2026
   - frontend/react-router-v7-remix-merger-and-v6-maintenance-mode
+tier: core
 updated: 2026-03-15
 review_by: 2026-09-21
 sidecar_hard_facts:

@@ -1,0 +1,203 @@
+id: "security/redis-8-agpl-vs-rsal-sspl-adoption-after-license-change-2025"
+title: "Redis 8 AGPL vs RSAL/SSPL Adoption After the 2025 License Change"
+problem: "Teams choosing Redis distributions or managed offerings need to
+  reassess legal and operational risk after Redis 8 added AGPL alongside RSAL
+  and SSPL, especially where Valkey or cloud-managed alternatives are already
+  under consideration."
+context:
+  - "security"
+  - "licensing"
+  - "redis"
+  - "valkey"
+  - "managed-cache"
+  - "self-hosting"
+  - "compliance"
+  - "cloud"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+  - "cost-sensitive"
+  - "small-team"
+  - "high-scale"
+  - "real-time"
+candidates:
+  - name: "Redis Open Source 8 under AGPLv3"
+    summary: "As of 2026-03-15, Redis says Redis Open Source 8 and later are
+      available under a tri-license of RSALv2, SSPLv1, and AGPLv3, and AGPLv3 is
+      the OSI-approved open-source option. Redis's official release notes list
+      Redis Open Source 8.6.0 from February 2026 as the latest 8.x release, and
+      Redis 8.6 docs describe a unified package that includes functionality such
+      as RedisJSON, RedisBloom, and RedisTimeSeries without separate modules."
+    when_to_use: "Best for compliance + enterprise or small-team + real-time cases
+      where policy requires an OSI-approved license but you still want current
+      upstream Redis 8 features, integrated data structures, and the official
+      Redis release line. Use this when your blocker is source-license
+      acceptability rather than managed-service resale rights, and you are
+      prepared for AGPL obligations if you modify and run the software over a
+      network, as of 2026-03-15."
+    tradeoffs: "You get the current Redis 8 feature line under an OSI-approved
+      license and stay aligned with Redis's latest upstream releases. The
+      tradeoff is AGPL copyleft: Redis explicitly contrasts AGPL with the older
+      BSD-3 license and notes that network use of modified versions triggers
+      source-availability obligations."
+    cautions: "Do not treat AGPL as equivalent to the BSD-3 terms from Redis 7.2 and
+      earlier. Redis's licensing page says 7.2 and earlier remained BSD-3, while
+      Redis Community Edition 7.4 through 7.8 used only RSALv2 or SSPLv1. Legal
+      review is still required if you modify Redis and expose it over a
+      network."
+    links:
+      - "https://redis.io/legal/licenses/"
+      - "https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterpri\
+        se/release-notes/redisce/"
+      - "https://redis.io/docs/latest/develop/whats-new/8-6/"
+  - name: "Redis Open Source 8 under RSALv2 or SSPLv1"
+    summary: "As of 2026-03-15, Redis still offers RSALv2 and SSPLv1 alongside
+      AGPLv3 for Redis Open Source 8 and later. Redis says RSALv2 allows use,
+      copying, distribution, and derivative works but forbids commercializing
+      the software or providing it as a managed service to third parties, while
+      SSPLv1 requires public release of modifications and management layers if
+      you provide the product as a service."
+    when_to_use: "Best for enterprise + high-scale or real-time + small-team
+      environments that need official upstream Redis 8 behavior and already have
+      internal approval for Redis's source-available licenses, especially when
+      you are not offering a Redis-like managed service to customers. As of
+      2026-03-15, this is mainly a continuity path for organizations that
+      already cleared RSAL or SSPL during the 7.4 to 7.8 era and want to stay on
+      Redis's main feature line."
+    tradeoffs: "This keeps you on official Redis 8 without taking AGPL specifically.
+      The tradeoff is license friction: Redis states that neither RSALv2 nor
+      SSPLv1 is an open-source license, and each has materially different
+      restrictions for hosted-service and derivative-work scenarios."
+    cautions: "Do not collapse RSAL and SSPL into the same risk profile. RSAL blocks
+      managed-service commercialization, while SSPL allows service use only with
+      strong source-release obligations. Re-run legal review instead of assuming
+      a pre-2025 Redis or fork decision still applies after Redis 8 added AGPL."
+    links:
+      - "https://redis.io/legal/licenses/"
+      - "https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterpri\
+        se/release-notes/redisce/"
+  - name: "Valkey"
+    summary: "As of 2026-03-15, the Valkey project describes itself as an
+      open-source BSD high-performance key/value datastore backed by the Linux
+      Foundation. Valkey's download page lists version 9.0.3 as the current
+      release and 8.1.6 as the latest supported 8.x release, while Valkey's
+      migration guide says Redis Community Edition 7.4 and later are not open
+      source and their data files are not compatible with Valkey."
+    when_to_use: "Best for compliance + enterprise or cost-sensitive + small-team
+      cases where you want permissive licensing, community governance, and a
+      clean alternative to Redis's AGPL, RSAL, and SSPL choices. Use it when the
+      main requirement is minimizing future license surprise and you can accept
+      a separate product roadmap from upstream Redis 8, especially if your
+      estate is still close to Redis OSS 7.2-era compatibility."
+    tradeoffs: "You get a BSD-licensed project with Linux Foundation stewardship and
+      documented migration paths such as snapshot copy, replication, and
+      key-by-key migration from compatible Redis versions. The tradeoff is
+      roadmap divergence from Redis 8: Valkey is not just a license wrapper for
+      current Redis Open Source releases."
+    cautions: "Do not assume a direct in-place jump from Redis Community Edition 7.4
+      or later. Valkey's migration docs explicitly say those releases are not
+      open source and their data files are not compatible with Valkey. Validate
+      feature parity, module needs, and migration method before committing."
+    links:
+      - "https://valkey.io/"
+      - "https://valkey.io/download/"
+      - "https://valkey.io/topics/migration/"
+  - name: "Amazon ElastiCache for Valkey"
+    summary: "As of 2026-03-15, AWS offers Amazon ElastiCache for Valkey as a
+      managed option with serverless pricing 33% lower and node-based pricing
+      20% lower than other supported engines, and AWS says you can get started
+      as low as $6 per month. AWS documentation says ElastiCache supports Valkey
+      8.2, 8.1, 8.0, and 7.2.6, and the pricing docs say Serverless for Valkey
+      has a 100 MB minimum metered data storage floor."
+    when_to_use: "Best for low-ops + high-scale or enterprise + compliance teams
+      already on AWS that want permissive-license direction via Valkey while
+      avoiding self-hosting and migration toil. As of 2026-03-15, this is the
+      strongest fit when you want a managed path off ElastiCache for Redis OSS
+      with AWS-operated availability, autoscaling, and documented engine
+      switching support."
+    tradeoffs: "You reduce licensing ambiguity and operational burden, and AWS
+      documents zero-downtime upgrades from ElastiCache for Redis OSS to
+      ElastiCache for Valkey. The tradeoff is platform coupling: version
+      cadence, pricing mechanics, and feature availability follow AWS rather
+      than upstream Valkey or Redis release timing."
+    cautions: "Do not assume every upstream Redis 8 capability appears on the same
+      timeline in AWS. AWS says ElastiCache for Valkey supports most features
+      available in ElastiCache version 7.2 for Redis OSS by default, and its
+      supported-version list is specific to AWS-managed engine releases.
+      Validate required commands, modules, and migration behavior before
+      standardizing."
+    links:
+      - "https://aws.amazon.com/about-aws/whats-new/2024/10/amazon-elasticache-\
+        valkey/"
+      - "https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/VersionManagem\
+        ent.html"
+      - "https://aws.amazon.com/elasticache/pricing/"
+      - "https://aws.amazon.com/elasticache/features/"
+tags:
+  - "security"
+  - "licensing"
+  - "redis"
+  - "redis-open-source"
+  - "valkey"
+  - "elasticache"
+  - "agpl"
+  - "rsal"
+  - "sspl"
+  - "managed-cache"
+aliases:
+  - "redis 8 agpl"
+  - "redis agpl vs rsal"
+  - "redis sspl vs agpl"
+  - "redis 8 license change"
+  - "valkey vs redis license"
+  - "redis managed service license risk"
+  - "elasticache valkey vs redis"
+related_cards:
+  - "deployment/vercel-edge-config-per-unit-pricing-vs-redis-config-store-2026"
+  - storage/minio-open-source-vs-aistor-commercial-licensing-2026
+  - storage/redis-agpl-vs-valkey-bsd-2026
+  - storage/dragonfly-cloud-vs-redis-after-license-shifts-2026
+  - database/redis-7-rsal-sspl-vs-redis-8-agpl-licensing-2026
+status: "active"
+tier: "core"
+updated: "2026-03-15"
+review_by: "2026-08-03"
+sidecar_hard_facts:
+  extracted: 2026-03-17
+  nodes:
+    - type: vendor
+      id: vendor/redis
+      name: Redis
+      category: database
+    - type: package
+      id: package/redis-8.6
+      name: Redis Open Source 8.6.0
+      version: 8.6.0
+    - type: protocol
+      id: protocol/agpl-v3
+      name: AGPLv3
+      standard: true
+  edges:
+    - type: breaking_change_in
+      from: vendor/redis
+      to: null
+      change: Redis 8+ tri-licensed under RSALv2, SSPLv1, and AGPLv3; AGPL is
+        OSI-approved but copyleft — network use of modified versions triggers
+        source-availability obligations; not equivalent to Redis 7.2 BSD-3
+      migration_path: Legal review required for AGPL if modifying and running over
+        network; evaluate Valkey for permissive BSD alternative
+    - type: breaking_change_in
+      from: package/redis-8.6
+      to: null
+      change: Redis 8.6 includes RedisJSON, RedisBloom, RedisTimeSeries as unified
+        package without separate modules
+      migration_path: Remove separate module installation; unified package replaces
+        modular setup
+    - type: locks_via
+      from: vendor/redis
+      to: protocol/agpl-v3
+      surface: "AGPL copyleft: network use of modified Redis triggers
+        source-availability obligations; RSALv2 forbids managed-service
+        commercialization; SSPLv1 requires public release of management layers"
+      severity: high

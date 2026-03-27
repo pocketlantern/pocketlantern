@@ -1,0 +1,152 @@
+id: "cloud/deno-deploy-free-vs-pro-after-metering-sept-2025"
+title: "Deno Deploy Free vs Pro After Metering and Billing Went Live in
+  September 2025"
+problem: "Choose whether to remain on Deno Deploy Free or move to Pro now that
+  metering is enforced, over-limit Free apps pause, and Pro overages bill
+  monthly."
+context:
+  - "deno"
+  - "deno-deploy"
+  - "serverless"
+  - "edge-runtime"
+constraints:
+  - "cost-sensitive"
+  - "serverless"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Remain on Deno Deploy Free"
+    summary: "As of 2026-03-19, Deno Deploy Free is priced at \"$0/month\" and
+      includes 1M requests/month, 100GB egress, 15h CPU time, 350 GB-h memory
+      time, 20 apps, and up to 50 custom domains per organization. Since
+      September 26, 2025, metering and billing have already been enabled for all
+      organizations. Free organizations that exceed requests, bandwidth, CPU
+      time, or memory time have their applications paused until the next billing
+      cycle instead of accruing paid overages. Deno also states that
+      organizations only get restricted Free-plan limits until they verify the
+      organization with a linked credit card."
+    when_to_use: "Use Free when you are clearly below the included monthly limits
+      and temporary suspension at limit breach is acceptable. It fits personal
+      projects, small internal tools, or low-traffic apps where strict cost
+      ceiling matters more than continuity under spikes."
+    tradeoffs: "No base cost and still includes custom domains, logs, analytics, and
+      core Deploy features. The downside is operational risk: once you cross
+      Free usage limits, traffic stops until the next billing cycle, and Free
+      does not include wildcard subdomains, email support, or Pro-only plan
+      headroom."
+    cautions: "As of 2026-03-19, the key risk is not price but service interruption
+      on overage. If your traffic is bursty or user-facing, treat the pause
+      behavior as a hard reliability constraint. Deno's docs also note
+      restricted Free-plan limits before credit-card verification; check
+      official docs and console for the exact current restriction details."
+    links:
+      - "https://deno.com/deploy/pricing"
+      - "https://docs.deno.com/deploy/changelog/"
+      - "https://docs.deno.com/deploy/usage/"
+  - name: "Move to Deno Deploy Pro"
+    summary: "As of 2026-03-19, Deno Deploy Pro is priced at \"$20/month\" and
+      includes 5M requests/month, 200GB egress, 40h CPU time, 1,000 GB-h memory
+      time, 100 apps, 100 custom domains, and 10 team members. Over-limit Pro
+      usage is billed monthly at the published metered rates, including $2 per
+      additional 1M requests, $0.50/GB egress, $0.05/CPU-hour, and $0.016/GB-h
+      memory time. Since September 26, 2025, Pro organizations no longer pause
+      at the included limit; instead they continue serving and are billed at
+      month end. Pro also unlocks features called out by Deno such as wildcard
+      custom domains, priority/email support, custom TLS certificates, and spend
+      limits."
+    when_to_use: "Use Pro when uptime through traffic spikes matters more than
+      keeping spend permanently at zero. It is the safer default for production
+      apps, customer-facing workloads, or any team that wants predictable
+      continuity plus the option to cap spend with spend limits."
+    tradeoffs: "You pay a fixed monthly fee and can incur overages, but you remove
+      the Free-plan suspension behavior and get materially higher included
+      quotas plus operational features. The tradeoff is that cost now scales
+      with usage, so you need billing monitoring and a realistic traffic model."
+    cautions: "Pro is the better fit for reliability, but it is not a flat-rate
+      unlimited plan. If your workload can spike hard on requests or egress,
+      configure spend controls and alerts in the billing console so you do not
+      replace downtime risk with invoice surprise."
+    links:
+      - "https://deno.com/deploy/pricing"
+      - "https://docs.deno.com/deploy/changelog/"
+      - "https://docs.deno.com/deploy/usage/"
+tags:
+  - "cloud"
+  - "deno"
+  - "deno-deploy"
+  - "pricing"
+  - "serverless"
+aliases:
+  - "deno deploy free vs pro"
+  - "deno deploy metering september 2025"
+  - "deno deploy pricing overages"
+  - "deno deploy free pricing"
+  - "deno deploy pro pricing"
+  - "deno deploy free limits"
+  - "deno deploy pro overages"
+  - "deno deploy billing live"
+  - "deno deploy metered billing"
+  - "deployctl free vs pro"
+  - "deno deploy app paused"
+  - "deno deploy usage charges"
+  - "deno deploy free tier cap"
+related_cards:
+  - "runtime/deno-deploy-paid-plans-after-ga-pricing-2026"
+  - "infra/js-runtime"
+  - runtime/deno-sandbox-beta-pricing-vs-self-built-microvms-2026
+  - cloud/deno-deploy-managed-vs-self-hosted-deployd-after-ga-2026
+  - deployment/deno-deploy-classic-vs-ga-2026
+  - web/deno-deploy-ga-vs-classic-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/deno
+      name: Deno
+    - type: runtime
+      id: runtime/deno-deploy
+      name: Deno Deploy
+    - type: capability
+      id: capability/metering-and-billing
+      name: Metering and billing
+      category: billing
+    - type: capability
+      id: capability/free-plan-overlimit-pause
+      name: Free-plan over-limit pause until next billing cycle
+      category: reliability
+    - type: capability
+      id: capability/pro-monthly-overage-billing
+      name: Pro monthly overage billing
+      category: billing
+    - type: capability
+      id: capability/spend-limits
+      name: Spend limits
+      category: billing-control
+    - type: capability
+      id: capability/linked-credit-card-verification
+      name: Linked credit-card verification
+      category: account-verification
+    - type: capability
+      id: capability/restricted-free-plan-limits
+      name: Restricted Free-plan limits
+      category: plan-limit
+  edges:
+    - type: breaking_change_in
+      from: capability/metering-and-billing
+      to: runtime/deno-deploy
+      date: 2025-09-26
+    - type: breaking_change_in
+      from: capability/free-plan-overlimit-pause
+      to: runtime/deno-deploy
+      date: 2025-09-26
+    - type: breaking_change_in
+      from: capability/pro-monthly-overage-billing
+      to: runtime/deno-deploy
+      date: 2025-09-26
+    - type: locks_via
+      from: capability/restricted-free-plan-limits
+      to: capability/linked-credit-card-verification

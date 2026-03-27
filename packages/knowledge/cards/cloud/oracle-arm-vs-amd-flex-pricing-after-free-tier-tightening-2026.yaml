@@ -1,0 +1,161 @@
+id: "cloud/oracle-arm-vs-amd-flex-pricing-after-free-tier-tightening-2026"
+title: "Oracle Cloud Ampere vs AMD Flex Pricing After Free-Tier Tightening 2026"
+problem: "Decide whether OCI still makes sense for low-cost workloads after
+  recent free-tier and shape tradeoffs changed the economics of ARM vs x86 in
+  2026."
+context:
+  - "oracle-cloud"
+  - "oci"
+  - "compute"
+  - "arm"
+  - "x86"
+  - "vm-pricing"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Use OCI Ampere A1 first, then pay only for spillover"
+    summary: "As of 2026-03-27, OCI still gives all tenancies the first 3,000 A1
+      OCPU-hours and 18,000 GB-hours per month free on VM.Standard.A1.Flex,
+      which Oracle documents as equivalent to 4 OCPUs and 24 GB for Always Free
+      tenancies. Over that allowance, Oracle's public price list shows A1 at
+      $0.0100 per OCPU-hour and $0.0015 per GB-hour. This is materially cheaper
+      than current AMD Flex pricing and is the only OCI flexible compute path
+      with a meaningful ongoing free allowance. The catch is that Always Free
+      compute is home-region only, idle instances can be reclaimed, and
+      free-only tenancies have narrower network limits such as up to 2 VCNs and
+      one 10 Mbps flexible load balancer."
+    when_to_use: "Best for cost-sensitive and low-ops workloads that can run on Arm
+      and fit within free-tier or near-free usage. Choose this when x86
+      compatibility is not a hard blocker, because OCI economics remain
+      strongest on A1 even after current free-tier restrictions."
+    tradeoffs: "Lowest published OCI compute cost and the only flexible shape with a
+      real monthly free allowance, but you accept Arm porting risk, home-region
+      constraints, and possible idle-instance reclamation."
+    cautions: "Do not assume 'free' means production-stable capacity: Oracle warns
+      about out-of-host-capacity errors for Always Free shapes, and idle A1
+      instances can be reclaimed if CPU, network, and memory stay below
+      threshold for 7 days. A1 also consumes the shared 200 GB Always Free block
+      volume budget, so instance count is storage-limited as well as
+      CPU-limited."
+    links:
+      - "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Alw\
+        ays_Free_Resources.htm"
+      - "https://docs.oracle.com/iaas/Content/Compute/References/arm.htm"
+      - "https://www.oracle.com/cloud/compute/arm/pricing/"
+      - "https://www.oracle.com/a/ocom/docs/corporate/pricing/oracle-paas-and-i\
+        aas-global-price-list.pdf"
+  - name: "Use AMD Flex only when x86 compatibility is worth paying for"
+    summary: "As of 2026-03-27, OCI's Always Free AMD offer is still limited to up
+      to two VM.Standard.E2.1.Micro instances, not AMD Flex shapes. Oracle's
+      public price list shows AMD E4 at $0.0250 per OCPU-hour and $0.0015 per
+      GB-hour, while newer AMD E5 and E6 are listed at $0.0300 per OCPU-hour and
+      $0.0020 per GB-hour. That makes AMD Flex roughly 2.5x to 3x the A1 CPU
+      rate before memory differences are counted. OCI can still make sense here,
+      but only if avoiding Arm migration or preserving x86-only dependencies is
+      more valuable than the extra monthly compute cost."
+    when_to_use: "Best for workloads with native x86 binaries, vendor agents, or
+      images you do not want to port to Arm. Choose this when compatibility, not
+      raw infrastructure cost, is the decisive factor."
+    tradeoffs: "Simpler lift-and-shift for existing x86 stacks and broader binary
+      compatibility, but no meaningful AMD Flex free tier and a much worse price
+      floor than A1."
+    cautions: "Do not compare AMD Flex against A1 as if both receive the same free
+      allowance; they do not. If you upgrade to Pay As You Go, Oracle says
+      Always Free resources still apply, but anything above the A1 and micro
+      limits becomes billable immediately."
+    links:
+      - "https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Alw\
+        ays_Free_Resources.htm"
+      - "https://docs.oracle.com/en-us/iaas/Content/Compute/References/computes\
+        hapes.htm"
+      - "https://www.oracle.com/cloud/pricing/"
+      - "https://www.oracle.com/a/ocom/docs/corporate/pricing/oracle-paas-and-i\
+        aas-global-price-list.pdf"
+tags:
+  - "cloud"
+  - "oracle-cloud"
+  - "oci"
+  - "pricing"
+  - "arm"
+  - "x86"
+aliases:
+  - "oci ampere vs amd pricing"
+  - "oracle cloud a1 vs e4 flex"
+  - "oci free tier arm vs x86"
+  - "oci arm vs x86 cost"
+  - "oracle ampere pricing 2026"
+  - "oci a1 flex economics"
+  - "oracle free tier changes"
+  - "oci ampere free tier"
+  - "oracle amd flex cost"
+  - "oci arm instance pricing"
+  - "oracle a1 vs e4 cost"
+  - "oci ampere vs e4"
+  - "oracle cloud arm pricing"
+
+  - "oci ampere vs amd pricing"
+  - "oracle cloud a1 vs e4 flex"
+  - "oci free tier arm vs x86"
+related_cards:
+  - "cloud/aws-graviton-adoption-cost-savings-vs-ecosystem-maturity-2026"
+  - "web/render-vs-fly-vs-railway-small-app-costs-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/oracle
+      name: Oracle
+    - type: runtime
+      id: runtime/vm-standard-a1-flex
+      name: VM.Standard.A1.Flex
+      architecture: Arm
+    - type: runtime
+      id: runtime/vm-standard-e2-1-micro
+      name: VM.Standard.E2.1.Micro
+      architecture: x86
+    - type: runtime
+      id: runtime/vm-standard-e4-flex
+      name: AMD E4 Flex
+      architecture: x86
+    - type: runtime
+      id: runtime/vm-standard-e5-flex
+      name: AMD E5 Flex
+      architecture: x86
+    - type: runtime
+      id: runtime/vm-standard-e6-flex
+      name: AMD E6 Flex
+      architecture: x86
+    - type: runtime
+      id: runtime/arm
+      name: Arm
+    - type: runtime
+      id: runtime/x86
+      name: x86
+  edges:
+    - type: requires_version
+      from: runtime/vm-standard-a1-flex
+      to: runtime/arm
+      evidence: Best for cost-sensitive and low-ops workloads that can run on Arm.
+    - type: requires_version
+      from: runtime/vm-standard-e4-flex
+      to: runtime/x86
+      evidence: Use AMD Flex only when x86 compatibility is worth paying for.
+    - type: requires_version
+      from: runtime/vm-standard-e5-flex
+      to: runtime/x86
+      evidence: Use AMD Flex only when x86 compatibility is worth paying for.
+    - type: requires_version
+      from: runtime/vm-standard-e6-flex
+      to: runtime/x86
+      evidence: Use AMD Flex only when x86 compatibility is worth paying for.
+    - type: requires_version
+      from: runtime/vm-standard-e2-1-micro
+      to: runtime/x86
+      evidence: OCI's Always Free AMD offer is still limited to up to two
+        VM.Standard.E2.1.Micro instances.

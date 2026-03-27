@@ -151,6 +151,8 @@ related_cards:
   - testing/jest-30-upgrade-after-node-18-drop-2026
   - runtime/node-18-nes-vs-jump-to-22-2026
   - runtime/node-20-eol-april-2026-upgrade-path
+  - runtime/node-22-vs-node-24-after-release-schedule-change-2026
+  - desktop/electron-node-22-minimum-for-official-packages-2026
 status: "active"
 tier: "core"
 updated: "2026-03-16"

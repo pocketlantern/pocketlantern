@@ -1,0 +1,146 @@
+id: "observability/firehydrant-platform-pro-vs-enterprise-signals-pricing-2026"
+title: "FireHydrant Platform Pro vs Enterprise After Signals Alert Packaging 2026"
+problem: "Pick between FireHydrant tiers when responder caps, included alert
+  volume, and private-incident features affect whether Pro is viable."
+context:
+  - "observability"
+  - "incident-management"
+  - "on-call"
+  - "slack"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "small-team"
+candidates:
+  - name: "FireHydrant Platform Pro"
+    summary: "As of 2026-03-20, FireHydrant lists Platform Pro at \"$9,600 per
+      year\". The official pricing page says Pro includes \"up to 20
+      responders\", 5 runbooks, 5 integrations, SSO, and Signals on-call
+      features such as on-call scheduling, unlimited escalation policies,
+      unlimited webhooks and alert rules, and notifications by SMS, voice, push,
+      Slack, Teams, and email. Pro includes \"up to 50 (SMS/Phone) alerts
+      included per month\" and FireHydrant says Signals is charged based on the
+      number of alerts sent. Pro does not list private incidents, private status
+      pages, analytics, SCIM, or viewer licenses."
+    when_to_use: "Use Pro when your active responder pool fits within 20 people,
+      private incidents are not a requirement, and your alerting volume is
+      modest enough that the included 50 SMS/phone alerts per month is
+      materially useful. This is the viable tier when cost sensitivity matters
+      more than advanced admin controls or restricted-incident workflows."
+    tradeoffs: "The main advantage is predictable entry pricing with integrated
+      incident management plus on-call in one contract. The main downside is a
+      hard responder cap and missing enterprise-only controls, so Pro can become
+      a false economy if you outgrow responder count or need private-incident
+      operations."
+    cautions: "Do not assume Pro includes the same incident privacy model as
+      Enterprise; private incidents are listed only on Enterprise. Also do not
+      assume alerting is fully flat-rate: FireHydrant states Signals is charged
+      based on alert volume, and the pricing page only verifies the included
+      monthly SMS/phone alert allotment, not overage rates."
+    links:
+      - "https://firehydrant.com/pricing/"
+      - "https://firehydrant.com/plan/"
+  - name: "FireHydrant Enterprise"
+    summary: "As of 2026-03-20, FireHydrant lists Enterprise as custom pricing
+      rather than publishing a fixed price. The pricing page says Enterprise
+      includes everything in Pro plus viewer licenses, unlimited runbooks,
+      private incidents, FireHydrant AI features, unlimited retrospective
+      templates, private status pages, incident analytics, unlimited custom
+      fields, unlimited integrations, alert grouping, volume discounting, live
+      call routing, Slack Enterprise Grid support, data exports, audit logs,
+      SCIM, multiple organizations, SLAs, and premium support. Enterprise is
+      therefore the first tier where restricted/private incident handling is
+      officially packaged. The official docs for private incidents also show
+      operational caveats around converting public incidents to private ones."
+    when_to_use: "Use Enterprise when you need private incidents, private status
+      pages, SCIM, audit logs, multi-org support, or responder/viewer separation
+      beyond the Pro packaging. It is the safer choice when incident privacy,
+      large-team administration, or higher alert volume makes the Pro cap and
+      included-alert bundle too restrictive."
+    tradeoffs: "Enterprise removes the most important packaging blockers and adds
+      admin, analytics, and alerting features that matter in larger
+      organizations. The tradeoff is custom pricing and sales involvement, so
+      budget predictability is lower unless you negotiate explicit alert-volume
+      and user-entitlement terms."
+    cautions: "Private incidents have workflow constraints in the official docs:
+      converting a public incident to private terminates attached runbooks, may
+      create a new private Slack channel if the old one was public, cannot be
+      reverted back to public, and public runbooks do not attach to private
+      incidents. FireHydrant also notes that users removed from a private
+      incident may still need manual removal from the private Slack channel by a
+      Slack admin."
+    links:
+      - "https://firehydrant.com/pricing/"
+      - "https://docs.firehydrant.com/docs/private-incidents"
+tags:
+  [
+    "observability",
+    "firehydrant",
+    "incident-management",
+    "pricing",
+    "on-call"
+  ]
+aliases:
+  - "firehydrant pro vs enterprise"
+  - "firehydrant signals pricing"
+  - "firehydrant private incidents pricing"
+related_cards:
+  - "observability/incident-alert-routing-strategy"
+  - "observability/incident-io-basic-vs-team-vs-pro-plus-on-call-pricing-2026"
+  - "observability/incident-io-vs-firehydrant-vs-statuspage-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/firehydrant
+      name: FireHydrant
+    - type: package
+      id: package/firehydrant-platform-pro
+      name: FireHydrant Platform Pro
+      vendor: vendor/firehydrant
+      category: incident-management
+    - type: package
+      id: package/firehydrant-enterprise
+      name: FireHydrant Enterprise
+      vendor: vendor/firehydrant
+      category: incident-management
+    - type: capability
+      id: capability/private-incidents
+      name: private incidents
+      category: incident-privacy
+    - type: capability
+      id: capability/scim
+      name: SCIM
+      category: admin
+    - type: capability
+      id: capability/viewer-licenses
+      name: viewer licenses
+      category: access
+    - type: capability
+      id: capability/private-status-pages
+      name: private status pages
+      category: status-pages
+    - type: capability
+      id: capability/incident-analytics
+      name: incident analytics
+      category: analytics
+  edges:
+    - type: locks_via
+      from: capability/private-incidents
+      to: package/firehydrant-enterprise
+    - type: locks_via
+      from: capability/scim
+      to: package/firehydrant-enterprise
+    - type: locks_via
+      from: capability/viewer-licenses
+      to: package/firehydrant-enterprise
+    - type: locks_via
+      from: capability/private-status-pages
+      to: package/firehydrant-enterprise
+    - type: locks_via
+      from: capability/incident-analytics
+      to: package/firehydrant-enterprise

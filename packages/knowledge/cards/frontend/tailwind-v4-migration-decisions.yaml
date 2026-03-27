@@ -1,0 +1,109 @@
+id: frontend/tailwind-v4-migration-decisions
+title: "Tailwind CSS v4 Migration Decisions (2026)"
+problem: "Deciding whether and how to migrate from Tailwind CSS v3 to v4,
+  considering the CSS-first configuration model, new engine, browser
+  requirements, and breaking changes."
+context:
+  - css
+  - frontend
+  - migration
+  - tailwind
+constraints:
+  - small-team
+  - cost-sensitive
+candidates:
+  - name: Migrate to Tailwind v4
+    summary: "Tailwind v4 replaces JavaScript config with CSS-first configuration
+      using @theme directives. New Oxide engine (Rust-based) delivers 2-5x
+      faster builds. Requires modern browsers (Safari 16.4+, Chrome 111+,
+      Firefox 128+)."
+    when_to_use: "When your browser support matrix allows modern-only targets (no
+      IE, no Safari <16.4) and you want faster builds. Best for greenfield or
+      actively maintained projects where the migration cost is justified by DX
+      improvements."
+    tradeoffs: "CSS-first config (@theme, @custom-variant) is cleaner but requires
+      unlearning tailwind.config.js patterns. Oxide engine is significantly
+      faster for large projects. PostCSS plugin changes from tailwindcss to
+      @tailwindcss/postcss. Content detection is now automatic — no content
+      array needed."
+    cautions: "Browser floor is hard: Safari 16.4+ (released March 2023), Chrome
+      111+ (March 2023), Firefox 128+ (July 2024). Default color changes —
+      border and ring default to currentColor instead of gray-200. Some plugins
+      may not be compatible. Run `npx @tailwindcss/upgrade` for automated
+      migration, but review changes manually."
+    links:
+      - https://tailwindcss.com/docs/upgrade-guide
+      - https://tailwindcss.com/blog/tailwindcss-v4
+  - name: Stay on Tailwind v3
+    summary: "Tailwind v3 remains stable and widely supported. No forced migration
+      timeline — v3 continues to receive security patches."
+    when_to_use: "When you must support older browsers (Safari <16.4), have
+      extensive custom plugin dependencies, or the migration cost exceeds the
+      benefit for a stable product."
+    tradeoffs: "No access to Oxide engine performance gains or CSS-first config.
+      Plugin ecosystem will gradually shift to v4. No new features will be added
+      to v3."
+    cautions: "v3 is in maintenance mode — security patches only. New Tailwind
+      plugins and integrations will increasingly target v4 only. Plan migration
+      timeline even if not immediate."
+    links:
+      - https://tailwindcss.com/docs/installation
+  - name: Incremental migration with @tailwindcss/upgrade
+    summary: "Use the official upgrade CLI tool to automate most migration steps,
+      then manually fix remaining issues. Supports partial migration in
+      monorepos."
+    when_to_use: "When you have a large codebase and want to minimize manual
+      migration effort. The tool handles most mechanical changes (config
+      conversion, class renames, PostCSS plugin swap)."
+    tradeoffs: "Automated tool catches ~80% of changes but manual review needed for
+      custom plugins, programmatic config, and edge cases. Some color utility
+      changes require visual QA."
+    cautions: "Run on a clean git branch. The tool modifies postcss.config, removes
+      tailwind.config.js, and rewrites @tailwind directives to @import. Test
+      thoroughly — default color changes (border, ring, placeholder) can cause
+      subtle visual regressions."
+    links:
+      - https://tailwindcss.com/docs/upgrade-guide
+tags:
+  - css
+  - tailwind
+  - migration
+  - frontend
+  - v4
+  - comparison
+  - breaking-changes
+aliases:
+  - tailwind v4 migration
+  - tailwind css v4
+  - tailwind upgrade
+  - tailwind v3 to v4
+related_cards:
+  - frontend/design-system-build-vs-buy
+  - frontend/tailwindcss-v4-upgrade-node20-browser-floor-2026
+tier: "core"
+status: active
+updated: "2026-03-15"
+review_by: "2026-10-12"
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: package
+      id: package/tailwind-v4
+      name: Tailwind CSS v4
+      version: 4.x
+  edges:
+    - type: breaking_change_in
+      from: package/tailwind-v4
+      to: null
+      change: CSS-first config replaces tailwind.config.js — uses @theme directives
+      migration_path: npx @tailwindcss/upgrade automated tool
+    - type: breaking_change_in
+      from: package/tailwind-v4
+      to: null
+      change: PostCSS plugin changed from tailwindcss to @tailwindcss/postcss
+      migration_path: update postcss.config
+    - type: breaking_change_in
+      from: package/tailwind-v4
+      to: null
+      change: border and ring default to currentColor instead of gray-200
+      migration_path: visual QA required — subtle regressions possible

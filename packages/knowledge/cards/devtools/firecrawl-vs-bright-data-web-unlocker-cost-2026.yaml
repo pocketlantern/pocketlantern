@@ -1,0 +1,137 @@
+id: "devtools/firecrawl-vs-bright-data-web-unlocker-cost-2026"
+title: "Firecrawl vs Bright Data Web Unlocker Cost for JS-Rendered Pages in 2026"
+problem: "Agent teams need a cost decision for JavaScript-heavy targets under
+  real production volume, while accounting for uncertainty in Firecrawl's
+  published pricing once browser execution is required."
+context:
+  - "web-scraping"
+  - "javascript-rendering"
+  - "agent-infrastructure"
+constraints:
+  - "cost-sensitive"
+  - "high-scale"
+  - "low-ops"
+candidates:
+  - name: "Firecrawl scrape and crawl credits"
+    summary: "As of 2026-03-26, Firecrawl lists scrape and crawl at \"1 / page\" and
+      browser usage at \"2 / browser minute.\" Its annual tiers imply lower base
+      scrape pricing per 1,000 pages than Bright Data, but the pricing page does
+      not confirm whether JS-rendered pages remain at the 1-credit rate once
+      browser execution is needed."
+    when_to_use: "Use this when your JS-heavy targets can stay on Firecrawl's
+      standard scrape or crawl path with limited browser-minute usage. The
+      decision case is strongest when successful pages stay close to the
+      published base scrape rate."
+    tradeoffs: "Pros: lower published base cost at scale, simple scrape and crawl
+      credit model, and failed requests are usually not charged. Cons: no broad
+      pay-as-you-go plan, credits usually do not roll over, and browser-heavy
+      workloads may cost more than the base per-page rate."
+    cautions: "Do not assume all JavaScript-heavy targets are priced exactly like
+      static pages. As of 2026-03-26, Firecrawl explicitly prices browser time
+      separately at 2 credits per browser minute and says advanced features may
+      add credits, so teams should verify whether their target mix needs browser
+      execution beyond standard scrape credits."
+    links:
+      - "https://www.firecrawl.dev/pricing"
+      - "https://docs.firecrawl.dev"
+  - name: "Bright Data Web Unlocker"
+    summary: "As of 2026-03-26, Bright Data Web Unlocker advertises
+      successful-result pricing with built-in JavaScript rendering and anti-bot
+      handling. Its published pricing is $1.5 per 1,000 results pay-as-you-go,
+      or about $1.31, $1.11, and $1.00 per 1,000 results on the listed committed
+      tiers."
+    when_to_use: "Use this when your targets are truly JS-rendered, frequently
+      blocked, or you want simpler budgeting for pages that need unblocking and
+      rendering. Its published model includes automatic JS execution instead of
+      exposing browser time as a separate meter on this product page."
+    tradeoffs: "Pros: predictable successful-result billing, built-in JS rendering,
+      and bundled anti-bot handling. Cons: higher published per-1,000 list price
+      than Firecrawl's base scrape tiers if Firecrawl can process the same pages
+      without extra browser cost."
+    cautions: "As of 2026-03-26, Bright Data states Web Unlocker API is not for
+      direct use with browser automation tools such as Puppeteer or Playwright;
+      if you need an interactive browser workflow, Bright Data directs users to
+      its Scraping Browser product instead. That product-boundary matters for
+      migrations from existing browser-based scrapers."
+    links:
+      - "https://brightdata.com/products/web-unlocker"
+      - "https://docs.brightdata.com"
+tags:
+  - "devtools"
+  - "scraping"
+  - "pricing"
+  - "firecrawl"
+  - "bright-data"
+aliases:
+  - "firecrawl vs bright data unlocker pricing"
+  - "js rendered page scraping cost 2026"
+  - "web unlocker vs firecrawl credits"
+related_cards:
+  - "devtools/firecrawl-vs-scraperapi-vs-scrapingbee-pricing-2026"
+  - "devtools/apify-rental-actors-sunset-to-pay-per-usage-2026"
+  - "testing/browserbase-vs-browserless-browser-session-pricing-2026"
+  - devtools/bright-data-web-unlocker-vs-zyte-api-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/firecrawl
+      name: Firecrawl
+    - type: vendor
+      id: vendor/bright-data
+      name: Bright Data
+    - type: capability
+      id: capability/javascript-rendering
+      name: JavaScript rendering
+    - type: capability
+      id: capability/browser-execution
+      name: Browser execution
+    - type: capability
+      id: capability/browser-automation
+      name: Browser automation
+    - type: package
+      id: package/puppeteer
+      name: Puppeteer
+    - type: package
+      id: package/playwright
+      name: Playwright
+  edges:
+    - type: locks_via
+      from: vendor/firecrawl
+      to: capability/browser-execution
+      meter: 2 credits per browser minute
+      as_of: 2026-03-26
+      evidence: Firecrawl explicitly prices browser time separately at 2 credits per
+        browser minute.
+    - type: locks_via
+      from: vendor/bright-data
+      to: capability/javascript-rendering
+      meter: successful-result pricing with built-in JavaScript rendering
+      as_of: 2026-03-26
+      evidence: Bright Data Web Unlocker advertises successful-result pricing with
+        built-in JavaScript rendering.
+    - type: locks_via
+      from: vendor/bright-data
+      to: capability/browser-automation
+      scope: not for direct use
+      as_of: 2026-03-26
+      evidence: Bright Data states Web Unlocker API is not for direct use with browser
+        automation tools.
+    - type: locks_via
+      from: vendor/bright-data
+      to: package/puppeteer
+      scope: not for direct use
+      as_of: 2026-03-26
+      evidence: Bright Data states Web Unlocker API is not for direct use with browser
+        automation tools such as Puppeteer.
+    - type: locks_via
+      from: vendor/bright-data
+      to: package/playwright
+      scope: not for direct use
+      as_of: 2026-03-26
+      evidence: Bright Data states Web Unlocker API is not for direct use with browser
+        automation tools such as Playwright.

@@ -1,0 +1,128 @@
+id: "database/planetscale-no-free-plan-after-hobby-deprecation-2026"
+title: "PlanetScale Without a Free Plan After Hobby Deprecation in 2026"
+problem: "Choose whether PlanetScale still fits side projects or prototypes now
+  that all new databases require paid Base and the old Hobby plan is gone."
+context:
+  - "postgres"
+  - "mysql"
+  - "prototyping"
+  - "serverless"
+constraints:
+  - "cost-sensitive"
+  - "low-ops"
+  - "small-team"
+candidates:
+  - name: "Use PlanetScale Base for a paid prototype that may grow"
+    summary: "As of 2026-03-20, PlanetScale does not offer a free plan.
+      PlanetScale's docs say all databases now require a paid subscription
+      starting with the Base plan, and the former Scaler Pro name has been
+      renamed to Base; a 2025 support article still says new databases are
+      created on paid Scaler Pro. PlanetScale Postgres single-node databases
+      start at $5/month for development and low-traffic workloads, while HA uses
+      a 3-node topology. This keeps PlanetScale viable for side projects only if
+      a paid floor is acceptable and you value PlanetScale features such as
+      branching, managed operations, and an upgrade path into larger production
+      shapes."
+    when_to_use: "Use this for low-ops plus small-team projects where paying from
+      day one is acceptable and avoiding a later database migration matters more
+      than preserving a free tier. It is the better fit when you expect the
+      prototype to become a real product and want to stay on the same vendor as
+      you scale."
+    tradeoffs: "You get managed branching and a cleaner path upward, but the old
+      zero-cost entry point is gone. Even the cheapest current option is paid,
+      so dormant hobby databases are no longer cost-free by default."
+    cautions: "PlanetScale's support article still uses the old Scaler Pro
+      terminology, but the plans docs say Scaler Pro was renamed to Base. If
+      your workload needs MySQL-compatible Vitess rather than Postgres, check
+      the pricing calculator because costs are resource-based and not as simple
+      as the $5 single-node Postgres entry point."
+    links:
+      - "https://planetscale.com/docs/planetscale-plans"
+      - "https://planetscale.com/docs/planetscale-plans"
+      - "https://planetscale.com/pricing"
+  - name: "Use Neon Free or Launch instead for cost-sensitive prototypes"
+    summary: "As of 2026-03-20, Neon still offers a Free plan at $0 with 100
+      projects, 100 CU-hours per project per month, 0.5 GB storage per project,
+      sizes up to 2 CU, and scale-to-zero after 5 minutes of inactivity. Its
+      paid Launch plan is usage-based, with typical spend shown as $15/month,
+      compute at $0.106 per CU-hour, and storage at $0.35 per GB-month. That
+      makes Neon a stronger fit when the main blocker is PlanetScale's loss of a
+      free entry tier rather than a need for PlanetScale-specific features."
+    when_to_use: "Use this for cost-sensitive plus low-ops prototypes where free
+      idle time and scale-to-zero matter more than vendor continuity with
+      PlanetScale. It is the decisive option when you want to keep experiments
+      live without immediately committing to monthly database spend."
+    tradeoffs: "The free tier is materially better for experiments and bursty
+      workloads, and billing stays usage-based as you grow. The tradeoff is that
+      choosing Neon means accepting a different platform and migration path
+      instead of standardizing on PlanetScale early."
+    cautions: "Neon's free limits are per project and still cap storage and monthly
+      compute, so sustained traffic or always-on workloads can push you into
+      Launch quickly. Validate branch, auth, and restore-window needs against
+      the current pricing table before treating it as a production default."
+    links:
+      - "https://neon.com/pricing"
+tags:
+  - "database"
+  - "planetscale"
+  - "neon"
+  - "pricing"
+aliases:
+  - "planetscale no free plan"
+  - "planetscale hobby deprecated"
+  - "planetscale scaler pro required"
+related_cards:
+  - "database/neon-vs-supabase-vs-planetscale-2026"
+  - "database/planetscale-single-node-vs-ha-clusters-2026"
+  - database/planetscale-scaler-pro-vs-managed-byoc-pricing-2026
+tier: "core"
+status: "active"
+updated: "2026-03-20"
+review_by: "2026-06-18"
+sidecar_hard_facts:
+  extracted: 2026-03-21
+  nodes:
+    - type: vendor
+      id: vendor/planetscale
+      name: PlanetScale
+    - type: vendor
+      id: vendor/neon
+      name: Neon
+    - type: capability
+      id: capability/free-plan
+      name: Free plan
+    - type: capability
+      id: capability/hobby-plan
+      name: Hobby plan
+    - type: capability
+      id: capability/base-plan
+      name: Base plan
+  edges:
+    - type: breaking_change_in
+      from: capability/free-plan
+      to: vendor/planetscale
+      date: 2026-03-20
+      evidence: As of 2026-03-20, PlanetScale does not offer a free plan.
+    - type: eol_date
+      from: capability/hobby-plan
+      to: vendor/planetscale
+      date: "2026"
+      evidence: the old Hobby plan is gone
+      confidence: title-level grounding
+    - type: requires_version
+      from: vendor/planetscale
+      to: capability/base-plan
+      date: 2026-03-20
+      evidence: PlanetScale's docs say all databases now require a paid subscription
+        starting with the Base plan.
+    - type: breaking_change_in
+      from: capability/hobby-plan
+      to: vendor/planetscale
+      date: 2026-03-20
+      evidence: the former Scaler Pro name has been renamed to Base; a 2025 support
+        article still says new databases are created on paid Scaler Pro.
+    - type: breaking_change_in
+      from: capability/free-plan
+      to: vendor/neon
+      date: 2026-03-20
+      evidence: As of 2026-03-20, Neon still offers a Free plan at $0.

@@ -1,0 +1,230 @@
+id: backend/api-response-caching-cdn-edge-vs-database-2026
+title: "API Response Caching: CDN vs Edge vs Database Cache 2026"
+problem: CDN caching costs per GB egress and region, edge caching varies by
+  provider (Cloudflare vs Vercel), database caching impacts connection pooling.
+  Cache hit rate directly affects total cost.
+context:
+  - backend
+  - api
+  - performance
+  - cost-optimization
+constraints:
+  - serverless
+  - high-scale
+  - cost-sensitive
+  - small-team
+  - microservices
+candidates:
+  - name: Cloudflare CDN Cache
+    summary: Cloudflare's global CDN caches API responses and assets across 300+
+      data centers on all plans including Free. As of 2026-03-16, egress
+      bandwidth carries no extra charge on standard plans (Free, Pro $20/mo,
+      Business $200/mo, Enterprise). Cache Rules are plan-gated at 10 (Free), 25
+      (Pro), 50 (Business), and 300 (Enterprise). The key differentiator is zero
+      egress cost at any traffic scale, making it the lowest-cost CDN option for
+      high-volume public APIs.
+    when_to_use: Best for cost-sensitive + high-scale where public API responses are
+      cacheable and eliminating per-GB egress fees is the primary budget
+      concern. The decisive factor is that cache hit rate improvements reduce
+      origin load without increasing CDN spend regardless of volume.
+    tradeoffs: "Pros: No bandwidth egress fees on standard plans. Free tier
+      included. Cache Rules with TTL override available on all plans. Tiered
+      Cache reduces origin load. Cons: Cache Rules count is low on Free/Pro
+      (10-25). Enterprise-only features include cache by status code and custom
+      cache keys by header/cookie. Cache Reserve (persistent storage) is a paid
+      add-on with separate billing."
+    cautions: Cloudflare Workers execute before the cache layer — even cache-hit
+      requests still incur Workers invocation costs, so Workers-based caching
+      does not reduce billing the way a pure CDN cache does. Edge Cache TTL
+      minimum is 2 hours on Free and 1 hour on Pro; the 1-second minimum
+      required for short-lived API caches is Business/Enterprise only.
+    links:
+      - https://developers.cloudflare.com/cache/
+      - https://developers.cloudflare.com/cache/plans/
+      - https://developers.cloudflare.com/cache/how-to/cache-rules/
+      - https://developers.cloudflare.com/workers/platform/pricing/
+  - name: Vercel Edge CDN Cache
+    summary: Vercel's global CDN caches full HTTP responses at the edge for all
+      plans, controlled via Cache-Control and Vercel-CDN-Cache-Control headers.
+      As of 2026-03-16, Fast Data Transfer is included at 100GB/mo (Hobby) and
+      1TB/mo (Pro); Fast Origin Transfer (cache misses hitting Functions) costs
+      $0.06/GB after 100GB included on Pro. The cache is segmented by region,
+      not globally pooled. The key differentiator is native ISR and Next.js
+      integration that enables automatic per-route cache revalidation without an
+      external CDN.
+    when_to_use: Best for serverless + small-team deploying Next.js or other
+      Vercel-native frameworks where ISR and CDN caching must work without
+      managing a separate CDN layer. The decisive factor is whether your app
+      already runs on Vercel — per-layer TTL via Vercel-CDN-Cache-Control and
+      automatic ISR revalidation eliminate the need for a standalone CDN.
+    tradeoffs: "Pros: Zero-config CDN caching included on all plans. Native ISR with
+      stale-while-revalidate. Vercel-CDN-Cache-Control enables independent TTL
+      for CDN vs browser vs downstream CDNs. No separate CDN setup required.
+      Cons: Fast Data Transfer is metered and regionally priced — high egress
+      volume in expensive regions increases costs meaningfully. Regional cache
+      segmentation means cold regions see more origin misses than a globally
+      unified cache pool."
+    cautions: Responses containing a Set-Cookie header are never cached by Vercel's
+      CDN — API routes that set cookies silently bypass the CDN cache regardless
+      of Cache-Control directives. The proxy-revalidate and stale-if-error
+      Cache-Control directives are not supported, and max cacheable response
+      size is 10MB for non-streaming Functions.
+    links:
+      - https://vercel.com/docs/cdn-cache
+      - https://vercel.com/docs/manage-cdn-usage
+      - https://vercel.com/pricing
+  - name: AWS CloudFront (Flat-Rate Plans)
+    summary: "AWS CloudFront is a global CDN with 750+ edge locations that caches
+      API Gateway, Lambda, and S3 responses. As of 2026-03-16, flat-rate plans
+      bundle CloudFront CDN, WAF, DDoS protection, Route 53, and CloudFront
+      Functions: Free ($0/mo, 100GB, 1M requests), Pro ($15/mo, 50TB, 10M
+      requests), Business ($200/mo, 50TB, 125M requests), Premium ($1,000/mo,
+      50TB, 500M requests) — all with no overage charges. Data transfer from AWS
+      origins (S3, API Gateway, ALB) to CloudFront is free. The key
+      differentiator is predictable flat-rate cost with AWS-native
+      zero-origin-egress pricing."
+    when_to_use: Best for enterprise + high-scale teams already on AWS where API
+      Gateway or S3 origins are the cache source and predictable monthly billing
+      via flat-rate pricing eliminates overage risk. The decisive factor is the
+      bundled WAF and zero-egress from AWS origins — teams running their API
+      entirely in AWS get both cost efficiency and security in one plan.
+    tradeoffs: "Pros: Flat-rate plans absorb traffic spikes (first 3x spike
+      protected that month). Zero data transfer cost from AWS origins. WAF,
+      DDoS, bot protection, and Route 53 bundled. Cache invalidations included
+      and propagate within seconds. Cons: Lambda@Edge invocations are billed
+      separately outside the flat-rate. Cache behavior rule limits are low on
+      Free/Pro (5-10). CloudFront distribution configuration complexity is
+      higher than Cloudflare or Vercel."
+    cautions: Flat-rate plans have hard account quotas of 100 plans per account and
+      3 Free plans per account — these cannot be increased. Lambda@Edge compute
+      costs fall outside flat-rate coverage and can be a significant surprise
+      for edge-compute-heavy caching patterns. Custom origin response rules and
+      regex-based cache filtering require Pro tier or above.
+    links:
+      - https://aws.amazon.com/cloudfront/pricing/
+      - https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/flat-rate-pricing-plan.html
+  - name: Upstash Redis (Serverless Database Cache)
+    summary: "Upstash Redis is a serverless, HTTP REST-based Redis service for
+      application-layer API response caching. As of 2026-03-16, pricing is: Free
+      (256MB storage, 500K commands/mo), Pay-as-you-go ($0.20/100K commands,
+      bandwidth free up to 200GB/mo then $0.03/GB, storage $0.25/GB with 1GB
+      free), Fixed plans from $10/mo. Max throughput is 10K requests/sec. Unlike
+      self-hosted Redis or ElastiCache, Upstash uses HTTP with no TCP connection
+      management — eliminating connection pool exhaustion under serverless cold
+      starts. The key differentiator is application-controlled cache
+      invalidation at sub-millisecond read latency without infrastructure
+      overhead."
+    when_to_use: "Best for serverless + microservices where per-user or per-tenant
+      cache invalidation is required and CDN-layer caching cannot express the
+      invalidation logic. The decisive factor is connection pooling: Upstash's
+      HTTP API removes the Lambda/Edge Function connection limit problem that
+      blocks use of self-hosted Redis in high-concurrency serverless
+      environments."
+    tradeoffs: "Pros: HTTP REST API eliminates connection pool exhaustion in
+      serverless. Pay-per-command pricing scales cost directly with cache hit
+      rate. Global read replicas available for low-latency cross-region reads.
+      No infrastructure provisioning or connection management. Cons: Network
+      latency to Upstash is higher than in-process (in-memory) caching.
+      Per-command cost model penalizes low cache hit rates — a high miss rate
+      makes this more expensive than CDN caching for the same traffic volume."
+    cautions: At $0.20/100K commands, a sustained low cache hit rate can produce
+      unexpectedly high costs relative to CDN caching — always instrument hit
+      rate before committing to pay-as-you-go. Global read replicas add $5/month
+      per region; without them, Upstash latency degrades significantly for users
+      outside the primary region, reducing the cache benefit for globally
+      distributed APIs.
+    links:
+      - https://upstash.com/pricing/redis
+      - https://upstash.com/docs/redis/overall/pricing
+      - https://upstash.com/blog/redis-and-performance-api
+tags:
+  - backend
+  - caching
+  - cdn
+  - edge-cache
+  - redis
+  - cloudflare
+  - vercel
+  - cloudfront
+  - upstash
+  - api
+  - performance
+  - cost-optimization
+aliases:
+  - api-caching
+  - cdn-cache
+  - edge-caching
+  - response-caching
+  - http-cache
+  - cache-layer-selection
+  - redis-cache
+  - cloudflare-cache
+  - vercel-cache
+  - cloudfront-cache
+related_cards:
+  - backend/rate-limiting
+  - auth/session-revocation-with-edge-caches
+  - database/vector-database-consolidation-pinecone-vs-weaviate-vs-milvus-2026
+  - backend/http-client-migration-fetch-vs-axios-vs-undici-node-24-2026
+  - backend/upstash-redis-free-payg-fixed-after-march-2025-pricing
+status: active
+tier: core
+updated: 2026-03-16
+review_by: 2026-09-21
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: capability
+      id: capability/1-second-edge-cache-ttl
+      name: 1-second minimum Edge Cache TTL for short-lived API caches
+    - type: package
+      id: package/cloudflare-business-plan
+      name: Cloudflare Business plan
+    - type: package
+      id: package/cloudflare-enterprise-plan
+      name: Cloudflare Enterprise plan
+    - type: capability
+      id: capability/custom-origin-response-rules
+      name: Custom origin response rules
+    - type: capability
+      id: capability/regex-based-cache-filtering
+      name: Regex-based cache filtering
+    - type: package
+      id: package/aws-cloudfront-pro-tier
+      name: AWS CloudFront Pro tier
+    - type: package
+      id: package/vercel-edge-cdn-cache
+      name: Vercel Edge CDN Cache
+    - type: protocol
+      id: protocol/cache-control
+      name: Cache-Control
+      standard: HTTP header
+    - type: protocol
+      id: protocol/vercel-cdn-cache-control
+      name: Vercel-CDN-Cache-Control
+      standard: HTTP header
+  edges:
+    - type: requires_version
+      from: capability/1-second-edge-cache-ttl
+      to: package/cloudflare-business-plan
+      requirement: Business or Enterprise only
+    - type: requires_version
+      from: capability/1-second-edge-cache-ttl
+      to: package/cloudflare-enterprise-plan
+      requirement: Business or Enterprise only
+    - type: requires_version
+      from: capability/custom-origin-response-rules
+      to: package/aws-cloudfront-pro-tier
+      requirement: Pro tier or above
+    - type: requires_version
+      from: capability/regex-based-cache-filtering
+      to: package/aws-cloudfront-pro-tier
+      requirement: Pro tier or above
+    - type: locks_via
+      from: package/vercel-edge-cdn-cache
+      to: protocol/cache-control
+      mechanism: controlled via Cache-Control headers
+    - type: locks_via
+      from: package/vercel-edge-cdn-cache
+      to: protocol/vercel-cdn-cache-control
+      mechanism: controlled via Vercel-CDN-Cache-Control headers

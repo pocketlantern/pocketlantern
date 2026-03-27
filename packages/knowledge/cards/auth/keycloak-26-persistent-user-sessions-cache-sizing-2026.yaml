@@ -1,0 +1,180 @@
+id: "auth/keycloak-26-persistent-user-sessions-cache-sizing-2026"
+title: "Keycloak 26 Persistent User Sessions Upgrade and Cache Sizing Decision"
+problem: "Teams upgrading self-hosted Keycloak need to know how the Keycloak 26
+  persistent-user-session defaults change memory, database load, and cluster
+  sizing before they roll forward."
+context:
+  - "keycloak"
+  - "infinispan"
+  - "identity-access-management"
+  - "self-hosted"
+constraints:
+  - "enterprise"
+  - "high-scale"
+  - "cost-sensitive"
+  - "compliance"
+candidates:
+  - name: "Adopt Keycloak 26 default persistent user sessions and resize around the
+      database"
+    summary: "As of 2026-03-27, Keycloak 26 enables `persistent-user-sessions` by
+      default, so regular user and client sessions are stored in the database
+      and loaded on demand into the `sessions` and `clientSessions` caches. The
+      default in-memory caches for user, client, offline user, and offline
+      client sessions are limited to 10000 entries per node, and the internal
+      caches run with only a single owner for each cache entry. Keycloak
+      documents that if concurrent sessions exceed the cache maximum, database
+      activity and request latency increase because session data must be
+      reloaded during operations such as token refresh or user-info calls. This
+      path reduces Keycloak memory footprint versus the older all-in-memory
+      model, but it shifts more steady-state load and sizing risk to the
+      database."
+    when_to_use: "Use this for the normal Keycloak 26 single-site upgrade path when
+      you want sessions to survive restarts and upgrades. It is the decisive
+      choice when restart resilience matters more than minimizing database
+      reads, and when you can provision and observe the database as the new
+      source of truth for online sessions."
+    tradeoffs: "Lower Keycloak memory use and no need for single-site external
+      Infinispan to preserve sessions, but more read/write pressure moves to the
+      database and cache miss latency becomes user-visible if cache sizing is
+      too small."
+    cautions: "If you upgraded from Keycloak 24 or earlier, migration of existing
+      online sessions only worked when `persistent-user-sessions` was enabled on
+      the first start of Keycloak 25. If you moved to Keycloak 25 without
+      enabling it, Keycloak documents there is no later migration path; you must
+      clear existing online sessions before first starting nodes with the
+      feature enabled. Keycloak 26 also restricts embedded remote-store usage:
+      if `persistent-user-sessions` is disabled and remote store is configured
+      for user-session caches, startup is refused, and if the feature is enabled
+      the remote-store configuration is ignored with a warning."
+    links:
+      - "https://www.keycloak.org/server/caching"
+      - "https://www.keycloak.org/docs/latest/upgrading/"
+      - "https://www.keycloak.org/2024/12/storing-sessions-in-kc26"
+      - "https://www.keycloak.org/2024/06/persistent-user-sessions-in-preview"
+  - name: "Disable persistent user sessions and keep volatile in-memory sessions"
+    summary: "As of 2026-03-27, Keycloak 26 still allows volatile user sessions by
+      starting with `--features-disabled=persistent-user-sessions`. In this
+      mode, the cache becomes the source of truth for regular user and client
+      sessions, which minimizes database calls for active sessions but brings
+      back the older failure mode where all sessions are lost if all Keycloak
+      nodes restart. Keycloak explicitly calls out increased memory consumption
+      for this setup. Current Keycloak 26 releases also state that problematic
+      custom owner and cache-size settings for volatile session caches are
+      ignored in favor of safe defaults, and teams should revert to the standard
+      cache configuration file rather than carry old `cache-ispn.xml` tweaks
+      forward."
+    when_to_use: "Use this only when database pressure is the immediate bottleneck
+      and you can accept restart-driven logout events. It is the decisive option
+      for single-site deployments that value lower database activity over
+      session durability across maintenance windows."
+    tradeoffs: "Lower database usage for active sessions, but higher Keycloak memory
+      consumption and guaranteed loss of online sessions on full-cluster
+      restarts. It also removes the main operational benefit of the Keycloak 26
+      default."
+    cautions: "Keycloak says setting maximum cache size for `sessions` and
+      `clientSessions` is not supported when volatile sessions are enabled.
+      Disabling `persistent-user-sessions` is also not possible when the
+      `multi-site` feature is enabled."
+    links:
+      - "https://www.keycloak.org/server/caching"
+      - "https://www.keycloak.org/docs/latest/upgrading/"
+      - "https://www.keycloak.org/2024/12/storing-sessions-in-kc26"
+  - name: "Evaluate experimental external Infinispan session storage only if
+      database load is unacceptable"
+    summary: "As of 2026-03-27, Keycloak 26 documents an experimental `clusterless`
+      path where sessions are stored in external Infinispan instead of the
+      database, with `persistent-user-sessions` disabled. Keycloak says this
+      reduces database usage, but it also labels the feature experimental and
+      not yet fully finished or performance-optimized. For older single-site
+      patterns that used embedded remote stores to survive restarts, Keycloak 26
+      treats that approach as obsolete, deprecated, and scheduled for removal in
+      the next major release. This makes pure external Infinispan an evaluation
+      path, not the standard production upgrade target."
+    when_to_use: "Use this only for controlled testing when persistent sessions put
+      unacceptable pressure on the database and your team can tolerate
+      experimental behavior. The decisive factor is a proven database bottleneck
+      combined with willingness to own extra complexity and feature risk."
+    tradeoffs: "Potentially reduced database load, but higher architecture
+      complexity and weaker support posture. It also keeps you closer to
+      features Keycloak is actively warning about or deprecating."
+    cautions: "Keycloak states the single-site memory-plus-external-Infinispan
+      pattern is deprecated and will be removed in the next major release. For
+      multi-site, Keycloak forces persistent user sessions unless you
+      intentionally evaluate the experimental `multi-site,clusterless`
+      combination."
+    links:
+      - "https://www.keycloak.org/2024/12/storing-sessions-in-kc26"
+      - "https://www.keycloak.org/docs/latest/upgrading/"
+      - "https://www.keycloak.org/server/caching"
+tags:
+  - "auth"
+  - "keycloak"
+  - "sessions"
+  - "infinispan"
+  - "migration"
+aliases:
+  - "keycloak 26 persistent user sessions"
+  - "keycloak 26 cache sizing"
+  - "keycloak 26 remote store migration"
+  - "keycloak 26 session persistence"
+  - "keycloak 26 persistent sessions"
+  - "kc26 persistent sessions"
+  - "keycloak 26 session cache sizing"
+  - "keycloak 26 db session load"
+  - "keycloak 26 infinispan sizing"
+  - "keycloak 26 remote store removal"
+  - "keycloak 26 cluster sizing"
+  - "keycloak 26 session memory"
+  - "keycloak 26 upgrade sessions"
+
+  - "keycloak 26 persistent user sessions"
+  - "keycloak 26 cache sizing"
+  - "keycloak 26 remote store migration"
+related_cards:
+  - "auth/session-revocation-with-edge-caches"
+  - "auth/jwt-vs-session"
+  - "_archived/migration-strategy"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: package
+      id: package/keycloak-25
+      name: Keycloak 25
+    - type: package
+      id: package/keycloak-26
+      name: Keycloak 26
+    - type: capability
+      id: capability/persistent-user-sessions
+      name: persistent user sessions
+    - type: capability
+      id: capability/volatile-user-sessions
+      name: volatile user sessions
+    - type: capability
+      id: capability/multi-site
+      name: multi-site
+  edges:
+    - type: breaking_change_in
+      from: capability/persistent-user-sessions
+      to: package/keycloak-26
+      summary: Keycloak 26 enables persistent-user-sessions by default and changes
+        remote-store behavior for user-session caches.
+    - type: requires_version
+      from: capability/persistent-user-sessions
+      to: package/keycloak-25
+      summary: Migration of existing online sessions from Keycloak 24 or earlier only
+        worked when persistent-user-sessions was enabled on the first start of
+        Keycloak 25.
+    - type: breaking_change_in
+      from: capability/volatile-user-sessions
+      to: package/keycloak-26
+      summary: Keycloak 26 still allows volatile user sessions, but unsupported custom
+        owner and cache-size settings are ignored in favor of safe defaults.
+    - type: locks_via
+      from: capability/volatile-user-sessions
+      to: capability/multi-site
+      summary: Disabling persistent-user-sessions is not possible when the multi-site
+        feature is enabled.

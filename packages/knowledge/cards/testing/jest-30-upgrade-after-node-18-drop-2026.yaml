@@ -102,6 +102,7 @@ related_cards:
   - "testing/mocking-strategy"
   - runtime/node-18-nes-vs-jump-to-22-2026
   - testing/jest-30-node18-typescript54-upgrade-breakage-2026
+  - testing/wdio-v9-upgrade-after-node-version-floor-and-api-breaks-2026
 tier: "core"
 status: "active"
 updated: "2026-03-18"

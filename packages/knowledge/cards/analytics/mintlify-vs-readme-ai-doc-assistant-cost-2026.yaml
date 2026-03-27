@@ -1,0 +1,224 @@
+id: "analytics/mintlify-vs-readme-ai-doc-assistant-cost-2026"
+title: "Mintlify vs ReadMe AI Doc Assistant Cost and Packaging 2026"
+problem: "Developer-docs teams need to choose which AI-doc assistant is cheaper
+  now that Mintlify bundles AI in Pro while ReadMe gates higher-value AI
+  features behind paid tiers and separate AI add-ons."
+context:
+  - "developer-docs"
+  - "api-docs"
+  - "documentation-platforms"
+  - "ai-doc-assistants"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Mintlify Pro"
+    summary: "Mintlify positions AI as part of its main paid docs plan. As of
+      2026-03-27, Mintlify Pro is listed at \"$250/month\" and includes AI
+      Assistant, with \"250 included\" AI credits and \"$0.25\" overages plus
+      tiered packages. The official assistant docs say the assistant is
+      automatically enabled on Pro and Enterprise, and unused messages can carry
+      over up to half of the monthly allowance. This makes Mintlify simpler to
+      budget for teams that want docs hosting plus embedded AI chat in one
+      bundled plan."
+    when_to_use: "Use this when you are a cost-sensitive small team that definitely
+      wants an end-user AI assistant live in docs from day one. The decisive
+      factor is packaging simplicity: one Pro plan includes the assistant, and
+      overages can be disabled if you need a hard spending cap."
+    tradeoffs: "The upside is straightforward bundling and immediate assistant
+      availability on the first paid tier. The downside is that included AI
+      usage is limited to 250 messages before overages, so active docs portals
+      can outgrow the base allowance quickly."
+    cautions: "As of 2026-03-27, Mintlify charges overages by message beyond the
+      included allowance, and the assistant docs note that overages are allowed
+      by default unless you disable them. If you expect uneven traffic,
+      carryover helps, but only up to half of the allowance."
+    links:
+      - "https://www.mintlify.com/pricing"
+      - "https://www.mintlify.com/docs/ai/assistant"
+  - name: "ReadMe Startup"
+    summary: "ReadMe offers a lower entry price for paid docs with AI features, but
+      not the same packaging shape as Mintlify. As of 2026-03-27, ReadMe Startup
+      is listed at \"$79/month\" billed annually and includes Agent Owlbert, AI
+      Doc Linting, and Docs Audit Preview, while Free includes lighter AI items
+      such as AI Dropdown, LLMs.txt, and MCP Server. ReadMe therefore undercuts
+      Mintlify on entry price if your team mainly wants lightweight AI
+      assistance inside a broader API-docs platform. However, ReadMe separates
+      some more advanced AI capabilities from the base paid tier."
+    when_to_use: "Use this when you are highly cost-sensitive and want the cheapest
+      paid path into AI-assisted docs workflows. The decisive factor is that
+      Startup is materially cheaper than Mintlify Pro if Agent Owlbert and
+      preview-level AI tools are enough."
+    tradeoffs: "The upside is a much lower monthly starting price. The downside is
+      that ReadMe's AI packaging is more segmented, so the cheapest tier does
+      not automatically imply access to every higher-value AI capability."
+    cautions: "As of 2026-03-27, Ask AI is not included as a standard bundled
+      feature on Startup; the pricing table shows Ask AI priced separately at
+      \"$150/month.\" If your team expects customer-facing AI Q&A rather than
+      editor-side AI helpers, check the add-on path first."
+    links:
+      - "https://readme.com/pricing/"
+  - name: "ReadMe Business plus AI add-ons"
+    summary: "ReadMe Business is the packaging step for teams that need both
+      stronger docs controls and paid-tier AI features. As of 2026-03-27,
+      Business is listed at \"$349/month\" billed annually and includes Agent
+      Owlbert, AI Doc Linting, Docs Audit Preview, branching, no ReadMe
+      branding, CSS/HTML, reusable content, and export metrics. The same pricing
+      page shows Ask AI at \"$150/month\" and an \"AI Booster Pack\" at
+      \"$150/month,\" while Enterprise adds items such as Full Docs Audit with
+      history, Ask AI API Access, Private AI Context, and Global Lint Rules.
+      This means ReadMe can become more expensive than Mintlify once you need
+      premium AI behavior or advanced docs governance."
+    when_to_use: "Use this when you need ReadMe's API-docs platform features first
+      and AI second, especially branching, branding control, or reusable
+      content. The decisive factor is that ReadMe becomes the better fit only if
+      those non-AI platform features justify the higher base price and likely AI
+      add-ons."
+    tradeoffs: "The upside is richer documentation workflow and governance
+      functionality than a lower-tier plan. The downside is price stacking:
+      Business already exceeds Mintlify Pro before separate Ask AI or booster
+      charges."
+    cautions: "As of 2026-03-27, higher-value AI capabilities are split across
+      Business, add-ons, and Enterprise-only features, so total cost depends on
+      exactly which AI surface you need. Check whether your requirement is Agent
+      Owlbert, Docs Audit history, Ask AI, or Ask AI API access before comparing
+      vendors."
+    links:
+      - "https://readme.com/pricing/"
+tags:
+  - "analytics"
+  - "documentation"
+  - "pricing"
+  - "ai"
+aliases:
+  - "mintlify vs readme pricing"
+  - "mintlify ai assistant cost"
+  - "readme ask ai pricing"
+  - "developer docs ai assistant pricing 2026"
+related_cards:
+  - "design/mintlify-ai-assistant-tier-overages-vs-upgrade-2026"
+  - "devtools/readme-startup-vs-business-vs-ai-booster-pack-2026"
+  - "design/readme-vs-redocly-vs-scalar-api-reference-stack-2026"
+  - design/fern-docs-basic-vs-pro-authed-docs-ai-search-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/mintlify
+      name: Mintlify
+    - type: vendor
+      id: vendor/readme
+      name: ReadMe
+    - type: package
+      id: package/mintlify-pro
+      name: Mintlify Pro
+    - type: package
+      id: package/readme-startup
+      name: ReadMe Startup
+    - type: package
+      id: package/readme-business
+      name: ReadMe Business
+    - type: package
+      id: package/readme-ask-ai
+      name: ReadMe Ask AI
+    - type: package
+      id: package/readme-ai-booster-pack
+      name: ReadMe AI Booster Pack
+    - type: capability
+      id: capability/ai-assistant
+      name: AI Assistant
+    - type: capability
+      id: capability/agent-owlbert
+      name: Agent Owlbert
+    - type: capability
+      id: capability/ai-doc-linting
+      name: AI Doc Linting
+    - type: capability
+      id: capability/docs-audit-preview
+      name: Docs Audit Preview
+    - type: capability
+      id: capability/ask-ai
+      name: Ask AI
+    - type: capability
+      id: capability/full-docs-audit-history
+      name: Full Docs Audit with history
+    - type: capability
+      id: capability/ask-ai-api-access
+      name: Ask AI API Access
+    - type: capability
+      id: capability/private-ai-context
+      name: Private AI Context
+    - type: capability
+      id: capability/global-lint-rules
+      name: Global Lint Rules
+  edges:
+    - type: locks_via
+      from: capability/ai-assistant
+      to: package/mintlify-pro
+      date: 2026-03-27
+      evidence: Mintlify Pro includes AI Assistant; assistant is automatically enabled
+        on Pro and Enterprise.
+    - type: locks_via
+      from: capability/agent-owlbert
+      to: package/readme-startup
+      date: 2026-03-27
+      evidence: ReadMe Startup includes Agent Owlbert.
+    - type: locks_via
+      from: capability/ai-doc-linting
+      to: package/readme-startup
+      date: 2026-03-27
+      evidence: ReadMe Startup includes AI Doc Linting.
+    - type: locks_via
+      from: capability/docs-audit-preview
+      to: package/readme-startup
+      date: 2026-03-27
+      evidence: ReadMe Startup includes Docs Audit Preview.
+    - type: locks_via
+      from: capability/agent-owlbert
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: ReadMe Business includes Agent Owlbert.
+    - type: locks_via
+      from: capability/ai-doc-linting
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: ReadMe Business includes AI Doc Linting.
+    - type: locks_via
+      from: capability/docs-audit-preview
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: ReadMe Business includes Docs Audit Preview.
+    - type: locks_via
+      from: capability/ask-ai
+      to: package/readme-ask-ai
+      date: 2026-03-27
+      evidence: Ask AI is priced separately at $150/month and is not included as a
+        standard bundled feature on Startup.
+    - type: locks_via
+      from: capability/full-docs-audit-history
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: Higher-value AI capabilities are split across Business, add-ons, and
+        Enterprise-only features; Enterprise adds Full Docs Audit with history.
+    - type: locks_via
+      from: capability/ask-ai-api-access
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: Higher-value AI capabilities are split across Business, add-ons, and
+        Enterprise-only features; Enterprise adds Ask AI API Access.
+    - type: locks_via
+      from: capability/private-ai-context
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: Higher-value AI capabilities are split across Business, add-ons, and
+        Enterprise-only features; Enterprise adds Private AI Context.
+    - type: locks_via
+      from: capability/global-lint-rules
+      to: package/readme-business
+      date: 2026-03-27
+      evidence: Higher-value AI capabilities are split across Business, add-ons, and
+        Enterprise-only features; Enterprise adds Global Lint Rules.

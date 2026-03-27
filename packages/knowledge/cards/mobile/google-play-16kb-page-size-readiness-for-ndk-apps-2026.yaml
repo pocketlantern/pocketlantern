@@ -123,6 +123,7 @@ related_cards:
   - mobile/apple-sdk-minimum-xcode-upgrade-deadline-planning-2026
   - mobile/google-play-billing-library-7-to-8-migration-before-2026-deadline
   - mobile/android-16-edge-to-edge-enforcement-for-apps-targeting-api-36-2026
+  - desktop/godot-4-4-vs-4-6-support-policy-for-mobile-shipping-2026
 status: active
 tier: core
 updated: 2026-03-15

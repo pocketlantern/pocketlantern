@@ -1,0 +1,198 @@
+id: "messaging/redpanda-vs-kafka-vs-pulsar-scaling-cost-2026"
+title: "Redpanda vs Apache Kafka vs Apache Pulsar Auto-Scaling Cost Comparison 2026"
+problem: "Message broker options diverge in cloud-native auto-scaling
+  capabilities and pricing. Redpanda managed pricing, Kafka MSK charges per
+  hour+data, Pulsar OSS has operational overhead."
+context:
+  - "event-driven architecture"
+  - "message streaming"
+  - "cloud-native"
+  - "auto-scaling"
+constraints:
+  - "high-scale"
+  - "cost-sensitive"
+  - "low-ops"
+  - "real-time"
+  - "microservices"
+candidates:
+  - name: "Redpanda Cloud"
+    summary: "Redpanda Cloud is a Kafka-compatible fully managed streaming platform
+      available in Serverless, Dedicated, and BYOC tiers; Serverless on AWS
+      reached GA in February 2026. As of 2026-03-18, Serverless uses usage-based
+      pricing at $0.10/hr compute, $0.045/GB ingress, $0.04/GB egress, and
+      $0.09/GB-month storage with a 99.9% SLA, capped at 100 MB/s ingress and
+      5,000 partitions per cluster. Its single-binary broker (no ZooKeeper),
+      built-in Redpanda Connect with 300+ connectors, and native Kafka API
+      compatibility make it the lowest-ops managed Kafka alternative in 2026."
+    when_to_use: "Best for cost-sensitive + low-ops teams on AWS or GCP who need
+      Kafka-compatible APIs without ZooKeeper complexity. Use Serverless for
+      variable or unpredictable workloads below 100 MB/s ingress; escalate to
+      BYOC (up to 2 GB/s write, 112,500 partitions) for enterprise-scale
+      throughput where data sovereignty is required."
+    tradeoffs: "Pros: true consumption-based pricing with no idle broker floor cost
+      on Serverless; Kafka wire compatibility means no client code changes;
+      single binary eliminates ZooKeeper and separate storage layer ops; tiered
+      storage reduces long-term retention costs by up to 8-9x. Cons: Serverless
+      partition limit (5,000) and ingress cap (100 MB/s) rule it out for large
+      fan-out workloads; Dedicated and BYOC pricing requires contacting sales;
+      smaller ISV ecosystem than Kafka."
+    cautions: "AWS PrivateLink for Serverless only reached GA in February 2026 —
+      teams that created Serverless clusters before that date may be running on
+      public endpoints without realizing it. In BYOC deployments, compute costs
+      land on your own cloud bill separately from Redpanda fees, which can
+      obscure true TCO in cost comparisons."
+    links:
+      - "https://docs.redpanda.com/redpanda-cloud/get-started/cloud-overview/"
+      - "https://www.redpanda.com/blog/new-redpanda-serverless"
+      - "https://docs.redpanda.com/redpanda-cloud/billing/billing/"
+      - "https://www.redpanda.com/data-streaming/serverless"
+  - name: "Amazon MSK"
+    summary: "Amazon MSK is AWS's managed Apache Kafka service with two modes as of
+      2026-03-18: Serverless (fully auto-scaling) and Provisioned (Standard or
+      Express broker instances). MSK Serverless prices at $0.75/cluster-hour
+      plus $0.0015/partition-hour, $0.10/GB ingress, $0.05/GB egress, and
+      $0.10/GB-month storage, with hard caps of 200 MBps ingress, 400 MBps
+      egress, and 2,400 non-compacted partitions per cluster. Provisioned
+      Standard brokers start at $0.21/hr per kafka.m5.large and Express brokers
+      at $0.408/hr per express.m7g.large in US East."
+    when_to_use: "Best for enterprise + AWS-native teams where IAM-based auth, VPC
+      integration, and CloudWatch observability are non-negotiable. MSK
+      Serverless suits unpredictable workloads under 200 MBps; Provisioned
+      Express brokers suit sustained high-throughput production loads requiring
+      fine-grained instance-type control."
+    tradeoffs: "Pros: deep native AWS integration (IAM, VPC, CloudWatch, AWS
+      Marketplace billing); Express brokers scale storage and throughput faster
+      than Standard; no Kafka version management burden. Cons: MSK Serverless
+      carries a $0.75/cluster-hour floor even at zero traffic; Serverless
+      mandates IAM auth and does not support Kafka ACLs; private connectivity
+      and inter-AZ data transfer add additional per-GB costs; Standard brokers
+      require manual partition rebalancing during cluster expansion."
+    cautions: "MSK Serverless enforces IAM-only access control — clients using
+      SASL/SCRAM or mTLS require auth-layer changes before migration, which is
+      frequently underestimated in project timelines. The default quota of 10
+      Serverless clusters per AWS account per region blocks multi-tenant
+      architectures and requires a Service Quotas support case to raise."
+    links:
+      - "https://aws.amazon.com/msk/pricing/"
+      - "https://aws.amazon.com/msk/features/msk-serverless/"
+      - "https://docs.aws.amazon.com/msk/latest/developerguide/limits.html"
+  - name: "Apache Pulsar / StreamNative Cloud"
+    summary: "Apache Pulsar is an open-source distributed messaging platform with
+      native multi-tenancy, geo-replication, and tiered storage; self-hosting
+      requires operating four interdependent component layers (brokers, Apache
+      BookKeeper, ZooKeeper, RocksDB). StreamNative Cloud (managed Pulsar from
+      Pulsar's original creators) offers Serverless from $73/month, Dedicated
+      from $505/month (99.99% SLA on multi-AZ), and BYOC from $365/month plus
+      your cloud infrastructure costs, as of 2026-03-18. StreamNative Dedicated
+      is SOC 2, ISO 27001, GDPR, and HIPAA compliant and supports both Pulsar
+      and Kafka protocols on a single cluster."
+    when_to_use: "Best for enterprise + compliance teams that need native
+      namespace-level multi-tenancy, built-in geo-replication, or dual
+      Pulsar/Kafka protocol support without running parallel clusters.
+      StreamNative Cloud is the managed path; self-hosted Pulsar is only
+      economically justified when dedicated platform-engineering capacity for
+      BookKeeper and ZooKeeper operations is explicitly staffed and budgeted."
+    tradeoffs: "Pros: native multi-tenancy eliminates cluster-per-team
+      proliferation; tiered storage can reduce cold-data retention costs by over
+      90% vs full-replication Kafka; Kafka API compatibility preserves existing
+      producer/consumer code; compliance certifications cover regulated
+      industries out of the box. Cons: self-hosted architecture is the most
+      operationally complex of the three options; StreamNative Dedicated entry
+      price ($505/month) exceeds Redpanda Serverless and MSK Serverless starting
+      costs; StreamNative Serverless region availability is narrower than AWS
+      MSK or Redpanda."
+    cautions: "Self-hosted Pulsar's BookKeeper write-quorum and ack-quorum settings
+      are frequently misconfigured in production, causing data availability
+      failures under broker-node loss. StreamNative's $73/month Serverless tier
+      is available only in select cloud regions — verify your required region is
+      GA before designing a system around it."
+    links:
+      - "https://streamnative.io/pricing"
+      - "https://streamnative.io/deployment/dedicated"
+      - "https://streamnative.io/blog/a-guide-to-evaluating-the-infrastructure-\
+        costs-of-apache-pulsar-and-apache-kafka"
+tags:
+  - "messaging"
+  - "kafka"
+  - "redpanda"
+  - "pulsar"
+  - "streaming"
+  - "message-broker"
+  - "auto-scaling"
+  - "cloud-native"
+  - "cost-comparison"
+  - "msk"
+  - "streamnative"
+aliases:
+  - "redpanda vs kafka"
+  - "pulsar vs kafka"
+  - "MSK vs Redpanda"
+  - "managed kafka cost"
+  - "kafka auto-scaling cloud"
+  - "event streaming platform comparison"
+  - "kafka alternatives 2026"
+  - "message broker cloud pricing"
+related_cards:
+  - "serverless/cloudflare-workers-free-tier-100k-requests-per-day-limit-2026"
+  - data/confluent-cloud-vs-redpanda-vs-upstash-kafka-pricing-2026
+  - data/confluent-freight-vs-enterprise-private-networking-after-pni-2026
+  - data/warpstream-vs-confluent-brokerless-kafka-pricing-2026
+  - data/aiven-for-apache-kafka-startup-vs-business-2026
+status: "active"
+tier: "core"
+updated: "2026-03-18"
+review_by: "2026-09-18"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: engine
+      id: engine/redpanda-cloud-serverless
+      name: Redpanda Cloud Serverless
+    - type: protocol
+      id: protocol/kafka-api
+      name: Kafka API
+      standard: Kafka-compatible
+    - type: engine
+      id: engine/amazon-msk-serverless
+      name: Amazon MSK Serverless
+    - type: capability
+      id: capability/iam-auth
+      name: IAM-based authentication
+      category: access_control
+    - type: capability
+      id: capability/kafka-acls
+      name: Kafka ACLs
+      category: access_control
+    - type: engine
+      id: engine/apache-pulsar-self-hosted
+      name: Apache Pulsar self-hosted
+    - type: package
+      id: package/zookeeper
+      name: ZooKeeper
+    - type: package
+      id: package/apache-bookkeeper
+      name: Apache BookKeeper
+    - type: engine
+      id: engine/streamnative-cloud
+      name: StreamNative Cloud
+  edges:
+    - type: locks_via
+      from: engine/amazon-msk-serverless
+      to: capability/iam-auth
+      note: MSK Serverless mandates IAM auth / enforces IAM-only access control
+    - type: locks_via
+      from: engine/redpanda-cloud-serverless
+      to: protocol/kafka-api
+      note: Native Kafka API compatibility means no client code changes
+    - type: requires_version
+      from: engine/apache-pulsar-self-hosted
+      to: package/apache-bookkeeper
+      note: Self-hosting requires operating Apache BookKeeper
+    - type: requires_version
+      from: engine/apache-pulsar-self-hosted
+      to: package/zookeeper
+      note: Self-hosting requires operating ZooKeeper
+    - type: locks_via
+      from: engine/streamnative-cloud
+      to: protocol/kafka-api
+      note: Supports both Pulsar and Kafka protocols on a single cluster

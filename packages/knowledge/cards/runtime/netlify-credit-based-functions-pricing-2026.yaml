@@ -126,6 +126,7 @@ related_cards:
   - "database/object-storage-s3-vs-r2-vs-gcs"
   - web/netlify-legacy-vs-credit-based-plans-2026
   - web/netlify-pro-credit-reduction-after-october-1-2025
+  - deployment/netlify-pro-credit-rebalance-oct-2025
 tier: "core"
 status: "active"
 updated: "2026-03-18"

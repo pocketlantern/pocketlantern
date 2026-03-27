@@ -1,0 +1,170 @@
+id: "cloud/vultr-vs-linode-vs-hetzner-small-vm-egress-pricing-2026"
+title: "Vultr vs Linode vs Hetzner Small VM and Egress Pricing 2026"
+problem: "Choose a low-cost cloud for small production services when bundled
+  transfer, IPv4 charges, and regional pricing materially change the monthly
+  bill."
+context:
+  - "cloud"
+  - "vps"
+  - "egress-pricing"
+  - "ipv4-pricing"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Hetzner Cloud shared vCPU"
+    summary: "As of 2026-03-26, Hetzner's current small shared-vCPU line starts at
+      the CX22 for \"€ 3.79\" per month with 2 vCPUs, 4 GB RAM, and 40 GB disk,
+      and Hetzner's 2024 launch note says these CX plans include \"20 TB\"
+      traffic and \"1 IPv4 address\". Hetzner's pricing page snippet also states
+      inclusive traffic differs sharply by region: at least \"20 TB\" in EU
+      locations, \"1 TB\" in US locations, and \"0.5 TB\" in Singapore. That
+      regional traffic asymmetry is the main bill-shaping fact for small
+      production services, not just the base VM price. Hetzner pricing is listed
+      excluding VAT."
+    when_to_use: "Use this when you are strongly \"cost-sensitive\" and can run in
+      EU regions, because the base VM price plus included IPv4 and high bundled
+      traffic is the strongest low-end value in the verified data. It is much
+      less decisive if you need Hetzner's US or Singapore locations, because the
+      included traffic drops materially."
+    tradeoffs: "Very low entry price and bundled IPv4 are strong advantages. The
+      tradeoff is that transfer economics depend heavily on region, so the same
+      architecture can have a very different effective cost outside Europe."
+    cautions: "As of 2026-03-26, the verified regional traffic allowances are not
+      uniform. Do not model Hetzner as having one global egress bundle."
+    links:
+      - "https://www.hetzner.com/cloud/"
+      - "https://www.hetzner.com/cloud/pricing/"
+      - "https://www.hetzner.com/pressroom/new-cx-plans/"
+  - name: "Linode shared CPU"
+    summary: "As of 2026-03-26, Akamai Cloud's standard shared CPU pricing page
+      lists \"Nanode 1 GB\" at \"$5.00\" per month with \"1 TB\" transfer,
+      \"Linode 2 GB\" at \"$12.00\" with \"2 TB\", and \"Linode 4 GB\" at
+      \"$24.00\" with \"4 TB\". The same pricing page states egress overage is
+      \"US$0.005 per GB\" and says overage is billed against a pooled monthly
+      network transfer quota. Akamai also maintains separate regional pricing
+      pages for distributed compute regions, Jakarta, and Sao Paulo, and the
+      distributed compute region pricing shown in official docs includes small
+      plans with \"0 TB\" transfer. That makes Linode viable in standard
+      regions, but potentially much less predictable in premium regions."
+    when_to_use: "Use this when you want straightforward standard-region pricing
+      with explicit bundled transfer and cheap overage, and your traffic profile
+      stays near the included pool. The decisive factor is whether you can avoid
+      premium-region SKUs that use separate regional pricing."
+    tradeoffs: "Standard-region pricing is easy to understand and overage is low at
+      \"$0.005\" per GB. The downside is that regional exceptions exist, and
+      some premium-region plans shown by Akamai have no bundled transfer at
+      all."
+    cautions: "As of 2026-03-26, Linode regional pricing is not uniform. Check the
+      exact region page before choosing Jakarta, Sao Paulo, or distributed
+      compute regions, because bundled transfer assumptions can break."
+    links:
+      - "https://www.akamai.com/cloud/pricing"
+      - "https://www.akamai.com/cloud/pricing/distributed-compute-regions"
+      - "https://techdocs.akamai.com/cloud-computing/docs/network-transfer-usag\
+        e-and-costs"
+  - name: "Vultr Cloud Compute"
+    summary: "As of 2026-03-27, Vultr's official pricing page puts its smallest
+      regular-performance Cloud Compute plan at \"$2.50/mo\" as an \"IPv6 Only\"
+      instance with \"0.50 TB\" bandwidth, while the comparable smallest plan
+      with public IPv4 is \"$3.50/mo\" with the same \"0.50 TB\" bandwidth. That
+      makes the visible low-end IPv4 delta effectively \"$1/mo\" on the smallest
+      listed plan. Vultr's official bandwidth docs also state outbound overage
+      is \"$0.01 per GB\", and Vultr's Reserved IP pricing doc says a Reserved
+      IP costs \"$3/month\". Compared with Hetzner and Linode, the key verified
+      takeaway is that Vultr can advertise a very low floor if you can use
+      IPv6-only, but the public-IPv4 small-instance price lands closer to
+      Linode's entry tier while bundling less transfer."
+    when_to_use: "Use this when you want a very low entry price for IPv6-only
+      workloads, or when Vultr regions and account model matter more than
+      absolute bundled transfer value. It is a cleaner fit when you can tolerate
+      lower included bandwidth and model public IPv4 as an explicit bill
+      component."
+    tradeoffs: "The upside is a very cheap smallest plan and a clearly visible
+      IPv6-only versus IPv4 price split. The downside is that the smallest
+      public-IPv4 plan includes only \"0.50 TB\" bandwidth and overage is higher
+      than Linode's, so Vultr's low sticker price is less compelling once you
+      need IPv4 and more transfer."
+    cautions: "As of 2026-03-27, do not compare Vultr's \"$2.50/mo\" floor directly
+      against IPv4-included plans from other providers. For a like-for-like
+      public-IP small VM, use the \"$3.50/mo\" plan and account for \"$0.01 per
+      GB\" overage and any separate \"$3/month\" Reserved IP needs."
+    links:
+      - "https://www.vultr.com/pricing/"
+      - "https://docs.vultr.com/support/platform/billing/what-is-the-bandwidth-\
+        overage-rate"
+      - "https://docs.vultr.com/support/products/network/are-reserved-ips-free"
+tags:
+  - "cloud"
+  - "vps"
+  - "pricing"
+  - "egress"
+  - "ipv4"
+  - "hetzner"
+  - "linode"
+  - "vultr"
+aliases:
+  - "hetzner vs linode vs vultr pricing"
+  - "small vm egress pricing 2026"
+  - "cheap cloud vm bundled transfer ipv4"
+related_cards:
+  - "cloud/digitalocean-droplets-vs-app-platform-vs-functions-pricing-2026"
+  - "cloud/aws-public-ipv4-charge-avoidance-vpc-and-load-balancer-design-2026"
+  - "web/render-vs-fly-vs-railway-small-app-costs-2026"
+  - web/gcore-vs-cdn77-cdn-pricing-2026
+  - cloud/paperspace-gradient-vs-vultr-gpu-pricing-2026
+  - cloud/hetzner-shared-vcpu-vs-dedicated-vcpu-after-april-1-2026-price-adjustment
+  - cloud/vultr-load-balancer-baseline-vs-vke-control-plane-free-2026
+  - cloud/ovhcloud-apac-free-egress-until-june-1-2026
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/hetzner
+      name: Hetzner
+    - type: vendor
+      id: vendor/linode
+      name: Linode
+    - type: vendor
+      id: vendor/vultr
+      name: Vultr
+    - type: capability
+      id: capability/egress-pricing
+      name: egress pricing
+    - type: capability
+      id: capability/ipv4-pricing
+      name: IPv4 pricing
+    - type: capability
+      id: capability/ipv6-only
+      name: IPv6-only
+  edges:
+    - type: locks_via
+      from: vendor/hetzner
+      to: capability/egress-pricing
+      as_of: 2026-03-26
+      detail: "Hetzner included traffic is region-dependent: at least 20 TB in EU
+        locations, 1 TB in US locations, and 0.5 TB in Singapore."
+    - type: locks_via
+      from: vendor/linode
+      to: capability/egress-pricing
+      as_of: 2026-03-26
+      detail: Linode standard-region plans include transfer and pooled overage at
+        US$0.005 per GB, but some premium-region pricing shown by Akamai
+        includes 0 TB transfer.
+    - type: locks_via
+      from: vendor/vultr
+      to: capability/ipv4-pricing
+      as_of: 2026-03-27
+      detail: Vultr's smallest Cloud Compute plan is $2.50/mo as IPv6-only and
+        $3.50/mo with public IPv4, making the visible low-end IPv4 delta
+        effectively $1/mo.
+    - type: locks_via
+      from: vendor/vultr
+      to: capability/ipv6-only
+      as_of: 2026-03-27
+      detail: Vultr's advertised lowest small-instance price is specifically for an
+        IPv6-only instance.

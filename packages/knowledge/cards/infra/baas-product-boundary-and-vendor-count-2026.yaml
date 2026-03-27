@@ -229,6 +229,11 @@ related_cards:
   - game/discord-social-sdk-free-vs-building-social-features-in-house-2026
   - messaging/sendbird-vs-stream-vs-pubnub-chat-mau-and-message-pricing-2026
   - game/playfab-metered-services-vs-backend-in-house-cost-2026
+  - backend/appwrite-free-vs-pro-vs-scale-after-ga-pricing-2026
+  - backend/appwrite-cloud-vs-self-hosted-after-pro-price-rise-2026
+  - game/beamable-free-vs-starter-vs-scale-pricing-2026
+  - backend/nhost-free-vs-pro-resource-limits-2026
+  - analytics/customerio-data-pipelines-vs-journeys-pricing-2026
 status: active
 tier: core
 updated: "2026-03-16"

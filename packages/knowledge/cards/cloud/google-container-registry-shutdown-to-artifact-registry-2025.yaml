@@ -1,0 +1,176 @@
+id: cloud/google-container-registry-shutdown-to-artifact-registry-2025
+title: "Google Container Registry Shut Down: Migrate to Artifact Registry (March
+  18, June 3, and October 14, 2025 Stages Completed)"
+problem: Teams still using Container Registry `gcr.io` need to know what breaks
+  at each 2025 shutdown stage, whether Artifact Registry-backed `gcr.io`
+  repositories are enough to preserve existing image URLs and CI/CD, and when
+  they must switch to `pkg.dev` repositories instead.
+context:
+  - cloud
+  - google-cloud
+  - gcp
+  - container-registry
+  - artifact-registry
+  - gcr.io
+  - pkg.dev
+  - docker
+  - container-images
+  - ci-cd
+  - gke
+  - app-engine
+constraints:
+  - enterprise
+  - compliance
+  - low-ops
+  - small-team
+  - microservices
+  - cost-sensitive
+candidates:
+  - name: Migrate to Artifact Registry `gcr.io` repositories with the automatic
+      migration tool
+    summary: This is the default path for most former Container Registry users.
+      Google documents that writes to Container Registry stopped on March 18,
+      2025, reads from Container Registry stopped on June 3, 2025, and as of
+      October 14, 2025 `gcr.io` endpoints serve from Artifact Registry if you
+      completed `gcr.io` repository setup; any images that were never copied are
+      unavailable, though the automatic migration tool remains available after
+      that date.
+    when_to_use: Best for small-team + low-ops or enterprise + microservices
+      environments where the main goal is to keep existing `gcr.io` image names,
+      avoid broad manifest and pipeline rewrites, and stay in the same Google
+      Cloud project and corresponding multi-region. As of 2026-03-15, choose
+      this when your CI/CD already pushes and pulls `gcr.io` references and you
+      want the least disruptive path before separately deciding whether newer
+      Artifact Registry features justify a later `pkg.dev` move.
+    tradeoffs: Google documents that `gcr.io` repositories in Artifact Registry
+      continue to support the same `gcr.io` URLs, Artifact Registry supports the
+      same authentication methods as Container Registry, and existing Pub/Sub
+      `gcr` topic integrations work automatically if you create the repositories
+      in the same project. The tradeoff is that these repositories are
+      constrained to the same project and corresponding multi-region mapping as
+      Container Registry, repository names are predefined, and you still need to
+      update IAM and operational tooling to use Artifact Registry roles and
+      commands.
+    cautions: Do not assume a redirect alone preserves old bucket-based automation.
+      Google documents that Artifact Registry does not create Cloud Storage
+      buckets for `gcr.io` repositories, so any scripts or policy automation
+      that touch Container Registry buckets must be rewritten against Artifact
+      Registry repositories. Also replace `gcloud container images` workflows
+      with `gcloud artifacts docker` commands because Artifact Registry commands
+      do not support shortened digests. Pricing is no longer Cloud
+      Storage-based; as of 2026-03-15, Artifact Registry pricing applies to
+      repositories that support the `gcr.io` domain, with storage priced at free
+      for the first 0.5 GB per month and `$0.10` per GB per month above that,
+      plus transfer and optional scanning charges.
+    links:
+      - https://cloud.google.com/artifact-registry/docs/transition/prepare-gcr-shutdown
+      - https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr
+      - https://cloud.google.com/artifact-registry/docs/transition/gcr-repositories
+      - https://cloud.google.com/artifact-registry/docs/access-control
+      - https://cloud.google.com/artifact-registry/pricing
+  - name: Migrate to standard Artifact Registry `pkg.dev` repositories and update
+      image references explicitly
+    summary: This is the better long-term path when you want Artifact Registry as a
+      first-class repository system instead of a compatibility layer. Google
+      documents that `pkg.dev` repositories are fully independent of existing
+      Container Registry hosts, must already exist before push and pull
+      requests, and are the right option when you need more control over
+      repository placement and structure than `gcr.io` repositories allow.
+    when_to_use: Best for compliance + enterprise or cost-sensitive + microservices
+      environments where you need region-specific placement, cleaner repository
+      boundaries, explicit per-repository IAM, or a broader modernization of
+      build and deploy flows. As of 2026-03-15, choose this when you are willing
+      to update image URLs, CI variables, deployment manifests, and automation
+      in exchange for a cleaner Artifact Registry-native setup rather than
+      preserving `gcr.io` compatibility.
+    tradeoffs: Google documents that Artifact Registry repositories can be regional
+      or multi-regional, support repository-level access control, and expose
+      Artifact Registry APIs and `gcloud artifacts docker` commands directly.
+      The tradeoff is higher migration effort because `pkg.dev` does not support
+      the `gcr.io` domain, repositories must be created ahead of time, and
+      pipelines and runtime references must be updated to the new hostnames.
+    cautions: Google explicitly says most former Container Registry users should
+      transition to Artifact Registry-hosted `gcr.io` repositories, not
+      `pkg.dev`, unless they understand the difference. If you use the automatic
+      migration tool for `pkg.dev`, the documented command is `gcloud artifacts
+      docker upgrade migrate --from-gcr=GCR_HOSTNAME/GCR_PROJECT
+      --to-pkg-dev=AR_PROJECT/AR_REPOSITORY`, and `--copy-only` is available
+      when you only want to copy images first. For App Engine specifically,
+      Google documents that automated migration does not apply to manually built
+      images deployed with `gcloud app deploy --image-url`; those flows require
+      either migration to Artifact Registry-backed `gcr.io`, or copying images
+      to Artifact Registry and redeploying with updated references. Pricing as
+      of 2026-03-15 follows normal Artifact Registry pricing rather than old
+      Cloud Storage billing, so check official pricing for your target regions
+      and for vulnerability scanning charges.
+    links:
+      - https://cloud.google.com/artifact-registry/docs/transition/transition-from-gcr
+      - https://cloud.google.com/artifact-registry/docs/transition/gcr-repositories
+      - https://docs.cloud.google.com/artifact-registry/docs/transition/auto-migrate-gcr-pkg-dev
+      - https://cloud.google.com/sdk/gcloud/reference/artifacts/docker/upgrade/migrate
+      - https://cloud.google.com/appengine/migration-center/migrate-to-artifact-registry
+      - https://cloud.google.com/artifact-registry/pricing
+tags:
+  - cloud
+  - google-cloud
+  - gcp
+  - container-registry
+  - artifact-registry
+  - gcr.io
+  - pkg.dev
+  - docker
+  - container-images
+  - ci-cd
+  - gke
+  - app-engine
+  - deprecation
+  - migration
+aliases:
+  - container registry shutdown
+  - gcr shutdown
+  - gcr io to artifact registry
+  - google container registry deprecation
+  - gcr io repositories artifact registry
+  - pkg.dev migration from gcr.io
+  - gcloud artifacts docker upgrade migrate
+  - container registry read shutdown june 3 2025
+  - container registry write shutdown march 18 2025
+  - container registry october 14 2025 artifact registry
+related_cards:
+  - infra/container-orchestration
+  - infra/container-registry-pricing-ecr-vs-docker-hub-vs-artifact-registry-2026
+  - web/firebase-app-hosting-free-allowances-vs-blaze-costs-2026
+status: active
+tier: core
+updated: 2026-03-15
+review_by: 2026-07-20
+sidecar_hard_facts:
+  extracted: 2026-03-16
+  nodes:
+    - type: vendor
+      id: vendor/container-registry
+      name: Google Container Registry
+      category: container
+    - type: vendor
+      id: vendor/artifact-registry
+      name: Google Artifact Registry
+      category: container
+  edges:
+    - type: eol_date
+      from: vendor/container-registry
+      to: null
+      date: 2025-10-14
+      successor: vendor/artifact-registry
+    - type: breaking_change_in
+      from: vendor/container-registry
+      to: null
+      change: writes stopped March 18, 2025; reads stopped June 3, 2025; gcr.io serves
+        from Artifact Registry as of October 14, 2025
+      migration_path: complete gcr.io repository setup in Artifact Registry before
+        read shutdown
+    - type: breaking_change_in
+      from: vendor/artifact-registry
+      to: null
+      change: "pricing changed from Cloud Storage-based to Artifact Registry pricing:
+        $0.10/GB/month (first 0.5 GB free), plus transfer and scanning charges"
+      migration_path: review Artifact Registry pricing for target regions before migration

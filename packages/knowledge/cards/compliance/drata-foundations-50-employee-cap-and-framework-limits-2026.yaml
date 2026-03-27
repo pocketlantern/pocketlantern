@@ -14,12 +14,12 @@ constraints:
   - "compliance"
 candidates:
   - name: "Start on Drata Foundation"
-    summary: 'As of 2026-03-18, Drata''s official plans page lists "Drata
-      Foundation" as the entry GRC tier, with no public dollar price.
+    summary: "As of 2026-03-18, Drata's official plans page lists \"Drata
+      Foundation\" as the entry GRC tier, with no public dollar price.
       Foundation includes up to 50 FTE and 1 pre-mapped framework limited to SOC
       2, ISO 27001, Cyber Essentials, HIPAA, or GDPR. If you expect to exceed 50
       FTE or need broader framework choice, that is the main trigger to move
-      up.'
+      up."
     when_to_use: "Use this when your company is at or under 50 FTE and your
       near-term compliance target is exactly one of the included framework
       options. It is the lower-scope starting point when you want to get
@@ -36,12 +36,12 @@ candidates:
       - "https://drata.com/plans"
       - "https://help.drata.com/en/articles/5329593-frameworks"
   - name: "Start on Drata Advanced or above"
-    summary: 'As of 2026-03-18, Drata''s official plans page shows "Drata Advanced"
-      and "Drata Enterprise" as higher GRC tiers, with no public list pricing.
+    summary: "As of 2026-03-18, Drata's official plans page shows \"Drata Advanced\"
+      and \"Drata Enterprise\" as higher GRC tiers, with no public list pricing.
       Advanced includes everything in Foundation and lets you use any available
-      framework rather than staying within Foundation''s shortlist. The main
+      framework rather than staying within Foundation's shortlist. The main
       reason to start higher is to avoid a likely migration if your compliance
-      scope already extends beyond Foundation''s framework limits.'
+      scope already extends beyond Foundation's framework limits."
     when_to_use: "Use this when you expect multi-framework expansion, need a
       non-Foundation framework from the start, or want to avoid a likely
       mid-program tier migration. It is the safer starting point when compliance

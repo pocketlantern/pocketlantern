@@ -1,0 +1,206 @@
+id: "desktop/electron-35-security-defaults-breaking-2026"
+title: "Should You Target Electron 35 Now That It Is Out of Support?"
+problem: "Desktop app teams need to decide whether Electron 35 is still a
+  sensible target, or whether they should skip it and avoid older unsupported
+  lines given Electron 35's breaking changes and expired support window."
+context:
+  - "desktop"
+  - "electron"
+  - "nodejs"
+  - "chromium"
+constraints:
+  - "enterprise"
+  - "compliance"
+  - "small-team"
+candidates:
+  - name: "Skip Electron 35 and move directly to a currently supported Electron
+      major"
+    summary: "As of 2026-03-26, Electron supports only the latest three stable major
+      releases. Electron 35.0.0 shipped on 2025-03-04 with Chromium 134 and
+      Node.js 22.14.0, then reached end of life on 2025-09-02. By 2026-03-26,
+      the supported stable lines are 39.0.0, 40.0.0, and 41.0.0, so targeting 35
+      now means starting on an unsupported branch."
+    when_to_use: "Use this when you are planning a new upgrade path in late March
+      2026 or later, your compliance or security posture expects
+      vendor-supported runtimes, and you do not have a narrow migration window
+      that requires landing briefly on 35 first."
+    tradeoffs: "You avoid landing on an already-expired line, but you may need to
+      absorb more upgrade work in one step and validate newer Chromium and
+      Node.js changes at the same time."
+    cautions: "Do not treat Electron 35 as a safe intermediate landing zone for a
+      product that still needs normal security maintenance. As of 2026-03-26,
+      its support window is already closed."
+    links:
+      - "https://www.electronjs.org/docs/latest/tutorial/electron-timelines"
+      - "https://releases.electronjs.org/schedule"
+      - "https://www.electronjs.org/docs/latest/breaking-changes"
+  - name: "Keep Electron 35 only on a frozen legacy branch"
+    summary: "Electron 35.0.0 introduced concrete migration work:
+      `PrinterInfo.isDefault` and `PrinterInfo.status` were removed,
+      `session.serviceWorkers.fromVersionID(versionId)` was deprecated in favor
+      of `getInfoFromVersionID(versionId)`, and `Session.setPreloads` and
+      `Session.getPreloads` were deprecated in favor of the preload registration
+      APIs. It also changed `WebRequestFilter.urls`, where an empty array no
+      longer means all URLs and developers must use `\"<all_urls>\"` explicitly.
+      On Linux, Dialog API `defaultPath` is not supported through portal file
+      chooser dialogs unless the portal backend is version 4 or higher. As of
+      2026-03-26, this line has been end-of-life since 2025-09-02."
+    when_to_use: "Use this only for short-lived emergency maintenance on an
+      already-shipping Electron 35 app where the alternative is a risky
+      immediate major jump. The decisive factor is that you are accepting
+      unsupported status deliberately to buy time for a bounded migration."
+    tradeoffs: "This minimizes near-term code churn if you are already on 35, but
+      you stay outside the supported release set and keep carrying deprecated
+      APIs and platform caveats."
+    cautions: "Replace deprecated preload and service-worker APIs immediately, and
+      audit any code that relied on `urls: []` in `WebRequestFilter`. Linux file
+      dialog behavior can regress if your environment does not provide portal
+      backend version 4 or higher."
+    links:
+      - "https://www.electronjs.org/docs/latest/breaking-changes"
+      - "https://www.electronjs.org/blog/electron-35-0"
+      - "https://releases.electronjs.org/schedule"
+  - name: "Pin to Electron 34 or older only if the app is effectively
+      maintenance-only"
+    summary: "Electron 34.0.0 was released on 2025-01-14 with Chromium 132 and
+      Node.js 20.18.1, and reached end of life on 2025-06-24. Pinning below 35
+      therefore does not avoid unsupported status; it chooses an even older
+      unsupported branch. Electron's breaking-changes documentation also shows
+      nearby majors already removed older behaviors such as `File.path` in
+      Electron 32 and deprecated `BrowserView` in Electron 30, so staying back
+      does not avoid the medium-term migration backlog."
+    when_to_use: "Use this only for products that are near retirement,
+      contract-bound, or otherwise frozen enough that unsupported runtime risk
+      is accepted. The decisive factor is organizational willingness to stop
+      chasing Electron support rather than any technical advantage in 34
+      itself."
+    tradeoffs: "This fits a retirement or sustain-only plan, but it hardens the app
+      around an older unsupported stack, reduces incentive to pay down the
+      eventual migration backlog, and can leave the final decommissioning period
+      dependent on internal compensating controls rather than upstream fixes."
+    cautions: "Do not present this as a security-preserving choice. Electron 34's
+      end of life passed on 2025-06-24, earlier than Electron 35."
+    links:
+      - "https://releases.electronjs.org/schedule"
+      - "https://www.electronjs.org/docs/latest/breaking-changes"
+tags:
+  - "desktop"
+  - "electron"
+  - "security"
+  - "upgrade"
+aliases:
+  - "electron 35 breaking changes"
+  - "electron 35 eol"
+  - "electron 35 security defaults"
+related_cards:
+  - "_archived/electron-33-34-upgrade-native-modules-cpp20-and-macos-baseline-2\
+    026"
+  - "desktop/electron-37-breaking-changes-and-support-window-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-26"
+review_by: "2026-06-24"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: framework
+      id: framework/electron-35
+      name: Electron 35
+    - type: framework
+      id: framework/electron-34
+      name: Electron 34
+    - type: framework
+      id: framework/electron-39
+      name: Electron 39
+    - type: framework
+      id: framework/electron-40
+      name: Electron 40
+    - type: framework
+      id: framework/electron-41
+      name: Electron 41
+    - type: runtime
+      id: runtime/nodejs-22.14.0
+      name: Node.js 22.14.0
+    - type: runtime
+      id: runtime/nodejs-20.18.1
+      name: Node.js 20.18.1
+    - type: engine
+      id: engine/chromium-134
+      name: Chromium 134
+    - type: engine
+      id: engine/chromium-132
+      name: Chromium 132
+    - type: capability
+      id: capability/printerinfo-isdefault-and-status
+      name: PrinterInfo.isDefault and PrinterInfo.status
+    - type: capability
+      id: capability/session-serviceworkers-fromversionid
+      name: session.serviceWorkers.fromVersionID(versionId)
+    - type: capability
+      id: capability/session-preloads
+      name: Session.setPreloads and Session.getPreloads
+    - type: capability
+      id: capability/webrequestfilter-urls-empty-array
+      name: WebRequestFilter.urls empty array behavior
+    - type: capability
+      id: capability/linux-dialog-defaultpath-portal
+      name: Linux Dialog API defaultPath via portal file chooser
+    - type: package
+      id: package/portal-backend-4
+      name: portal backend version 4
+  edges:
+    - type: eol_date
+      from: framework/electron-35
+      to: null
+      date: 2025-09-02
+    - type: eol_date
+      from: framework/electron-34
+      to: null
+      date: 2025-06-24
+    - type: requires_version
+      from: framework/electron-35
+      to: engine/chromium-134
+    - type: requires_version
+      from: framework/electron-35
+      to: runtime/nodejs-22.14.0
+    - type: requires_version
+      from: framework/electron-34
+      to: engine/chromium-132
+    - type: requires_version
+      from: framework/electron-34
+      to: runtime/nodejs-20.18.1
+    - type: breaking_change_in
+      from: capability/printerinfo-isdefault-and-status
+      to: framework/electron-35
+      change: removed
+    - type: breaking_change_in
+      from: capability/session-serviceworkers-fromversionid
+      to: framework/electron-35
+      change: deprecated
+    - type: breaking_change_in
+      from: capability/session-preloads
+      to: framework/electron-35
+      change: deprecated
+    - type: breaking_change_in
+      from: capability/webrequestfilter-urls-empty-array
+      to: framework/electron-35
+      change: changed
+    - type: breaking_change_in
+      from: capability/linux-dialog-defaultpath-portal
+      to: framework/electron-35
+      change: changed
+    - type: requires_version
+      from: capability/linux-dialog-defaultpath-portal
+      to: package/portal-backend-4
+    - type: locks_via
+      from: framework/electron-35
+      to: runtime/nodejs-22.14.0
+    - type: locks_via
+      from: framework/electron-35
+      to: engine/chromium-134
+    - type: locks_via
+      from: framework/electron-34
+      to: runtime/nodejs-20.18.1
+    - type: locks_via
+      from: framework/electron-34
+      to: engine/chromium-132

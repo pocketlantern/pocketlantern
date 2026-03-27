@@ -1,0 +1,210 @@
+id: devtools/github-actions-macos-13-runner-retirement-october-2025
+title: GitHub Actions macOS 13 (Ventura) Runner Image Retirement October 2025
+problem: "As of 2026-03-18, the GitHub Actions macos-13, macos-13-large, and
+  macos-13-xlarge runner images have been fully retired since December 4, 2025.
+  Workflows still pinned to any macos-13 label fail immediately. Teams must
+  choose a replacement runner: ARM64 runners (macos-14, macos-15) are the
+  long-term direction but can silently break x86-dependent build steps, while
+  macos-15-intel preserves x86_64 continuity but is itself scheduled for
+  retirement in August 2027."
+context:
+  - github-actions
+  - ci-cd
+  - macos
+  - runner
+  - migration
+constraints:
+  - low-ops
+  - cost-sensitive
+  - enterprise
+  - small-team
+candidates:
+  - name: ARM64 Runner (macos-14 or macos-15)
+    summary: The macos-14 (Sonoma) and macos-15 (Sequoia) GitHub-hosted runners run
+      on Apple Silicon M1 (ARM64) with 3 vCPU and 7 GB RAM. As of 2026-03-18,
+      the macos-latest label resolves to macOS 15 (ARM64) following the
+      migration completed September 2025. These are GitHub's long-term strategic
+      path with no announced retirement. The critical differentiator is that
+      switching to ARM64 can silently break workflows that compile, link, or
+      test x86_64-specific binaries.
+    when_to_use: "Best for low-ops + small-team workflows where all build steps are
+      architecture-agnostic: pure Swift, Objective-C, or cross-platform
+      scripting that does not produce or test x86_64 binaries. The single most
+      decisive factor is verifying that every Homebrew formula, native
+      dependency, and third-party GitHub Action in the workflow has an arm64
+      build before switching."
+    tradeoffs: "Pros: GitHub's long-term supported path with no planned EOL,
+      macos-latest convenience label works out of the box, generally faster
+      cold-start, consistent with Apple's silicon direction. Cons: 3 vCPU and 7
+      GB RAM vs 4 vCPU and 14 GB RAM on Intel runners; ARM64 ABI breaks
+      workflows that link against x86-only libraries or produce x86 binaries for
+      distribution; some older GitHub Marketplace actions bundle x86 native
+      binaries and fail silently on ARM64."
+    cautions: Rosetta 2 is not pre-installed on GitHub-hosted ARM runners; x86
+      binary execution will fail unless you explicitly run softwareupdate
+      --install-rosetta --agree-to-license as a workflow step. ARM
+      incompatibilities in third-party actions often surface at runtime rather
+      than during step setup, making them difficult to catch without a full
+      end-to-end test run on the new label.
+    links:
+      - https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+      - https://github.blog/changelog/2025-07-11-upcoming-changes-to-macos-hosted-runners-macos-latest-migration-and-xcode-support-policy-updates/
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+      - https://github.com/actions/runner-images/issues/12520
+  - name: Intel Runner (macos-15-intel)
+    summary: The macos-15-intel runner runs macOS 15 (Sequoia) on x86_64 Intel
+      hardware with 4 vCPU and 14 GB RAM, providing a direct
+      architecture-compatible replacement for macos-13 workflows. As of
+      2026-03-18, this is the only GitHub-hosted x86_64 macOS runner available.
+      GitHub has confirmed it will be retired in August 2027, after which no
+      x86_64 macOS runner will be offered on GitHub-hosted infrastructure.
+    when_to_use: Best for enterprise + cost-sensitive teams whose workflows must
+      produce or test x86_64 binaries, link against x86-only native libraries,
+      or cannot absorb the risk of ARM compatibility regressions in the current
+      delivery window. The single most decisive factor is whether your build
+      output is required to be x86_64 native — if so, this is the only
+      GitHub-hosted option available as of 2026-03-18.
+    tradeoffs: "Pros: direct x86_64 architecture continuity from macos-13 with no
+      compatibility work required for existing x86 toolchains; more CPU and RAM
+      than ARM runners (4 vCPU / 14 GB vs 3 vCPU / 7 GB); immediate fix for
+      broken macos-13 workflows. Cons: explicitly GitHub's last x86_64 macOS
+      image, retired August 2027, requiring a second migration within roughly 18
+      months; Intel runners may face longer queue times as GitHub deprioritizes
+      the architecture."
+    cautions: Using macos-15-intel without a parallel ARM64 migration plan creates a
+      hard deadline in August 2027 with no GitHub-hosted fallback option. The
+      macOS version jump from 13 to 15 may still cause subtle breakage in Xcode
+      toolchain versions, default Homebrew formula versions, or pre-installed
+      software regardless of the architecture match.
+    links:
+      - https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+      - https://github.com/actions/runner-images/issues/13045
+      - https://github.com/actions/runner-images/issues/13046
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+  - name: Self-Hosted macOS Runner
+    summary: Self-hosted runners let teams register any macOS machine — physical,
+      virtual, on-premises, or cloud — as a GitHub Actions executor, retaining
+      full control over hardware architecture, OS version, and installed
+      tooling. This eliminates all GitHub-imposed architecture and OS retirement
+      timelines. The decisive differentiator is that it shifts full operational
+      burden (provisioning, patching, scaling, security) to the team.
+    when_to_use: Best for enterprise + compliance teams with hard x86_64
+      requirements extending beyond August 2027, teams needing Xcode versions or
+      hardware configurations unavailable on GitHub-hosted runners, or teams
+      that need macOS runner capacity beyond what GitHub-hosted pools provide.
+      Use only when the operational cost of runner fleet management is
+      explicitly budgeted.
+    tradeoffs: "Pros: full control over hardware architecture and macOS version, no
+      GitHub-imposed retirement dates, can maintain x86_64 macOS indefinitely,
+      enables hardware-in-the-loop or notarization-specific configurations.
+      Cons: team owns all provisioning, patching, and scaling; horizontal
+      scaling requires manual effort or a third-party autoscaler; security
+      patching and runner software updates are the team's responsibility."
+    cautions: Apple's macOS EULA restricts running macOS on non-Apple hardware;
+      virtualizing macOS on non-Apple hosts violates the license. Self-hosted
+      runners attached to public repositories carry significant security risk
+      because pull requests from forks can execute arbitrary code on your runner
+      machine — restrict to private repositories or use ephemeral runner
+      configurations.
+    links:
+      - https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/about-self-hosted-runners
+      - https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
+      - https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+tags:
+  - github-actions
+  - ci-cd
+  - macos
+  - runner
+  - migration
+  - arm64
+  - apple-silicon
+  - x86
+  - devtools
+  - eol
+aliases:
+  - macos-13 deprecated
+  - macos-13 runner retirement
+  - github actions macos migration
+  - macos ventura runner
+  - macos-13 to macos-14
+  - macos-13 to macos-15
+  - github actions arm macos
+  - macos runner arm vs intel
+  - macos-15-intel
+  - github actions macos architecture
+  - macos runner arm64 x86_64
+related_cards:
+  - runtime/java-11-lts-eol-september-2026
+  - auth/jwt-vs-session
+  - cloud/gcp-cloud-functions-gen1-deprecation-2025
+  - devtools/prettier-3-esm-only-requirement-and-cjs-plugin-breakage
+  - devtools/eslint-9-flat-config-required-eslintrc-removed
+  - mobile/expo-sdk-52-react-native-0-76-new-architecture-default-2026
+  - devtools/replit-vs-gitpod-vs-github-codespaces-development-cost-2026
+  - desktop/flutter-desktop-minimum-toolchain-and-breaking-upgrades-2026
+status: active
+tier: core
+updated: 2026-03-18
+review_by: 2027-05-01
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/github
+      name: GitHub
+    - type: runtime
+      id: runtime/macos-13
+      name: macos-13
+      category: github-hosted runner image
+    - type: runtime
+      id: runtime/macos-13-large
+      name: macos-13-large
+      category: github-hosted runner image
+    - type: runtime
+      id: runtime/macos-13-xlarge
+      name: macos-13-xlarge
+      category: github-hosted runner image
+    - type: runtime
+      id: runtime/macos-14
+      name: macos-14
+      category: github-hosted runner image
+    - type: runtime
+      id: runtime/macos-15
+      name: macos-15
+      category: github-hosted runner image
+    - type: capability
+      id: capability/x86_64-binaries
+      name: x86_64-specific binaries
+      category: architecture compatibility
+    - type: engine
+      id: engine/rosetta-2
+      name: Rosetta 2
+      category: translation layer
+  edges:
+    - type: eol_date
+      from: runtime/macos-13
+      to: null
+      date: 2025-12-04
+    - type: eol_date
+      from: runtime/macos-13-large
+      to: null
+      date: 2025-12-04
+    - type: eol_date
+      from: runtime/macos-13-xlarge
+      to: null
+      date: 2025-12-04
+    - type: breaking_change_in
+      from: capability/x86_64-binaries
+      to: runtime/macos-14
+      note: Switching to ARM64 can silently break workflows that compile, link, or
+        test x86_64-specific binaries.
+    - type: breaking_change_in
+      from: capability/x86_64-binaries
+      to: runtime/macos-15
+      note: Switching to ARM64 can silently break workflows that compile, link, or
+        test x86_64-specific binaries.
+    - type: requires_version
+      from: capability/x86_64-binaries
+      to: engine/rosetta-2
+      context: On GitHub-hosted ARM runners, x86 binary execution will fail unless
+        Rosetta 2 is explicitly installed.

@@ -1,0 +1,163 @@
+id: "devtools/postman-free-plan-team-limit-march-2026"
+title: "Postman Free Team Workspaces After the March 2026 Plan Changes"
+problem: "API teams need a current decision card on whether Postman’s March 2026
+  packaging changes make the Free plan unusable for collaboration and when
+  upgrading or moving to another tool is justified."
+context:
+  - "api-testing"
+  - "api-collaboration"
+  - "postman"
+constraints:
+  - "cost-sensitive"
+  - "small-team"
+candidates:
+  - name: "Stay on Postman Free only for solo use"
+    summary: "As of 2026-03-19, Postman’s March 2026 packaging change has already
+      occurred. Postman now offers Free, Solo, Team, and Enterprise; Basic is no
+      longer sold to new customers, and Professional remains supported for
+      existing customers. The current pricing page states Free is for
+      individuals, includes 1 user, and the FAQ says Free and Solo are
+      single-player plans. Free still includes core tools, Native Git, unlimited
+      specs and mock servers, unlimited Collection Runner and Performance
+      Testing runs, and 50 AI credits per month, but collaboration roles such as
+      Workspace Editor / Viewer are unavailable."
+    when_to_use: "Use this only when one developer owns the workspace and shared
+      editing or review is not required. For any actual team workflow inside
+      Postman, the decisive factor is that Free no longer provides the
+      collaboration model teams usually expect."
+    tradeoffs: "Lowest cost and still generous for solo API work, but it no longer
+      works as a shared team workspace plan."
+    cautions: "As of 2026-03-19, Free is not the old small-team free tier. If your
+      team was relying on pre-March-2026 assumptions, re-check seat and role
+      behavior before inviting anyone."
+    links:
+      - "https://www.postman.com/pricing/"
+      - "https://learning.postman.com/docs/billing/about-plans/"
+  - name: "Upgrade to Postman Team"
+    summary: "As of 2026-03-19, Postman Team is the new collaboration plan that
+      replaces Basic for new purchases and costs $19 per user per month billed
+      annually. Postman’s FAQ explicitly says Team is for collaboration, and the
+      pricing page adds team collaboration, unlimited workspace and collection
+      viewers, and basic RBAC. Team also includes 400 AI credits per user per
+      month. Postman’s March 2026 docs also say v11 and v12 can both be used
+      with legacy and new plans."
+    when_to_use: "Use this when multiple people need to edit or review APIs and you
+      want to stay in Postman with the least migration risk. The decisive factor
+      is whether shared workspaces, viewers, and team roles matter more than the
+      higher per-seat cost."
+    tradeoffs: "Keeps existing Postman workflows and adds the collaboration features
+      Free removed, but the entry cost is materially higher than before for
+      small teams."
+    cautions: "Paid plans still have usage-based services. Team is not Enterprise:
+      private invite-only workspaces and external Partner workspaces remain
+      unavailable on Team."
+    links:
+      - "https://www.postman.com/pricing/"
+      - "https://learning.postman.com/docs/billing/about-plans/"
+  - name: "Move collaboration to Hoppscotch Cloud"
+    summary: "As of 2026-03-19, Hoppscotch’s pricing page states its Free plan is $0
+      forever and includes unlimited workspaces, unlimited collections,
+      unlimited requests, and unlimited runners. Its Organization plan is $6 per
+      user per month billed annually. That makes it much cheaper than Postman
+      Team on listed seat price and avoids Postman’s new single-player Free
+      positioning for collaboration. The main differentiator is simple low-cost
+      team access rather than Postman’s broader commercial platform and
+      governance stack."
+    when_to_use: "Use this when your blocker is primarily seat cost and you need
+      shared API workspaces without paying Postman Team pricing. The decisive
+      factor is whether your team can accept a migration and verify feature
+      parity in the areas you actually use."
+    tradeoffs: "Much cheaper published team pricing and a more
+      collaboration-friendly free entry point, but it may not match Postman’s
+      ecosystem, AI tooling, or governance depth."
+    cautions: "Before migrating, check official docs for Postman import
+      compatibility, role model differences, and any gaps around automation or
+      enterprise controls that your team depends on."
+    links:
+      - "https://hoppscotch.com/pricing"
+      - "https://hoppscotch.com/"
+tags:
+  - "devtools"
+  - "postman"
+  - "api-testing"
+  - "pricing"
+aliases:
+  - "postman free team limit"
+  - "postman march 2026 pricing"
+  - "postman free collaboration"
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/postman
+      name: Postman
+    - type: vendor
+      id: vendor/hoppscotch
+      name: Hoppscotch
+    - type: capability
+      id: capability/postman-free-plan
+      name: Postman Free plan
+      category: plan
+    - type: capability
+      id: capability/postman-team-plan
+      name: Postman Team plan
+      category: plan
+    - type: capability
+      id: capability/postman-basic-plan
+      name: Postman Basic plan
+      category: plan
+    - type: capability
+      id: capability/postman-collaboration
+      name: Postman collaboration features
+      category: collaboration
+    - type: runtime
+      id: runtime/postman-v11
+      name: Postman v11
+    - type: runtime
+      id: runtime/postman-v12
+      name: Postman v12
+    - type: capability
+      id: capability/hoppscotch-organization-plan
+      name: Hoppscotch Organization plan
+      category: plan
+  edges:
+    - type: breaking_change_in
+      from: vendor/postman
+      to: capability/postman-free-plan
+      date: 2026-03-19
+      summary: Postman Free is positioned for individuals, includes 1 user, and Free
+        and Solo are single-player plans.
+    - type: breaking_change_in
+      from: vendor/postman
+      to: capability/postman-collaboration
+      date: 2026-03-19
+      summary: Collaboration roles such as Workspace Editor and Viewer are unavailable
+        on Postman Free.
+    - type: breaking_change_in
+      from: vendor/postman
+      to: capability/postman-basic-plan
+      date: 2026-03-19
+      summary: Basic is no longer sold to new customers, and Team replaces Basic for
+        new purchases.
+    - type: breaking_change_in
+      from: vendor/postman
+      to: capability/postman-team-plan
+      date: 2026-03-19
+      summary: Team is the new collaboration plan for Postman and adds team
+        collaboration, unlimited workspace and collection viewers, and basic
+        RBAC.
+    - type: requires_version
+      from: capability/postman-team-plan
+      to: runtime/postman-v11
+      summary: Postman March 2026 docs say v11 can be used with legacy and new plans.
+    - type: requires_version
+      from: capability/postman-team-plan
+      to: runtime/postman-v12
+      summary: Postman March 2026 docs say v12 can be used with legacy and new plans.
+related_cards:
+  - devtools/bruno-open-source-vs-pro-vs-ultimate-pricing-2026
+  - devtools/insomnia-vs-bruno-seat-pricing-2026

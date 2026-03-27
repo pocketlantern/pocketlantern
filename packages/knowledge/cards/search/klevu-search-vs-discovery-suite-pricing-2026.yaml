@@ -1,0 +1,153 @@
+id: "search/klevu-search-vs-discovery-suite-pricing-2026"
+title: "Klevu Search vs Discovery Suite Pricing and Contract Scope in 2026"
+problem: "Retail teams choosing Klevu need a current answer on whether pure
+  search or the full discovery suite is the better buy after packaging and
+  feature-bundling changes."
+context:
+  - "ecommerce"
+  - "site-search"
+  - "merchandising"
+  - "personalization"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+candidates:
+  - name: "Klevu search-led buy: Athos Essential"
+    summary: "As of 2026-03-27, Klevu's public pricing URL redirects to Athos
+      Commerce plans and no longer shows a public monthly price; commercial
+      scope is now quote-based and usage-based on domains, sessions, and SKUs.
+      The entry plan is \"Essential,\" which includes site search and
+      autocomplete, search preview, product pinning, search boost rules,
+      campaign scheduling, category filters and sort options, and 20 active
+      merchandising campaigns with 2x per day indexing. This is the closest
+      current match to a pure-search purchase, but it is not a narrowly isolated
+      search SKU anymore because merchandising controls are already bundled into
+      the base plan. Product Finder is listed as an add-on rather than
+      included."
+    when_to_use: "Use this when the team is cost-sensitive and mainly needs onsite
+      search relevance, autocomplete, filters, and basic merchandising without
+      committing to personalization. The decisive factor is that Essential
+      already bundles meaningful merchandising scope, so it is the lowest-scope
+      Klevu contract currently visible, but not a bare search-only contract."
+    tradeoffs: "Lower bundled scope than higher tiers and likely the lowest commit,
+      but public list pricing is gone and you need a quote. You get useful
+      merchandising features, but not geo-merchandising, landing pages, A/B
+      testing, personalized search, or recommendations."
+    cautions: "Klevu's older official pricing page previously exposed standalone
+      starting prices for Site Search, Merchandising, and Recommendations, but
+      as of 2026-03-27 the public pricing model shown is consolidated under
+      Athos plans instead. Also, Klevu support docs still refer to \"Discovery
+      Suite,\" \"Smart Search,\" \"Smart Category Merchandising,\" and \"Smart
+      Recommendations\" as product areas, so teams should verify whether their
+      order form, implementation scope, and admin entitlements follow the new
+      plan packaging or legacy module language."
+    links:
+      - "https://www.klevu.com/pricing/"
+      - "https://support.klevu.com/hc/en-us/articles/39397021714843-KMC-Prefere\
+        nces"
+      - "https://docs.klevu.com/klevu-magento-v4/frontend-enabling-and-disablin\
+        g-features"
+  - name: "Klevu full discovery buy: Athos Expert"
+    summary: "As of 2026-03-27, the highest public Klevu plan is shown as Athos
+      \"Expert,\" described as the plan to \"get full AI offering,\" with
+      pricing available only by quote and usage metrics rather than a posted
+      monthly fee. Expert includes everything in Advanced plus personalized
+      category results, personalized product recommendations, 200+ active
+      merchandising campaigns, and live or real-time indexing. The plan
+      comparison also shows Expert as the first tier with personalized search
+      results, NLP, personalized email recommendations, and predictive product
+      bundling as an add-on. This is the clearest current equivalent of buying
+      the full discovery suite rather than search alone."
+    when_to_use: "Use this when the team wants one contract to cover search,
+      category merchandising, and personalization together, and when higher
+      conversion upside matters more than minimizing initial scope. The decisive
+      factor is that Expert is the first visible tier that unlocks the
+      personalization stack across search, category, and recommendations."
+    tradeoffs: "Broadest capability set and most future-proof package, but likely
+      the highest commercial commitment and the least transparent publicly
+      because pricing is quote-only. It may replace multiple point purchases,
+      but it also reduces the ability to keep scope tightly limited to search."
+    cautions: "If the team only needs better search and some merchandising, jumping
+      to Expert can overbuy because Advanced already adds geo-merchandising,
+      landing pages, A/B testing, inline banners, and 50 active campaigns.
+      Verify whether predictive product bundling, ProServ, dedicated
+      infrastructure, and support commitments are separate add-ons in the final
+      contract."
+    links:
+      - "https://www.klevu.com/pricing/"
+      - "https://support.klevu.com/hc/en-us/articles/39397021714843-KMC-Prefere\
+        nces"
+      - "https://docs.klevu.com/klevu-magento-v4/frontend-enabling-and-disablin\
+        g-features"
+tags:
+  - "search"
+  - "klevu"
+  - "athos-commerce"
+  - "pricing"
+aliases:
+  - "klevu pricing 2026"
+  - "klevu discovery suite pricing"
+  - "klevu search vs discovery suite"
+related_cards:
+  - "search/searchanise-vs-doofinder-vs-klevu-ecommerce-search-pricing-2026"
+tier: "core"
+status: "active"
+updated: "2026-03-27"
+review_by: "2026-06-25"
+sidecar_hard_facts:
+  extracted: 2026-03-27
+  nodes:
+    - type: vendor
+      id: vendor/klevu
+      name: Klevu
+    - type: package
+      id: package/athos-essential
+      name: Athos Essential
+      vendor: vendor/klevu
+    - type: package
+      id: package/athos-expert
+      name: Athos Expert
+      vendor: vendor/klevu
+    - type: capability
+      id: capability/site-search
+      name: Site search
+    - type: capability
+      id: capability/autocomplete
+      name: Autocomplete
+    - type: capability
+      id: capability/merchandising
+      name: Merchandising
+    - type: capability
+      id: capability/personalization
+      name: Personalization
+    - type: capability
+      id: capability/personalized-search-results
+      name: Personalized search results
+    - type: capability
+      id: capability/personalized-product-recommendations
+      name: Personalized product recommendations
+    - type: capability
+      id: capability/nlp
+      name: NLP
+  edges:
+    - type: locks_via
+      from: capability/site-search
+      to: package/athos-essential
+    - type: locks_via
+      from: capability/autocomplete
+      to: package/athos-essential
+    - type: locks_via
+      from: capability/merchandising
+      to: package/athos-essential
+    - type: locks_via
+      from: capability/personalization
+      to: package/athos-expert
+    - type: locks_via
+      from: capability/personalized-search-results
+      to: package/athos-expert
+    - type: locks_via
+      from: capability/personalized-product-recommendations
+      to: package/athos-expert
+    - type: locks_via
+      from: capability/nlp
+      to: package/athos-expert

@@ -1,0 +1,223 @@
+id: "design/penpot-self-hosted-vs-cloud-license-and-support-2026"
+title: "Penpot Self-Hosted vs Cloud Support and Licensing Terms in 2026"
+problem: "Choose Penpot deployment mode based on current open-source licensing,
+  enterprise support boundaries, and collaboration tradeoffs that have shifted
+  since older comparisons."
+context:
+  - "design"
+  - "self-hosting"
+  - "saas"
+  - "open-source"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+  - "small-team"
+candidates:
+  - name: "Penpot Cloud Professional or Unlimited"
+    summary: "As of 2026-03-19, Penpot Cloud keeps collaboration in Penpot's shared
+      SaaS environment. The default Professional plan is \"$0 / user / month\"
+      and includes up to 8 team members, unlimited viewers, 10GB storage, 7 days
+      of autosaved versions, and 7 days of deleted file recovery. If you outgrow
+      that shared-cloud baseline, Cloud Unlimited is \"$7 / user / month\" with
+      a capped monthly bill of \"$175\", 25GB storage, and 30 days for autosaved
+      versions and deleted file recovery. Penpot's source repository remains
+      under the \"MPL-2.0\" license, but the SaaS convenience and support
+      boundaries are governed by the hosted plans rather than self-managed
+      open-source operations."
+    when_to_use: "Use this when \"low-ops\" and fast team onboarding matter more
+      than infrastructure control. It is the default choice for small teams or
+      product teams that want hosted collaboration without taking on Linux,
+      Docker, backups, and upgrade operations."
+    tradeoffs: "Fastest setup and least operational burden, but free cloud has clear
+      member and storage limits and paid cloud adds ongoing per-user or
+      flat-plan costs. You also accept hosted-plan storage/version ceilings
+      unless you move up to higher tiers."
+    cautions: "If you need stronger isolation or managed dedicated infrastructure,
+      Penpot lists a separate \"Private Server\" plan at \"$50k / year\" rather
+      than treating that as part of standard shared cloud plans. Older
+      comparisons that framed Penpot as simply \"free cloud vs free self-host\"
+      are outdated because hosted pricing now has formal Professional,
+      Unlimited, and Enterprise packaging."
+    links:
+      - "https://penpot.app/pricing"
+      - "https://design.penpot.app"
+      - "https://github.com/penpot/penpot"
+  - name: "Penpot on Elestio"
+    summary: "As of 2026-03-19, Penpot's official self-host guide includes Elestio
+      as an official deployment option and describes it as a fully managed
+      service for dedicated Penpot instances. Penpot says this path can deploy a
+      dedicated instance in about 3 minutes and offloads DNS configuration,
+      SMTP, backups, SSL certificates, OS upgrades, and Penpot upgrades. This is
+      the managed dedicated option if shared SaaS is too limited but fully DIY
+      self-hosting would create too much operational work."
+    when_to_use: "Use this when you need a dedicated Penpot environment with less
+      internal ops burden than running Docker or Kubernetes yourself. It fits
+      teams that still want infrastructure separation or provider choice but
+      prefer a managed deployment workflow."
+    tradeoffs: "You get a dedicated instance and managed operations, but this is
+      still a self-host-style deployment through a partner platform rather than
+      Penpot's default shared cloud. Costs, regions, sizing, and support terms
+      depend on the managed provider you choose."
+    cautions: "Do not treat this like Penpot's own shared SaaS plans: you still need
+      to choose a provider, region, service plan, and support level. If you need
+      Penpot's enterprise support boundaries, SSO, or compliance add-ons,
+      evaluate those separately from the managed hosting layer."
+    links:
+      - "https://help.penpot.app/technical-guide/getting-started/elestio/"
+      - "https://help.penpot.app/technical-guide/getting-started/"
+      - "https://penpot.app/blog/how-to-self-host-penpot/"
+  - name: "Penpot Self-Hosted Professional"
+    summary: "As of 2026-03-19, Penpot Self-host Professional is \"Free, forever\"
+      and is positioned for teams with their own technical infrastructure. The
+      official self-host pricing page says it includes complete control over
+      data and infrastructure, unlimited users, teams and files, all design and
+      prototyping features, community support, and \"100% open-source\"
+      operation. Penpot's public repository is licensed under \"MPL-2.0\", which
+      is the key licensing fact if you need an open-source deployment baseline.
+      The official self-host guide also says self-hosted Docker images can
+      arrive a few days after new releases, so version parity with cloud is not
+      always same-day."
+    when_to_use: "Use this when \"cost-sensitive\" plus \"compliance\" or
+      data-control requirements outweigh the value of hosted convenience. It is
+      the right fit when your team can operate Linux and Docker and wants
+      unlimited users/files without Penpot SaaS seat economics."
+    tradeoffs: "You avoid Penpot hosting charges and keep control of data, scale,
+      and continuity, but you own deployment, upgrades, monitoring, backups, and
+      user-support overhead. Collaboration features stay available, but
+      reliability and admin experience depend on your own operations maturity."
+    cautions: "Official requirements explicitly include a Linux server, Docker
+      knowledge, and self-managed deployment. Do not assume immediate release
+      parity with cloud, because Penpot states self-hosted Docker images are
+      intentionally published slightly later than release announcements."
+    links:
+      - "https://penpot.app/pricing/self-host"
+      - "https://help.penpot.app/technical-guide/getting-started/"
+      - "https://penpot.app/blog/how-to-self-host-penpot/"
+      - "https://github.com/penpot/penpot"
+  - name: "Penpot Self-Hosted Enterprise"
+    summary: "As of 2026-03-19, Penpot Self-host Enterprise is \"$950 / organization
+      per month\" and includes everything in Self-host Professional plus
+      dedicated deployment support, enterprise SSO and access controls,
+      certified plugins, guaranteed response times, and priority feature
+      requests. Penpot also lists paid add-ons for audit logs and activity
+      monitoring, security compliance support for \"SOC2, HIPAA\", air-gapped
+      deployment support, custom plugins or integrations, and roadmap
+      fast-tracking. The pricing page separately notes \"Two factor
+      authentication\" as \"coming soon\", so that capability should not be
+      treated as generally available yet. This tier keeps the self-hosted
+      control model while drawing a clearer boundary around what paid enterprise
+      support actually adds."
+    when_to_use: "Use this when you need self-hosting for security, compliance, or
+      air-gapped reasons but cannot rely on community support alone. The
+      decisive factor is whether enterprise support, SSO, and
+      compliance-oriented add-ons justify a fixed vendor relationship on top of
+      the open-source core."
+    tradeoffs: "You keep data and infrastructure control while getting formal vendor
+      backing, but you still operate the environment yourself and may need
+      additional paid add-ons for audit/compliance needs. It is materially more
+      expensive than free self-hosting, though still flat-priced per
+      organization rather than per editor."
+    cautions: "Do not over-assume the enterprise bundle: audit logs, compliance
+      support, and air-gapped deployment are explicitly listed as add-ons, and
+      \"Two factor authentication\" is still marked \"coming soon\" as of
+      2026-03-19. If you want Penpot-managed dedicated hosting instead of
+      running your own servers, that is a different offering from self-host
+      Enterprise."
+    links:
+      - "https://penpot.app/pricing/self-host"
+      - "https://penpot.app/blog/how-to-self-host-penpot/"
+      - "https://help.penpot.app/technical-guide/getting-started/"
+tags:
+  - "design"
+  - "penpot"
+  - "pricing"
+  - "open-source"
+  - "self-hosting"
+aliases:
+  - "penpot self-host pricing"
+  - "penpot cloud vs self-host"
+  - "penpot enterprise support"
+  - "penpot self hosted license"
+  - "penpot cloud licensing"
+  - "penpot self host support"
+  - "penpot enterprise licensing"
+  - "penpot oss vs cloud"
+  - "penpot hosted vs self hosted"
+  - "penpot support tiers"
+  - "penpot self managed pricing"
+  - "penpot selfhosted enterprise support"
+related_cards:
+  - "backend/pocketbase-vs-supabase-open-source-managed-2026"
+  - "infra/hosting-platform-lock-in-and-ejection-cost-2026"
+  - "design/figma-dev-seats-vs-full-seats-after-dev-mode-pricing-2026"
+  - devtools/n8n-cloud-vs-self-host-license-and-execution-cost-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/penpot
+      name: Penpot
+    - type: vendor
+      id: vendor/elestio
+      name: Elestio
+    - type: framework
+      id: framework/docker
+      name: Docker
+    - type: runtime
+      id: runtime/linux-server
+      name: Linux server
+    - type: capability
+      id: capability/penpot-cloud-professional
+      name: Penpot Cloud Professional
+      category: deployment_plan
+    - type: capability
+      id: capability/penpot-cloud-unlimited
+      name: Penpot Cloud Unlimited
+      category: deployment_plan
+    - type: capability
+      id: capability/penpot-self-hosted-professional
+      name: Penpot Self-Hosted Professional
+      category: deployment_plan
+    - type: capability
+      id: capability/penpot-self-hosted-enterprise
+      name: Penpot Self-Hosted Enterprise
+      category: deployment_plan
+    - type: capability
+      id: capability/shared-saas-environment
+      name: shared SaaS environment
+      category: hosting_model
+    - type: capability
+      id: capability/self-managed-deployment
+      name: self-managed deployment
+      category: operational_requirement
+  edges:
+    - type: requires_version
+      from: capability/penpot-self-hosted-professional
+      to: runtime/linux-server
+      requirement: Official requirements explicitly include a Linux server.
+    - type: requires_version
+      from: capability/penpot-self-hosted-professional
+      to: framework/docker
+      requirement: Official requirements explicitly include Docker knowledge.
+    - type: requires_version
+      from: capability/penpot-self-hosted-professional
+      to: capability/self-managed-deployment
+      requirement: Official requirements explicitly include self-managed deployment.
+    - type: locks_via
+      from: capability/penpot-cloud-professional
+      to: capability/shared-saas-environment
+      basis: Penpot Cloud keeps collaboration in Penpot's shared SaaS environment.
+    - type: locks_via
+      from: capability/penpot-cloud-unlimited
+      to: capability/shared-saas-environment
+      basis: Penpot Cloud keeps collaboration in Penpot's shared SaaS environment.
+    - type: requires_version
+      from: capability/penpot-self-hosted-enterprise
+      to: capability/penpot-self-hosted-professional
+      requirement: Self-host Enterprise includes everything in Self-host Professional
+        plus enterprise support and add-ons.

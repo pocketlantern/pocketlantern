@@ -1,0 +1,153 @@
+id: "database/planetscale-private-connections-flat-rate-feb-2026"
+title: "PlanetScale Postgres Private Connections Flat $0.01 per GB Pricing from
+  February 2026"
+problem: "Choose public versus private connectivity for PlanetScale Postgres
+  after private ingress and egress moved to a flat $0.01/GB rate in February
+  2026."
+context:
+  - "postgres"
+  - "planetscale"
+  - "aws"
+  - "gcp"
+  - "networking"
+constraints:
+  - "cost-sensitive"
+  - "enterprise"
+  - "compliance"
+  - "low-ops"
+candidates:
+  - name: "Keep standard public TLS connectivity"
+    summary: "As of 2026-03-19, PlanetScale Postgres uses secure TLS connections
+      over the public internet by default, and PlanetScale states this is
+      appropriate for most customers. Public incoming traffic is free. Public
+      outgoing traffic is billed by region after the included allowance, with
+      100 GB/month included for Production branches and 10 GB/month included for
+      PS-5 non-HA and Development branches. Official pricing examples show
+      public egress at $0.060/GB in AWS us-east-1 and GCP us-central1, but
+      higher in some regions such as AWS ap-northeast-1 at $0.101/GB and GCP
+      asia-northeast3 at $0.117/GB."
+    when_to_use: "Best for cost-sensitive plus low-ops teams that do not have a
+      requirement to avoid the public internet. It is the simpler default when
+      free ingress and no extra cloud private-endpoint infrastructure matter
+      more than private-network isolation."
+    tradeoffs: "Simplest setup and no private endpoint management, with free public
+      ingress. The tradeoff is region-based public egress pricing and traffic
+      traversing the public internet instead of staying on AWS or GCP private
+      backbones."
+    cautions: "Do not compare only the new private $0.01/GB rate against public
+      egress. Public can still be cheaper for ingress-heavy workloads because
+      public ingress is free while private traffic bills both directions."
+    links:
+      - "https://planetscale.com/docs/postgres/pricing"
+      - "https://planetscale.com/docs/postgres/connecting/private-connections/a\
+        ws-privatelink"
+      - "https://planetscale.com/docs/postgres/connecting/private-connections/g\
+        cp-private-service-connect"
+  - name: "Use private connectivity with AWS PrivateLink or GCP Private Service
+      Connect"
+    summary: "As of 2026-03-19, following PlanetScale's February 19, 2026 pricing
+      change, all private-connection traffic for PlanetScale Postgres is billed
+      at a flat $0.01/GB for both ingress and egress regardless of region.
+      PlanetScale says this replaces the standard regional public-egress pricing
+      for traffic routed over private connections. The included allowance
+      matches public traffic: 100 GB/month for Production branches and 10
+      GB/month for PS-5 non-HA and Development branches. PlanetScale documents
+      private connectivity as mainly useful for compliance, stronger network
+      isolation, and private-cloud-network architectures, while noting that AWS
+      or GCP also charge their own endpoint-related fees."
+    when_to_use: "Best for enterprise plus compliance workloads, or when your
+      network architecture already assumes private service endpoints. It is also
+      the decisive choice when you want predictable PlanetScale transfer pricing
+      across regions and are willing to pay for private traffic in both
+      directions."
+    tradeoffs: "You get private-path connectivity and a lower, uniform PlanetScale
+      transfer rate than many public-egress regions. The tradeoff is extra setup
+      and separate AWS PrivateLink or GCP Private Service Connect charges, plus
+      private traffic billing on ingress as well as egress."
+    cautions: "As of 2026-03-19, this pricing change has already occurred. Enabling
+      a private connection does not automatically disable public access;
+      PlanetScale requires separate IP restrictions if you want private-only
+      access, using RFC1918 ranges 10.0.0.0/8, 172.16.0.0/12, and
+      192.168.0.0/16. PlanetScale also notes that for private connections it
+      sees source IPs from its internal private infrastructure rather than your
+      VPC CIDR."
+    links:
+      - "https://planetscale.com/changelog/updated-pricing-for-postgres-private\
+        -traffic"
+      - "https://planetscale.com/docs/postgres/pricing"
+      - "https://planetscale.com/docs/postgres/connecting/private-connections/a\
+        ws-privatelink"
+      - "https://planetscale.com/docs/postgres/connecting/private-connections/g\
+        cp-private-service-connect"
+tags:
+  - "database"
+  - "postgres"
+  - "planetscale"
+  - "networking"
+  - "pricing"
+aliases:
+  - "planetscale private connections pricing"
+  - "planetscale postgres privatelink pricing 2026"
+  - "planetscale postgres public vs private connectivity"
+related_cards:
+  - "database/neon-vs-supabase-vs-planetscale-2026"
+  - "database/fly-managed-postgres-inter-region-private-network-charges-2026"
+  - "cloud/aws-public-ipv4-charge-avoidance-vpc-and-load-balancer-design-2026"
+  - database/cockroachdb-cloud-usage-billing-renewal-model-2026
+  - database/planetscale-single-node-vs-ha-clusters-2026
+  - cloud/planetscale-private-connections-vs-public-egress-feb-2026
+  - database/planetscale-scaler-pro-vs-managed-byoc-pricing-2026
+  - data/tidb-cloud-essential-vs-dedicated-private-networking-and-changefeed-cost-2026
+  - search/elastic-serverless-plus-private-connectivity-promo-2026
+tier: "core"
+status: "active"
+updated: "2026-03-19"
+review_by: "2026-06-17"
+sidecar_hard_facts:
+  extracted: 2026-03-20
+  nodes:
+    - type: vendor
+      id: vendor/planetscale
+      name: PlanetScale
+    - type: vendor
+      id: vendor/aws
+      name: AWS
+    - type: vendor
+      id: vendor/gcp
+      name: GCP
+    - type: protocol
+      id: protocol/tls
+      name: TLS
+      standard: TLS
+    - type: capability
+      id: capability/public-tls-connectivity
+      name: public TLS connectivity
+      category: networking
+    - type: capability
+      id: capability/private-connectivity
+      name: private connectivity
+      category: networking
+    - type: capability
+      id: capability/aws-privatelink
+      name: AWS PrivateLink
+      category: private service endpoint
+    - type: capability
+      id: capability/gcp-private-service-connect
+      name: GCP Private Service Connect
+      category: private service endpoint
+  edges:
+    - type: locks_via
+      from: capability/public-tls-connectivity
+      to: protocol/tls
+    - type: locks_via
+      from: capability/private-connectivity
+      to: capability/aws-privatelink
+    - type: locks_via
+      from: capability/private-connectivity
+      to: capability/gcp-private-service-connect
+    - type: locks_via
+      from: capability/aws-privatelink
+      to: vendor/aws
+    - type: locks_via
+      from: capability/gcp-private-service-connect
+      to: vendor/gcp
