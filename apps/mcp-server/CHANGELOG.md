@@ -1,5 +1,15 @@
 # @pocketlantern/mcp-server
 
+## 0.1.2
+
+### Patch Changes
+
+- [#4](https://github.com/pocketlantern/pocketlantern/pull/4) [`e8847df`](https://github.com/pocketlantern/pocketlantern/commit/e8847dfcad5aaa1d3b2119ec13019b5344c5c402) Thanks [@allssu](https://github.com/allssu)! - Add mcpName for Official MCP Registry registration
+
+- Updated dependencies []:
+  - @pocketlantern/schema@0.1.2
+  - @pocketlantern/knowledge@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes

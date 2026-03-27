@@ -1,5 +1,13 @@
 # pocketlantern
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`e8847df`](https://github.com/pocketlantern/pocketlantern/commit/e8847dfcad5aaa1d3b2119ec13019b5344c5c402)]:
+  - @pocketlantern/mcp-server@0.1.2
+  - @pocketlantern/schema@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
