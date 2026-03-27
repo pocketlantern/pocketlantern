@@ -12,6 +12,9 @@ Thumbs.db
 
 pro-catalog.json
 
+# mcp-publisher auth tokens
+.mcpregistry_*
+
 .vscode/
 .idea/
 *.swp
