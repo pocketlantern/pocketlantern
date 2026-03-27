@@ -39,5 +39,14 @@
       "description": "List constraint filters (serverless, enterprise, etc.)"
     }
   ],
-  "tags": ["mcp", "ai-agents", "developer-tools", "technical-decisions", "breaking-changes", "eol", "migration", "lock-in"]
+  "tags": [
+    "mcp",
+    "ai-agents",
+    "developer-tools",
+    "technical-decisions",
+    "breaking-changes",
+    "eol",
+    "migration",
+    "lock-in"
+  ]
 }
