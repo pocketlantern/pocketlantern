@@ -1,6 +1,6 @@
 {
   "name": "pocketlantern",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "description": "Blocker-aware decision layer for AI coding agents, grounded in source-linked, time-sensitive facts",
   "author": "PocketLantern",

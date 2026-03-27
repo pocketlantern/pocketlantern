@@ -1,5 +1,15 @@
 # pocketlantern
 
+## 0.1.4
+
+### Patch Changes
+
+- [`0154b4f`](https://github.com/pocketlantern/pocketlantern/commit/0154b4f0c91526440d7532c522ae8fcf701f09ed) Thanks [@allssu](https://github.com/allssu)! - Improve search precision: word-boundary matching, score threshold, query coverage gate, zero-result UX
+
+- Updated dependencies [[`0154b4f`](https://github.com/pocketlantern/pocketlantern/commit/0154b4f0c91526440d7532c522ae8fcf701f09ed)]:
+  - @pocketlantern/mcp-server@0.1.4
+  - @pocketlantern/schema@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
