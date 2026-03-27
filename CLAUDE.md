@@ -32,6 +32,7 @@ This is the **public toolkit** repo. It contains the MCP server, CLI, schema, an
 pnpm build                                          # Build all packages (schema → mcp-server → cli)
 pnpm test                                           # Run all tests (vitest)
 pnpm test:coverage                                  # Run tests with v8 coverage report
+npx prettier --write .                              # Fix formatting (CI runs format:check)
 npx pocketlantern validate                          # Validate sample cards against schema
 npx pocketlantern search "query"                    # Search cards (human-readable output)
 npx pocketlantern doctor                            # Diagnose installation status
@@ -188,9 +189,18 @@ These decisions were made deliberately. Don't change without discussion.
 4. **Verify technical claims** against official documentation (fetch the linked URLs)
 5. Include working links to official docs for each candidate
 
+## CI Checklist
+
+CI runs these in order — all must pass before merge:
+
+1. `pnpm build` — TypeScript compilation (`tsc`). Catches missing imports, type errors.
+2. `pnpm format:check` — Prettier. Run `npx prettier --write .` locally before pushing.
+3. `pnpm test` — Vitest. Smoke test (`smoke.test.ts`) requires `dist/` from step 1.
+
 ## Don't
 
 - Don't write card content in languages other than English.
+- Don't push without running `npx prettier --write .` on changed files — CI will reject formatting issues.
 - Don't add schema fields without updating `packages/schema/src/card.ts`.
 - Don't skip `validate` after editing cards.
 - Don't use `process.env` values without null-checking.
